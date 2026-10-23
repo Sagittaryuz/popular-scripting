@@ -1,0 +1,19 @@
+{
+  "version": "0.2.0",
+  "at": "2026-10-23 21:56:57 UTC",
+  "localPassed": [
+    "13 modules syntax/imports",
+    "selection of any four from eight collected indicators",
+    "crossing/freshness/rearming/deduplication",
+    "safe CSV",
+    "4 economic reference series",
+    "16 Python ingestion/recovery tests"
+  ],
+  "nativeIPhone": false,
+  "pending": [
+    "iPhone update and native declarations",
+    "direct source links and small-family host behavior",
+    "native graph rendering",
+    "actual notification receipt and refresh interval"
+  ]
+}

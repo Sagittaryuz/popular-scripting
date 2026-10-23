@@ -2,7 +2,7 @@ name: Atualizar referências econômicas públicas
 on:
   workflow_dispatch:
   schedule:
-    - cron: '35 16 * * 1-5'
+    - cron: '17 11-23 * * 1-5'
 concurrency:
   group: public-economic-data
   cancel-in-progress: false

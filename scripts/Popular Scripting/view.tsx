@@ -1,4 +1,5 @@
-import { Canvas, Image, Rectangle, Text, ZStack } from 'scripting'
+import { Canvas, Image, Rectangle, Text, ZStack, Link } from 'scripting'
+import { selectSmall, sourceURL } from './pro-model'
 import { assets } from './assets'
 import { drawBadge } from './badges'
 import { GEOMETRY as G, layout, place, movementColor, curvePlan, monthBand, drawCurve } from './draw'
@@ -11,13 +12,14 @@ function Label({value,plan,x,y,width,height,size,min,bold=false,color='white',ri
 export function PopularView({model,width,height}:{model:any;width:number;height:number}){
   for(const [key,value] of Object.entries(assets))if(!images[key]){const image=UIImage.fromBase64String(value as string);if(image)images[key]=image}
   const plan=layout(model.family,width,height)
+  const visibleRows=model.family==='small'?selectSmall(model.rows,Storage.get('popular-small-codes')):model.rows.slice(0,plan.count)
   const label=(key:string,value:string,x:number,y:number,w:number,h:number,size:number,min:number,bold=false,color='white',right=false)=>
     <Label key={key} value={value} plan={plan} x={x} y={y} width={w} height={h} size={size} min={min} bold={bold} color={color} right={right}/>
-  return <ZStack alignment="topLeading" frame={{width,height}} clipped widgetBackground="#1E1E1E" widgetURL="scripting://run/Popular%20Scripting"
+  return <ZStack alignment="topLeading" frame={{width,height}} clipped widgetBackground="#1E1E1E" widgetURL={visibleRows[0]?sourceURL(visibleRows[0]):'https://www.bcb.gov.br/'}
     accessibilityLabel={model.rows.map((r:any)=>`${r.name}, ${r.price}, ${r.percent}, ${r.unit}, ${r.time}`).join('. ')}>
     {images.background?<Image image={images.background} resizable renderingMode="original" frame={{width,height}}/>:null}
     {plan.large?label('title','Popular · '+model.status.label,0,-32,304,18,11,8,true):null}
-    {model.rows.slice(0,plan.count).map((row:any,i:number)=>{
+    {visibleRows.map((row:any,i:number)=>{
       const x=Math.floor(i/4)*158,y=(i%4)*(G.row+G.gap),detail=x+G.detail,color=movementColor(row),curve=curvePlan(model.api,row)
       const band=monthBand(curve),custom=['SOJA_JATAI_GO','CUB_GO','IPCA','DIESEL_S10'].includes(row.asset.code)
       return <ZStack key={row.asset.code} alignment="topLeading" frame={{width,height}}>
@@ -38,6 +40,7 @@ export function PopularView({model,width,height}:{model:any;width:number;height:
         {label('unit',row.unit,detail,y+28,64,8,6,5,false,'#96969C')}
         {label('time',row.time,detail+68,y+28,48,8,7.5,6,false,'#96969C',true)}
         {i%4<3?<Rectangle fill="rgba(255,255,255,0.13)" {...place(plan,x,y+36,146,G.gap)}/>:null}
+        <Link url={sourceURL(row)} {...place(plan,x,y,146,36)}><Rectangle fill="black" opacity={0.001} frame={{width:146*plan.scale,height:36*plan.scale}}/></Link>
       </ZStack>
     })}
     {plan.large?label('foot','D/D diário · S/S semanal · M/M mensal · pp: taxa',0,155,304,14,8,6,false,'#96969C'):null}

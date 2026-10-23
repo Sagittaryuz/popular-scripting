@@ -1,5 +1,9 @@
 # Popular Scripting
 
+**Atual: 0.2.0 — Scripting Pro.** Detalhes, seleção de quatro indicadores, CSV,
+alertas, assistente, Central de Controle e painel Início. Consulta solicitada em
+1 minuto e links diretos às fontes. [Ativação, testes e limites](PRO.md).
+
 Widget econômico para o aplicativo Scripting, com acesso público e sem token de GitHub no aplicativo.
 
 ## Importação remota
@@ -10,7 +14,7 @@ Na tela **Importar Scripts Remotos** do Scripting, cole:
 https://github.com/Sagittaryuz/popular-scripting/tree/main/scripts/Popular%20Scripting
 ```
 
-Importe **Popular Scripting**, confirme a versão **0.1.3**, abra o projeto e toque em **Atualizar**. Adicione o widget do Scripting à Tela de Início e selecione esse projeto.
+Importe **Popular Scripting**, confirme a versão **0.2.0**, abra o projeto e toque em **Atualizar**. Adicione o widget do Scripting à Tela de Início e selecione esse projeto.
 
 Para receber melhorias de código, use a atualização do script remoto no Scripting. Essa importação vincula o projeto à pasta `main/scripts/Popular Scripting`; não use um endereço de commit ou tag para acompanhar as próximas versões. O botão **Atualizar** dentro da tela do Popular consulta somente os indicadores e solicita recarregar o widget.
 
@@ -20,8 +24,8 @@ Para receber melhorias de código, use a atualização do script remoto no Scrip
 - Cinco modos de ordenação, fundo original, ícones e gráficos.
 - Fontes: BCB, AgroLink, Investidor10, AwesomeAPI, FRED e referências públicas documentadas em `data/economic-series.json`.
 - Dados econômicos de referência são consultados diretamente deste Git, sem autenticação. Rede indisponível ou resposta inválida preserva o cache validado ou a reserva versionada, com suas datas originais.
-- O workflow `economic-data.yml` é programado em dias úteis às 16h35 UTC. Falha de uma fonte mantém a série anterior e é registrada no workflow; dados antigos não recebem data de observação nova.
-- Política de atualização do widget: a partir de cinco minutos, sujeita ao iOS.
+- O workflow `economic-data.yml` é programado a cada hora útil, 11h17–23h17 UTC, sujeito a atrasos do GitHub. Falha de uma fonte mantém a série anterior e é registrada no workflow; dados antigos não recebem data de observação nova.
+- Política de atualização do widget: a partir de um minuto, configurável em 1/5/15, sujeita ao iOS.
 
 Não são solicitadas permissões de Calendário, Lembretes ou Localização. O projeto não lê credenciais; ao executar a tela principal, tenta remover somente a credencial legada que uma edição anterior do próprio projeto tenha salvo. Não altera o GitHub configurado nas preferências gerais do Scripting nem revoga credenciais da conta GitHub.
 

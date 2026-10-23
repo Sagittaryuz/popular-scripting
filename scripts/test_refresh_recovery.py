@@ -15,7 +15,9 @@ import update_economic_data as m
 FIXTURE=json.loads((m.ROOT/'data/economic-series.json').read_text())
 # The EIA parser tests model the pre-refresh six-observation archive. The
 # production snapshot is newer, but the recovery contract is unchanged.
-FIXTURE['series']['BRENT']['observations']=FIXTURE['series']['BRENT']['observations'][:6]
+FIXTURE['series']['BRENT']['observations']=[{'period':period,'value':value,'sourceURL':m.BRENT_EIA} for period,value in [
+    ('2026-10-07',126.00),('2026-10-08',130.18),('2026-10-09',130.03),
+    ('2026-10-12',129.95),('2026-10-13',125.78),('2026-10-14',126.55)]]
 FIXTURE['series']['BRENT']['publishedAt']='2026-10-15'
 EIA=b'<h1>Spot Prices</h1><p>Crude Oil in Dollars per Barrel, Products in Dollars per Gallon</p><table><tr><th>Product</th><th>10/07/26</th><th>10/08/26</th><th>10/09/26</th><th>10/12/26</th><th>10/13/26</th><th>10/14/26</th></tr><tr><td>WTI - Cushing, Oklahoma</td><td>1.00</td></tr><tr><td>Brent - Europe</td><td>126.00</td><td>130.18</td><td>130.03</td><td>129.95</td><td>125.78</td><td>126.55</td><td>1987-2026</td></tr></table><p>Release Date: 10/15/2026 Next Release Date: 10/21/2026</p>'
 
