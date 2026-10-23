@@ -4,10 +4,11 @@ import { historyCSV, sourceURL, summaryRows, validateRules } from './pro-model'
 import { addAlert, evaluateAlerts } from './alerts'
 import { chooseExportFolder, explain, exportPreferences, exportText, readPreferences, refreshMinutes, reloadWidgets } from './pro-common'
 export function PopularDetails({model}:{model:any}){
-  const [selected,setSelected]=useState(''),[message,setMessage]=useState(''),[busy,setBusy]=useState(false)
+  const [selected,setSelected]=useState(''),[message,setMessage]=useState(''),[busy,setBusy]=useState(false),[historyDays,setHistoryDays]=useState(0)
   const running=useRef(false)
   async function run(fn:()=>Promise<void>){if(running.current)return;running.current=true;setBusy(true);try{await fn()}catch(e){setMessage(e instanceof Error?e.message:'Não foi possível concluir.')}finally{running.current=false;setBusy(false)}}
   const row=model?.rows.find((r:any)=>r.asset.code===selected)
+  const history=row?.chart?{...row.chart,points:row.chart.points.filter((p:any)=>!historyDays||p.stamp.time>=Date.now()-historyDays*86400000)}:null
   async function small(){
     const codes:string[]=[]
     for(let i=0;i<4;i++){
@@ -24,7 +25,8 @@ export function PopularDetails({model}:{model:any}){
       {row?<VStack spacing={8}>
         <Text>{row.name+' · '+row.price+' · '+row.percent}</Text><Text>{row.unit+' · '+row.time}</Text>
         <Text>{'Fonte: '+row.asset.source+' · '+(row.referencePeriod??row.stamp?.day??'Data de observação indisponível')}</Text>
-        <Canvas opaque={false} frame={{width:300,height:100}} draw={(ctx,size)=>drawCurve(ctx,size,curvePlan(model.api,row,300),'#4BAEFF')}/>
+        <HStack>{[[90,'90 dias'],[365,'1 ano'],[0,'Disponível']].map(([days,label])=><Button key={String(days)} title={String(label)} action={()=>setHistoryDays(Number(days))}/>)}</HStack>
+        <Canvas opaque={false} frame={{width:300,height:100}} draw={(ctx,size)=>drawCurve(ctx,size,curvePlan({...model.api,displayChart:(chart:any)=>chart},{...row,chart:history},300),'#4BAEFF')}/>
         <Link url={sourceURL(row)}><Text>Abrir fonte</Text></Link>
         <Text>Histórico disponível da própria fonte; períodos e unidades podem variar entre indicadores.</Text>
       </VStack>:null}
