@@ -1,67 +1,28 @@
 // @ts-nocheck
-// Canvas renderer. Numeric data, ordering and chart geometry come from the original engine.
-import { drawBadge } from './badges'
-export function fitText(ctx,text,box,{size=10,min=6,bold=false,color='white',align='left',ellipsis=false}={}) {
-  text=String(text);ctx.save();ctx.beginPath();ctx.rect(box.x,box.y,box.width,box.height);ctx.clip();
-  const font=n=>({name:bold?'SFProText-Semibold':'SFProText-Regular',size:n});
-  let chosen=null;
-  for(let n=size;n>=min-.001;n-=.25){ctx.font=font(n);const m=ctx.measureText(text);
-    if(m.width<=box.width-2&&m.actualBoundingBoxAscent+m.actualBoundingBoxDescent<=box.height-1){chosen={n,m};break;}}
-  if(!chosen){
-    ctx.font=font(min);
-    if(ellipsis){while(text.length>1&&ctx.measureText(text+'…').width>box.width-2)text=text.slice(0,-1);text+='…';}
-    else text=text==='—'?'—':'FORA';
-    chosen={n:min,m:ctx.measureText(text)};
-  }
-  ctx.font=font(chosen.n);ctx.fillStyle=color;ctx.textAlign=align;ctx.textBaseline='alphabetic';
-  const x=align==='right'?box.x+box.width-1:align==='center'?box.x+box.width/2:box.x+1;
-  const y=box.y+(box.height-chosen.m.actualBoundingBoxAscent-chosen.m.actualBoundingBoxDescent)/2+chosen.m.actualBoundingBoxAscent;
-  ctx.fillText(text,x,y);ctx.restore();return {text,size:chosen.n};
+// Text belongs to native Text views, never to Canvas baselines or clipping boxes.
+export const GEOMETRY=Object.freeze({column:146,columnGap:12,row:36,gap:2/3,icon:26,detail:30,name:64,price:52,graph:78,percent:34,top:17,middle:11,bottom:8});
+export function layout(family,width,height){
+  if(!Number.isFinite(width)||!Number.isFinite(height)||width<=12||height<=8)throw Error('Dimensão inválida');
+  const wide=family!=='small',large=family==='large',contentWidth=wide?304:146;
+  const scale=Math.min(1,(width-12)/contentWidth,(height-(large?62:8))/146);
+  if(scale<=0)throw Error('Área insuficiente');
+  return {width,height,scale,x:(width-contentWidth*scale)/2,y:(height-146*scale)/2,wide,large,count:wide?8:4,contentWidth};
 }
-
-function chart(ctx,row,api,x,y,width,color){
-  const visible=api.displayChart(row.chart),points=api.lineCoordinates(visible,width,5.5),months=api.monthLayout(visible,width);
-  ctx.save();ctx.beginPath();ctx.rect(x,y,width,11);ctx.clip();ctx.translate(x,y);
-  for(const line of months.lines){ctx.beginPath();ctx.moveTo(line.x,.5);ctx.lineTo(line.x,5);ctx.strokeStyle='rgba(255,255,255,.20)';ctx.lineWidth=.45;ctx.stroke();}
-  if(points.length>=2){
-    const g=ctx.createLinearGradient(0,0,0,5.5);g.addColorStop(0,color+'3D');g.addColorStop(1,color+'00');
-    ctx.beginPath();ctx.moveTo(points[0].x,5.5);for(const p of points)ctx.lineTo(p.x,p.y);ctx.lineTo(points.at(-1).x,5.5);ctx.closePath();ctx.fillStyle=g;ctx.fill();
-    ctx.beginPath();points.forEach((p,i)=>i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y));ctx.strokeStyle=color;ctx.lineWidth=.7;ctx.stroke();
-  }else fitText(ctx,'—',{x:0,y:0,width,height:5.5},{size:5,min:4,color});
-  for(const label of months.labels)fitText(ctx,label.text,{x:label.x,y:6,width:14,height:5},{size:5,min:4,color});
-  ctx.restore();
+export function place(plan,x,y,width,height,alignment='center'){
+  const s=plan.scale;
+  return {frame:{width:width*s,height:height*s,alignment},position:{x:plan.x+(x+width/2)*s,y:plan.y+(y+height/2)*s}};
 }
-
-export function drawPopular(ctx,size,model,images){
-  const {width,height}=size,wide=model.family!=='small',large=model.family==='large';
-  ctx.save();ctx.fillStyle='#1E1E1E';ctx.fillRect(0,0,width,height);
-  if(images.background)ctx.drawImage({image:images.background},0,0,width,height);
-  // 146pt columns, 12pt gap, 6pt side padding: exactly the original layout budget.
-  const logicalWidth=wide?304:146,scale=Math.min(1,(width-12)/logicalWidth,(height-(large?62:8))/146);
-  ctx.translate((width-logicalWidth*scale)/2,(height-146*scale)/2);ctx.scale(scale,scale);
-  if(large){fitText(ctx,'Popular · '+model.status.label,{x:0,y:-32,width:304,height:18},{size:11,min:8,bold:true,ellipsis:true});
-    fitText(ctx,'D/D diário · S/S semanal · M/M mensal · pp: taxa',{x:0,y:155,width:304,height:14},{size:8,min:6,color:'#96969C'});}
-  const colors={up:'#30C795',down:'#FF5967',neutral:'#96969C'};
-  // Reserve is measured from a fixed reference, so quotes never move the chart edge.
-  ctx.font={name:'SFProText-Semibold',size:17.5};
-  const reserve=Math.min(45,Math.max(32,ctx.measureText('4,99').width)),graphWidth=Math.max(64,Math.floor(116-1-reserve-3));
-  const count=wide?8:4;
-  for(let i=0;i<count;i++){
-    const row=model.rows[i];if(!row)continue;
-    const x=Math.floor(i/4)*158,y=(i%4)*(36+2/3),detail=x+30;
-    const color=row.movement>0?colors.up:row.movement<0?colors.down:colors.neutral;
-    ctx.save();ctx.beginPath();ctx.ellipse(x+13,y+18,13,13,0,0,Math.PI*2,false);ctx.clip();
-    if(['SOJA_JATAI_GO','CUB_GO','IPCA','DIESEL_S10'].includes(row.asset.code)){ctx.save();ctx.translate(x,y+5);drawBadge(ctx,row.asset.code);ctx.restore();}
-    else if(images[row.asset.code])ctx.drawImage({image:images[row.asset.code]},x,y+5,26,26);
-    else {ctx.fillStyle='#36363A';ctx.fillRect(x,y+5,26,26);fitText(ctx,({SELIC:'%',SOJA_JATAI_GO:'🌱',CUB_GO:'CUB',IPCA:'IPCA',DIESEL_S10:'S10',BRENT:'BRENT','USD/BRL':'$'})[row.asset.code]||'—',{x,y:y+5,width:26,height:26},{size:9,min:6,bold:true,align:'center'});}
-    ctx.restore();
-    fitText(ctx,row.name,{x:detail,y,width:116-reserve-4,height:17},{size:10,min:7,bold:true,ellipsis:true});
-    fitText(ctx,row.price,{x:detail+64,y,width:52,height:17},{size:17.5,min:8.5,bold:true,align:'right'});
-    chart(ctx,row,model.api,detail,y+17,graphWidth,color);
-    fitText(ctx,row.percent,{x:detail+graphWidth+3,y:y+17,width:116-graphWidth-3,height:11},{size:10.5,min:7.5,bold:true,color,align:'right'});
-    fitText(ctx,row.unit,{x:detail,y:y+28,width:64,height:8},{size:6,min:5,color:colors.neutral,ellipsis:true});
-    fitText(ctx,row.time,{x:detail+68,y:y+28,width:48,height:8},{size:7.5,min:6,color:colors.neutral,align:'right'});
-    if(i%4<3){ctx.fillStyle='rgba(255,255,255,.13)';ctx.fillRect(x,y+36,146,2/3);}
-  }
-  ctx.restore();
+export function movementColor(row){return row.movement>0?'#30C795':row.movement<0?'#FF5967':'#96969C';}
+export function curvePlan(api,row,width=GEOMETRY.graph){
+  const visible=api.displayChart(row.chart),points=api.lineCoordinates(visible,width,5.5);
+  return {width,points,months:api.monthLayout(visible,width),strips:api.gradientStrips(points,5.5,.5)};
+}
+function rgba(hex,a){return `rgba(${parseInt(hex.slice(1,3),16)},${parseInt(hex.slice(3,5),16)},${parseInt(hex.slice(5,7),16)},${a})`;}
+// Path commands and explicit RGBA only: no Canvas text, gradients or 8-digit hex.
+export function drawCurve(ctx,size,plan,color){
+  const sx=size.width/plan.width,sy=size.height/5.5;
+  const path=points=>{ctx.beginPath();points.forEach((p,i)=>i?ctx.lineTo(p.x*sx,p.y*sy):ctx.moveTo(p.x*sx,p.y*sy));};
+  for(const guide of plan.months.lines){ctx.beginPath();ctx.moveTo(guide.x*sx,.5*sy);ctx.lineTo(guide.x*sx,5*sy);ctx.strokeStyle='rgba(255,255,255,0.20)';ctx.lineWidth=.45*sx;ctx.stroke();}
+  for(const {polygon,alpha} of plan.strips){path(polygon);ctx.closePath();ctx.fillStyle=rgba(color,alpha);ctx.fill();}
+  if(plan.points.length){path(plan.points);ctx.strokeStyle=color;ctx.lineWidth=.7*sx;ctx.stroke();}
 }

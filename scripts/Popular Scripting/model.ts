@@ -1,6 +1,6 @@
 import { createEngine } from './original-engine'
 import { createHost } from './host'
-export const VERSION='0.1.1'
+export const VERSION='0.1.2'
 export const MODES=['fixed','gainers','losers','up_first','down_first'] as const
 export function engine(family='medium',force=false){return createEngine(createHost(),{family,force})}
 export function setOrdering(mode:string){if(!MODES.includes(mode as any))throw Error('Ordenação inválida');engine().writeOrderingMode(mode)}

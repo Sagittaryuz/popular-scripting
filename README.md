@@ -10,7 +10,7 @@ Na tela **Importar Scripts Remotos** do Scripting, cole:
 https://github.com/Sagittaryuz/popular-scripting/tree/main/scripts/Popular%20Scripting
 ```
 
-Importe **Popular Scripting**, confirme a versão **0.1.1**, abra o projeto e toque em **Atualizar**. Adicione o widget do Scripting à Tela de Início e selecione esse projeto.
+Importe **Popular Scripting**, confirme a versão **0.1.2**, abra o projeto e toque em **Atualizar**. Adicione o widget do Scripting à Tela de Início e selecione esse projeto.
 
 Para receber melhorias de código, use a atualização do script remoto no Scripting. Essa importação vincula o projeto à pasta `main/scripts/Popular Scripting`; não use um endereço de commit ou tag para acompanhar as próximas versões. O botão **Atualizar** dentro da tela do Popular consulta somente os indicadores e solicita recarregar o widget.
 
@@ -27,7 +27,9 @@ Não são solicitadas permissões de Calendário, Lembretes ou Localização. O 
 
 ## Validação e recuperação
 
-A versão 0.1.1 foi verificada localmente com sintaxe TS/TSX, equivalência de cálculos, cinco ordenações, curvas e meses do motor original, prévias simuladas dos três tamanhos, requisições anônimas, exclusão restrita da credencial legada e fallback em falhas de rede. Isso não comprova importação nem execução no WidgetKit: a confirmação no iPhone ainda depende do aparelho.
+A versão 0.1.2 corrige a composição após o relato de textos cortados e valores invisíveis no iPhone. Nomes, preços, percentuais, meses e datas usam componentes nativos Text. Canvas desenha somente ícones e curvas, com preenchimento de transparência explícita em faixas derivadas do original; não usa tipografia Canvas nem CanvasGradient. Os meses ficam recortados somente dentro da faixa do gráfico. Mantém as colunas de 146 pt, ícones de 26 pt e três faixas de informação em cada linha do original.
+
+Passaram sintaxe TS/TSX, equivalência de cálculos, cinco ordenações e geometrias do motor, testes da árvore TSX efetivamente usada (Text nativo, preço/percentual presentes em todas as linhas, limites das caixas, Canvas sem texto/gradiente e transparente) e quinze prévias simuladas dos três tamanhos. A prévia local anterior não captou o defeito do aparelho; a simulação nova também não comprova fontes nem aceite visual no iPhone. É necessário conferir a 0.1.2 na Tela de Início. Acesso público e cache continuam sem token.
 
 O histórico Git e as releases preservam versões anteriores para recuperação. Antes de atualizar uma edição personalizada, preserve suas alterações locais. Os dados e preferências do projeto ficam no aparelho; não apague o projeto para atualizar.
 
