@@ -1,0 +1,42 @@
+name: Atualizar referências econômicas públicas
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '35 16 * * 1-5'
+concurrency:
+  group: public-economic-data
+  cancel-in-progress: false
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          package-manager-cache: false
+      - run: python -m pip install -r scripts/economic-requirements.txt
+      - run: python -m unittest discover -s scripts -p 'test_*.py'
+      - run: python scripts/update_economic_data.py --report work/refresh-report.json
+      - run: node scripts/validate-data.cjs
+      - name: Publicar somente os dados validados
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add data/economic-series.json
+          if git diff --cached --quiet; then exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Update validated public economic observations'
+          git fetch origin main
+          git rebase origin/main
+          node scripts/validate-data.cjs
+          git push origin HEAD:main
