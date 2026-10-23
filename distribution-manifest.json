@@ -1,5 +1,7 @@
 {
   "version": "0.1.1",
+  "dataPath": "data/economic-series.json",
+  "dataUpdatesIndependently": true,
   "files": {
     "scripts/Popular Scripting/assets.js": "7327c16a196201c3ef795d4eb382c81e274f47af2a328bacc704514549cbc06c",
     "scripts/Popular Scripting/badges.js": "ba6fe1df32f35e86cdf0800ada95ddb2f080c6158077467cbc9424f9350b6d7a",
@@ -16,7 +18,6 @@
     "scripts/economic-requirements.txt": "f470ac7d1a9ebe7603869f60536ef486a99eea6f90f2fc589952c4a01f13c76c",
     "scripts/test_economic_ingestion.py": "831463fd1b349058c813e187f3ea076119e1dc7317a42728b8baa5c86ced6453",
     "scripts/test_refresh_recovery.py": "a0aaf5477de09abadd34b46d232d1b249e55227260f31aa1932118c583e294b7",
-    "data/economic-series.json": "9bcad18730493213fded4299b92fb9176500529e05f46cce2bfa47e8eac6b408",
     "README.md": "b2623a4248dcaf38975757a5f169db6f3f5c392cc083fff47351370548f2a090",
     "scripts/validate-data.cjs": "43dbb0259c7f8a51baa8c53d5171a2b875528ae920e93a3014f2ad07e3ce65de",
     ".github/workflows/economic-data.yml": "f5b88d97c24b6e4ba5ca3eb8488c50023f700a42f2f15927d463c35b27c68199"
