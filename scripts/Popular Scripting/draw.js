@@ -17,6 +17,11 @@ export function curvePlan(api,row,width=GEOMETRY.graph){
   const visible=api.displayChart(row.chart),points=api.lineCoordinates(visible,width,5.5);
   return {width,points,months:api.monthLayout(visible,width),strips:api.gradientStrips(points,5.5,.5)};
 }
+export function monthBand(curve){
+  if(!curve.points.length)return {left:0,width:0,labels:[]};
+  const left=Math.max(0,Math.min(...curve.points.map(p=>p.x))),right=Math.min(curve.width,Math.max(...curve.points.map(p=>p.x)));
+  return {left,width:Math.max(0,right-left),labels:curve.months.labels.filter(m=>m.x<right&&m.x+14>left).map(m=>({...m,x:m.x-left}))};
+}
 function rgba(hex,a){return `rgba(${parseInt(hex.slice(1,3),16)},${parseInt(hex.slice(3,5),16)},${parseInt(hex.slice(5,7),16)},${a})`;}
 // Path commands and explicit RGBA only: no Canvas text, gradients or 8-digit hex.
 export function drawCurve(ctx,size,plan,color){

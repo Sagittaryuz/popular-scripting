@@ -1,4 +1,4 @@
-import { readPriceSprites } from './png'
+import { readPriceSprites, inflateZlib } from './png'
 
 // Remove only the legacy credential owned by this script, never global app settings.
 export function removeLegacyAccess(){try{Keychain.remove('popular-github-read-token')}catch{}}
@@ -29,8 +29,8 @@ export async function within<T>(task:Promise<T>,ms:number):Promise<T>{
   finally{if(timer!==undefined)clearTimeout(timer)}
 }
 
-export function createHost(){
-  const deadline=Date.now()+8000
+export function createHost(foreground=false){
+  const deadline=Date.now()+(foreground?20000:8000)
   class EngineRequest {
     method='GET';headers:Record<string,string>={};body?:string;timeoutInterval=3;response?:{statusCode:number}
     constructor(public url:string){}
@@ -39,7 +39,7 @@ export function createHost(){
       if(remaining<=0)throw Error('Orçamento de rede encerrado')
       if(Object.keys(this.headers).some(k=>['authorization','cookie','proxy-authorization'].includes(k.toLowerCase())))throw Error('Esta edição usa somente acesso público')
       if(!['GET','POST'].includes(this.method)||this.method==='POST'&&(url.hostname!=='www.agrolink.com.br'||url.pathname!=='/cotacoes/graos/soja'))throw Error('Método não autorizado')
-      const timeout=Math.max(.05,Math.min(3,this.timeoutInterval,remaining/1000))
+      const timeout=Math.max(.05,Math.min(foreground?6:3,this.timeoutInterval,remaining/1000))
       const result=await within((async()=>{
         const res=await fetch(this.url,{method:this.method,headers:this.headers,body:this.body,timeout,
           handleRedirect:async request=>{const next=allowedURL(request.url);return next.origin===url.origin?request:null}})
@@ -60,7 +60,7 @@ export function createHost(){
       const data=Data.fromUint8Array(candidate)?.decompressed('zlib').toUint8Array()
       if(data?.length===expected)return data
     }catch{}
-    throw Error('Não foi possível descomprimir o sprite AgroLink')
+    return inflateZlib(bytes,expected)
   }
   return {FileManager:{local:files},Request:EngineRequest,Data,Timer:undefined,
     readSprites:(quotes:any,sprites:any,decode:any,glyphs:any)=>readPriceSprites(quotes,sprites,decode,glyphs,inflate)}

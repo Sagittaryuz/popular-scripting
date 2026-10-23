@@ -20,6 +20,7 @@ class IngestionTests(unittest.TestCase):
             m.cub_text(text.replace('R-1 2.795,37', 'R-8 2.795,37'), '2026-09', 'source')
         with self.assertRaises(ValueError):
             m.cub_text(text, '2026-10', 'source')
+        self.assertEqual(m.cub_text(text.replace('SETEMBRO','SET EM BRO').replace('PADRÃO ALTO','PADRÃO A L TO'),'2026-09','source')['value'],2795.37)
 
     def workbook(self, unit='R$/l'):
         book=Workbook();sheet=book.active;sheet.title='ESTADOS'
@@ -103,6 +104,12 @@ class IngestionTests(unittest.TestCase):
         self.assertEqual(m.sidra_index(raw,m.IPCA_INDEX)[-1]['period'],'2026-08')
         with self.assertRaises(ValueError):m.sidra_index(json.dumps([{'D2C':'202607','V':'7657.73'},{'D2C':'202607','V':'7657.73'}]).encode(),m.IPCA_INDEX)
         with self.assertRaises(ValueError):m.sidra_index(json.dumps([{'D2C':'202607','V':'..'}]).encode(),m.IPCA_INDEX)
+
+    def test_sidra_official_header_and_variable_before_month(self):
+        raw=json.dumps([{'V':'Valor','D2C':'Variável (Código)','D3C':'Mês (Código)'},
+                        {'V':'7695.8200000000000','D2C':'2266','D3C':'202609'}]).encode()
+        self.assertEqual(m.sidra_index(raw,m.IPCA_INDEX)[0]['period'],'2026-09')
+        with self.assertRaises(ValueError):m.sidra_index(json.dumps([{'V':'7695.82','D2C':'2266'}]),m.IPCA_INDEX)
 
     def test_ipca_rejects_duplicate_month(self):
         raw=json.dumps([{'data':'01/09/2026','valor':'0,82'},{'data':'15/09/2026','valor':'0,82'}]).encode()

@@ -88,7 +88,10 @@ def sidra_index(raw, source, maximum=100000):
     if not isinstance(payload, list) or not payload:
         raise ValueError('IBGE SIDRA response is empty')
     records={}
-    for item in payload:
+    for position, item in enumerate(payload):
+        if position == 0 and isinstance(item, dict) and item.get('V') == 'Valor':
+            # SIDRA includes a descriptive header, not an observation.
+            continue
         if not isinstance(item, dict):
             raise ValueError('IBGE SIDRA record is invalid')
         value=item.get('V')
@@ -247,12 +250,14 @@ class Page(HTMLParser):
 def cub_text(text, period, source):
     clean = ' '.join(text.split())
     month = MONTHS[int(period[5:])-1]
-    if not re.search(normalized(month)+r'\s*-?\s*'+period[:4], normalized(clean)):
+    # PDF glyph extraction can separate letters (e.g. "MAR ÇO", "A L TO").
+    month_pattern=r'\s*'.join(normalized(month))
+    if not re.search(r'\b'+month_pattern+r'\s*-?\s*'+period[:4]+r'\b', normalized(clean)):
         raise ValueError('CUB reference month does not match publication')
     # Layout extraction keeps the three columns low / normal / high in order.
     # The separate "Valor referencial" and its changes describe R16-A and must
     # never be reused for the user's R1 normal series.
-    if not re.search(r'PADRAO BAIXO\s+PADRAO NORMAL\s+PADRAO ALTO', normalized(clean)):
+    if not re.search(r'PADRAO BAIXO\s+PADRAO NORMAL\s+PADRAO A\s*L\s*T\s*O', normalized(clean)):
         raise ValueError('CUB residential standard columns not found')
     values = re.findall(r'\bR\s*-?\s*1\s+(\d[\d.]*,\d{2})\b', clean, re.I)
     if len(values) != 3:

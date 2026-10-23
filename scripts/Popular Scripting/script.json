@@ -2,6 +2,6 @@
   "name": "Popular Scripting",
   "icon": "chart.line.uptrend.xyaxis",
   "color": "#1E1E1E",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Indicadores econômicos do Popular para Scripting."
 }

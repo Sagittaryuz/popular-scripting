@@ -124,7 +124,7 @@ function bounded(promise, milliseconds) {
 async function request(url,json=false) {
   const remaining=collectionDeadline-Date.now();
   if(remaining<=0)throw Error('Orçamento de consulta encerrado');
-  const milliseconds=Math.min(3000,remaining),r=new Request(url);r.timeoutInterval=milliseconds/1000;
+  const milliseconds=Math.min(options.force?6000:3000,remaining),r=new Request(url);r.timeoutInterval=milliseconds/1000;
   if(forceRefresh)r.headers={'Cache-Control':'no-cache','Pragma':'no-cache'};
   let result;try{result=await bounded(json?r.loadJSON():r.loadString(),milliseconds);}catch(error){networkFailures.push({url,reason:String(error.message||error)});throw error;}const status=r.response?.statusCode;
   if(status!=null&&(status<200||status>=300)){networkFailures.push({url,reason:'HTTP '+status});throw Error('HTTP '+status);}
@@ -1091,7 +1091,7 @@ async function presentOrderingFeedback(status) {
 
 async function collectRows(mode=readOrderingMode()) {
   const allIndicators=isDirectionMode(mode);
-  collectionDeadline=Date.now()+(config.runsInWidget?8000:20000);
+  collectionDeadline=Date.now()+(options.force?20000:8000);
   const soybeanPromise=loadAgrolinkSoybean(),selicPromise=loadSelic();
   const storedCatalog=cacheRead('catalog'),assets=economicPanel()||allIndicators?(validCatalog(storedCatalog)?storedCatalog.assets:[]):await catalog(),pool=allIndicators?[]:rotationPool(assets),ibov=watchAssets(assets).find(a=>a.code==='IBOV')||IBOVESPA;
   const rotatingProbes=allIndicators?ECONOMIC_ASSETS:isWide()?(economicPanel()?ECONOMIC_ASSETS:uniqueAssets([...probeAssets(assets),...orderedPool(pool).slice(0,6)])):[];
