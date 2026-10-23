@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "verifiedAt": "2026-10-21T19:14:39.159920Z",
+  "verifiedAt": "2026-10-23T20:03:09.087419Z",
   "series": {
     "CUB_GO": {
       "instrument": "CUB-GO-R1-N-CUB2006",
@@ -281,34 +281,216 @@
       "frequency": "monthly",
       "valueKind": "monthly-change-percent",
       "annualObservations": [
-        {"period": "2025-09", "value": 5.17, "sourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json"},
-        {"period": "2025-10", "value": 4.68, "sourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json"},
-        {"period": "2025-11", "value": 4.46, "sourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json"},
-        {"period": "2025-12", "value": 4.26, "sourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json"},
-        {"period": "2026-01", "value": 4.44, "sourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json"},
-        {"period": "2026-02", "value": 3.81, "sourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json"},
-        {"period": "2026-03", "value": 4.14, "sourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json"},
-        {"period": "2026-04", "value": 4.39, "sourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json"},
-        {"period": "2026-05", "value": 4.72, "sourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json"},
-        {"period": "2026-06", "value": 4.64, "sourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json"},
-        {"period": "2026-07", "value": 4.44, "sourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json"},
-        {"period": "2026-08", "value": 4.22, "sourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json"},
-        {"period": "2026-09", "value": 4.58, "sourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json"}
+        {
+          "period": "2025-09",
+          "value": 5.17,
+          "sourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json"
+        },
+        {
+          "period": "2025-10",
+          "value": 4.68,
+          "sourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json"
+        },
+        {
+          "period": "2025-11",
+          "value": 4.46,
+          "sourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json"
+        },
+        {
+          "period": "2025-12",
+          "value": 4.26,
+          "sourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json"
+        },
+        {
+          "period": "2026-01",
+          "value": 4.44,
+          "sourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json"
+        },
+        {
+          "period": "2026-02",
+          "value": 3.81,
+          "sourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json"
+        },
+        {
+          "period": "2026-03",
+          "value": 4.14,
+          "sourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json"
+        },
+        {
+          "period": "2026-04",
+          "value": 4.39,
+          "sourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json"
+        },
+        {
+          "period": "2026-05",
+          "value": 4.72,
+          "sourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json"
+        },
+        {
+          "period": "2026-06",
+          "value": 4.64,
+          "sourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json"
+        },
+        {
+          "period": "2026-07",
+          "value": 4.44,
+          "sourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json"
+        },
+        {
+          "period": "2026-08",
+          "value": 4.22,
+          "sourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json"
+        },
+        {
+          "period": "2026-09",
+          "value": 4.58,
+          "sourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json"
+        }
       ],
       "observations": [
-        {"period": "2025-09", "value": 0.48, "sourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados/ultimos/13?formato=json", "annualChange": 5.17, "annualChangeSourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json", "yearToDate": 3.64, "indexValue": 7359.06, "indexSourceURL": "https://apisidra.ibge.gov.br/values/t/1737/n1/all/v/2266/p/last%2013", "referenceURL": "https://www.gov.br/fazenda/pt-br/central-de-conteudo/publicacoes/conjuntura-economica/inflacao/defeso-eleitoral-2026/informativo-ipca-set2026.html/view"},
-        {"period": "2025-10", "value": 0.09, "sourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados/ultimos/13?formato=json", "annualChange": 4.68, "annualChangeSourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json", "yearToDate": 3.73, "indexValue": 7365.68, "indexSourceURL": "https://apisidra.ibge.gov.br/values/t/1737/n1/all/v/2266/p/last%2013", "referenceURL": "https://www.gov.br/fazenda/pt-br/central-de-conteudo/publicacoes/conjuntura-economica/inflacao/defeso-eleitoral-2026/informativo-ipca-set2026.html/view"},
-        {"period": "2025-11", "value": 0.18, "sourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados/ultimos/13?formato=json", "annualChange": 4.46, "annualChangeSourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json", "yearToDate": 3.92, "indexValue": 7378.94, "indexSourceURL": "https://apisidra.ibge.gov.br/values/t/1737/n1/all/v/2266/p/last%2013", "referenceURL": "https://www.gov.br/fazenda/pt-br/central-de-conteudo/publicacoes/conjuntura-economica/inflacao/defeso-eleitoral-2026/informativo-ipca-set2026.html/view"},
-        {"period": "2025-12", "value": 0.33, "sourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados/ultimos/13?formato=json", "annualChange": 4.26, "annualChangeSourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json", "yearToDate": 4.26, "indexValue": 7403.29, "indexSourceURL": "https://apisidra.ibge.gov.br/values/t/1737/n1/all/v/2266/p/last%2013", "referenceURL": "https://www.gov.br/fazenda/pt-br/central-de-conteudo/publicacoes/conjuntura-economica/inflacao/defeso-eleitoral-2026/informativo-ipca-set2026.html/view"},
-        {"period": "2026-01", "value": 0.33, "sourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados/ultimos/13?formato=json", "annualChange": 4.44, "annualChangeSourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json", "yearToDate": 0.33, "indexValue": 7427.72, "indexSourceURL": "https://apisidra.ibge.gov.br/values/t/1737/n1/all/v/2266/p/last%2013", "referenceURL": "https://www.gov.br/fazenda/pt-br/central-de-conteudo/publicacoes/conjuntura-economica/inflacao/defeso-eleitoral-2026/informativo-ipca-set2026.html/view"},
-        {"period": "2026-02", "value": 0.70, "sourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados/ultimos/13?formato=json", "annualChange": 3.81, "annualChangeSourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json", "yearToDate": 1.03, "indexValue": 7479.71, "indexSourceURL": "https://apisidra.ibge.gov.br/values/t/1737/n1/all/v/2266/p/last%2013", "referenceURL": "https://www.gov.br/fazenda/pt-br/central-de-conteudo/publicacoes/conjuntura-economica/inflacao/defeso-eleitoral-2026/informativo-ipca-set2026.html/view"},
-        {"period": "2026-03", "value": 0.88, "sourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados/ultimos/13?formato=json", "annualChange": 4.14, "annualChangeSourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json", "yearToDate": 1.92, "indexValue": 7545.53, "indexSourceURL": "https://apisidra.ibge.gov.br/values/t/1737/n1/all/v/2266/p/last%2013", "referenceURL": "https://www.gov.br/fazenda/pt-br/central-de-conteudo/publicacoes/conjuntura-economica/inflacao/defeso-eleitoral-2026/informativo-ipca-set2026.html/view"},
-        {"period": "2026-04", "value": 0.67, "sourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados/ultimos/13?formato=json", "annualChange": 4.39, "annualChangeSourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json", "yearToDate": 2.60, "indexValue": 7596.09, "indexSourceURL": "https://apisidra.ibge.gov.br/values/t/1737/n1/all/v/2266/p/last%2013", "referenceURL": "https://www.gov.br/fazenda/pt-br/central-de-conteudo/publicacoes/conjuntura-economica/inflacao/defeso-eleitoral-2026/informativo-ipca-set2026.html/view"},
-        {"period": "2026-05", "value": 0.58, "sourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados/ultimos/13?formato=json", "annualChange": 4.72, "annualChangeSourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json", "yearToDate": 3.20, "indexValue": 7640.15, "indexSourceURL": "https://apisidra.ibge.gov.br/values/t/1737/n1/all/v/2266/p/last%2013", "referenceURL": "https://www.gov.br/fazenda/pt-br/central-de-conteudo/publicacoes/conjuntura-economica/inflacao/defeso-eleitoral-2026/informativo-ipca-set2026.html/view"},
-        {"period": "2026-06", "value": 0.16, "sourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados/ultimos/13?formato=json", "annualChange": 4.64, "annualChangeSourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json", "yearToDate": 3.36, "indexValue": 7652.37, "indexSourceURL": "https://apisidra.ibge.gov.br/values/t/1737/n1/all/v/2266/p/last%2013", "referenceURL": "https://www.gov.br/fazenda/pt-br/central-de-conteudo/publicacoes/conjuntura-economica/inflacao/defeso-eleitoral-2026/informativo-ipca-set2026.html/view"},
-        {"period": "2026-07", "value": 0.07, "sourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados/ultimos/13?formato=json", "annualChange": 4.44, "annualChangeSourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json", "yearToDate": 3.44, "indexValue": 7657.73, "indexSourceURL": "https://apisidra.ibge.gov.br/values/t/1737/n1/all/v/2266/p/last%2013", "referenceURL": "https://www.gov.br/fazenda/pt-br/central-de-conteudo/publicacoes/conjuntura-economica/inflacao/defeso-eleitoral-2026/informativo-ipca-set2026.html/view"},
-        {"period": "2026-08", "value": -0.32, "sourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados/ultimos/13?formato=json", "annualChange": 4.22, "annualChangeSourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json", "yearToDate": 3.11, "indexValue": 7633.23, "indexSourceURL": "https://apisidra.ibge.gov.br/values/t/1737/n1/all/v/2266/p/last%2013", "referenceURL": "https://www.gov.br/fazenda/pt-br/central-de-conteudo/publicacoes/conjuntura-economica/inflacao/defeso-eleitoral-2026/informativo-ipca-set2026.html/view"},
-        {"period": "2026-09", "value": 0.82, "sourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados/ultimos/13?formato=json", "annualChange": 4.58, "annualChangeSourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json", "yearToDate": 3.95, "indexValue": 7695.82, "indexSourceURL": "https://apisidra.ibge.gov.br/values/t/1737/n1/all/v/2266/p/last%2013", "referenceURL": "https://www.gov.br/fazenda/pt-br/central-de-conteudo/publicacoes/conjuntura-economica/inflacao/defeso-eleitoral-2026/informativo-ipca-set2026.html/view"}
+        {
+          "period": "2025-09",
+          "value": 0.48,
+          "sourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados/ultimos/13?formato=json",
+          "annualChange": 5.17,
+          "annualChangeSourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json",
+          "yearToDate": 3.64,
+          "indexValue": 7359.06,
+          "indexSourceURL": "https://apisidra.ibge.gov.br/values/t/1737/n1/all/v/2266/p/last%2013",
+          "referenceURL": "https://www.gov.br/fazenda/pt-br/central-de-conteudo/publicacoes/conjuntura-economica/inflacao/defeso-eleitoral-2026/informativo-ipca-set2026.html/view"
+        },
+        {
+          "period": "2025-10",
+          "value": 0.09,
+          "sourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados/ultimos/13?formato=json",
+          "annualChange": 4.68,
+          "annualChangeSourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json",
+          "yearToDate": 3.73,
+          "indexValue": 7365.68,
+          "indexSourceURL": "https://apisidra.ibge.gov.br/values/t/1737/n1/all/v/2266/p/last%2013",
+          "referenceURL": "https://www.gov.br/fazenda/pt-br/central-de-conteudo/publicacoes/conjuntura-economica/inflacao/defeso-eleitoral-2026/informativo-ipca-set2026.html/view"
+        },
+        {
+          "period": "2025-11",
+          "value": 0.18,
+          "sourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados/ultimos/13?formato=json",
+          "annualChange": 4.46,
+          "annualChangeSourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json",
+          "yearToDate": 3.92,
+          "indexValue": 7378.94,
+          "indexSourceURL": "https://apisidra.ibge.gov.br/values/t/1737/n1/all/v/2266/p/last%2013",
+          "referenceURL": "https://www.gov.br/fazenda/pt-br/central-de-conteudo/publicacoes/conjuntura-economica/inflacao/defeso-eleitoral-2026/informativo-ipca-set2026.html/view"
+        },
+        {
+          "period": "2025-12",
+          "value": 0.33,
+          "sourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados/ultimos/13?formato=json",
+          "annualChange": 4.26,
+          "annualChangeSourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json",
+          "yearToDate": 4.26,
+          "indexValue": 7403.29,
+          "indexSourceURL": "https://apisidra.ibge.gov.br/values/t/1737/n1/all/v/2266/p/last%2013",
+          "referenceURL": "https://www.gov.br/fazenda/pt-br/central-de-conteudo/publicacoes/conjuntura-economica/inflacao/defeso-eleitoral-2026/informativo-ipca-set2026.html/view"
+        },
+        {
+          "period": "2026-01",
+          "value": 0.33,
+          "sourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados/ultimos/13?formato=json",
+          "annualChange": 4.44,
+          "annualChangeSourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json",
+          "yearToDate": 0.33,
+          "indexValue": 7427.72,
+          "indexSourceURL": "https://apisidra.ibge.gov.br/values/t/1737/n1/all/v/2266/p/last%2013",
+          "referenceURL": "https://www.gov.br/fazenda/pt-br/central-de-conteudo/publicacoes/conjuntura-economica/inflacao/defeso-eleitoral-2026/informativo-ipca-set2026.html/view"
+        },
+        {
+          "period": "2026-02",
+          "value": 0.7,
+          "sourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados/ultimos/13?formato=json",
+          "annualChange": 3.81,
+          "annualChangeSourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json",
+          "yearToDate": 1.03,
+          "indexValue": 7479.71,
+          "indexSourceURL": "https://apisidra.ibge.gov.br/values/t/1737/n1/all/v/2266/p/last%2013",
+          "referenceURL": "https://www.gov.br/fazenda/pt-br/central-de-conteudo/publicacoes/conjuntura-economica/inflacao/defeso-eleitoral-2026/informativo-ipca-set2026.html/view"
+        },
+        {
+          "period": "2026-03",
+          "value": 0.88,
+          "sourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados/ultimos/13?formato=json",
+          "annualChange": 4.14,
+          "annualChangeSourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json",
+          "yearToDate": 1.92,
+          "indexValue": 7545.53,
+          "indexSourceURL": "https://apisidra.ibge.gov.br/values/t/1737/n1/all/v/2266/p/last%2013",
+          "referenceURL": "https://www.gov.br/fazenda/pt-br/central-de-conteudo/publicacoes/conjuntura-economica/inflacao/defeso-eleitoral-2026/informativo-ipca-set2026.html/view"
+        },
+        {
+          "period": "2026-04",
+          "value": 0.67,
+          "sourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados/ultimos/13?formato=json",
+          "annualChange": 4.39,
+          "annualChangeSourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json",
+          "yearToDate": 2.6,
+          "indexValue": 7596.09,
+          "indexSourceURL": "https://apisidra.ibge.gov.br/values/t/1737/n1/all/v/2266/p/last%2013",
+          "referenceURL": "https://www.gov.br/fazenda/pt-br/central-de-conteudo/publicacoes/conjuntura-economica/inflacao/defeso-eleitoral-2026/informativo-ipca-set2026.html/view"
+        },
+        {
+          "period": "2026-05",
+          "value": 0.58,
+          "sourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados/ultimos/13?formato=json",
+          "annualChange": 4.72,
+          "annualChangeSourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json",
+          "yearToDate": 3.2,
+          "indexValue": 7640.15,
+          "indexSourceURL": "https://apisidra.ibge.gov.br/values/t/1737/n1/all/v/2266/p/last%2013",
+          "referenceURL": "https://www.gov.br/fazenda/pt-br/central-de-conteudo/publicacoes/conjuntura-economica/inflacao/defeso-eleitoral-2026/informativo-ipca-set2026.html/view"
+        },
+        {
+          "period": "2026-06",
+          "value": 0.16,
+          "sourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados/ultimos/13?formato=json",
+          "annualChange": 4.64,
+          "annualChangeSourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json",
+          "yearToDate": 3.36,
+          "indexValue": 7652.37,
+          "indexSourceURL": "https://apisidra.ibge.gov.br/values/t/1737/n1/all/v/2266/p/last%2013",
+          "referenceURL": "https://www.gov.br/fazenda/pt-br/central-de-conteudo/publicacoes/conjuntura-economica/inflacao/defeso-eleitoral-2026/informativo-ipca-set2026.html/view"
+        },
+        {
+          "period": "2026-07",
+          "value": 0.07,
+          "sourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados/ultimos/13?formato=json",
+          "annualChange": 4.44,
+          "annualChangeSourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json",
+          "yearToDate": 3.44,
+          "indexValue": 7657.73,
+          "indexSourceURL": "https://apisidra.ibge.gov.br/values/t/1737/n1/all/v/2266/p/last%2013",
+          "referenceURL": "https://www.gov.br/fazenda/pt-br/central-de-conteudo/publicacoes/conjuntura-economica/inflacao/defeso-eleitoral-2026/informativo-ipca-set2026.html/view"
+        },
+        {
+          "period": "2026-08",
+          "value": -0.32,
+          "sourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados/ultimos/13?formato=json",
+          "annualChange": 4.22,
+          "annualChangeSourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json",
+          "yearToDate": 3.11,
+          "indexValue": 7633.23,
+          "indexSourceURL": "https://apisidra.ibge.gov.br/values/t/1737/n1/all/v/2266/p/last%2013",
+          "referenceURL": "https://www.gov.br/fazenda/pt-br/central-de-conteudo/publicacoes/conjuntura-economica/inflacao/defeso-eleitoral-2026/informativo-ipca-set2026.html/view"
+        },
+        {
+          "period": "2026-09",
+          "value": 0.82,
+          "sourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados/ultimos/13?formato=json",
+          "annualChange": 4.58,
+          "annualChangeSourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json",
+          "yearToDate": 3.95,
+          "indexValue": 7695.82,
+          "indexSourceURL": "https://apisidra.ibge.gov.br/values/t/1737/n1/all/v/2266/p/last%2013",
+          "referenceURL": "https://www.gov.br/fazenda/pt-br/central-de-conteudo/publicacoes/conjuntura-economica/inflacao/defeso-eleitoral-2026/informativo-ipca-set2026.html/view"
+        }
       ],
       "verifiedAt": "2026-10-21T19:14:39.159920Z"
     },
@@ -321,60 +503,459 @@
       "frequency": "daily",
       "valueKind": "level",
       "modality": "spot-Europe",
-      "publishedAt": "2026-10-21",
       "observations": [
+        {
+          "period": "2026-06-16",
+          "value": 80.5,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-06-17",
+          "value": 80.33,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-06-18",
+          "value": 79.35,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-06-19",
+          "value": 80.46,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-06-22",
+          "value": 76.49,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-06-23",
+          "value": 75.69,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-06-24",
+          "value": 72.09,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-06-25",
+          "value": 73.74,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-06-26",
+          "value": 70.16,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-06-29",
+          "value": 71.59,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-06-30",
+          "value": 70.46,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-07-01",
+          "value": 69.24,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-07-02",
+          "value": 68.53,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-07-03",
+          "value": 68.68,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-07-06",
+          "value": 69.56,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-07-07",
+          "value": 71.78,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-07-08",
+          "value": 76.5,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-07-09",
+          "value": 74.46,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-07-10",
+          "value": 74.34,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-07-13",
+          "value": 81.62,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-07-14",
+          "value": 83.69,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-07-15",
+          "value": 83.08,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-07-16",
+          "value": 81.23,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-07-17",
+          "value": 85.01,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-07-20",
+          "value": 86.99,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-07-21",
+          "value": 93.85,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-07-22",
+          "value": 94.12,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-07-23",
+          "value": 105.32,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-07-24",
+          "value": 100.31,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-07-27",
+          "value": 91.82,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-07-28",
+          "value": 85.51,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-07-29",
+          "value": 91.95,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-07-30",
+          "value": 91.91,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-07-31",
+          "value": 96.95,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-08-03",
+          "value": 88.9,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-08-04",
+          "value": 86.47,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-08-05",
+          "value": 86.65,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-08-06",
+          "value": 89.65,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-08-07",
+          "value": 87.62,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-08-10",
+          "value": 92.74,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-08-11",
+          "value": 93.26,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-08-12",
+          "value": 92.52,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-08-13",
+          "value": 92.03,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-08-14",
+          "value": 92.02,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-08-17",
+          "value": 92.43,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-08-18",
+          "value": 95.29,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-08-19",
+          "value": 92.37,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-08-20",
+          "value": 94.0,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-08-21",
+          "value": 96.92,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-08-24",
+          "value": 92.71,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-08-25",
+          "value": 88.24,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-08-26",
+          "value": 87.77,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-08-27",
+          "value": 90.18,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-08-28",
+          "value": 89.75,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-09-01",
+          "value": 96.02,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-09-02",
+          "value": 97.59,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-09-03",
+          "value": 100.52,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-09-04",
+          "value": 102.24,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-09-07",
+          "value": 104.47,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-09-08",
+          "value": 106.12,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-09-09",
+          "value": 109.51,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-09-10",
+          "value": 120.98,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-09-11",
+          "value": 118.06,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-09-14",
+          "value": 121.25,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-09-15",
+          "value": 130.8,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-09-16",
+          "value": 127.84,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-09-17",
+          "value": 121.18,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-09-18",
+          "value": 119.66,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-09-21",
+          "value": 116.15,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-09-22",
+          "value": 114.89,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-09-23",
+          "value": 117.45,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-09-24",
+          "value": 120.92,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-09-25",
+          "value": 116.01,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-09-28",
+          "value": 119.97,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-09-29",
+          "value": 113.96,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-09-30",
+          "value": 115.91,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-10-01",
+          "value": 114.82,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-10-02",
+          "value": 135.51,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-10-05",
+          "value": 125.51,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-10-06",
+          "value": 125.44,
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
         {
           "period": "2026-10-07",
           "value": 126.0,
-          "sourceURL": "https://www.eia.gov/dnav/pet/pet_pri_spt_s1_d.htm"
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
         },
         {
           "period": "2026-10-08",
           "value": 130.18,
-          "sourceURL": "https://www.eia.gov/dnav/pet/pet_pri_spt_s1_d.htm"
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
         },
         {
           "period": "2026-10-09",
           "value": 130.03,
-          "sourceURL": "https://www.eia.gov/dnav/pet/pet_pri_spt_s1_d.htm"
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
         },
         {
           "period": "2026-10-12",
           "value": 129.95,
-          "sourceURL": "https://www.eia.gov/dnav/pet/pet_pri_spt_s1_d.htm"
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
         },
         {
           "period": "2026-10-13",
           "value": 125.78,
-          "sourceURL": "https://www.eia.gov/dnav/pet/pet_pri_spt_s1_d.htm"
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
         },
         {
           "period": "2026-10-14",
           "value": 126.55,
-          "sourceURL": "https://www.eia.gov/dnav/pet/pet_pri_spt_s1_d.htm"
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
         },
         {
           "period": "2026-10-15",
           "value": 126.35,
-          "sourceURL": "https://www.eia.gov/dnav/pet/pet_pri_spt_s1_d.htm"
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
         },
         {
           "period": "2026-10-16",
           "value": 119.33,
-          "sourceURL": "https://www.eia.gov/dnav/pet/pet_pri_spt_s1_d.htm"
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
         },
         {
           "period": "2026-10-19",
           "value": 118.82,
-          "sourceURL": "https://www.eia.gov/dnav/pet/pet_pri_spt_s1_d.htm"
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
         },
         {
           "period": "2026-10-20",
           "value": 115.22,
-          "sourceURL": "https://www.eia.gov/dnav/pet/pet_pri_spt_s1_d.htm"
+          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
         }
       ],
-      "verifiedAt": "2026-10-21T19:14:39.159920Z"
+      "verifiedAt": "2026-10-23T20:03:09.087419Z"
     }
   }
 }
