@@ -31,10 +31,23 @@ export async function within<T>(task:Promise<T>,ms:number):Promise<T>{
 
 export function createHost(foreground=false){
   const deadline=Date.now()+(foreground?20000:8000)
+  const pending=new Map<string,Promise<{value:any;response:any}>>()
   class EngineRequest {
     method='GET';headers:Record<string,string>={};body?:string;timeoutInterval=3;response?:{statusCode:number}
     constructor(public url:string){}
     async run(binary=false){
+      const key=JSON.stringify([this.url,this.method,this.headers,this.body,binary])
+      let shared=pending.get(key)
+      if(!shared){
+        shared=this.download(binary).then(value=>({value,response:this.response}))
+        pending.set(key,shared)
+        shared.then(()=>pending.delete(key),()=>pending.delete(key))
+      }
+      const result=await shared
+      this.response=result.response
+      return result.value
+    }
+    async download(binary=false){
       const url=allowedURL(this.url),remaining=deadline-Date.now()
       if(remaining<=0)throw Error('Orçamento de rede encerrado')
       if(Object.keys(this.headers).some(k=>['authorization','cookie','proxy-authorization'].includes(k.toLowerCase())))throw Error('Esta edição usa somente acesso público')

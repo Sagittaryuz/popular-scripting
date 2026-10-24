@@ -1,7 +1,7 @@
 import { createEngine } from './original-engine'
 import { createHost } from './host'
 import { dashboardStatus, refreshMinutes } from './pro-common'
-export const VERSION='0.2.6'
+export const VERSION='0.2.7'
 export const MODES=['fixed','gainers','losers','up_first','down_first'] as const
 export function engine(family='medium',force=false){
   const queryDue=Date.now()-(Storage.get<number>('popular-last-query')??0)>=refreshMinutes()*60000
@@ -28,6 +28,8 @@ export async function loadModel(family='medium',force=false,cacheOnly=false){
       time:api.timeText(row),unit:api.unitText(row)})),api}
   Storage.set('popular-last-query',Date.now())
   Storage.set('popular-pro-rows',result.rows)
+  // Bounded local data only; homepage UI lives in its own Git repository.
+  try{Storage.set('sagittaryuz-dashboard-v1:Popular',{schema:1,source:'Popular',at:result.queriedAt,version:VERSION,rows:result.rows.slice(0,16).map((row:any)=>({name:row.name,price:row.price,percent:row.percent,movement:row.movement,time:row.time,points:(row.chart?.points??[]).slice(-24).map((p:any)=>p.value).filter(Number.isFinite)}))},{shared:true})}catch{}
   dashboardStatus('Popular',{at:Date.now(),label:result.rows.length+' indicadores · '+result.status.label})
   Storage.set('last-run',{version:VERSION,sourceVersion:api.version,at:Date.now(),elapsedMS:Date.now()-started,
     mode:result.mode,rows:combined.map(api.quoteAudit),networkFailures:api.failures})

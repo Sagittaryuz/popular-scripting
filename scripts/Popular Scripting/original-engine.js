@@ -252,7 +252,7 @@ function snapshotCache(key,asset) {
   if((r.asset.code==='OURO'&&r.asset.unit==='ozt')||r.asset.code===SOYBEAN.code||r.asset.code==='SELIC')return r;
   return normalizeLegacySnapshot(r,asset);
 }
-function cacheFresh(c) { return !forceRefresh&&config.runsInWidget&&c&&Date.now()-c.fetchedAt<SETTINGS.refreshMinutes*60000; }
+function cacheFresh(c) { return !forceRefresh&&config.runsInWidget&&c&&finite(c.fetchedAt)&&c.fetchedAt<=Date.now()&&Date.now()-c.fetchedAt<SETTINGS.refreshMinutes*60000; }
 function catalogPercent(raw,direction) {
   const text=textOnly(raw).replace(/[−–]/g,'-'),value=brNumber(text);
   if(!finite(value))return null;

@@ -1,3 +1,7 @@
+## Mudança 0.2.7
+
+A homepage é agora um projeto independente em Sagittaryuz/scripting-home. Referências à homepage embutida abaixo são históricas. As funções dos widgets e sua aparência foram preservadas.
+
 ## Atualização 0.2.6 — páginas e ativos adicionais
 
 Toque no conteúdo para avançar à próxima página, com retorno à primeira depois da última. Pequeno: 4 por página; médio/grande: 8. O trapézio continua acionando exclusivamente consulta e recarga global. Os links de cada linha saem do widget para dar lugar à paginação; fontes seguem disponíveis nos detalhes do projeto.
