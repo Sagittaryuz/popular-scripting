@@ -1,3 +1,15 @@
+## Atualização 0.2.6 — páginas e ativos adicionais
+
+Toque no conteúdo para avançar à próxima página, com retorno à primeira depois da última. Pequeno: 4 por página; médio/grande: 8. O trapézio continua acionando exclusivamente consulta e recarga global. Os links de cada linha saem do widget para dar lugar à paginação; fontes seguem disponíveis nos detalhes do projeto.
+
+Os oito indicadores atuais vêm primeiro; até oito ativos adicionais são obtidos do catálogo público do Investidor10, distribuídos entre ações, FIIs, ETFs, stocks, BDRs e cripto conforme disponibilidade. Reutiliza parser/cache/validação de cotações já existentes. Adicionais sem preço positivo ou sem data são excluídos. Ordenação do bloco original preservada; extras não são apresentados como ranking comparável aos indicadores econômicos.
+
+Página é persistida por família, preservada ao atualizar e compartilhada entre instâncias da mesma família. A troca usa dados em cache por até 15 segundos para não consultar todas as fontes a cada toque. Consulta automática/manual continua atualizando observações; páginas não alteram datas. Falha no catálogo preserva extras antigos identificados como cache.
+
+Consulta desktop real em 24/10/2026: sete adicionais datados (PETR4, KNCR11, IVVB11, NVDC34, BTC, ITUB4, ISNT11), incluindo a mesma allowlist do host. NVDA retornou sem cotação datada utilizável e foi excluída. Cotação datada publicada não equivale a confirmação de negociação em tempo real. Disponibilidade e composição podem mudar.
+
+Testes locais: páginas sem repetição, retorno ao início, preferência do pequeno, isolamento por tamanho, intenção sem rede, cache sem renovar data e separação do trapézio. Compilação/toque/renderização físicos desta versão ainda pendentes.
+
 ## Atualização 0.2.5 — centralização e texto do rodapé
 
 Data/hora deslocada 2 pontos para baixo: centro vertical da área pintada de 17 pontos (trapézio de 13 + base de 4). Texto passa de 8,5 para 9,5 pontos; forma, gradiente, largura e altura do trapézio preservados. A área de toque acompanha o rodapé inteiro central.

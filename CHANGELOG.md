@@ -1,3 +1,10 @@
+## 0.2.6 — 2026-10-24
+
+- Toque no conteúdo avança páginas; rodapé continua atualizando.
+- Até oito ativos adicionais do catálogo, com preço e data, além dos oito indicadores.
+- Paginação usa cache e não altera datas de observação.
+- Consulta desktop real e testes locais aprovados; toque nativo pendente.
+
 ## 0.2.5 — 2026-10-24
 
 - Centraliza texto no rodapé estendido; fonte 9,5 sem mudar o trapézio.

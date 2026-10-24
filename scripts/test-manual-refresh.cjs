@@ -9,7 +9,7 @@ function load(name,deps,values=new Map()){
  for(const fail of [false,true]){
   const values=new Map(),events=[],definitions={};
   const sdk={AppIntentManager:{register:d=>{definitions[d.name]=d;return ()=>({name:d.name})}},AppIntentProtocol:{AppIntent:0},Widget:{reloadAll:()=>events.push('reload')},ControlWidget:{reloadButtons:()=>events.push('control')}};
-  const deps={scripting:sdk,'./selection':{}};
+  const deps={scripting:sdk,'./selection':{},'./pagination':{}};
   deps['./model']={loadModel:async(family,force)=>{assert.equal(family,'medium');assert.equal(force,true);events.push('query');if(fail)throw Error('offline');return {rows:[]}}};
   deps['./alerts']={evaluateAlerts:async()=>events.push('alerts')};deps['./pro-common']={reloadWidgets:async()=>events.push('reload')};
   load('app_intents.tsx',deps,values);
@@ -24,8 +24,9 @@ function load(name,deps,values=new Map()){
  for(const [family,width,height] of [['small',158,170],['medium',338,170],['large',338,360]]){
   const tree=module.exports.PopularView({model:{family,queriedAt:new Date(2026,9,24,9,5).getTime(),rows:[],status:{label:'fixture'}},width,height});
   const walk=n=>n&&typeof n==='object'?[n,...n.children.flatMap(walk)]:[];
-  const buttons=walk(tree).filter(n=>n.type==='Button');assert.equal(buttons.length,1,'Exactly one refresh button, outside row links and graph masks');
-  const p=buttons[0].props;assert.equal(p.intent.name,'RefreshPopular');assert.equal(p.position.x,width/2);assert(p.position.x+p.frame.width/2<=width&&p.position.y+p.frame.height/2<=height);
+  const allButtons=walk(tree).filter(n=>n.type==='Button');assert.equal(allButtons.length,2,'Paging and refresh have separate touch targets');const buttons=allButtons.filter(n=>n.props.intent.name==='RefreshPopular');assert.equal(buttons.length,1);
+  const next=allButtons.find(n=>n.props.intent.name==='NextPopularPage');assert(next);assert(next.props.position.y+next.props.frame.height/2<=buttons[0].props.position.y-buttons[0].props.frame.height/2,'Body pages and footer refreshes independently');
+ const p=buttons[0].props;assert.equal(p.intent.name,'RefreshPopular');assert.equal(p.position.x,width/2);assert(p.position.x+p.frame.width/2<=width&&p.position.y+p.frame.height/2<=height);
  }
  const draw=load('draw.js',{});
  for(const [family,width,height] of [['small',158,158],['medium',338,170],['large',338,360]]){

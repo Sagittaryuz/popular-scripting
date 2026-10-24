@@ -1,0 +1,62 @@
+{
+  "at": "2026-10-24T13:20:39.729Z",
+  "count": 7,
+  "priced": 7,
+  "rows": [
+    {
+      "code": "PETR4",
+      "type": "acoes",
+      "hasPrice": true,
+      "observed": "2026-10-23",
+      "verified": false
+    },
+    {
+      "code": "KNCR11",
+      "type": "fiis",
+      "hasPrice": true,
+      "observed": "2026-10-23",
+      "verified": false
+    },
+    {
+      "code": "IVVB11",
+      "type": "etfs",
+      "hasPrice": true,
+      "observed": "2026-10-23",
+      "verified": false
+    },
+    {
+      "code": "NVDC34",
+      "type": "bdrs",
+      "hasPrice": true,
+      "observed": "2026-10-23",
+      "verified": false
+    },
+    {
+      "code": "BTC",
+      "type": "criptomoedas",
+      "hasPrice": true,
+      "observed": "2026-10-24",
+      "verified": false
+    },
+    {
+      "code": "ITUB4",
+      "type": "acoes",
+      "hasPrice": true,
+      "observed": "2026-10-23",
+      "verified": false
+    },
+    {
+      "code": "ISNT11",
+      "type": "fiis",
+      "hasPrice": true,
+      "observed": "2026-10-23",
+      "verified": false
+    }
+  ],
+  "elapsedMS": 2706,
+  "networkFailures": 0,
+  "version": "0.2.6",
+  "nativeTapConfirmed": false,
+  "nativeRenderingConfirmed": false,
+  "localTestsPassed": true
+}

@@ -26,7 +26,7 @@ function Screen(){
     {model?.api.failures.map((failure:any,i:number)=><Text key={'failure-'+i}>{new URL(failure.url).hostname}: {failure.reason}</Text>)}
     <Text>Ordenação dos ativos</Text>
     {MODES.map(mode=><Button key={mode} title={(api.readOrderingMode()===mode?'✓ ':'')+api.modes[mode]} action={async()=>{try{setOrdering(mode);await refresh()}catch{setMessage('Falha ao salvar a ordenação.')}}}/>)}
-    <Text>Pequeno: 4 indicadores. Médio e grande: 8. Atualização solicitada a partir de 5 minutos, sujeita ao iOS. As datas exibidas são as das observações; o cache não renova cotações antigas.</Text>
+    <Text>Toque no conteúdo para avançar páginas: 4 ativos no pequeno, 8 no médio/grande. Oito indicadores e até oito ativos adicionais com cotação datada disponível. Atualização solicitada após 1 minuto por padrão, sujeita ao iOS. As datas exibidas são as das observações; o cache não renova cotações antigas.</Text>
     <Text>Para melhorias de código, use a atualização do script remoto no Scripting. Atualizar nesta tela consulta somente os indicadores.</Text>
   </VStack></ScrollView></NavigationStack>
 }

@@ -1,7 +1,7 @@
 import { RefreshFooter, footerLayout } from './refresh-footer'
-import { Canvas, Image, Rectangle, Text, ZStack, Link } from 'scripting'
-import { RefreshPopular } from './app_intents'
-import { selectSmall, sourceURL } from './pro-model'
+import { Canvas, Image, Rectangle, Text, ZStack, Button } from 'scripting'
+import { RefreshPopular, NextPopularPage } from './app_intents'
+import { pageKey, pageRows } from './pagination'
 import { assets } from './assets'
 import { drawBadge } from './badges'
 import { GEOMETRY as G, layout, place, movementColor, curvePlan, monthBand, drawCurve } from './draw'
@@ -14,11 +14,11 @@ function Label({value,plan,x,y,width,height,size,min,bold=false,color='white',ri
 export function PopularView({model,width,height}:{model:any;width:number;height:number}){
   for(const [key,value] of Object.entries(assets))if(!images[key]){const image=UIImage.fromBase64String(value as string);if(image)images[key]=image}
   const plan=layout(model.family,width,footerLayout(width,height).top)
-  const visibleRows=model.family==='small'?selectSmall(model.rows,Storage.get('popular-small-codes')):model.rows.slice(0,plan.count)
+  const page=pageRows(model.rows,model.family,Storage.get('popular-small-codes'),Storage.get(pageKey(model.family))),visibleRows=page.rows
   const label=(key:string,value:string,x:number,y:number,w:number,h:number,size:number,min:number,bold=false,color='white',right=false)=>
     <Label key={key} value={value} plan={plan} x={x} y={y} width={w} height={h} size={size} min={min} bold={bold} color={color} right={right}/>
-  return <ZStack alignment="topLeading" frame={{width,height}} clipped widgetBackground="#1E1E1E" widgetURL={visibleRows[0]?sourceURL(visibleRows[0]):'https://www.bcb.gov.br/'}
-    accessibilityLabel={model.rows.map((r:any)=>`${r.name}, ${r.price}, ${r.percent}, ${r.unit}, ${r.time}`).join('. ')}>
+  return <ZStack alignment="topLeading" frame={{width,height}} clipped widgetBackground="#1E1E1E"
+    accessibilityLabel={visibleRows.map((r:any)=>`${r.name}, ${r.price}, ${r.percent}, ${r.unit}, ${r.time}`).join('. ')}>
     {images.background?<Image image={images.background} resizable renderingMode="original" frame={{width,height}}/>:null}
     {plan.large?label('title','Popular · '+model.status.label,0,-32,304,18,11,8,true):null}
     {visibleRows.map((row:any,i:number)=>{
@@ -26,7 +26,7 @@ export function PopularView({model,width,height}:{model:any;width:number;height:
       const band=monthBand(curve),custom=['SOJA_JATAI_GO','CUB_GO','IPCA','DIESEL_S10'].includes(row.asset.code)
       return <ZStack key={row.asset.code} alignment="topLeading" frame={{width,height}}>
         {custom?<Canvas opaque={false} {...place(plan,x,y+5,26,26)} draw={(ctx,size)=>{ctx.scale(size.width/26,size.height/26);drawBadge(ctx,row.asset.code)}}/>
-          :images[row.asset.code]?<Image image={images[row.asset.code]} resizable renderingMode="original" {...place(plan,x,y+5,26,26)}/>:null}
+          :images[row.asset.code]?<Image image={images[row.asset.code]} resizable renderingMode="original" {...place(plan,x,y+5,26,26)}/>:<Image systemName="chart.line.uptrend.xyaxis" font={11*plan.scale} foregroundStyle="#D1D1D6" background={{style:'#34343A',shape:{type:'circle'}}} {...place(plan,x,y+5,26,26)}/>}
         {label('name',row.name,detail,y,64,17,10,8,true)}
         {label('price',row.price,detail+64,y,52,17,17.5,8.5,true,'white',true)}
         <Canvas opaque={false} {...place(plan,detail,y+17,G.graph,5.5)} draw={(ctx,size)=>drawCurve(ctx,size,curve,color)}/>
@@ -42,10 +42,14 @@ export function PopularView({model,width,height}:{model:any;width:number;height:
         {label('unit',row.unit,detail,y+28,64,8,6,5,false,'#96969C')}
         {label('time',row.time,detail+68,y+28,48,8,7.5,6,false,'#96969C',true)}
         {i%4<3?<Rectangle fill="rgba(255,255,255,0.13)" {...place(plan,x,y+36,146,G.gap)}/>:null}
-        <Link url={sourceURL(row)} {...place(plan,x,y,146,36)}><Rectangle fill="black" opacity={0.001} frame={{width:146*plan.scale,height:36*plan.scale}}/></Link>
         </ZStack>
     })}
     {plan.large?label('foot','D/D diário · S/S semanal · M/M mensal · pp: taxa',0,155,304,14,8,6,false,'#96969C'):null}
+  <Button intent={NextPopularPage({family:model.family})} buttonStyle="plain"
+    accessibilityLabel={`Próxima página de ativos. Página ${page.index+1} de ${page.count}`}
+    frame={{width,height:footerLayout(width,height).top}} position={{x:width/2,y:footerLayout(width,height).top/2}}>
+    <Rectangle fill="black" opacity={0.001} frame={{width,height:footerLayout(width,height).top}}/>
+  </Button>
   <RefreshFooter width={width} height={height} at={model.queriedAt} intent={RefreshPopular()} label="Atualizar todos os widgets do Scripting. Última consulta"/>
   </ZStack>
 }

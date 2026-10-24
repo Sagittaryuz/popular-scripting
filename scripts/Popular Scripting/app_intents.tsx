@@ -1,12 +1,22 @@
+import { pageFamily, pageKey, pageRows } from './pagination'
 import { AppIntentManager, AppIntentProtocol, ControlWidget } from 'scripting'
 import { loadModel } from './model'
 import { evaluateAlerts } from './alerts'
 import { reloadWidgets } from './pro-common'
 export const RefreshPopular=AppIntentManager.register({name:'RefreshPopular',protocol:AppIntentProtocol.AppIntent,perform:async()=>{
   try{
+    for(const family of ['small','medium','large'])Storage.set('popular-page-refresh:'+family,0)
     const model=await loadModel('medium',true)
     Storage.set('manual-refresh',{at:Date.now(),state:'queried'})
     await evaluateAlerts(model.rows)
   }catch{Storage.set('manual-refresh',{at:Date.now(),state:'failed-cache-preserved'})}
   finally{await reloadWidgets();if(typeof ControlWidget.reloadButtons==='function')ControlWidget.reloadButtons()}
+}})
+
+export const NextPopularPage=AppIntentManager.register({name:'NextPopularPage',protocol:AppIntentProtocol.AppIntent,perform:async({family}:{family:string})=>{
+  const valid=pageFamily(family),rows=Storage.get<any[]>('popular-pro-rows')??[]
+  const page=pageRows(rows,valid,Storage.get('popular-small-codes'),Storage.get(pageKey(valid)))
+  if(!Storage.set(pageKey(valid),(page.index+1)%page.count))throw Error('Não foi possível guardar a página.')
+  Storage.set('popular-page-refresh:'+valid,Date.now())
+  await reloadWidgets()
 }})
