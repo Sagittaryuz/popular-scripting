@@ -1,4 +1,5 @@
-import { Canvas, Image, Rectangle, Text, ZStack, Link } from 'scripting'
+import { Canvas, Image, Rectangle, Text, ZStack, Link, Button } from 'scripting'
+import { RefreshPopular } from './app_intents'
 import { selectSmall, sourceURL } from './pro-model'
 import { assets } from './assets'
 import { drawBadge } from './badges'
@@ -11,7 +12,7 @@ function Label({value,plan,x,y,width,height,size,min,bold=false,color='white',ri
 }
 export function PopularView({model,width,height}:{model:any;width:number;height:number}){
   for(const [key,value] of Object.entries(assets))if(!images[key]){const image=UIImage.fromBase64String(value as string);if(image)images[key]=image}
-  const plan=layout(model.family,width,height)
+  const plan=layout(model.family,width,height-24)
   const visibleRows=model.family==='small'?selectSmall(model.rows,Storage.get('popular-small-codes')):model.rows.slice(0,plan.count)
   const label=(key:string,value:string,x:number,y:number,w:number,h:number,size:number,min:number,bold=false,color='white',right=false)=>
     <Label key={key} value={value} plan={plan} x={x} y={y} width={w} height={h} size={size} min={min} bold={bold} color={color} right={right}/>
@@ -35,14 +36,19 @@ export function PopularView({model,width,height}:{model:any;width:number;height:
           {band.labels.map((month:any,j:number)=><Text key={'month-'+j} font={5*plan.scale} foregroundStyle={color}
             lineLimit={1} minScaleFactor={.8} frame={{width:14*plan.scale,height:5*plan.scale,alignment:'leading'}}
             position={{x:(month.x+7)*plan.scale,y:2.5*plan.scale}}>{month.text}</Text>)}
-        </ZStack></ZStack>:null}
+          </ZStack></ZStack>:null}
         {label('percent',row.percent,detail+G.graph+3,y+17,G.percent,11,10.5,7.5,true,color,true)}
         {label('unit',row.unit,detail,y+28,64,8,6,5,false,'#96969C')}
         {label('time',row.time,detail+68,y+28,48,8,7.5,6,false,'#96969C',true)}
         {i%4<3?<Rectangle fill="rgba(255,255,255,0.13)" {...place(plan,x,y+36,146,G.gap)}/>:null}
         <Link url={sourceURL(row)} {...place(plan,x,y,146,36)}><Rectangle fill="black" opacity={0.001} frame={{width:146*plan.scale,height:36*plan.scale}}/></Link>
-      </ZStack>
+        </ZStack>
     })}
     {plan.large?label('foot','D/D diário · S/S semanal · M/M mensal · pp: taxa',0,155,304,14,8,6,false,'#96969C'):null}
+  <Button intent={RefreshPopular()} buttonStyle="plain" accessibilityLabel="Atualizar indicadores"
+    frame={{width:28,height:28}} position={{x:width-24,y:height-18}}>
+    <Image systemName="arrow.clockwise" font={12} foregroundStyle="#C7C7CC" frame={{width:28,height:28}}
+      background={{style:'rgba(0,0,0,0.25)',shape:{type:'circle'}}}/>
+  </Button>
   </ZStack>
 }

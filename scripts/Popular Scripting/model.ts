@@ -1,7 +1,7 @@
 import { createEngine } from './original-engine'
 import { createHost } from './host'
 import { dashboardStatus, refreshMinutes } from './pro-common'
-export const VERSION='0.2.0'
+export const VERSION='0.2.1'
 export const MODES=['fixed','gainers','losers','up_first','down_first'] as const
 export function engine(family='medium',force=false){
   const queryDue=Date.now()-(Storage.get<number>('popular-last-query')??0)>=refreshMinutes()*60000

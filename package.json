@@ -1,9 +1,11 @@
 {
-  "name":"popular-scripting-validation",
-  "private":true,
-  "scripts":{
-    "check":"node scripts/check-pro.cjs",
-    "test":"node scripts/test-pro.cjs && node scripts/validate-data.cjs"
+  "name": "popular-scripting-validation",
+  "private": true,
+  "scripts": {
+    "check": "node scripts/check-pro.cjs",
+    "test": "node scripts/test-pro.cjs && node scripts/validate-data.cjs && node scripts/test-manual-refresh.cjs"
   },
-  "devDependencies":{"esbuild":"0.28.2"}
+  "devDependencies": {
+    "esbuild": "0.28.2"
+  }
 }
