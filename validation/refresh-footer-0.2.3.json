@@ -1,0 +1,15 @@
+{
+  "version": "0.2.3",
+  "visibleHeightPoints": 13,
+  "previousHeightPoints": 26,
+  "reservedFooterPoints": 36,
+  "gradient": [
+    "#9B2B37",
+    "#521720"
+  ],
+  "roundedCorners": 4,
+  "timezoneTest": "2026-10-24T12:05:00Z => 09:05h | 24/10 America/Sao_Paulo",
+  "manualRefreshTestsPassed": true,
+  "nativeTapConfirmed": false,
+  "nativeRenderingConfirmed": false
+}

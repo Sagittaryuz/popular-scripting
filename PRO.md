@@ -1,3 +1,11 @@
+## Atualização 0.2.3 — rodapé discreto com gradiente
+
+Trapézio com 13 pontos de altura (antes 26), quatro cantos suavizados com curvas quadráticas, gradiente vermelho #9B2B37 → #521720 e texto cinza-claro menor. Mantém a reserva inferior de 36 pontos e o mesmo botão de atualização. Gradiente desenhado em faixas explícitas sob recorte curvo, sem depender de objetos de gradiente do host.
+
+A data/hora é local: testado UTC 12:05 → 09:05h | 24/10 em America/Sao_Paulo. Codex indica a coleta publicada e conserva sua data ao usar cache; Popular indica consulta, sem substituir as datas reais dos indicadores. Não há recibo remoto do toque nesses dois projetos. A execução no aparelho e o horário visível no dispositivo ainda não foram confirmados remotamente.
+
+Testes locais: consulta forçada por AppIntent, cache/recarga, sucesso/falha, geometria em quatro tamanhos, curvas/gradiente, fuso, formato e data inválida. No Codex, integração da intenção com o repositório e armazenamento reais do projeto, usando transporte nativo simulado. Prévia Canvas local; visual nativo pendente.
+
 ## Atualização 0.2.2 — trapézio de atualização
 
 Rodapé centralizado em trapézio, topo mais estreito que a base, fundo vermelho #B3262E e texto cinza-claro #D1D1D6. Mostra HH:MMh | DD/MM e o símbolo de atualizar. Toda a faixa aciona o mesmo AppIntent. Margem inferior reservada de 36 pontos (antes 24); composição, fontes de dados, cores do conteúdo e links preservados, com ajuste de altura para caber nos tamanhos fixos do iOS. Não altera o Calendar.
