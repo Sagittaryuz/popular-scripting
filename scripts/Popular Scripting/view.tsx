@@ -46,6 +46,6 @@ export function PopularView({model,width,height}:{model:any;width:number;height:
         </ZStack>
     })}
     {plan.large?label('foot','D/D diário · S/S semanal · M/M mensal · pp: taxa',0,155,304,14,8,6,false,'#96969C'):null}
-  <RefreshFooter width={width} height={height} at={model.queriedAt} intent={RefreshPopular()} label="Atualizar indicadores. Última consulta"/>
+  <RefreshFooter width={width} height={height} at={model.queriedAt} intent={RefreshPopular()} label="Atualizar todos os widgets do Scripting. Última consulta"/>
   </ZStack>
 }

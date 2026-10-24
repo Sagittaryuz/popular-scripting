@@ -1,3 +1,11 @@
+## Atualização 0.2.4 — espaço recuperado e recarga global
+
+Reserva inferior reduzida de 36 para 23 pontos: devolve 13 pontos ao conteúdo. Trapézio mantém altura 13 e cantos curvos; os 4 pontos abaixo dele, até a borda inferior e nas laterais, usam a continuação do mesmo gradiente. Não pinta a faixa toda acima dessa base.
+
+O botão consulta os dados deste projeto e, em seguida, usa Widget.reloadAll() para solicitar a recarga de todos os widgets criados no Scripting (usuário/desenvolvimento), incluindo Calendar. Botões da Central de Controle também mantêm sua recarga existente. A solicitação não impõe execução imediata ao iOS e não invalida caches de outros scripts; cada projeto conserva seu próprio comportamento de consulta. Calendar 0.3.10 remove apenas o ícone de refresh visível, mantendo navegação e caminho de atualização por intenção/atalho.
+
+Data/hora local preservada: Codex indica coleta publicada; Popular indica consulta às fontes. Sem recibo remoto do toque/visual destes dois widgets. Testes locais comprovam chamada global real do helper em vez da API restrita a widgets de usuário, atualização/cache em sucesso e falha, base/gradiente contínuo e redistribuição. Renderização/toque simultâneo em todos os widgets no aparelho ainda pendentes.
+
 ## Atualização 0.2.3 — rodapé discreto com gradiente
 
 Trapézio com 13 pontos de altura (antes 26), quatro cantos suavizados com curvas quadráticas, gradiente vermelho #9B2B37 → #521720 e texto cinza-claro menor. Mantém a reserva inferior de 36 pontos e o mesmo botão de atualização. Gradiente desenhado em faixas explícitas sob recorte curvo, sem depender de objetos de gradiente do host.

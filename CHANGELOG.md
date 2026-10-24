@@ -1,3 +1,10 @@
+## 0.2.4 — 2026-10-24
+
+- Pinta a base abaixo do trapézio com o gradiente contínuo até a borda.
+- Devolve 13 pontos ao conteúdo (reserva de 23 pontos).
+- Botão solicita recarga de todos os widgets Scripting via Widget.reloadAll().
+- Testes locais aprovados; execução/visual globais no aparelho pendentes.
+
 ## 0.2.3 — 2026-10-24
 
 - Rodapé com metade da altura, gradiente vermelho discreto e quatro cantos curvos.

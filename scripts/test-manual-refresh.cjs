@@ -27,5 +27,8 @@ function load(name,deps,values=new Map()){
   const buttons=walk(tree).filter(n=>n.type==='Button');assert.equal(buttons.length,1,'Exactly one refresh button, outside row links and graph masks');
   const p=buttons[0].props;assert.equal(p.intent.name,'RefreshPopular');assert.equal(p.position.x,width/2);assert(p.position.x+p.frame.width/2<=width&&p.position.y+p.frame.height/2<=height);
  }
+ let globalReloads=0;
+ const common=load('pro-common.ts',{scripting:{Widget:{reloadAll:()=>{globalReloads++},reloadUserWidgets:()=>{throw Error('User-only API must not be chosen')}}}});
+ await common.reloadWidgets();assert.equal(globalReloads,1,'Actual helper requests all Scripting widgets');
  console.log('PASS manual refresh: actual intent requests current data, preserves offline status and reloads on success/failure. Native tap pending.');
 })().catch(e=>{console.error(e);process.exitCode=1});

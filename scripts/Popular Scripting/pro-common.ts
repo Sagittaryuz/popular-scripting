@@ -2,8 +2,8 @@ import { Widget } from 'scripting'
 // Native utilities are runtime globals. Never copy Keychain values to files.
 export function refreshMinutes(){const n=Storage.get<number>('refresh-minutes');return n===5||n===15?n:1}
 export async function reloadWidgets(){
-  if(typeof Widget.reloadUserWidgets==='function')await Widget.reloadUserWidgets()
-  else await Widget.reloadAll()
+  // All Scripting timelines, including Calendar and developer widgets.
+  Widget.reloadAll()
 }
 export async function exportText(name:string,text:string){
   const bookmark=Storage.get<string>('export-folder-bookmark')

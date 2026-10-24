@@ -1,0 +1,11 @@
+{
+  "version": "0.2.4",
+  "api": "Widget.reloadAll",
+  "officialReference": "https://scriptingapp.github.io/guide/Widget/Widget%20API",
+  "reservedFooterPoints": 23,
+  "recoveredContentPoints": 13,
+  "baseFillHeight": 4,
+  "trapezoidHeight": 13,
+  "nativeGlobalReloadConfirmed": false,
+  "localTestsPassed": true
+}
