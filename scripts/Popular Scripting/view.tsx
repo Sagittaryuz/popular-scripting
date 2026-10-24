@@ -1,4 +1,4 @@
-import { RefreshFooter, FOOTER_SPACE } from './refresh-footer'
+import { RefreshFooter, footerLayout } from './refresh-footer'
 import { Canvas, Image, Rectangle, Text, ZStack, Link } from 'scripting'
 import { RefreshPopular } from './app_intents'
 import { selectSmall, sourceURL } from './pro-model'
@@ -13,7 +13,7 @@ function Label({value,plan,x,y,width,height,size,min,bold=false,color='white',ri
 }
 export function PopularView({model,width,height}:{model:any;width:number;height:number}){
   for(const [key,value] of Object.entries(assets))if(!images[key]){const image=UIImage.fromBase64String(value as string);if(image)images[key]=image}
-  const plan=layout(model.family,width,height-FOOTER_SPACE)
+  const plan=layout(model.family,width,footerLayout(width,height).top)
   const visibleRows=model.family==='small'?selectSmall(model.rows,Storage.get('popular-small-codes')):model.rows.slice(0,plan.count)
   const label=(key:string,value:string,x:number,y:number,w:number,h:number,size:number,min:number,bold=false,color='white',right=false)=>
     <Label key={key} value={value} plan={plan} x={x} y={y} width={w} height={h} size={size} min={min} bold={bold} color={color} right={right}/>

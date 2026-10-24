@@ -27,6 +27,12 @@ function load(name,deps,values=new Map()){
   const buttons=walk(tree).filter(n=>n.type==='Button');assert.equal(buttons.length,1,'Exactly one refresh button, outside row links and graph masks');
   const p=buttons[0].props;assert.equal(p.intent.name,'RefreshPopular');assert.equal(p.position.x,width/2);assert(p.position.x+p.frame.width/2<=width&&p.position.y+p.frame.height/2<=height);
  }
+ const draw=load('draw.js',{});
+ for(const [family,width,height] of [['small',158,158],['medium',338,170],['large',338,360]]){
+  const bottom=height-17,plan=draw.layout(family,width,bottom),min=family==='large'?-32:0,max=family==='large'?169:146;
+  const top=plan.y+min*plan.scale,lower=bottom-(plan.y+max*plan.scale);
+  assert(top>=3.99&&lower>=3.99);assert(Math.abs(top-lower)<1e-8,'All content, including large title/footnote, is centered above footer');
+ }
  let globalReloads=0;
  const common=load('pro-common.ts',{scripting:{Widget:{reloadAll:()=>{globalReloads++},reloadUserWidgets:()=>{throw Error('User-only API must not be chosen')}}}});
  await common.reloadWidgets();assert.equal(globalReloads,1,'Actual helper requests all Scripting widgets');

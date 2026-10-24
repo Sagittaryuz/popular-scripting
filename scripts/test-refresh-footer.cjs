@@ -20,6 +20,7 @@ for(const [width,height] of [[158,158],[158,170],[338,170],[338,360]]){
  assert.equal(rectangles.length,26);assert.equal(colors[0],'rgb(155,43,55)');assert.equal(colors.at(-1),footerGradientColor(12.5/17));assert(new Set(colors).size>20,'Visible smooth gradient');
 
  const oldCount=rectangles.length;drawRefreshBase(ctx,{width,height:4});assert.equal(colors[oldCount],footerGradientColor(13/17),'Base continues the same gradient');assert.equal(rectangles.at(-1)[2],width,'Paint reaches both lateral edges below trapezoid');
- const text=button.children[0].children[1].children[0];assert.equal(text.props.foregroundStyle,'#D1D1D6');
+ const group=button.children[0].children[1];assert.equal(button.props.frame.height,17);assert.equal(group.props.position.y,8.5,'Text centered in the extended 17-point painted area');assert.equal(button.props.position.y-button.props.frame.height/2+group.props.position.y,box.top+17/2);
+ const text=group.children[0];assert.equal(text.props.foregroundStyle,'#D1D1D6');assert.equal(text.props.font,9.5,'Time label slightly larger without changing trapezoid');
 }
 console.log('PASS footer: local timestamp, invalid date, half-height curved trapezoid, clipped red gradient, light gray label, centered bottom button and four widget sizes. Native rendering pending.');

@@ -1,0 +1,11 @@
+{
+  "version": "0.2.5",
+  "timestampFont": 9.5,
+  "timestampCenterOffset": 2,
+  "paintedHeight": 17,
+  "trapezoidHeight": 13,
+  "equalContentMarginsTested": true,
+  "globalReloadApi": "Widget.reloadAll",
+  "nativeGlobalReloadConfirmed": false,
+  "nativeRenderingConfirmed": false
+}

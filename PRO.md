@@ -1,3 +1,11 @@
+## Atualização 0.2.5 — centralização e texto do rodapé
+
+Data/hora deslocada 2 pontos para baixo: centro vertical da área pintada de 17 pontos (trapézio de 13 + base de 4). Texto passa de 8,5 para 9,5 pontos; forma, gradiente, largura e altura do trapézio preservados. A área de toque acompanha o rodapé inteiro central.
+
+Conteúdo centralizado entre o topo do widget e o topo da faixa pintada, com margens superior/inferior iguais. No tamanho grande, o título e a nota de rodapé participam dos limites usados na centralização.
+
+Atualização global mantém Widget.reloadAll(). Testes locais de consulta/cache, chamada global, formato/fuso, centro do texto, margens iguais, links e dimensões aprovados. Não existe recibo remoto que comprove a simultaneidade do toque nos três widgets físicos. Codex usa horário da coleta publicada; Popular, horário da consulta, preservando observações por indicador.
+
 ## Atualização 0.2.4 — espaço recuperado e recarga global
 
 Reserva inferior reduzida de 36 para 23 pontos: devolve 13 pontos ao conteúdo. Trapézio mantém altura 13 e cantos curvos; os 4 pontos abaixo dele, até a borda inferior e nas laterais, usam a continuação do mesmo gradiente. Não pinta a faixa toda acima dessa base.

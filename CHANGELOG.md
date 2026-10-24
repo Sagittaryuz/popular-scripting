@@ -1,3 +1,10 @@
+## 0.2.5 — 2026-10-24
+
+- Centraliza texto no rodapé estendido; fonte 9,5 sem mudar o trapézio.
+- Equilibra margens superior/inferior do conteúdo.
+- No tamanho grande, o título e a nota de rodapé participam dos limites usados na centralização.
+- Recarga global preservada; testes locais aprovados, visual/toque nativos pendentes.
+
 ## 0.2.4 — 2026-10-24
 
 - Pinta a base abaixo do trapézio com o gradiente contínuo até a borda.

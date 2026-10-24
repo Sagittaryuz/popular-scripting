@@ -3,7 +3,7 @@ import { Button, Canvas, HStack, Image, Text, ZStack } from 'scripting'
 export const FOOTER_SPACE=23
 export function footerLayout(width:number,height:number){
   const w=Math.min(210,width-28),h=13
-  return {width:w,height:h,x:width/2,y:height-4-h/2,top:height-4-h}
+  return {width:w,height:h,totalHeight:h+4,x:width/2,y:height-4-h/2,top:height-4-h}
 }
 export function footerLabel(value:string|number){
   const date=new Date(value)
@@ -49,11 +49,11 @@ export function RefreshFooter({width,height,at,intent,label}:{width:number;heigh
   return <ZStack alignment="topLeading" frame={{width,height}}>
     <Canvas opaque={false} frame={{width,height:4}} position={{x:width/2,y:height-2}} draw={drawRefreshBase}/>
     <Button intent={intent} buttonStyle="plain" accessibilityLabel={`${label}. ${stamp}`}
-    frame={{width:box.width,height:box.height}} position={{x:box.x,y:box.y}}>
-    <ZStack frame={{width:box.width,height:box.height}}>
-      <Canvas opaque={false} frame={{width:box.width,height:box.height}} draw={drawRefreshTrapezoid}/>
-      <HStack spacing={4}>
-        <Text font={8.5} fontWeight="medium" monospacedDigit foregroundStyle="#D1D1D6" lineLimit={1}>{stamp}</Text>
+    frame={{width:box.width,height:box.totalHeight}} position={{x:box.x,y:box.top+box.totalHeight/2}}>
+    <ZStack alignment="topLeading" frame={{width:box.width,height:box.totalHeight}}>
+      <Canvas opaque={false} frame={{width:box.width,height:box.height}} position={{x:box.width/2,y:box.height/2}} draw={drawRefreshTrapezoid}/>
+      <HStack spacing={4} position={{x:box.width/2,y:box.totalHeight/2}}>
+        <Text font={9.5} fontWeight="medium" monospacedDigit foregroundStyle="#D1D1D6" lineLimit={1}>{stamp}</Text>
         <Image systemName="arrow.clockwise" font={8.5} foregroundStyle="#D1D1D6"/>
       </HStack>
     </ZStack>

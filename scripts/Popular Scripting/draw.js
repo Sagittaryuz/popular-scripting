@@ -4,9 +4,10 @@ export const GEOMETRY=Object.freeze({column:146,columnGap:12,row:36,gap:2/3,icon
 export function layout(family,width,height){
   if(!Number.isFinite(width)||!Number.isFinite(height)||width<=12||height<=8)throw Error('Dimensão inválida');
   const wide=family!=='small',large=family==='large',contentWidth=wide?304:146;
-  const scale=Math.min(1,(width-12)/contentWidth,(height-(large?62:8))/146);
+  const contentTop=large?-32:0,contentBottom=large?169:146;
+  const scale=Math.min(1,(width-12)/contentWidth,(height-8)/(contentBottom-contentTop));
   if(scale<=0)throw Error('Área insuficiente');
-  return {width,height,scale,x:(width-contentWidth*scale)/2,y:(height-146*scale)/2,wide,large,count:wide?8:4,contentWidth};
+  return {width,height,scale,x:(width-contentWidth*scale)/2,y:(height-(contentBottom-contentTop)*scale)/2-contentTop*scale,wide,large,count:wide?8:4,contentWidth};
 }
 export function place(plan,x,y,width,height,alignment='center'){
   const s=plan.scale;
