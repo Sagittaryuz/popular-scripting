@@ -1,4 +1,5 @@
-import { Canvas, Image, Rectangle, Text, ZStack, Link, Button } from 'scripting'
+import { RefreshFooter, FOOTER_SPACE } from './refresh-footer'
+import { Canvas, Image, Rectangle, Text, ZStack, Link } from 'scripting'
 import { RefreshPopular } from './app_intents'
 import { selectSmall, sourceURL } from './pro-model'
 import { assets } from './assets'
@@ -12,7 +13,7 @@ function Label({value,plan,x,y,width,height,size,min,bold=false,color='white',ri
 }
 export function PopularView({model,width,height}:{model:any;width:number;height:number}){
   for(const [key,value] of Object.entries(assets))if(!images[key]){const image=UIImage.fromBase64String(value as string);if(image)images[key]=image}
-  const plan=layout(model.family,width,height-24)
+  const plan=layout(model.family,width,height-FOOTER_SPACE)
   const visibleRows=model.family==='small'?selectSmall(model.rows,Storage.get('popular-small-codes')):model.rows.slice(0,plan.count)
   const label=(key:string,value:string,x:number,y:number,w:number,h:number,size:number,min:number,bold=false,color='white',right=false)=>
     <Label key={key} value={value} plan={plan} x={x} y={y} width={w} height={h} size={size} min={min} bold={bold} color={color} right={right}/>
@@ -45,10 +46,6 @@ export function PopularView({model,width,height}:{model:any;width:number;height:
         </ZStack>
     })}
     {plan.large?label('foot','D/D diário · S/S semanal · M/M mensal · pp: taxa',0,155,304,14,8,6,false,'#96969C'):null}
-  <Button intent={RefreshPopular()} buttonStyle="plain" accessibilityLabel="Atualizar indicadores"
-    frame={{width:28,height:28}} position={{x:width-24,y:height-18}}>
-    <Image systemName="arrow.clockwise" font={12} foregroundStyle="#C7C7CC" frame={{width:28,height:28}}
-      background={{style:'rgba(0,0,0,0.25)',shape:{type:'circle'}}}/>
-  </Button>
+  <RefreshFooter width={width} height={height} at={model.queriedAt} intent={RefreshPopular()} label="Atualizar indicadores. Última consulta"/>
   </ZStack>
 }

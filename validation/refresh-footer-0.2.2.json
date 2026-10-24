@@ -1,0 +1,10 @@
+{
+  "version": "0.2.2",
+  "background": "#B3262E",
+  "foreground": "#D1D1D6",
+  "footerReservedPoints": 36,
+  "dateFormat": "HH:MMh | DD/MM",
+  "dateOrigin": "consulta das fontes, model.queriedAt; não substitui as datas das cotações mostradas nas linhas",
+  "localTestsPassed": true,
+  "nativeRenderingConfirmed": false
+}

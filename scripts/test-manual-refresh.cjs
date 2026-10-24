@@ -20,12 +20,12 @@ function load(name,deps,values=new Map()){
  const code=buildSync({entryPoints:[path.join(dir,'view.tsx')],bundle:true,write:false,format:'cjs',platform:'node',external:['scripting'],jsxFactory:'createElement'}).outputFiles[0].text;
  const native={AppIntentManager:{register:d=>()=>({name:d.name})},AppIntentProtocol:{AppIntent:0}};
  const sdk=new Proxy(native,{get:(target,name)=>target[name]??name}),module={exports:{}};
- vm.runInNewContext(code,{module,exports:module.exports,require:()=>sdk,createElement:(type,props,...children)=>({type,props,children:children.flat(Infinity).filter(Boolean)}),Date,Storage:{get:()=>null},UIImage:{fromBase64String:()=>null}});
+ vm.runInNewContext(code,{module,exports:module.exports,require:()=>sdk,createElement:(type,props,...children)=>typeof type==='function'?type({...props,children}):({type,props,children:children.flat(Infinity).filter(Boolean)}),Date,Storage:{get:()=>null},UIImage:{fromBase64String:()=>null}});
  for(const [family,width,height] of [['small',158,170],['medium',338,170],['large',338,360]]){
-  const tree=module.exports.PopularView({model:{family,rows:[],status:{label:'fixture'}},width,height});
+  const tree=module.exports.PopularView({model:{family,queriedAt:new Date(2026,9,24,9,5).getTime(),rows:[],status:{label:'fixture'}},width,height});
   const walk=n=>n&&typeof n==='object'?[n,...n.children.flatMap(walk)]:[];
   const buttons=walk(tree).filter(n=>n.type==='Button');assert.equal(buttons.length,1,'Exactly one refresh button, outside row links and graph masks');
-  const p=buttons[0].props;assert.equal(p.intent.name,'RefreshPopular');assert(p.position.x+14<=width&&p.position.y+14<=height);
+  const p=buttons[0].props;assert.equal(p.intent.name,'RefreshPopular');assert.equal(p.position.x,width/2);assert(p.position.x+p.frame.width/2<=width&&p.position.y+p.frame.height/2<=height);
  }
  console.log('PASS manual refresh: actual intent requests current data, preserves offline status and reloads on success/failure. Native tap pending.');
 })().catch(e=>{console.error(e);process.exitCode=1});

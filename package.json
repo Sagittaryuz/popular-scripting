@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "check": "node scripts/check-pro.cjs",
-    "test": "node scripts/test-pro.cjs && node scripts/validate-data.cjs && node scripts/test-manual-refresh.cjs"
+    "test": "node scripts/test-pro.cjs && node scripts/validate-data.cjs && node scripts/test-manual-refresh.cjs && node scripts/test-refresh-footer.cjs"
   },
   "devDependencies": {
     "esbuild": "0.28.2"
