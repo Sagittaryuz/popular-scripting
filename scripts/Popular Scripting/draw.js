@@ -5,13 +5,14 @@ export function layout(family,width,height){
   if(!Number.isFinite(width)||!Number.isFinite(height)||width<=12||height<=8)throw Error('Dimensão inválida');
   const wide=family!=='small',large=family==='large',contentWidth=wide?304:146;
   const contentTop=large?-32:0,contentBottom=large?169:146;
-  const scale=Math.min(1,(width-12)/contentWidth,(height-8)/(contentBottom-contentTop));
+  const scale=Math.min(1,(width-12)/contentWidth,(height-16)/(contentBottom-contentTop));
   if(scale<=0)throw Error('Área insuficiente');
-  return {width,height,scale,x:(width-contentWidth*scale)/2,y:(height-(contentBottom-contentTop)*scale)/2-contentTop*scale,wide,large,count:wide?8:4,contentWidth};
+  const scaleY=(height-16)/(contentBottom-contentTop);
+  return {width,height,scale,scaleY,x:(width-contentWidth*scale)/2,y:8-contentTop*scaleY,wide,large,count:wide?8:4,contentWidth};
 }
 export function place(plan,x,y,width,height,alignment='center'){
   const s=plan.scale;
-  return {frame:{width:width*s,height:height*s,alignment},position:{x:plan.x+(x+width/2)*s,y:plan.y+(y+height/2)*s}};
+  return {frame:{width:width*s,height:height*plan.scaleY,alignment},position:{x:plan.x+(x+width/2)*s,y:plan.y+(y+height/2)*plan.scaleY}};
 }
 export function movementColor(row){return row.movement>0?'#30C795':row.movement<0?'#FF5967':'#96969C';}
 export function curvePlan(api,row,width=GEOMETRY.graph){

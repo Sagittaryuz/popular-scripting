@@ -24,14 +24,14 @@ function load(name,deps,values=new Map()){
  for(const [family,width,height] of [['small',158,170],['medium',338,170],['large',338,360]]){
   const tree=module.exports.PopularView({model:{family,queriedAt:new Date(2026,9,24,9,5).getTime(),rows:[],status:{label:'fixture'}},width,height});
   const walk=n=>n&&typeof n==='object'?[n,...n.children.flatMap(walk)]:[];
-  const allButtons=walk(tree).filter(n=>n.type==='Button');assert.equal(allButtons.length,2,'Paging and refresh have separate touch targets');const buttons=allButtons.filter(n=>n.props.intent.name==='RefreshPopular');assert.equal(buttons.length,1);
-  const next=allButtons.find(n=>n.props.intent.name==='NextPopularPage');assert(next);assert(next.props.position.y+next.props.frame.height/2<=buttons[0].props.position.y-buttons[0].props.frame.height/2,'Body pages and footer refreshes independently');
- const p=buttons[0].props;assert.equal(p.intent.name,'RefreshPopular');assert.equal(p.position.x,width/2);assert(p.position.x+p.frame.width/2<=width&&p.position.y+p.frame.height/2<=height);
+  const allButtons=walk(tree).filter(n=>n.type==='Button');assert.equal(allButtons.length,1,'Whole-widget refresh and pagination share one target');
+  const next=allButtons.find(n=>n.props.intent.name==='NextPopularPage');assert(next);assert.equal(next.props.frame.height,height);assert.equal(next.props.position.y,height/2);
+ const p=next.props;assert.equal(p.intent.name,'NextPopularPage');assert.equal(p.position.x,width/2);assert(p.position.x+p.frame.width/2<=width&&p.position.y+p.frame.height/2<=height);
  }
  const draw=load('draw.js',{});
  for(const [family,width,height] of [['small',158,158],['medium',338,170],['large',338,360]]){
-  const bottom=height-17,plan=draw.layout(family,width,bottom),min=family==='large'?-32:0,max=family==='large'?169:146;
-  const top=plan.y+min*plan.scale,lower=bottom-(plan.y+max*plan.scale);
+  const bottom=height,plan=draw.layout(family,width,bottom),min=family==='large'?-32:0,max=family==='large'?169:146;
+  const top=plan.y+min*plan.scaleY,lower=bottom-(plan.y+max*plan.scaleY);
   assert(top>=3.99&&lower>=3.99);assert(Math.abs(top-lower)<1e-8,'All content, including large title/footnote, is centered above footer');
  }
  let globalReloads=0;

@@ -13,14 +13,14 @@ assert.equal(paging.pageRows([], 'medium',null,20).count,1);assert.throws(()=>pa
 (async()=>{
  const values=new Map([['popular-pro-rows',rows]]),defs={};let queries=0,reloads=0;
  const storage={get:k=>values.get(k),set:(k,v)=>{values.set(k,v);return true}};
- load('app_intents.tsx',{'./pagination':paging,scripting:{AppIntentManager:{register:d=>{defs[d.name]=d;return ()=>({})}},AppIntentProtocol:{AppIntent:0}},'./model':{loadModel:async()=>{queries++}},'./alerts':{},'./pro-common':{reloadWidgets:async()=>{reloads++}}},{Storage:storage});
- await defs.NextPopularPage.perform({family:'medium'});assert.equal(values.get('popular-page:medium'),1);assert.equal(queries,0);assert.equal(reloads,1);assert(values.get('popular-page-refresh:medium')>0);
+ load('app_intents.tsx',{'./pagination':paging,scripting:{AppIntentManager:{register:d=>{defs[d.name]=d;return ()=>({})}},AppIntentProtocol:{AppIntent:0}},'./model':{loadModel:async()=>{queries++;return {rows}}},'./alerts':{evaluateAlerts:async()=>{}},'./pro-common':{reloadWidgets:async()=>{reloads++}}},{Storage:storage});
+ await defs.NextPopularPage.perform({family:'medium'});assert.equal(values.get('popular-page:medium'),1);assert.equal(queries,1);assert.equal(reloads,1);assert(values.get('popular-page-refresh:medium')>0);
  await defs.NextPopularPage.perform({family:'medium'});assert.equal(values.get('popular-page:medium'),0);
  await assert.rejects(defs.NextPopularPage.perform({family:'invalid'}));
  // Cached page render keeps actual query timestamp and makes no provider requests.
  values.set('popular-last-query',1234);
  const model=load('model.ts',{'./host':{createHost:()=>({})},'./pro-common':{refreshMinutes:()=>1},'./original-engine':{createEngine:()=>({version:'fixture',readOrderingMode:()=> 'fixed',orderingFeedback:()=>({label:'fixture'}),collectRows:async()=>{queries++;return []}})}},{Storage:storage});
- const cached=await model.loadModel('medium',false,true);assert.equal(cached.rows.length,16);assert.equal(cached.queriedAt,1234);assert.equal(queries,0);
+ queries=0;const cached=await model.loadModel('medium',false,true);assert.equal(cached.rows.length,16);assert.equal(cached.queriedAt,1234);assert.equal(queries,0);
  const viewCode=buildSync({entryPoints:[path.join(dir,'view.tsx')],bundle:true,write:false,format:'cjs',platform:'node',external:['scripting'],jsxFactory:'createElement'}).outputFiles[0].text;
  const viewModule={exports:{}},sdk=new Proxy({AppIntentProtocol:{AppIntent:0},AppIntentManager:{register:d=>params=>({name:d.name,params})}},{get:(o,k)=>o[k]??k});
  const createElement=(type,props,...children)=>typeof type==='function'?type({...props,children}):({type,props:props||{},children:children.flat(Infinity).filter(Boolean)});
@@ -32,5 +32,5 @@ assert.equal(paging.pageRows([], 'medium',null,20).count,1);assert.throws(()=>pa
   const tree=viewModule.exports.PopularView({model:{family:'medium',rows:display,api:fakeApi,status:{label:'fixture'},queriedAt:1234},width:338,height:170});
   assert(tree.props.accessibilityLabel.includes('a'+index*8+','));assert(!tree.props.accessibilityLabel.includes('a'+(index?0:8)+','));assert.equal(tree.props.widgetURL,undefined);
  }
- console.log('PASS pagination: full universe, distinct pages, wraparound, preferred small page, family isolation, actual intent without network, cached render preserves observation time. Native taps pending.');
+ console.log('PASS pagination: full universe, distinct pages, wraparound, preferred small page, family isolation, actual intent with forced data collection, cached render preserves observation time. Native taps pending.');
 })().catch(e=>{console.error(e);process.exitCode=1});

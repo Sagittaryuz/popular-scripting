@@ -14,7 +14,10 @@ export const RefreshPopular=AppIntentManager.register({name:'RefreshPopular',pro
 }})
 
 export const NextPopularPage=AppIntentManager.register({name:'NextPopularPage',protocol:AppIntentProtocol.AppIntent,perform:async({family}:{family:string})=>{
-  const valid=pageFamily(family),rows=Storage.get<any[]>('popular-pro-rows')??[]
+  const valid=pageFamily(family)
+  let rows=Storage.get<any[]>('popular-pro-rows')??[]
+  try{const model=await loadModel(valid,true);rows=model.rows;await evaluateAlerts(rows);Storage.set('manual-refresh',{at:Date.now(),state:'queried'})}
+  catch{Storage.set('manual-refresh',{at:Date.now(),state:'failed-cache-preserved'})}
   const page=pageRows(rows,valid,Storage.get('popular-small-codes'),Storage.get(pageKey(valid)))
   if(!Storage.set(pageKey(valid),(page.index+1)%page.count))throw Error('Não foi possível guardar a página.')
   Storage.set('popular-page-refresh:'+valid,Date.now())

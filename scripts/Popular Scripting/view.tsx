@@ -1,6 +1,5 @@
-import { RefreshFooter, footerLayout } from './refresh-footer'
 import { Canvas, Image, Rectangle, Text, ZStack, Button } from 'scripting'
-import { RefreshPopular, NextPopularPage } from './app_intents'
+import { NextPopularPage } from './app_intents'
 import { pageKey, pageRows } from './pagination'
 import { assets } from './assets'
 import { drawBadge } from './badges'
@@ -13,7 +12,7 @@ function Label({value,plan,x,y,width,height,size,min,bold=false,color='white',ri
 }
 export function PopularView({model,width,height}:{model:any;width:number;height:number}){
   for(const [key,value] of Object.entries(assets))if(!images[key]){const image=UIImage.fromBase64String(value as string);if(image)images[key]=image}
-  const plan=layout(model.family,width,footerLayout(width,height).top)
+  const plan=layout(model.family,width,height)
   const page=pageRows(model.rows,model.family,Storage.get('popular-small-codes'),Storage.get(pageKey(model.family))),visibleRows=page.rows
   const label=(key:string,value:string,x:number,y:number,w:number,h:number,size:number,min:number,bold=false,color='white',right=false)=>
     <Label key={key} value={value} plan={plan} x={x} y={y} width={w} height={h} size={size} min={min} bold={bold} color={color} right={right}/>
@@ -46,10 +45,9 @@ export function PopularView({model,width,height}:{model:any;width:number;height:
     })}
     {plan.large?label('foot','D/D diário · S/S semanal · M/M mensal · pp: taxa',0,155,304,14,8,6,false,'#96969C'):null}
   <Button intent={NextPopularPage({family:model.family})} buttonStyle="plain"
-    accessibilityLabel={`Próxima página de ativos. Página ${page.index+1} de ${page.count}`}
-    frame={{width,height:footerLayout(width,height).top}} position={{x:width/2,y:footerLayout(width,height).top/2}}>
-    <Rectangle fill="black" opacity={0.001} frame={{width,height:footerLayout(width,height).top}}/>
+    accessibilityLabel={`Atualizar e avançar ativos. Página ${page.index+1} de ${page.count}`}
+    frame={{width,height}} position={{x:width/2,y:height/2}}>
+    <Rectangle fill="black" opacity={0.001} frame={{width,height}}/>
   </Button>
-  <RefreshFooter width={width} height={height} at={model.queriedAt} intent={RefreshPopular()} label="Atualizar todos os widgets do Scripting. Última consulta"/>
   </ZStack>
 }

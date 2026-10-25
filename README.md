@@ -1,3 +1,9 @@
+## Atualização 0.2.8
+
+Remove o trapézio e horário da área visível. O conteúdo usa a altura completa com margem vertical externa de 8pt, preserva o ajuste horizontal original e redistribui verticalmente as linhas. Tocar qualquer parte do widget força uma coleta atual, avalia alertas e avança para a próxima página; falha na fonte conserva os dados anteriores e permite avançar. A execução de apresentação seguinte usa o cache recém-coletado para não duplicar a consulta. Widget.reloadAll solicita também as outras timelines do Scripting.
+
+Testes locais: fontes, páginas distintas/retorno, coleta forçada no intent, falha/cache, alvo único de toque, margens e novas posições. O módulo antigo de footer fica sem importação na view, apenas como histórico e regressão isolada. Aparência, toques e agenda de execução no aparelho ainda não confirmados. Reversão: scripting-v0.2.7.
+
 ## Atualização 0.2.7 — revisão de desempenho e homepage separada
 
 O transporte une requisições simultâneas iguais dentro da mesma execução, preservando status, allowlist e orçamentos. Depois de concluídas, as requisições saem da memória de deduplicação: não criamos outro cache nem renovamos a data das cotações. Teste: duas chamadas sobrepostas viram uma requisição; consulta posterior continua indo à fonte. Cache com horário futuro deixa de ser válido.
