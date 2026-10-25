@@ -5,10 +5,17 @@ import { assets } from './assets'
 import { drawBadge } from './badges'
 import { GEOMETRY as G, layout, place, movementColor, curvePlan, monthBand, drawCurve } from './draw'
 const images:Record<string,UIImage>={}
+const CUB_VARIATION_MIN_SIZE=6.5
 function Label({value,plan,x,y,width,height,size,min,bold=false,color='white',right=false}:any){
   return <Text font={size*plan.scale} fontWeight={bold?'semibold':'regular'} foregroundStyle={color}
     lineLimit={1} minScaleFactor={min/size} frame={place(plan,x,y,width,height,right?'trailing':'leading').frame}
     position={place(plan,x,y,width,height).position}>{value}</Text>
+}
+function variationMinimumSize(row:any,value:string){
+  // CUB-GO keeps its published three-decimal M/M value in the fixed 34 pt box.
+  // The lower native floor avoids UIFont ellipsis without changing the box,
+  // neighboring labels, or the value itself.
+  return row.asset?.code==='CUB_GO'&&String(value).length>6?CUB_VARIATION_MIN_SIZE:7.5
 }
 export function PopularView({model,width,height}:{model:any;width:number;height:number}){
   for(const [key,value] of Object.entries(assets))if(!images[key]){const image=UIImage.fromBase64String(value as string);if(image)images[key]=image}
@@ -23,6 +30,7 @@ export function PopularView({model,width,height}:{model:any;width:number;height:
     {visibleRows.map((row:any,i:number)=>{
       const x=Math.floor(i/4)*158,y=(i%4)*(G.row+G.gap),detail=x+G.detail,color=movementColor(row),curve=curvePlan(model.api,row)
       const band=monthBand(curve),custom=['SOJA_JATAI_GO','CUB_GO','IPCA','DIESEL_S10'].includes(row.asset.code)
+      const percentMinimum=variationMinimumSize(row,row.percent)
       return <ZStack key={row.asset.code} alignment="topLeading" frame={{width,height}}>
         {custom?<Canvas opaque={false} {...place(plan,x,y+5,26,26)} draw={(ctx,size)=>{ctx.scale(size.width/26,size.height/26);drawBadge(ctx,row.asset.code)}}/>
           :images[row.asset.code]?<Image image={images[row.asset.code]} resizable renderingMode="original" {...place(plan,x,y+5,26,26)}/>:<Image systemName="chart.line.uptrend.xyaxis" font={11*plan.scale} foregroundStyle="#D1D1D6" background={{style:'#34343A',shape:{type:'circle'}}} {...place(plan,x,y+5,26,26)}/>}
@@ -37,7 +45,7 @@ export function PopularView({model,width,height}:{model:any;width:number;height:
             lineLimit={1} minScaleFactor={.8} frame={{width:14*plan.scale,height:5*plan.scale,alignment:'leading'}}
             position={{x:(month.x+7)*plan.scale,y:2.5*plan.scale}}>{month.text}</Text>)}
           </ZStack></ZStack>:null}
-        {label('percent',row.percent,detail+G.graph+3,y+17,G.percent,11,10.5,7.5,true,color,true)}
+        {label('percent',row.percent,detail+G.graph+3,y+17,G.percent,11,10.5,percentMinimum,true,color,true)}
         {label('unit',row.unit,detail,y+28,64,8,6,5,false,'#96969C')}
         {label('time',row.time,detail+68,y+28,48,8,7.5,6,false,'#96969C',true)}
         {i%4<3?<Rectangle fill="rgba(255,255,255,0.13)" {...place(plan,x,y+36,146,G.gap)}/>:null}

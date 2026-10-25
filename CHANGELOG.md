@@ -1,3 +1,9 @@
+## 0.2.9 — 2026-10-25
+
+- Corrige a truncagem nativa da variação M/M do CUB-GO (`+0,025%`) ajustando apenas o piso de redução da fonte dentro da mesma reserva de 34 pt.
+- Preserva IPCA (`+1,14 pp`), Diesel (`-0,14%`), Brent (`-3,03%`), sinais, unidades, preços, curvas, margens, fontes, paginação, toque e dados.
+- Testes de sintaxe/contratos e prévias continuam simulações; iPhone nativo ainda não foi testado.
+
 ## 0.2.6 — 2026-10-24
 
 - Toque no conteúdo avança páginas; rodapé continua atualizando.

@@ -1,0 +1,47 @@
+{
+  "version": "0.2.9",
+  "image": "validation/variation-boxes-0.2.9.png",
+  "simulation": "Skia/Arial focused raster; not Scripting/iPhone",
+  "boxWidth": 34,
+  "records": [
+    {
+      "name": "small · CUB-GO",
+      "value": "+0,025%",
+      "naturalWidth": 42.13999938964844,
+      "renderedWidth": 33.9900016784668,
+      "renderedSize": 8.471760920046334,
+      "boxWidth": 34,
+      "minimumScaleFactor": 0.6190476190476191
+    },
+    {
+      "name": "medium · IPCA",
+      "value": "+1,14 pp",
+      "naturalWidth": 44.380001068115234,
+      "renderedWidth": 33.95000076293945,
+      "renderedSize": 8.044163844252052,
+      "boxWidth": 34,
+      "minimumScaleFactor": 0.7142857142857143
+    },
+    {
+      "name": "large · Diesel",
+      "value": "-0,14%",
+      "naturalWidth": 33.2400016784668,
+      "renderedWidth": 33.2400016784668,
+      "renderedSize": 10.5,
+      "boxWidth": 34,
+      "minimumScaleFactor": 0.7142857142857143
+    },
+    {
+      "name": "large · Brent",
+      "value": "-3,03%",
+      "naturalWidth": 33.2400016784668,
+      "renderedWidth": 33.2400016784668,
+      "renderedSize": 10.5,
+      "boxWidth": 34,
+      "minimumScaleFactor": 0.7142857142857143
+    }
+  ],
+  "fullPreviews": [],
+  "fullPreviewBasis": "focused raster contract for the preserved 34 pt variation box",
+  "nativeIPhone": false
+}

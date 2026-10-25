@@ -1,5 +1,9 @@
 # Melhorias Scripting Pro — 23/10/2026
 
+## 0.2.9 — variações sem truncagem
+
+Corrigir somente o espaço nativo da variação CUB-GO na reserva fixa de 34 pt. Preservar todos os ajustes Pro e de atualização já publicados em 0.2.8, além de sinais, unidades, curvas, dados, paginação, toque e margens. Validar texto completo em small/medium/large; iPhone permanece pendente.
+
 Escopo: preservar desenho; escolher quatro indicadores do pequeno; detalhes,
 histórico maior, fontes e exportação CSV; alertas por cruzamento com baseline e
 datas reais; ferramenta do assistente; controle de consulta; painel Início.

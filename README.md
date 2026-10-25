@@ -1,3 +1,7 @@
+## Atualização 0.2.9 — variação CUB completa
+
+A variação M/M do CUB-GO (`+0,025%`) continua sendo o valor publicado, mas sua reserva nativa de 34 pt pode exceder a métrica de algumas UIFonts. O rótulo mantém a mesma caixa, posição, alinhamento e formatação; somente o piso de redução desse texto longo passa de 7,5 para 6,5 pt. IPCA (`+1,14 pp`), Diesel (`-0,14%`) e Brent (`-3,03%`) permanecem inalterados. Dados, curvas, fontes, paginação, toque, atualização, Pro e demais ajustes da 0.2.8 foram preservados. Teste físico no iPhone continua pendente.
+
 ## Atualização 0.2.8
 
 Remove o trapézio e horário da área visível. O conteúdo usa a altura completa com margem vertical externa de 8pt, preserva o ajuste horizontal original e redistribui verticalmente as linhas. Tocar qualquer parte do widget força uma coleta atual, avalia alertas e avança para a próxima página; falha na fonte conserva os dados anteriores e permite avançar. A execução de apresentação seguinte usa o cache recém-coletado para não duplicar a consulta. Widget.reloadAll solicita também as outras timelines do Scripting.

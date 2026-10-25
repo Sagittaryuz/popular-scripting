@@ -1,5 +1,9 @@
 # Popular Scripting — Pro 0.2.0
 
+## 0.2.9 — variação CUB sem reticências
+
+O retorno do usuário isolou truncagem por espaço, não ausência de dado: o CUB-GO conserva três casas na variação publicada (`+0,025%`) e usa uma reserva nativa de 34 pt. A vista reduz somente o piso desse rótulo longo para 6,5 pt, preservando a geometria, alinhamento, curvas, fontes, paginação, atualização, Pro e os demais ajustes posteriores. IPCA, Diesel e Brent mantêm sinais, unidades e textos completos. Nenhum dado econômico ou arquivo da interface Scriptable foi alterado. O iPhone nativo não foi testado.
+
 Fonte: `Sagittaryuz/popular-scripting`, `main`, `scripts/Popular Scripting`.
 Preservar motor gerado, fontes, unidades, datas, geometria e versões anteriores.
 TSX nativo, cache local, fontes públicas e GitHub Actions para referências.
