@@ -1,3 +1,7 @@
+## Atualização 0.2.10 — toque para Meu Painel
+
+Tocar na área de ativos abre `Meu Painel` diretamente na seção `Mercado`, usando o esquema oficial do Scripting (`scripting://run/Meu%20Painel?section=market`). O painel precisa estar instalado; o widget não tenta instalar, detectar ou reabrir em loop. O botão explícito **Consultar indicadores** continua sendo o caminho para coleta/refresh, e a seleção de ativos e os dados compartilhados permanecem intactos. A apresentação nativa no iPhone ainda não foi testada.
+
 ## Atualização 0.2.9 — variação CUB completa
 
 A variação M/M do CUB-GO (`+0,025%`) continua sendo o valor publicado, mas sua reserva nativa de 34 pt pode exceder a métrica de algumas UIFonts. O rótulo mantém a mesma caixa, posição, alinhamento e formatação; somente o piso de redução desse texto longo passa de 7,5 para 6,5 pt. IPCA (`+1,14 pp`), Diesel (`-0,14%`) e Brent (`-3,03%`) permanecem inalterados. Dados, curvas, fontes, paginação, toque, atualização, Pro e demais ajustes da 0.2.8 foram preservados. Teste físico no iPhone continua pendente.
@@ -34,7 +38,7 @@ Na tela **Importar Scripts Remotos** do Scripting, cole:
 https://github.com/Sagittaryuz/popular-scripting/tree/main/scripts/Popular%20Scripting
 ```
 
-Importe **Popular Scripting**, confirme a versão **0.2.0**, abra o projeto e toque em **Atualizar**. Adicione o widget do Scripting à Tela de Início e selecione esse projeto.
+Importe **Popular Scripting**, confirme a versão **0.2.10**, abra o projeto e toque em **Atualizar**. Adicione o widget do Scripting à Tela de Início e selecione esse projeto.
 
 Para receber melhorias de código, use a atualização do script remoto no Scripting. Essa importação vincula o projeto à pasta `main/scripts/Popular Scripting`; não use um endereço de commit ou tag para acompanhar as próximas versões. O botão **Atualizar** dentro da tela do Popular consulta somente os indicadores e solicita recarregar o widget.
 
@@ -51,11 +55,11 @@ Não são solicitadas permissões de Calendário, Lembretes ou Localização. O 
 
 ## Validação e recuperação
 
-A versão 0.1.3 limita os meses aos extremos da curva, com máscara local e descarte dos rótulos totalmente externos. Mantém a composição nativa Text, Canvas transparente para ícones/curvas e as dimensões originais.
+A versão 0.2.10 mantém os meses nos extremos da curva, a composição nativa Text, Canvas transparente para ícones/curvas e as dimensões originais.
 
 A leitura dos preços AgroLink tem alternativa zlib em JavaScript, independente da descompressão nativa. A atualização manual permite até 20 segundos totais e 6 segundos por consulta AgroLink; o widget mantém 8 e 3 segundos. Falhas das fontes aparecem na tela após Atualizar, e o cache anterior é preservado com suas datas. O IPCA trata o cabeçalho da resposta SIDRA; o CUB trata letras separadas na extração de PDFs, mantendo a conferência de mês/padrão.
 
-Testes locais cobrem os oito indicadores por HTTP, coletores de referência, descompressão com a ponte nativa desativada, entradas inválidas, cache e quinze prévias simuladas. Esses testes não confirmam o comportamento da rede e das fontes no iPhone; a versão 0.1.3 ainda exige essa conferência na Tela de Início.
+Testes locais cobrem os oito indicadores por HTTP, coletores de referência, descompressão com a ponte nativa desativada, entradas inválidas, cache, contrato de navegação e quinze prévias simuladas. Esses testes não confirmam o comportamento da rede, dos intents e das fontes no iPhone; a versão 0.2.10 ainda exige essa conferência na Tela de Início.
 
 O histórico Git e as releases preservam versões anteriores para recuperação. Antes de atualizar uma edição personalizada, preserve suas alterações locais. Os dados e preferências do projeto ficam no aparelho; não apague o projeto para atualizar.
 

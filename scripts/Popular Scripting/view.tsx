@@ -1,5 +1,4 @@
-import { Canvas, Image, Rectangle, Text, ZStack, Button } from 'scripting'
-import { NextPopularPage } from './app_intents'
+import { Canvas, Image, Rectangle, Text, ZStack, Script } from 'scripting'
 import { pageKey, pageRows } from './pagination'
 import { assets } from './assets'
 import { drawBadge } from './badges'
@@ -24,6 +23,7 @@ export function PopularView({model,width,height}:{model:any;width:number;height:
   const label=(key:string,value:string,x:number,y:number,w:number,h:number,size:number,min:number,bold=false,color='white',right=false)=>
     <Label key={key} value={value} plan={plan} x={x} y={y} width={w} height={h} size={size} min={min} bold={bold} color={color} right={right}/>
   return <ZStack alignment="topLeading" frame={{width,height}} clipped widgetBackground="#1E1E1E"
+    widgetURL={Script.createRunURLScheme("Meu Painel", { section: "market" })}
     accessibilityLabel={visibleRows.map((r:any)=>`${r.name}, ${r.price}, ${r.percent}, ${r.unit}, ${r.time}`).join('. ')}>
     {images.background?<Image image={images.background} resizable renderingMode="original" frame={{width,height}}/>:null}
     {plan.large?label('title','Popular · '+model.status.label,0,-32,304,18,11,8,true):null}
@@ -52,10 +52,5 @@ export function PopularView({model,width,height}:{model:any;width:number;height:
         </ZStack>
     })}
     {plan.large?label('foot','D/D diário · S/S semanal · M/M mensal · pp: taxa',0,155,304,14,8,6,false,'#96969C'):null}
-  <Button intent={NextPopularPage({family:model.family})} buttonStyle="plain"
-    accessibilityLabel={`Atualizar e avançar ativos. Página ${page.index+1} de ${page.count}`}
-    frame={{width,height}} position={{x:width/2,y:height/2}}>
-    <Rectangle fill="black" opacity={0.001} frame={{width,height}}/>
-  </Button>
   </ZStack>
 }

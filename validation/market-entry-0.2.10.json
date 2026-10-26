@@ -1,0 +1,20 @@
+{
+  "version": "0.2.10",
+  "contract": {
+    "helper": "Script.createRunURLScheme",
+    "application": "Meu Painel",
+    "parameters": {"section": "market"},
+    "equivalentURL": "scripting://run/Meu%20Painel?section=market",
+    "behavior": "Home do Meu Painel com Mercado em foco",
+    "assetContext": "not supplied; the agreed contract defines only section"
+  },
+  "assetTap": "market-entry-url",
+  "oldAssetTapIntent": "NextPopularPage removed from PopularView",
+  "explicitRefresh": "RefreshPopular preserved",
+  "selectionAndSharedDataPreserved": true,
+  "automaticInstallation": false,
+  "fakeDetection": false,
+  "loop": false,
+  "scriptingHomeEdited": false,
+  "nativeIPhone": false
+}
