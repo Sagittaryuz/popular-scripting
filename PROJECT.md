@@ -1,4 +1,8 @@
-# Popular Scripting — Pro 0.2.11
+# Popular Scripting — Pro 0.2.12
+
+## 0.2.12 — refresh limitado antes da navegação
+
+`RefreshAndOpenMarket` aguarda até 1.800 ms pela consulta iniciada no toque. Quando a consulta termina, o modelo já persistido é seguido por `Widget.reloadAll()`/recarga dos controles e depois por uma única abertura de `Meu Painel`/`Mercado`. Rejeição ou offline conserva o cache e segue a mesma ordem. No timeout, o widget solicita a recarga do cache e abre o destino uma vez; a consulta pendente pode ser suspensa pelo iOS, portanto não há garantia de atualização de rede após a troca de app. O timer é limpo, não há retry/loop e o iOS ainda pode adiar o render da timeline. iPhone nativo não testado.
 
 ## 0.2.11 — ordem fixa e atualização no toque
 

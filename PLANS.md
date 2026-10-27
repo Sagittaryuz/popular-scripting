@@ -1,5 +1,9 @@
 # Melhorias Scripting Pro — 23/10/2026
 
+## 0.2.12 — refresh limitado antes da navegação
+
+No toque, dar ao refresh uma janela limitada de 1.800 ms. Em sucesso ou rejeição, persistir/conservar o cache, pedir a recarga e só então navegar uma vez. Em timeout, pedir a recarga do cache e navegar sem prometer conclusão de rede após a troca de app. Limpar o timer, não criar loop e preservar dados, ordem fixa, layout, link Mercado e os três tamanhos. Validar sucesso, timeout, rejeição/offline, repetição e limite de não teste nativo no iPhone.
+
 ## 0.2.11 — ordem fixa e refresh no toque
 
 Fixar `Selic, IPCA, Ibovespa, Dólar, Soja GO, CUB-GO, Diesel S10, Brent`, preservando a posição com reserva quando uma fonte não responder e removendo ordenação por variação da superfície pública. O botão de tela inteira deve iniciar a coleta/reload pelo AppIntent e pedir o mesmo URI Mercado do Meu Painel sem aguardar a rede. Validar fonte ausente, cache/offline, navegação, repetição sem loop e os três tamanhos; confirmar comportamento nativo no iPhone quando houver aparelho.

@@ -1,3 +1,7 @@
+## 0.2.12 — refresh limitado antes do Mercado
+
+O toque de tela inteira ligado a `RefreshAndOpenMarket` aguarda a atualização por até 1,8 s. Se a consulta termina, a persistência e a solicitação de recarga vêm antes de uma única abertura de `Meu Painel`/`Mercado`; se a fonte rejeita ou está offline, o cache é preservado e recarregado. Quando o limite vence, a recarga do cache é solicitada e a navegação continua, sem afirmar que a rede terminará depois que o iOS trocar de app. O timer é limpo e não há repetição. A recarga de timeline do iOS não é renderização instantânea. iPhone nativo não foi testado.
+
 ## 0.2.11 — ordem fixa e toque com atualização
 
 Oito indicadores seguem `Selic, IPCA, Ibovespa, Dólar, Soja GO, CUB-GO, Diesel S10, Brent`; ausência conserva o slot com reserva sem cotação e não há ranking por variação. O toque no widget solicita a coleta/renderização e abre o Mercado no Meu Painel pelo URI existente, sem aguardar rede, instalar o painel ou repetir a abertura. O iOS pode adiar a execução; cache e dados reais são preservados. iPhone nativo não testado.

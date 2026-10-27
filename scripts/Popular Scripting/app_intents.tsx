@@ -5,29 +5,47 @@ import { evaluateAlerts } from './alerts'
 import { reloadWidgets } from './pro-common'
 
 const MARKET_URL=Script.createRunURLScheme('Meu Painel',{section:'market'})
+export const TAP_REFRESH_TIMEOUT_MS=1800
 
-async function refreshPopularData(){
+async function requestWidgetReload(){
+  try{await reloadWidgets()}catch{}
+  try{if(typeof ControlWidget.reloadButtons==='function')ControlWidget.reloadButtons()}catch{}
+}
+
+async function refreshPopularData():Promise<'queried'|'failed-cache-preserved'>{
+  let state:'queried'|'failed-cache-preserved'='failed-cache-preserved'
   try{
     for(const family of ['small','medium','large'])Storage.set('popular-page-refresh:'+family,0)
     const model=await loadModel('medium',true)
     Storage.set('manual-refresh',{at:Date.now(),state:'queried'})
     await evaluateAlerts(model.rows)
+    state='queried'
   }catch{Storage.set('manual-refresh',{at:Date.now(),state:'failed-cache-preserved'})}
-  finally{await reloadWidgets();if(typeof ControlWidget.reloadButtons==='function')ControlWidget.reloadButtons()}
+  finally{await requestWidgetReload()}
+  return state
 }
 
 export const RefreshPopular=AppIntentManager.register({name:'RefreshPopular',protocol:AppIntentProtocol.AppIntent,perform:async()=>{await refreshPopularData()}})
 
-// A widget tap requests the refresh and immediately preserves the existing
-// Meu Painel destination. The query is deliberately not awaited before the
-// URL is opened: network/offline state must never hold navigation hostage.
-// Therefore completion before the external app appears is not guaranteed;
-// when the AppIntent remains alive, refreshPopularData persists first and its
-// finally block requests the redraw afterward.
+function waitForRefresh(refresh:Promise<'queried'|'failed-cache-preserved'>){
+  let timer:any=null
+  const timeout=new Promise<{timedOut:true}>(resolve=>{timer=setTimeout(()=>resolve({timedOut:true}),TAP_REFRESH_TIMEOUT_MS)})
+  return Promise.race([refresh.then(state=>({timedOut:false as const,state})),timeout]).finally(()=>{if(timer!=null)clearTimeout(timer)})
+}
+
+// A widget tap gives the refresh a short foreground opportunity before
+// switching apps. Offline/rejected work reaches its cache-preserving finally
+// path; a slow request times out, requests a cache redraw, and still navigates.
 export const RefreshAndOpenMarket=AppIntentManager.register({name:'RefreshAndOpenMarket',protocol:AppIntentProtocol.AppIntent,perform:async()=>{
   const refresh=refreshPopularData()
+  let outcome:{timedOut:false,state:'queried'|'failed-cache-preserved'}|{timedOut:true}
+  try{outcome=await waitForRefresh(refresh)}catch{outcome={timedOut:true}}
+  if(outcome.timedOut){
+    Storage.set('manual-refresh',{at:Date.now(),state:'timeout-cache-preserved'})
+    await requestWidgetReload()
+    void refresh.catch(()=>{})
+  }
   try{await Safari.openURL(MARKET_URL)}catch{}
-  try{await refresh}catch{}
 }})
 
 export const NextPopularPage=AppIntentManager.register({name:'NextPopularPage',protocol:AppIntentProtocol.AppIntent,perform:async({family}:{family:string})=>{

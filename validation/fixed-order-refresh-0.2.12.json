@@ -1,0 +1,48 @@
+{
+  "version": "0.2.12",
+  "fixedOrder": [
+    "SELIC",
+    "IPCA",
+    "IBOV",
+    "USD/BRL",
+    "SOJA_JATAI_GO",
+    "CUB_GO",
+    "DIESEL_S10",
+    "BRENT"
+  ],
+  "missingSourceCase": {
+    "omitted": "IPCA",
+    "reservedSlot": 2,
+    "price": null,
+    "inventedObservation": false
+  },
+  "tap": {
+    "intent": "RefreshAndOpenMarket",
+    "uri": "scripting://run/Meu%20Painel?section=market",
+    "timeoutMs": 1800,
+    "success": {
+      "persistsBeforeReload": true,
+      "reloadBeforeNavigation": true,
+      "networkUpdateGuaranteedBeforeNavigation": true
+    },
+    "rejection": {
+      "cachePreserved": true,
+      "cacheReloadBeforeNavigation": true,
+      "networkUpdateGuaranteed": false
+    },
+    "timeout": {
+      "cacheReloadBeforeNavigation": true,
+      "networkUpdateGuaranteedAfterNavigation": false
+    },
+    "navigationCount": 1,
+    "timerCleanup": true,
+    "retryLoop": false,
+    "offlinePreservesCache": true
+  },
+  "sizes": ["small", "medium", "large"],
+  "nativeIPhone": "not-tested",
+  "tests": [
+    "npm run check",
+    "npm test"
+  ]
+}

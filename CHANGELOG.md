@@ -1,3 +1,9 @@
+## 0.2.12 — 2026-10-27
+
+- O toque no widget aguarda o refresh por até 1,8 s antes de abrir o Mercado no Meu Painel.
+- Em sucesso, persiste o resultado e solicita a recarga antes da navegação; em rejeição/offline, preserva e recarrega o cache; em timeout, recarrega o cache sem prometer conclusão da rede após a troca de app.
+- Garante uma navegação, limpa o timer e preserva a ordem fixa, dados, layout, fontes e correção CUB; iPhone nativo ainda não testado.
+
 ## 0.2.11 — 2026-10-27
 
 - Fixa os oito indicadores em `Selic, IPCA, Ibovespa, Dólar, Soja GO, CUB-GO, Diesel S10, Brent`; fontes ausentes mantêm seus slots sem valor inventado e os modos de ordenação por variação deixam de ser oferecidos.
