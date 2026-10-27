@@ -1,8 +1,9 @@
-import { Canvas, Image, Rectangle, Text, ZStack, Script } from 'scripting'
+import { Button, Canvas, Image, Rectangle, Text, ZStack, Script } from 'scripting'
 import { pageKey, pageRows } from './pagination'
 import { assets } from './assets'
 import { drawBadge } from './badges'
 import { GEOMETRY as G, layout, place, movementColor, curvePlan, monthBand, drawCurve } from './draw'
+import { RefreshAndOpenMarket } from './app_intents'
 const images:Record<string,UIImage>={}
 const CUB_VARIATION_MIN_SIZE=6.5
 function Label({value,plan,x,y,width,height,size,min,bold=false,color='white',right=false}:any){
@@ -52,5 +53,10 @@ export function PopularView({model,width,height}:{model:any;width:number;height:
         </ZStack>
     })}
     {plan.large?label('foot','D/D diário · S/S semanal · M/M mensal · pp: taxa',0,155,304,14,8,6,false,'#96969C'):null}
+    <Button intent={RefreshAndOpenMarket(undefined)} buttonStyle="plain"
+      accessibilityLabel="Atualizar indicadores e abrir Mercado no Meu Painel"
+      frame={{width,height}}>
+      <Rectangle fill="#000000" opacity={0.001} frame={{width,height}}/>
+    </Button>
   </ZStack>
 }

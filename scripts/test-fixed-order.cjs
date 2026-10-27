@@ -1,0 +1,15 @@
+const assert=require('node:assert/strict'),path=require('node:path'),vm=require('node:vm'),{buildSync}=require('esbuild');
+const entry=path.join(__dirname,'Popular Scripting','original-engine.js');
+const code=buildSync({entryPoints:[entry],bundle:true,write:false,format:'cjs',platform:'node'}).outputFiles[0].text;
+const bundled={exports:{}};vm.runInNewContext(code,{module:bundled,exports:bundled.exports,console,Date,URL,Intl,Math,JSON,Set,Map});
+const files=new Map(),fm={documentsDirectory:()=>'/documents',joinPath:(...parts)=>parts.join('/'),fileExists:file=>files.has(file),createDirectory:()=>{},readString:file=>files.get(file),writeString:(file,value)=>{files.set(file,value)}};
+const api=bundled.exports.createEngine({FileManager:{local:()=>fm},Request:class{},Data:{},Timer:undefined},{family:'medium',now:Date.parse('2026-10-27T12:00:00Z')});
+const row=(code,price)=>({asset:{code,price,percent:1},marker:code,stamp:null,chart:null});
+const rows=[row('BRENT',115.22),row('CUB_GO',2795.37),row('SELIC',15),row('USD/BRL',5.4),row('SOJA_JATAI_GO',130),row('IBOV',145000),row('DIESEL_S10',7.35)];
+const ordered=api.fixedIndicatorRows(rows);
+assert.deepEqual(Array.from(ordered.map(value=>value.asset.code)),['SELIC','IPCA','IBOV','USD/BRL','SOJA_JATAI_GO','CUB_GO','DIESEL_S10','BRENT']);
+assert.equal(ordered[0],rows[2]);assert.equal(ordered[5],rows[1]);assert.equal(ordered[6],rows[6]);assert.equal(ordered[7],rows[0]);
+assert.equal(ordered[1].asset.code,'IPCA');assert.equal(ordered[1].asset.price,null,'Missing IPCA keeps its reserved slot without inventing a quote');
+assert.equal(ordered[1].chartStatus,'verified-reference-unavailable');
+assert.deepEqual(Object.keys(api.modes),['fixed']);assert.equal(api.readOrderingMode(),'fixed');assert.throws(()=>api.writeOrderingMode('gainers'));
+console.log(JSON.stringify({order:ordered.map(value=>value.asset.code),missing:['IPCA'],variationOrdering:false}));

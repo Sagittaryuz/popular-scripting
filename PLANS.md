@@ -1,5 +1,9 @@
 # Melhorias Scripting Pro — 23/10/2026
 
+## 0.2.11 — ordem fixa e refresh no toque
+
+Fixar `Selic, IPCA, Ibovespa, Dólar, Soja GO, CUB-GO, Diesel S10, Brent`, preservando a posição com reserva quando uma fonte não responder e removendo ordenação por variação da superfície pública. O botão de tela inteira deve iniciar a coleta/reload pelo AppIntent e pedir o mesmo URI Mercado do Meu Painel sem aguardar a rede. Validar fonte ausente, cache/offline, navegação, repetição sem loop e os três tamanhos; confirmar comportamento nativo no iPhone quando houver aparelho.
+
 ## 0.2.10 — entrada Mercado
 
 Trocar somente o destino do toque da área de ativos pelo esquema oficial do Meu Painel, preservando `RefreshPopular`, dados, seleção e a correção CUB. Sem fallback de instalação ou detecção não suportada. Validar URI/parâmetro, ausência de coleta/avanço no toque, repetição sem loop, refresh explícito e os três tamanhos; iPhone permanece pendente.

@@ -26,7 +26,7 @@ function Screen(){
     {model?.api.failures.map((failure:any,i:number)=><Text key={'failure-'+i}>{new URL(failure.url).hostname}: {failure.reason}</Text>)}
     <Text>Ordenação dos ativos</Text>
     {MODES.map(mode=><Button key={mode} title={(api.readOrderingMode()===mode?'✓ ':'')+api.modes[mode]} action={async()=>{try{setOrdering(mode);await refresh()}catch{setMessage('Falha ao salvar a ordenação.')}}}/>)}
-    <Text>Toque no conteúdo para avançar páginas: 4 ativos no pequeno, 8 no médio/grande. Oito indicadores e até oito ativos adicionais com cotação datada disponível. Atualização solicitada após 1 minuto por padrão, sujeita ao iOS. As datas exibidas são as das observações; o cache não renova cotações antigas.</Text>
+    <Text>O widget mantém a ordem fixa dos oito indicadores (o pequeno mostra quatro conforme a seleção). Toque no conteúdo solicita atualização e abre o Mercado no Meu Painel; o iOS decide quando executar. As datas exibidas são as das observações; o cache não renova cotações antigas.</Text>
     <Text>Para melhorias de código, use a atualização do script remoto no Scripting. Atualizar nesta tela consulta somente os indicadores.</Text>
   </VStack></ScrollView></NavigationStack>
 }

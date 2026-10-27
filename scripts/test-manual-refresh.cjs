@@ -8,7 +8,7 @@ function load(name,deps,values=new Map()){
 (async()=>{
  for(const fail of [false,true]){
   const values=new Map(),events=[],definitions={};
-  const sdk={AppIntentManager:{register:d=>{definitions[d.name]=d;return ()=>({name:d.name})}},AppIntentProtocol:{AppIntent:0},Widget:{reloadAll:()=>events.push('reload')},ControlWidget:{reloadButtons:()=>events.push('control')}};
+ const sdk={AppIntentManager:{register:d=>{definitions[d.name]=d;return ()=>({name:d.name})}},AppIntentProtocol:{AppIntent:0},Widget:{reloadAll:()=>events.push('reload')},ControlWidget:{reloadButtons:()=>events.push('control')},Safari:{openURL:async()=>{events.push('navigate');return true}},Script:{createRunURLScheme:()=> 'scripting://run/Meu%20Painel?section=market'}};
   const deps={scripting:sdk,'./selection':{},'./pagination':{}};
   deps['./model']={loadModel:async(family,force)=>{assert.equal(family,'medium');assert.equal(force,true);events.push('query');if(fail)throw Error('offline');return {rows:[]}}};
   deps['./alerts']={evaluateAlerts:async()=>events.push('alerts')};deps['./pro-common']={reloadWidgets:async()=>events.push('reload')};
@@ -18,15 +18,15 @@ function load(name,deps,values=new Map()){
   assert.equal(events[0],'query');assert.equal(values.get('manual-refresh').state,fail?'failed-cache-preserved':'queried');
  }
  const code=buildSync({entryPoints:[path.join(dir,'view.tsx')],bundle:true,write:false,format:'cjs',platform:'node',external:['scripting'],jsxFactory:'createElement'}).outputFiles[0].text;
- const native={AppIntentManager:{register:d=>()=>({name:d.name})},AppIntentProtocol:{AppIntent:0}};
+ const native={AppIntentManager:{register:d=>()=>({name:d.name})},AppIntentProtocol:{AppIntent:0},Safari:{openURL:async()=>true},Script:{createRunURLScheme:()=> 'scripting://run/Meu%20Painel?section=market'}};
  const sdk=new Proxy(native,{get:(target,name)=>target[name]??name}),module={exports:{}};
  vm.runInNewContext(code,{module,exports:module.exports,require:()=>sdk,createElement:(type,props,...children)=>typeof type==='function'?type({...props,children}):({type,props,children:children.flat(Infinity).filter(Boolean)}),Date,Storage:{get:()=>null},UIImage:{fromBase64String:()=>null}});
  for(const [family,width,height] of [['small',158,170],['medium',338,170],['large',338,360]]){
   const tree=module.exports.PopularView({model:{family,queriedAt:new Date(2026,9,24,9,5).getTime(),rows:[],status:{label:'fixture'}},width,height});
   const walk=n=>n&&typeof n==='object'?[n,...n.children.flatMap(walk)]:[];
   const allButtons=walk(tree).filter(n=>n.type==='Button');assert.equal(allButtons.length,1,'Whole-widget refresh and pagination share one target');
-  const next=allButtons.find(n=>n.props.intent.name==='NextPopularPage');assert(next);assert.equal(next.props.frame.height,height);assert.equal(next.props.position.y,height/2);
- const p=next.props;assert.equal(p.intent.name,'NextPopularPage');assert.equal(p.position.x,width/2);assert(p.position.x+p.frame.width/2<=width&&p.position.y+p.frame.height/2<=height);
+  const tap=allButtons.find(n=>n.props.intent.name==='RefreshAndOpenMarket');assert(tap);assert.equal(tap.props.frame.height,height);assert.equal(tap.props.frame.width,width);
+  assert.equal(tap.props.accessibilityLabel,'Atualizar indicadores e abrir Mercado no Meu Painel');
  }
  const draw=load('draw.js',{});
  for(const [family,width,height] of [['small',158,158],['medium',338,170],['large',338,360]]){
@@ -37,5 +37,5 @@ function load(name,deps,values=new Map()){
  let globalReloads=0;
  const common=load('pro-common.ts',{scripting:{Widget:{reloadAll:()=>{globalReloads++},reloadUserWidgets:()=>{throw Error('User-only API must not be chosen')}}}});
  await common.reloadWidgets();assert.equal(globalReloads,1,'Actual helper requests all Scripting widgets');
- console.log('PASS manual refresh: actual intent requests current data, preserves offline status and reloads on success/failure. Native tap pending.');
+ console.log('PASS manual refresh: actual intent requests current data, preserves offline status and reloads on success/failure. Tap target preserves navigation.');
 })().catch(e=>{console.error(e);process.exitCode=1});

@@ -4,20 +4,31 @@ const view=fs.readFileSync(path.join(root,'view.tsx'),'utf8');
 const intents=fs.readFileSync(path.join(root,'app_intents.tsx'),'utf8');
 const control=fs.readFileSync(path.join(root,'control_widget_button.tsx'),'utf8');
 const model=fs.readFileSync(path.join(root,'model.ts'),'utf8');
+const engine=fs.readFileSync(path.join(root,'original-engine.js'),'utf8');
 const script=JSON.parse(fs.readFileSync(path.join(root,'script.json'),'utf8'));
 
-assert.equal(script.version,'0.2.10');
-assert.match(view,/import \{ Canvas, Image, Rectangle, Text, ZStack, Script \} from 'scripting'/);
+assert.equal(script.version,'0.2.11');
+assert.match(view,/import \{ Button, Canvas, Image, Rectangle, Text, ZStack, Script \} from 'scripting'/);
 assert.match(view,/widgetURL=\{Script\.createRunURLScheme\("Meu Painel", \{ section: "market" \}\)\}/);
-assert.doesNotMatch(view,/NextPopularPage|Button intent=|opacity=\{0\.001\}/);
-assert.doesNotMatch(view,/scripting-home|install|reloadWidgets|loadModel\(/);
+assert.match(view,/Button intent=\{RefreshAndOpenMarket\(undefined\)\}/);
+assert.match(view,/accessibilityLabel="Atualizar indicadores e abrir Mercado no Meu Painel"/);
+assert.match(view,/opacity=\{0\.001\}/);
+assert.doesNotMatch(view,/NextPopularPage|scripting-home/);
 assert.match(intents,/export const RefreshPopular=/);
-assert.match(intents,/export const NextPopularPage=/,'Pagination intent remains available as a compatibility export; the asset tap no longer invokes it.');
+assert.match(intents,/export const RefreshAndOpenMarket=/);
+assert.match(intents,/Safari\.openURL\(MARKET_URL\)/);
+assert.match(intents,/Script\.createRunURLScheme\('Meu Painel',\{section:'market'\}\)/);
+const refreshStart=intents.indexOf('const refresh=refreshPopularData()');
+const navigation=intents.indexOf('await Safari.openURL(MARKET_URL)',refreshStart);
+assert(refreshStart>=0&&navigation>refreshStart,'Tap starts refresh before requesting navigation');
 assert.match(control,/RefreshPopular/);
-assert.match(model,/sagittaryuz-dashboard-v1:Popular/);
+assert.match(model,/FIXED_INDICATOR_CODES=\['SELIC','IPCA','IBOV','USD\/BRL','SOJA_JATAI_GO','CUB_GO','DIESEL_S10','BRENT'\]/);
+assert.match(model,/MODES=\['fixed'\]/);
+assert.match(engine,/const FIXED_INDICATOR_CODES = Object\.freeze\(\['SELIC','IPCA','IBOV','USD\/BRL',SOYBEAN\.code,'CUB_GO','DIESEL_S10','BRENT'\]\)/);
+assert.match(engine,/const ORDERING_MODES = Object\.freeze\(\{fixed:'Ordem fixa'\}\)/);
 
 // Contract reference: the official Scripting helper produces this URL. The
 // widget does not detect/install Meu Painel and therefore cannot loop/fallback.
 const expected='scripting://run/Meu%20Painel?section=market';
 assert.equal(`scripting://run/${encodeURIComponent('Meu Painel')}?section=${encodeURIComponent('market')}`,expected);
-console.log(JSON.stringify({version:script.version,assetTap:'Script.createRunURLScheme',expectedURL:expected,section:'market',explicitRefresh:'RefreshPopular',fallback:'none',loop:false,nativeIPhone:false}));
+console.log(JSON.stringify({version:script.version,assetTap:'RefreshAndOpenMarket',expectedURL:expected,section:'market',fixedOrder:['SELIC','IPCA','IBOV','USD/BRL','SOJA_JATAI_GO','CUB_GO','DIESEL_S10','BRENT'],fallback:'none',loop:false,nativeIPhone:false}));

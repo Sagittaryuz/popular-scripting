@@ -1,3 +1,9 @@
+## 0.2.11 — 2026-10-27
+
+- Fixa os oito indicadores em `Selic, IPCA, Ibovespa, Dólar, Soja GO, CUB-GO, Diesel S10, Brent`; fontes ausentes mantêm seus slots sem valor inventado e os modos de ordenação por variação deixam de ser oferecidos.
+- Todo toque no widget inicia a coleta via AppIntent, solicita `Widget.reloadAll()` ao terminar e abre `Meu Painel`/`Mercado` sem aguardar a rede; falhas offline preservam o cache e não criam loop.
+- Preserva coletor, dados reais, seleção, layout, curvas, link de Mercado e correção CUB; iPhone nativo ainda não testado.
+
 ## 0.2.10 — 2026-10-26
 
 - O toque na área de ativos abre `Meu Painel` na seção `Mercado` pelo helper oficial `Script.createRunURLScheme`.

@@ -1,3 +1,7 @@
+## 0.2.11 — ordem fixa e toque com atualização
+
+Oito indicadores seguem `Selic, IPCA, Ibovespa, Dólar, Soja GO, CUB-GO, Diesel S10, Brent`; ausência conserva o slot com reserva sem cotação e não há ranking por variação. O toque no widget solicita a coleta/renderização e abre o Mercado no Meu Painel pelo URI existente, sem aguardar rede, instalar o painel ou repetir a abertura. O iOS pode adiar a execução; cache e dados reais são preservados. iPhone nativo não testado.
+
 ## Mudança 0.2.7
 
 A homepage é agora um projeto independente em Sagittaryuz/scripting-home. Referências à homepage embutida abaixo são históricas. As funções dos widgets e sua aparência foram preservadas.

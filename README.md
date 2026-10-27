@@ -1,3 +1,7 @@
+## Atualização 0.2.11 — ordem fixa e toque com refresh
+
+Os oito indicadores aparecem em ordem fixa: Selic, IPCA, Ibovespa, Dólar, Soja GO, CUB-GO, Diesel S10 e Brent. Uma fonte ausente conserva sua posição com a reserva sem cotação; não há ordenação por variação. Tocar qualquer área do widget solicita uma nova coleta e uma recarga pelo AppIntent e, sem esperar a rede, abre `Meu Painel` na seção `Mercado`. O iOS decide quando o render solicitado ocorre; cache e navegação permanecem disponíveis offline. A apresentação nativa no iPhone ainda não foi testada.
+
 ## Atualização 0.2.10 — toque para Meu Painel
 
 Tocar na área de ativos abre `Meu Painel` diretamente na seção `Mercado`, usando o esquema oficial do Scripting (`scripting://run/Meu%20Painel?section=market`). O painel precisa estar instalado; o widget não tenta instalar, detectar ou reabrir em loop. O botão explícito **Consultar indicadores** continua sendo o caminho para coleta/refresh, e a seleção de ativos e os dados compartilhados permanecem intactos. A apresentação nativa no iPhone ainda não foi testada.
@@ -24,7 +28,7 @@ Testes locais de fontes, observações antigas/futuras, alertas, cache, transpor
 
 # Popular Scripting
 
-**Atual: 0.2.0 — Scripting Pro.** Detalhes, seleção de quatro indicadores, CSV,
+**Atual: 0.2.11 — Scripting Pro.** Detalhes, seleção de quatro indicadores, CSV,
 alertas, assistente, Central de Controle e painel Início. Consulta solicitada em
 1 minuto e links diretos às fontes. [Ativação, testes e limites](PRO.md).
 
@@ -38,14 +42,14 @@ Na tela **Importar Scripts Remotos** do Scripting, cole:
 https://github.com/Sagittaryuz/popular-scripting/tree/main/scripts/Popular%20Scripting
 ```
 
-Importe **Popular Scripting**, confirme a versão **0.2.10**, abra o projeto e toque em **Atualizar**. Adicione o widget do Scripting à Tela de Início e selecione esse projeto.
+Importe **Popular Scripting**, confirme a versão **0.2.11**, abra o projeto e toque em **Atualizar**. Adicione o widget do Scripting à Tela de Início e selecione esse projeto.
 
 Para receber melhorias de código, use a atualização do script remoto no Scripting. Essa importação vincula o projeto à pasta `main/scripts/Popular Scripting`; não use um endereço de commit ou tag para acompanhar as próximas versões. O botão **Atualizar** dentro da tela do Popular consulta somente os indicadores e solicita recarregar o widget.
 
 ## Tamanhos e dados
 
 - Pequeno: quatro indicadores. Médio e grande: oito.
-- Cinco modos de ordenação, fundo original, ícones e gráficos.
+- Ordem fixa dos oito indicadores, fundo original, ícones e gráficos.
 - Fontes: BCB, AgroLink, Investidor10, AwesomeAPI, FRED e referências públicas documentadas em `data/economic-series.json`.
 - Dados econômicos de referência são consultados diretamente deste Git, sem autenticação. Rede indisponível ou resposta inválida preserva o cache validado ou a reserva versionada, com suas datas originais.
 - O workflow `economic-data.yml` é programado a cada hora útil, 11h17–23h17 UTC, sujeito a atrasos do GitHub. Falha de uma fonte mantém a série anterior e é registrada no workflow; dados antigos não recebem data de observação nova.
@@ -55,11 +59,11 @@ Não são solicitadas permissões de Calendário, Lembretes ou Localização. O 
 
 ## Validação e recuperação
 
-A versão 0.2.10 mantém os meses nos extremos da curva, a composição nativa Text, Canvas transparente para ícones/curvas e as dimensões originais.
+A versão 0.2.11 mantém os meses nos extremos da curva, a composição nativa Text, Canvas transparente para ícones/curvas e as dimensões originais.
 
 A leitura dos preços AgroLink tem alternativa zlib em JavaScript, independente da descompressão nativa. A atualização manual permite até 20 segundos totais e 6 segundos por consulta AgroLink; o widget mantém 8 e 3 segundos. Falhas das fontes aparecem na tela após Atualizar, e o cache anterior é preservado com suas datas. O IPCA trata o cabeçalho da resposta SIDRA; o CUB trata letras separadas na extração de PDFs, mantendo a conferência de mês/padrão.
 
-Testes locais cobrem os oito indicadores por HTTP, coletores de referência, descompressão com a ponte nativa desativada, entradas inválidas, cache, contrato de navegação e quinze prévias simuladas. Esses testes não confirmam o comportamento da rede, dos intents e das fontes no iPhone; a versão 0.2.10 ainda exige essa conferência na Tela de Início.
+Testes locais cobrem os oito indicadores por HTTP, coletores de referência, descompressão com a ponte nativa desativada, entradas inválidas, cache, ordem fixa com fonte ausente, toque com refresh/offline, contrato de navegação e quinze prévias simuladas. Esses testes não confirmam o comportamento da rede, dos intents e das fontes no iPhone; a versão 0.2.11 ainda exige essa conferência na Tela de Início.
 
 O histórico Git e as releases preservam versões anteriores para recuperação. Antes de atualizar uma edição personalizada, preserve suas alterações locais. Os dados e preferências do projeto ficam no aparelho; não apague o projeto para atualizar.
 
