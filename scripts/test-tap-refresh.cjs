@@ -1,25 +1,38 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
 const {transformSync}=require('esbuild'),dir=path.join(__dirname,'Popular Scripting');
 
-function load(deps,values,timers){
+function loadIntent(deps,values,timers){
   const code=transformSync(fs.readFileSync(path.join(dir,'app_intents.tsx'),'utf8'),{loader:'tsx',format:'cjs'}).code;
   const module={exports:{}};
   vm.runInNewContext(code,{module,exports:module.exports,require:id=>deps[id],Date,setTimeout:timers.setTimeout,clearTimeout:timers.clearTimeout,Promise,Storage:{get:key=>values.get(key),set:(key,value)=>{values.set(key,value);return true}}});
   return module.exports;
 }
 
+function loadModelState(values){
+  const code=transformSync(fs.readFileSync(path.join(dir,'model.ts'),'utf8'),{loader:'ts',format:'cjs'}).code;
+  const module={exports:{}};
+  vm.runInNewContext(code,{module,exports:module.exports,require:id=>{
+    if(id==='./original-engine')return {createEngine:()=>({})};
+    if(id==='./host')return {createHost:()=>({})};
+    if(id==='./pro-common')return {dashboardStatus:()=>{},refreshMinutes:()=>1};
+    throw Error('unexpected dependency '+id);
+  },Date,Storage:{get:key=>values.get(key),set:(key,value)=>{values.set(key,value);return true}}});
+  return module.exports;
+}
+
 async function tick(){await Promise.resolve();await new Promise(resolve=>setImmediate(resolve));}
 
-async function runCase(kind){
+function harness(kind){
   const values=new Map(),events=[],definitions={};
   let release;
+  const pending=new Promise(resolve=>{release=resolve});
   const nativeSetTimeout=setTimeout,nativeClearTimeout=clearTimeout;
-  let scheduled=0,cleared=0;
+  let scheduled=[],cleared=0;
   const timers={
-    setTimeout:(callback,delay)=>{scheduled+=1;return nativeSetTimeout(callback,Math.min(delay,5))},
+    setTimeout:(callback,delay)=>{scheduled.push(delay);return nativeSetTimeout(callback,Math.min(delay,5))},
     clearTimeout:timer=>{cleared+=1;return nativeClearTimeout(timer)}
   };
-  const pending=new Promise(resolve=>{release=resolve});
+  const rows=Array.from({length:8},(_,index)=>({asset:{code:'CODE'+index}}));
   const sdk={
     AppIntentManager:{register:definition=>{definitions[definition.name]=definition;return ()=>({name:definition.name})}},
     AppIntentProtocol:{AppIntent:0},
@@ -30,49 +43,105 @@ async function runCase(kind){
   const deps={
     scripting:sdk,
     './pagination':{pageFamily:value=>value,pageKey:value=>`page:${value}`,pageRows:()=>({index:0,count:1,rows:[]})},
-    './model':{loadModel:async()=>{
-      events.push('query');
-      if(kind==='rejection')throw Error('offline');
-      if(kind==='timeout')return new Promise(()=>{});
-      return pending.then(model=>{events.push('persist');return model});
-    }},
+    './model':{
+      TAP_REFRESH_CACHE_KEY:'popular-tap-refresh-v1',
+      TapRefreshState:undefined,
+      preparedTapState:()=>{
+        const marker=values.get('popular-tap-refresh-v1');
+        const rows=values.get('popular-pro-rows'),age=marker&&Date.now()-marker.at;
+        return marker&&typeof marker.at==='number'&&age>=0&&age<=5000&&['queried','failed-cache-preserved','timeout-cache-preserved'].includes(marker.state)&&Array.isArray(rows)&&rows.length>=8?'queried':null;
+      },
+      loadModel:async(_family,_force,_cacheOnly,persistWhen=()=>true)=>{
+        events.push('query');
+        if(kind==='rejection')throw Error('offline');
+        const model=await pending;
+        if(persistWhen()){values.set('popular-pro-rows',rows);events.push('persist')}
+        else events.push('late-skipped');
+        return model;
+      }
+    },
     './alerts':{evaluateAlerts:async()=>events.push('alerts')},
     './pro-common':{reloadWidgets:async()=>events.push('reload')}
   };
-  load(deps,values,timers);
-  const operation=definitions.RefreshAndOpenMarket.perform();
-  await tick();
-  if(kind==='success')release({rows:[]});
-  await operation;
+  const intents=loadIntent(deps,values,timers);
+  return {values,events,definitions,release,rows,intents,scheduled,get cleared(){return cleared}};
+}
 
-  const navigations=events.filter(event=>Array.isArray(event)&&event[0]==='navigate');
-  assert.equal(navigations.length,1,'Each tap must navigate exactly once');
+async function runSuccessAndDedup(){
+  const fixture=harness('success');
+  assert.equal(fixture.intents.TAP_REFRESH_TIMEOUT_MS,1500);
+  const first=fixture.definitions.RefreshAndOpenMarket.perform();
+  const second=fixture.definitions.RefreshAndOpenMarket.perform();
+  fixture.release({rows:fixture.rows});
+  await Promise.all([first,second]);
+  const navigations=fixture.events.filter(event=>Array.isArray(event)&&event[0]==='navigate');
+  assert.equal(fixture.events.filter(event=>event==='query').length,1,'Concurrent taps must share one query');
+  assert.equal(fixture.events.filter(event=>event==='reload').length,1,'Concurrent taps must share one reload');
+  assert.equal(navigations.length,2,'Each tap must navigate exactly once');
+  assert.equal(fixture.events.filter(event=>event==='persist').length,1,'One shared result must persist once');
+  assert(fixture.events.indexOf('persist')<fixture.events.indexOf('reload'),'Successful data must persist before reload');
+  assert(fixture.events.indexOf('reload')<fixture.events.findIndex(event=>Array.isArray(event)&&event[0]==='navigate'),'Reload must precede navigation');
   assert.equal(navigations[0][1],'scripting://run/Meu%20Painel?section=market');
-  const navigationIndex=events.findIndex(event=>Array.isArray(event)&&event[0]==='navigate');
-  const reloadIndex=events.indexOf('reload');
-  assert(reloadIndex>=0,'Tap must request a redraw for every outcome');
-  assert(reloadIndex<navigationIndex,'Cache/data redraw must be requested before navigation');
-  assert.equal(events.indexOf('control'),reloadIndex+1,'Control widgets must be cleaned up with the same reload request');
-  assert.equal(navigationIndex,events.length-1,'No second navigation or refresh loop may follow the destination request');
-  assert(scheduled>=1,'The bounded foreground timer must be scheduled');
-  assert(cleared>=1,'The bounded foreground timer must be cleaned up');
+  assert.equal(fixture.scheduled[0],1500,'Tap refresh must use the 1500ms bound');
+  assert(fixture.cleared>=1,'The bounded foreground timer must be cleaned up');
 
-  if(kind==='success'){
-    assert.equal(values.get('manual-refresh').state,'queried');
-    assert(events.indexOf('persist')<reloadIndex,'Successful data must persist before reload');
-    assert(reloadIndex<navigationIndex,'Successful reload must precede navigation');
-  }else if(kind==='rejection'){
-    assert.equal(values.get('manual-refresh').state,'failed-cache-preserved');
-    assert.equal(events.includes('persist'),false,'Rejected refresh must not invent a persisted model');
-  }else{
-    assert.equal(values.get('manual-refresh').state,'timeout-cache-preserved');
-    assert.equal(events.includes('persist'),false,'Timed out refresh must not fabricate persistence');
-  }
+  const prepared=fixture.events.length;
+  await fixture.definitions.RefreshAndOpenMarket.perform();
+  assert.equal(fixture.events.filter(event=>event==='query').length,1,'Prepared result must suppress an immediate duplicate query');
+  assert.equal(fixture.events.filter(event=>event==='reload').length,2,'Prepared result still requests a redraw');
+  assert.equal(fixture.events.length,prepared+3,'Prepared tap performs reload/control/navigation only');
+
+  fixture.values.set('popular-tap-refresh-v1',{at:Date.now()-5001,state:'queried'});
+  const expired=fixture.definitions.RefreshAndOpenMarket.perform();
+  await tick();
+  await expired;
+  assert.equal(fixture.events.filter(event=>event==='query').length,2,'Expired prepared result must query again');
+}
+
+async function runRejection(){
+  const fixture=harness('rejection');
+  await fixture.definitions.RefreshAndOpenMarket.perform();
+  assert.equal(fixture.values.get('manual-refresh').state,'failed-cache-preserved');
+  assert.equal(fixture.events.includes('persist'),false,'Rejected refresh must not invent a persisted model');
+  assert.equal(fixture.events.filter(event=>event==='reload').length,1,'Rejected refresh still redraws the cache');
+  assert.equal(fixture.events.filter(event=>Array.isArray(event)&&event[0]==='navigate').length,1);
+}
+
+async function runTimeoutLateResult(){
+  const fixture=harness('timeout');
+  await fixture.definitions.RefreshAndOpenMarket.perform();
+  assert.equal(fixture.values.get('manual-refresh').state,'timeout-cache-preserved');
+  assert.equal(fixture.events.includes('persist'),false,'Timed out refresh must not fabricate persistence');
+  assert.equal(fixture.events.filter(event=>event==='reload').length,1,'Timeout must redraw the existing cache once');
+  assert.equal(fixture.events.filter(event=>Array.isArray(event)&&event[0]==='navigate').length,1);
+  fixture.release({rows:fixture.rows});
+  await tick();
+  assert.equal(fixture.events.includes('late-skipped'),true,'Late result must be excluded after timeout');
+  assert.equal(fixture.events.filter(event=>event==='reload').length,1,'Late result must not request a second reload');
+}
+
+function runMarkerValidation(){
+  const values=new Map(),model=loadModelState(values),now=Date.now();
+  const rows=Array.from({length:8},(_,index)=>({asset:{code:'CODE'+index}}));
+  values.set('popular-pro-rows',rows);
+  values.set('popular-tap-refresh-v1',{at:now-100,state:'queried'});
+  assert.equal(model.preparedTapState(now),'queried');
+  values.set('popular-tap-refresh-v1',{at:now-5001,state:'queried'});
+  assert.equal(model.preparedTapState(now),null,'Expired marker must not be reused');
+  values.set('popular-tap-refresh-v1',{at:now-100,state:'unknown'});
+  assert.equal(model.preparedTapState(now),null,'Unknown marker state must not be trusted');
+  values.set('popular-tap-refresh-v1',{at:now-100,state:'queried'});
+  values.set('popular-pro-rows',[{asset:{}}]);
+  assert.equal(model.preparedTapState(now),null,'Incomplete model cache must not be treated as prepared');
+  values.set('popular-tap-refresh-v1',{at:now+1,state:'queried'});
+  values.set('popular-pro-rows',rows);
+  assert.equal(model.preparedTapState(now),null,'Future marker must not be trusted');
 }
 
 (async()=>{
-  await runCase('success');
-  await runCase('timeout');
-  await runCase('rejection');
-  console.log('PASS tap refresh: success/rejection await cache reload before one navigation; timeout reloads cache before one navigation; timers are cleaned up.');
+  await runSuccessAndDedup();
+  await runRejection();
+  await runTimeoutLateResult();
+  runMarkerValidation();
+  console.log('PASS tap refresh: 1500ms bound, concurrent deduplication, five-second prepared cache, invalid markers, offline preservation, one navigation per tap and late-result exclusion. Native iPhone remains untested.');
 })().catch(error=>{console.error(error);process.exitCode=1});

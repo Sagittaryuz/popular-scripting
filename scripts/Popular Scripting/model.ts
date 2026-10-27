@@ -1,7 +1,15 @@
 import { createEngine } from './original-engine'
 import { createHost } from './host'
 import { dashboardStatus, refreshMinutes } from './pro-common'
-export const VERSION='0.2.15'
+export const VERSION='0.2.16'
+export const TAP_REFRESH_CACHE_KEY='popular-tap-refresh-v1'
+export const TAP_REFRESH_CACHE_MS=5000
+export type TapRefreshState='queried'|'failed-cache-preserved'|'timeout-cache-preserved'
+export function preparedTapState(now=Date.now()):TapRefreshState|null{
+  const marker=Storage.get<{at:number;state:TapRefreshState}>(TAP_REFRESH_CACHE_KEY),rows=Storage.get<any[]>('popular-pro-rows')
+  if(!marker||typeof marker.at!=='number'||!Number.isFinite(marker.at)||now<marker.at||now-marker.at>TAP_REFRESH_CACHE_MS||!['queried','failed-cache-preserved','timeout-cache-preserved'].includes(marker.state))return null
+  return Array.isArray(rows)&&rows.length>0&&rows.slice(0,8).every(row=>typeof row?.asset?.code==='string')?marker.state:null
+}
 export const FIXED_INDICATOR_CODES=['SELIC','IPCA','IBOV','USD/BRL','SOJA_JATAI_GO','CUB_GO','DIESEL_S10','BRENT'] as const
 export const MODES=['fixed'] as const
 function fixedIndicatorRows(rows:any[]){
@@ -13,7 +21,7 @@ export function engine(family='medium',force=false){
   return createEngine(createHost(force),{family,force:force||queryDue})
 }
 export function setOrdering(mode:string){if(!MODES.includes(mode as any))throw Error('Ordenação inválida');engine().writeOrderingMode(mode)}
-export async function loadModel(family='medium',force=false,cacheOnly=false){
+export async function loadModel(family='medium',force=false,cacheOnly=false,persistWhen:()=>boolean=()=>true){
   // Collect all eight so a small widget can select any four, not just the legacy first four.
   const api=engine(family==='small'?'medium':family,force),started=Date.now()
   const cached=Storage.get<any[]>('popular-pro-rows')
@@ -27,13 +35,14 @@ export async function loadModel(family='medium',force=false,cacheOnly=false){
   const baseCodes=new Set(orderedRows.map((r:any)=>r.asset.code))
   const saved=Storage.get<any[]>('popular-extra-rows')
   const additions=(extra.length?extra:Array.isArray(saved)?saved.map(r=>({...r,cached:true})):[]).filter((r:any)=>r?.asset&&typeof r.asset.code==='string'&&!baseCodes.has(r.asset.code)).slice(0,8)
-  if(extra.length)Storage.set('popular-extra-rows',additions)
+  if(extra.length&&persistWhen())Storage.set('popular-extra-rows',additions)
   const combined=fixedIndicatorRows([...orderedRows,...additions])
   const status=api.orderingFeedback(orderedRows)
   const result={queriedAt:Date.now(),version:VERSION,sourceVersion:api.version,family,mode:'fixed',status,
     rows:combined.map((row:any)=>({...row,name:api.displayName(row.asset),price:api.displayPrice(row.asset.price,row.asset),
       percent:api.displayPercent(api.presentationPercent(row),row.asset),movement:api.presentationPercent(row),
       time:api.timeText(row),unit:api.unitText(row)})),api}
+  if(!persistWhen())return result
   Storage.set('popular-last-query',Date.now())
   Storage.set('popular-pro-rows',result.rows)
   // Bounded local data only; homepage UI lives in its own Git repository.

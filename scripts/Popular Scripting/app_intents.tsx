@@ -1,50 +1,70 @@
 import { pageFamily, pageKey, pageRows } from './pagination'
 import { AppIntentManager, AppIntentProtocol, ControlWidget, Safari, Script } from 'scripting'
-import { loadModel } from './model'
+import { loadModel, preparedTapState, TAP_REFRESH_CACHE_KEY, TapRefreshState } from './model'
 import { evaluateAlerts } from './alerts'
 import { reloadWidgets } from './pro-common'
 
 const MARKET_URL=Script.createRunURLScheme('Meu Painel',{section:'market'})
-export const TAP_REFRESH_TIMEOUT_MS=1800
+export const TAP_REFRESH_TIMEOUT_MS=1500
 
 async function requestWidgetReload(){
   try{await reloadWidgets()}catch{}
   try{if(typeof ControlWidget.reloadButtons==='function')ControlWidget.reloadButtons()}catch{}
 }
 
-async function refreshPopularData():Promise<'queried'|'failed-cache-preserved'>{
+async function refreshPopularData(isActive:()=>boolean=()=>true,reload=true):Promise<'queried'|'failed-cache-preserved'|'late-ignored'>{
   let state:'queried'|'failed-cache-preserved'='failed-cache-preserved'
   try{
     for(const family of ['small','medium','large'])Storage.set('popular-page-refresh:'+family,0)
-    const model=await loadModel('medium',true)
+    const model=await loadModel('medium',true,false,isActive)
+    if(!isActive())return 'late-ignored'
     Storage.set('manual-refresh',{at:Date.now(),state:'queried'})
     await evaluateAlerts(model.rows)
     state='queried'
-  }catch{Storage.set('manual-refresh',{at:Date.now(),state:'failed-cache-preserved'})}
-  finally{await requestWidgetReload()}
-  return state
+  }catch{if(isActive())Storage.set('manual-refresh',{at:Date.now(),state:'failed-cache-preserved'})}
+  finally{if(reload&&isActive())await requestWidgetReload()}
+  return isActive()?state:'late-ignored'
 }
 
 export const RefreshPopular=AppIntentManager.register({name:'RefreshPopular',protocol:AppIntentProtocol.AppIntent,perform:async()=>{await refreshPopularData()}})
 
-function waitForRefresh(refresh:Promise<'queried'|'failed-cache-preserved'>){
+function waitForRefresh(refresh:Promise<'queried'|'failed-cache-preserved'|'late-ignored'>){
   let timer:any=null
   const timeout=new Promise<{timedOut:true}>(resolve=>{timer=setTimeout(()=>resolve({timedOut:true}),TAP_REFRESH_TIMEOUT_MS)})
   return Promise.race([refresh.then(state=>({timedOut:false as const,state})),timeout]).finally(()=>{if(timer!=null)clearTimeout(timer)})
 }
 
-// A widget tap gives the refresh a short foreground opportunity before
-// switching apps. Offline/rejected work reaches its cache-preserving finally
-// path; a slow request times out, requests a cache redraw, and still navigates.
-export const RefreshAndOpenMarket=AppIntentManager.register({name:'RefreshAndOpenMarket',protocol:AppIntentProtocol.AppIntent,perform:async()=>{
-  const refresh=refreshPopularData()
-  let outcome:{timedOut:false,state:'queried'|'failed-cache-preserved'}|{timedOut:true}
-  try{outcome=await waitForRefresh(refresh)}catch{outcome={timedOut:true}}
-  if(outcome.timedOut){
-    Storage.set('manual-refresh',{at:Date.now(),state:'timeout-cache-preserved'})
+let tapRefreshPending:Promise<TapRefreshState>|null=null
+function markTapRefresh(state:TapRefreshState){Storage.set(TAP_REFRESH_CACHE_KEY,{at:Date.now(),state})}
+async function refreshForTap():Promise<TapRefreshState>{
+  const recent=preparedTapState();
+  if(recent){await requestWidgetReload();return recent}
+  if(tapRefreshPending)return tapRefreshPending
+  const active={value:true}
+  const operation=(async()=>{
+    const refresh=refreshPopularData(()=>active.value,false)
+    let outcome:{timedOut:false;state:'queried'|'failed-cache-preserved'|'late-ignored'}|{timedOut:true}
+    try{outcome=await waitForRefresh(refresh)}catch{outcome={timedOut:true}}
+    let state:TapRefreshState
+    if(outcome.timedOut){
+      active.value=false
+      state='timeout-cache-preserved'
+      Storage.set('manual-refresh',{at:Date.now(),state})
+    }else state=outcome.state==='late-ignored'?'timeout-cache-preserved':outcome.state
+    markTapRefresh(state)
     await requestWidgetReload()
     void refresh.catch(()=>{})
-  }
+    return state
+  })()
+  tapRefreshPending=operation.finally(()=>{tapRefreshPending=null})
+  return tapRefreshPending
+}
+
+// A widget tap gives the refresh a short foreground opportunity before
+// switching apps. Concurrent taps share one refresh; a prepared result is reused
+// briefly; a slow result is prevented from replacing the model after timeout.
+export const RefreshAndOpenMarket=AppIntentManager.register({name:'RefreshAndOpenMarket',protocol:AppIntentProtocol.AppIntent,perform:async()=>{
+  await refreshForTap()
   try{await Safari.openURL(MARKET_URL)}catch{}
 }})
 

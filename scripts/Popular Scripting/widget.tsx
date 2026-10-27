@@ -1,5 +1,5 @@
 import { Widget, Text } from 'scripting'
-import { loadModel, VERSION } from './model'
+import { loadModel, VERSION, preparedTapState } from './model'
 import { PopularView } from './view'
 import { refreshMinutes } from './pro-common'
 import { evaluateAlerts } from './alerts'
@@ -8,8 +8,8 @@ async function main(){
   const family=families[Widget.family]
   if(!family){Widget.present(<Text widgetBackground="#1E1E1E" foregroundStyle="white">Selecione pequeno, médio ou grande.</Text>);return}
   try{
-    const changed=Storage.get<number>('popular-page-refresh:'+family)??0,age=Date.now()-changed
-    const model=await loadModel(family,false,age>=0&&age<15000),{width,height}=Widget.displaySize
+    const changed=Storage.get<number>('popular-page-refresh:'+family)??0,age=Date.now()-changed,tapPrepared=preparedTapState()
+    const model=await loadModel(family,false,tapPrepared!=null||(age>=0&&age<15000)),{width,height}=Widget.displaySize
     Storage.set('widget-diagnostic',{version:VERSION,phase:'present-requested',at:Date.now(),family})
     try{await evaluateAlerts(model.rows)}catch{}
     Widget.present(<PopularView model={model} width={width} height={height}/>,{policy:'after',date:new Date(Date.now()+refreshMinutes()*60000)})

@@ -1,5 +1,11 @@
 # Melhorias Scripting Pro — 23/10/2026
 
+## 0.2.16 — refresh limitado no toque e decisão sobre estado
+
+Implementar no pequeno 2×2 e preservar nos demais tamanhos um refresh deduplicado: janela de 1.500 ms, cache preparado de 5 segundos, recarga antes da navegação única para `Meu Painel`/Mercado e exclusão de resultado tardio após timeout. Testar sucesso, concorrência, cache preparado/expirado, rejeição/offline, timeout, resposta tardia, marcadores inválidos e latência sintética. Não alterar bloco centralizado no ícone, ordem fixa, dados ou layout.
+
+Avaliar uma bolinha mínima somente quando as fontes fornecerem estado de sessão confiável por ativo. Como o contrato atual só expõe observações periódicas/diárias e não estado de negociação, a decisão desta versão é deixar o indicador desconhecido e não desenhar verde/cinza. iPhone permanece não testado.
+
 ## 0.2.15 — bloco interno agrupado
 
 Voltar aos offsets internos da 0.2.13 sem reverter ordem fixa, dados ou correções posteriores. Agrupar as três linhas em uma caixa única de 36 pontos e centralizar somente essa caixa no ícone. Preservar ícones, fontes, cores, divisórias e alturas externas; validar small/medium/large, quatro/oito linhas, dados longos/ausentes e prévia com caixa/ícone marcados. iPhone permanece não testado.

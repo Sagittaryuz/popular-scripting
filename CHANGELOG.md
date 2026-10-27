@@ -1,3 +1,9 @@
+## 0.2.16 — refresh limitado e deduplicado no toque
+
+- O toque do widget mantém o destino existente `Meu Painel`/`Mercado`, mas agora compartilha consultas concorrentes, aguarda até 1.500 ms antes de navegar e solicita uma única recarga depois do resultado ou do cache preservado.
+- Um resultado preparado é reutilizado por 5 segundos; falha/offline preserva o cache. Respostas que chegam depois do timeout não podem substituir o modelo persistido nem iniciar uma segunda recarga.
+- Não foi adicionada bolinha de estado: as fontes atuais expõem observações periódicas/diárias, não um contrato confiável de sessão aberta por ativo. O estado permanece desconhecido, sem fabricar verde/cinza. Layout, bloco centralizado no ícone, ordem fixa, dados e tamanhos permanecem inalterados; iPhone nativo ainda não testado.
+
 ## 0.2.15 — bloco interno centralizado
 
 - Recupera a disposição interna da 0.2.13 e agrupa nome/valor, gráfico/variação e código/data em um único bloco de 36 pontos.

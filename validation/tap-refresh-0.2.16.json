@@ -1,0 +1,33 @@
+{
+  "version": "0.2.16",
+  "repository": "Sagittaryuz/popular-scripting",
+  "branch": "main",
+  "tap": {
+    "timeoutMs": 1500,
+    "preparedCacheMs": 5000,
+    "deduplicatesConcurrent": true,
+    "lateResultPolicy": "ignore after timeout",
+    "reloadBeforeNavigation": true,
+    "navigation": "scripting://run/Meu%20Painel?section=market"
+  },
+  "preserved": [
+    "three-line block centered on asset icon",
+    "fixed order Selic, IPCA, Ibovespa, USD/BRL, Soja GO, CUB-GO, Diesel S10, Brent",
+    "small/medium/large dimensions and data contracts",
+    "explicit refresh action and Meu Painel destination"
+  ],
+  "statusIndicator": {
+    "implemented": false,
+    "decision": "deferred-unknown",
+    "reason": "Current sources expose periodic or daily observations, not a reliable per-asset trading-session status."
+  },
+  "tests": [
+    "success and one query for concurrent taps",
+    "prepared cache reuse and five-second expiry",
+    "offline/rejection cache preservation",
+    "1500ms timeout and late-result exclusion",
+    "invalid and future refresh markers",
+    "navigation exactly once per tap"
+  ],
+  "nativeIPhone": "not-tested"
+}

@@ -1,3 +1,9 @@
+## 0.2.16 — refresh do widget no toque
+
+O toque no widget pequeno e nos demais tamanhos compartilha uma consulta já em andamento, aguarda até 1.500 ms e pede uma recarga antes de abrir o Mercado no Meu Painel. O modelo preparado é reutilizado por 5 segundos; rejeição/offline conserva o cache. Um resultado que chega depois do timeout não grava o modelo nem gera uma segunda recarga. O layout aprovado, bloco centralizado no ícone, ordem fixa, fontes e dados não mudam.
+
+A bolinha de estado foi deliberadamente adiada: o contrato atual não diferencia de forma defensável mercado aberto, fechado ou desconhecido para todos os oito indicadores. Não é usado HTTP 200, horário local ou calendário parcial para fabricar esse estado; iPhone nativo não testado.
+
 ## 0.2.15 — bloco interno agrupado
 
 Cada ativo preserva a disposição de linhas da 0.2.13 dentro de um super-elemento de 36 pontos. A caixa total do bloco compartilha o centro vertical do ícone; gráfico e variação não são centralizados independentemente. Ícones, fontes, cores, divisórias, alturas externas, ordem fixa e dados permanecem inalterados. A validação cobre small/medium/large, quatro/oito linhas, nomes longos, valores negativos e ausência de data; iPhone nativo não testado.

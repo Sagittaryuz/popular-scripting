@@ -1,4 +1,10 @@
-# Popular Scripting — Pro 0.2.15
+# Popular Scripting — Pro 0.2.16
+
+## 0.2.16 — refresh limitado e deduplicado no toque
+
+`RefreshAndOpenMarket` compartilha toques concorrentes, dá até 1.500 ms à consulta e pede uma recarga do widget antes de abrir uma única vez o URI existente de `Meu Painel`/`Mercado`. Um resultado válido do modelo é considerado preparado por 5 segundos; rejeição/offline preserva o cache. Depois do timeout, o resultado tardio não substitui o modelo persistido nem pede outra recarga. O destino, o fallback inexistente e a abertura única permanecem iguais.
+
+Não há indicador verde/cinza nesta versão: Selic/IPCA/CUB/ANP são observações periódicas, enquanto B3, câmbio e Brent exigiriam contratos de sessão diferentes que o coletor atual não fornece. Sem confirmação defensável, o estado fica desconhecido. O bloco de três linhas continua centralizado no ícone; ordem fixa, dados, fontes, tamanhos e alturas externas permanecem inalterados. Testes são desktop/sintéticos; iPhone nativo não testado.
 
 ## 0.2.15 — bloco interno agrupado
 
