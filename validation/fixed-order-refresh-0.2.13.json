@@ -1,0 +1,52 @@
+{
+  "version": "0.2.13",
+  "identity": {
+    "repository": "Sagittaryuz/popular-scripting",
+    "branch": "main",
+    "importPath": "scripts/Popular Scripting",
+    "scriptName": "Popular Scripting",
+    "updateExistingProject": true,
+    "reimportCopyRequired": false
+  },
+  "fixedOrder": [
+    "SELIC",
+    "IPCA",
+    "IBOV",
+    "USD/BRL",
+    "SOJA_JATAI_GO",
+    "CUB_GO",
+    "DIESEL_S10",
+    "BRENT"
+  ],
+  "sizes": {
+    "small": ["SELIC", "IPCA", "IBOV", "USD/BRL"],
+    "medium": ["SELIC", "IPCA", "IBOV", "USD/BRL", "SOJA_JATAI_GO", "CUB_GO", "DIESEL_S10", "BRENT"],
+    "large": ["SELIC", "IPCA", "IBOV", "USD/BRL", "SOJA_JATAI_GO", "CUB_GO", "DIESEL_S10", "BRENT"]
+  },
+  "legacyState": {
+    "key": "popular-small-codes",
+    "example": ["IPCA", "CUB_GO", "DIESEL_S10", "BRENT"],
+    "affectsSmallWidget": false,
+    "pageKeysAffectRenderedWidget": false,
+    "inventedObservation": false
+  },
+  "missingSourceCase": {
+    "omitted": "IPCA",
+    "reservedSlot": 2,
+    "price": null,
+    "inventedObservation": false
+  },
+  "tap": {
+    "intent": "RefreshAndOpenMarket",
+    "uri": "scripting://run/Meu%20Painel?section=market",
+    "timeoutMs": 1800,
+    "navigationCount": 1,
+    "timerCleanup": true,
+    "retryLoop": false
+  },
+  "nativeIPhone": "not-tested",
+  "tests": [
+    "npm run check",
+    "npm test"
+  ]
+}

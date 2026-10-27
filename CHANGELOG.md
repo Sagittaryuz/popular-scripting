@@ -1,3 +1,9 @@
+## 0.2.13 — 2026-10-27
+
+- Corrige a entrega do widget pequeno: estado legado de `popular-small-codes` não pode substituir `Selic, IPCA, Ibovespa, Dólar`.
+- Médio e grande preservam os oito indicadores em ordem fixa, com reservas para fontes ausentes; a tela de detalhes deixa de oferecer uma seleção conflitante.
+- Atualização incremental pelo mesmo caminho `main/scripts/Popular Scripting`; iPhone nativo ainda não testado.
+
 ## 0.2.12 — 2026-10-27
 
 - O toque no widget aguarda o refresh por até 1,8 s antes de abrir o Mercado no Meu Painel.

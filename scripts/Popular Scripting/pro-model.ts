@@ -7,10 +7,10 @@ export function validateRules(raw:any):AlertRule[]{
     ids.add(r.id);return {id:r.id,code:r.code,direction:r.direction,threshold:r.threshold}
   })
 }
-export function selectSmall(rows:any[],codes:unknown){
-  if(!Array.isArray(codes)||codes.length!==4||new Set(codes).size!==4)return rows.slice(0,4)
-  const selected=codes.map(code=>rows.find(r=>r.asset.code===code));return selected.every(Boolean)?selected:rows.slice(0,4)
-}
+// The small widget is a fixed preview of the first four ordered indicators.
+// Keep the legacy argument for import/test compatibility, but never let an
+// older persisted selection override the published order.
+export function selectSmall(rows:any[],_legacyCodes:unknown){return rows.slice(0,4)}
 export function quoteObservation(row:any,now=Date.now()){
   const value=row.asset?.price
   if(typeof value!=='number'||!Number.isFinite(value))return null

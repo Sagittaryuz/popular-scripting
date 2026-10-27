@@ -1,3 +1,7 @@
+## 0.2.13 — ordem fixa no pequeno
+
+O pequeno não usa mais `popular-small-codes` nem páginas persistidas: sua página é sempre `Selic, IPCA, Ibovespa, Dólar`. Médio e grande usam os oito indicadores na ordem fixa, incluindo Soja GO, CUB-GO, Diesel S10 e Brent. Preferências antigas não são apagadas, mas deixam de controlar a ordem; a tela não oferece uma seleção que contradiga a regra. Slots sem fonte permanecem visíveis. O projeto existente deve ser atualizado pelo endereço `https://github.com/Sagittaryuz/popular-scripting/tree/main/scripts/Popular%20Scripting`, sem reimportar uma cópia em outro caminho. iPhone nativo não testado.
+
 ## 0.2.12 — refresh limitado antes do Mercado
 
 O toque de tela inteira ligado a `RefreshAndOpenMarket` aguarda a atualização por até 1,8 s. Se a consulta termina, a persistência e a solicitação de recarga vêm antes de uma única abertura de `Meu Painel`/`Mercado`; se a fonte rejeita ou está offline, o cache é preservado e recarregado. Quando o limite vence, a recarga do cache é solicitada e a navegação continua, sem afirmar que a rede terminará depois que o iOS trocar de app. O timer é limpo e não há repetição. A recarga de timeline do iOS não é renderização instantânea. iPhone nativo não foi testado.

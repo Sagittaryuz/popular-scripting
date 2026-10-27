@@ -1,5 +1,5 @@
 import { Button, Canvas, Image, Rectangle, Text, ZStack, Script } from 'scripting'
-import { pageKey, pageRows } from './pagination'
+import { pageRows } from './pagination'
 import { assets } from './assets'
 import { drawBadge } from './badges'
 import { GEOMETRY as G, layout, place, movementColor, curvePlan, monthBand, drawCurve } from './draw'
@@ -20,7 +20,9 @@ function variationMinimumSize(row:any,value:string){
 export function PopularView({model,width,height}:{model:any;width:number;height:number}){
   for(const [key,value] of Object.entries(assets))if(!images[key]){const image=UIImage.fromBase64String(value as string);if(image)images[key]=image}
   const plan=layout(model.family,width,height)
-  const page=pageRows(model.rows,model.family,Storage.get('popular-small-codes'),Storage.get(pageKey(model.family))),visibleRows=page.rows
+  // The published widget is a fixed indicator panel. Legacy page state and
+  // the old small-widget selection must not replace its first four/eight.
+  const page=pageRows(model.rows,model.family,null,0),visibleRows=page.rows
   const label=(key:string,value:string,x:number,y:number,w:number,h:number,size:number,min:number,bold=false,color='white',right=false)=>
     <Label key={key} value={value} plan={plan} x={x} y={y} width={w} height={h} size={size} min={min} bold={bold} color={color} right={right}/>
   return <ZStack alignment="topLeading" frame={{width,height}} clipped widgetBackground="#1E1E1E"

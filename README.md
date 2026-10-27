@@ -1,3 +1,7 @@
+## Atualização 0.2.13 — ordem fixa também no widget pequeno
+
+O widget pequeno agora ignora seleções e páginas persistidas de versões anteriores e mostra sempre `Selic, IPCA, Ibovespa, Dólar`. Médio e grande mantêm os oito na sequência `Selic, IPCA, Ibovespa, Dólar, Soja GO, CUB-GO, Diesel S10, Brent`. Preferências antigas continuam importáveis sem alterar essa ordem; fontes ausentes conservam seu slot. A apresentação nativa no iPhone ainda não foi testada.
+
 ## Atualização 0.2.12 — refresh limitado antes da navegação
 
 O toque dá ao refresh uma oportunidade limitada de até 1,8 s antes de abrir o Mercado no Meu Painel. Em sucesso, o resultado é persistido, a recarga é solicitada e só então ocorre a navegação; em rejeição/offline, o cache é preservado, recarregado e a navegação ocorre uma vez. Se a rede exceder o limite, o widget recarrega o cache disponível e navega sem prometer que a coleta terminará depois da troca de app. O timer é limpo e não há loop. O iOS continua decidindo quando o widget renderiza a solicitação; isso não é uma promessa de atualização instantânea. A apresentação nativa no iPhone ainda não foi testada.
@@ -32,7 +36,7 @@ Testes locais de fontes, observações antigas/futuras, alertas, cache, transpor
 
 # Popular Scripting
 
-**Atual: 0.2.12 — Scripting Pro.** Detalhes, seleção de quatro indicadores, CSV,
+**Atual: 0.2.13 — Scripting Pro.** Detalhes, ordem fixa dos oito indicadores, CSV,
 alertas, assistente, Central de Controle e painel Início. Consulta solicitada em
 1 minuto e links diretos às fontes. [Ativação, testes e limites](PRO.md).
 
@@ -46,7 +50,7 @@ Na tela **Importar Scripts Remotos** do Scripting, cole:
 https://github.com/Sagittaryuz/popular-scripting/tree/main/scripts/Popular%20Scripting
 ```
 
-Importe **Popular Scripting**, confirme a versão **0.2.12**, abra o projeto e toque em **Atualizar**. Adicione o widget do Scripting à Tela de Início e selecione esse projeto.
+Importe **Popular Scripting**, confirme a versão **0.2.13**, abra o projeto e toque em **Atualizar**. Adicione o widget do Scripting à Tela de Início e selecione esse projeto.
 
 Para receber melhorias de código, use a atualização do script remoto no Scripting. Essa importação vincula o projeto à pasta `main/scripts/Popular Scripting`; não use um endereço de commit ou tag para acompanhar as próximas versões. O botão **Atualizar** dentro da tela do Popular consulta somente os indicadores e solicita recarregar o widget.
 
@@ -63,11 +67,11 @@ Não são solicitadas permissões de Calendário, Lembretes ou Localização. O 
 
 ## Validação e recuperação
 
-A versão 0.2.12 mantém os meses nos extremos da curva, a composição nativa Text, Canvas transparente para ícones/curvas e as dimensões originais.
+A versão 0.2.13 mantém os meses nos extremos da curva, a composição nativa Text, Canvas transparente para ícones/curvas e as dimensões originais.
 
 A leitura dos preços AgroLink tem alternativa zlib em JavaScript, independente da descompressão nativa. A atualização manual permite até 20 segundos totais e 6 segundos por consulta AgroLink; o widget mantém 8 e 3 segundos. Falhas das fontes aparecem na tela após Atualizar, e o cache anterior é preservado com suas datas. O IPCA trata o cabeçalho da resposta SIDRA; o CUB trata letras separadas na extração de PDFs, mantendo a conferência de mês/padrão.
 
-Testes locais cobrem os oito indicadores por HTTP, coletores de referência, descompressão com a ponte nativa desativada, entradas inválidas, cache, ordem fixa com fonte ausente, toque com refresh em sucesso/timeout/rejeição, contrato de navegação e quinze prévias simuladas. Esses testes não confirmam o comportamento da rede, dos intents e das fontes no iPhone; a versão 0.2.12 ainda exige essa conferência na Tela de Início.
+Testes locais cobrem os oito indicadores por HTTP, coletores de referência, descompressão com a ponte nativa desativada, entradas inválidas, cache, ordem fixa com fonte ausente, seleção persistida legada ignorada, toque com refresh em sucesso/timeout/rejeição, contrato de navegação e quinze prévias simuladas. Esses testes não confirmam o comportamento da rede, dos intents e das fontes no iPhone; a versão 0.2.13 ainda exige essa conferência na Tela de Início.
 
 O histórico Git e as releases preservam versões anteriores para recuperação. Antes de atualizar uma edição personalizada, preserve suas alterações locais. Os dados e preferências do projeto ficam no aparelho; não apague o projeto para atualizar.
 

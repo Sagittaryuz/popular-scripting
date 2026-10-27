@@ -1,4 +1,8 @@
-# Popular Scripting — Pro 0.2.12
+# Popular Scripting — Pro 0.2.13
+
+## 0.2.13 — ordem fixa do widget pequeno
+
+O pequeno usa sempre os quatro primeiros resultados já ordenados pelo motor: `SELIC`, `IPCA`, `IBOV` e `USD/BRL`. `popular-small-codes`, páginas, exportações e preferências antigas não substituem mais essa ordem; os estados antigos são mantidos apenas como compatibilidade de dados, sem efeito visual. Médio e grande exibem os oito códigos fixos na sequência `SELIC`, `IPCA`, `IBOV`, `USD/BRL`, `SOJA_JATAI_GO`, `CUB_GO`, `DIESEL_S10`, `BRENT`. Slots de fonte indisponível permanecem reservados. O caminho remoto continua sendo `main/scripts/Popular Scripting`; atualizar o projeto existente é suficiente, sem criar cópia. iPhone nativo não testado.
 
 ## 0.2.12 — refresh limitado antes da navegação
 

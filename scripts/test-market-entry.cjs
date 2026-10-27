@@ -7,7 +7,7 @@ const model=fs.readFileSync(path.join(root,'model.ts'),'utf8');
 const engine=fs.readFileSync(path.join(root,'original-engine.js'),'utf8');
 const script=JSON.parse(fs.readFileSync(path.join(root,'script.json'),'utf8'));
 
-assert.equal(script.version,'0.2.12');
+assert.equal(script.version,'0.2.13');
 assert.match(view,/import \{ Button, Canvas, Image, Rectangle, Text, ZStack, Script \} from 'scripting'/);
 assert.match(view,/widgetURL=\{Script\.createRunURLScheme\("Meu Painel", \{ section: "market" \}\)\}/);
 assert.match(view,/Button intent=\{RefreshAndOpenMarket\(undefined\)\}/);
@@ -30,6 +30,9 @@ assert.match(model,/FIXED_INDICATOR_CODES=\['SELIC','IPCA','IBOV','USD\/BRL','SO
 assert.match(model,/MODES=\['fixed'\]/);
 assert.match(engine,/const FIXED_INDICATOR_CODES = Object\.freeze\(\['SELIC','IPCA','IBOV','USD\/BRL',SOYBEAN\.code,'CUB_GO','DIESEL_S10','BRENT'\]\)/);
 assert.match(engine,/const ORDERING_MODES = Object\.freeze\(\{fixed:'Ordem fixa'\}\)/);
+assert.match(fs.readFileSync(path.join(root,'pagination.ts'),'utf8'),/selectSmall\(rows,_legacyCodes\)/);
+assert.match(fs.readFileSync(path.join(root,'pro-model.ts'),'utf8'),/older persisted selection override/);
+assert.doesNotMatch(view,/popular-small-codes/,'Widget render must not read legacy small-widget selection');
 
 // Contract reference: the official Scripting helper produces this URL. The
 // widget does not detect/install Meu Painel and therefore cannot loop/fallback.

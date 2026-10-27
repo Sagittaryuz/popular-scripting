@@ -8,7 +8,7 @@ for(const family of ['small','medium','large']){
  for(let i=0;i<16/cap;i++){const p=paging.pageRows(rows,family,null,i);assert.equal(p.index,i);assert.equal(p.rows.length,cap);seen.push(...p.rows.map(r=>r.asset.code))}
  assert.equal(new Set(seen).size,16);assert.equal(paging.pageRows(rows,family,null,16/cap).index,0);
 }
-assert.deepEqual(Array.from(paging.pageRows(rows,'small',['a4','a5','a6','a7'],0).rows,r=>r.asset.code),['a4','a5','a6','a7']);
+assert.deepEqual(Array.from(paging.pageRows(rows,'small',['a4','a5','a6','a7'],0).rows,r=>r.asset.code),['a0','a1','a2','a3'],'Legacy small-widget selection must not override fixed order');
 assert.equal(paging.pageRows([], 'medium',null,20).count,1);assert.throws(()=>paging.pageKey('invalid'));
 (async()=>{
  const values=new Map([['popular-pro-rows',rows]]),defs={};let queries=0,reloads=0;
@@ -30,8 +30,12 @@ assert.equal(paging.pageRows([], 'medium',null,20).count,1);assert.throws(()=>pa
  for(const index of [0,1]){
   values.set('popular-page:medium',index);
   const tree=viewModule.exports.PopularView({model:{family:'medium',rows:display,api:fakeApi,status:{label:'fixture'},queriedAt:1234},width:338,height:170});
-  assert(tree.props.accessibilityLabel.includes('a'+index*8+','));assert(!tree.props.accessibilityLabel.includes('a'+(index?0:8)+','));assert.equal(tree.props.widgetURL,'scripting://run/Meu%20Painel?section=market');
+  assert(tree.props.accessibilityLabel.includes('a0,'),'Rendered medium widget must keep the fixed first page');assert(!tree.props.accessibilityLabel.includes('a8,'),'Persisted page state must not replace the fixed eight');assert.equal(tree.props.widgetURL,'scripting://run/Meu%20Painel?section=market');
   const walk=n=>n&&typeof n==='object'?[n,...(n.children||[]).flatMap(walk)]:[],tap=walk(tree).find(n=>n.type==='Button');assert.equal(tap.props.intent.name,'RefreshAndOpenMarket');assert.equal(tap.props.frame.width,338);assert.equal(tap.props.frame.height,170);
  }
- console.log('PASS pagination: full universe, distinct pages, wraparound, preferred small page, family isolation, actual intent with forced data collection, cached render preserves observation time. Tap target preserves navigation.');
+  values.set('popular-small-codes',['a4','a5','a6','a7']);values.set('popular-page:small',0);
+  const smallTree=viewModule.exports.PopularView({model:{family:'small',rows:display,api:fakeApi,status:{label:'fixture'},queriedAt:1234},width:158,height:158});
+  assert(smallTree.props.accessibilityLabel.startsWith('a0,'),'Small widget must start with Selic slot from fixed model order');
+  assert(!smallTree.props.accessibilityLabel.includes('a4,'),'Persisted legacy small selection must be ignored');
+ console.log('PASS pagination: full universe, distinct pages, wraparound, fixed small order despite legacy selection, family isolation, actual intent with forced data collection, cached render preserves observation time. Tap target preserves navigation.');
 })().catch(e=>{console.error(e);process.exitCode=1});

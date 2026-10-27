@@ -1,7 +1,7 @@
 import { createEngine } from './original-engine'
 import { createHost } from './host'
 import { dashboardStatus, refreshMinutes } from './pro-common'
-export const VERSION='0.2.12'
+export const VERSION='0.2.13'
 export const FIXED_INDICATOR_CODES=['SELIC','IPCA','IBOV','USD/BRL','SOJA_JATAI_GO','CUB_GO','DIESEL_S10','BRENT'] as const
 export const MODES=['fixed'] as const
 function fixedIndicatorRows(rows:any[]){

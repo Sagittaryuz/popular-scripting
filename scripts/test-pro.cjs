@@ -12,7 +12,7 @@ assert.equal(api.crossed(rule,{value:4,at:now},{value:6,at:now-1}),false);
 assert.equal(api.quoteObservation(row(null)),null);assert.equal(api.quoteObservation(row(6,now-10*86400000)),null);assert.equal(api.quoteObservation(row(6,now+3600000)),null);
 assert.throws(()=>api.validateRules([{...rule,threshold:Infinity}]));assert.throws(()=>api.validateRules([rule,rule]));
 const rows=['a','b','c','d','e','f','g','h'].map(code=>({asset:{code}}));
-assert.equal(api.selectSmall(rows,['e','f','g','h'])[0].asset.code,'e');assert.equal(api.selectSmall(rows,['e','e','g','h'])[0].asset.code,'a');
+assert.equal(api.selectSmall(rows,['e','f','g','h'])[0].asset.code,'a');assert.equal(api.selectSmall(rows,['e','e','g','h'])[0].asset.code,'a');
 assert(api.historyCSV([row(5)]).includes('"5"'));assert(api.historyCSV([{...row(5),asset:{...row(5).asset,code:'=HYPERLINK("x")'}}]).includes("'=HYPERLINK"));
 (async()=>{
  const modelCode=transformSync(require('node:fs').readFileSync(path.join(dir,'model.ts'),'utf8'),{loader:'ts',format:'cjs'}).code;
@@ -23,7 +23,7 @@ assert(api.historyCSV([row(5)]).includes('"5"'));assert(api.historyCSV([{...row(
   if(id==='./pro-common')return {refreshMinutes:()=>1,dashboardStatus:()=>{}};
   return {createEngine:(_,options)=>{collectionFamily=options.family;return {collectRows:async()=>nativeRows,orderingFeedback:()=>({label:'fixture'}),readOrderingMode:()=> 'fixed',displayName:a=>a.code,displayPrice:()=> '1',displayPercent:()=> '0',presentationPercent:()=>0,timeText:()=>'',unitText:()=>'',quoteAudit:r=>r.asset.code,failures:[]}}};
  }});
- const small=await modelModule.exports.loadModel('small');assert.equal(collectionFamily,'medium');assert.equal(small.family,'small');assert.equal(small.rows.length,8);assert.equal(api.selectSmall(small.rows,['e','f','g','h'])[0].asset.code,'e');
+ const small=await modelModule.exports.loadModel('small');assert.equal(collectionFamily,'medium');assert.equal(small.family,'small');assert.equal(small.rows.length,8);assert.equal(api.selectSmall(small.rows,['e','f','g','h'])[0].asset.code,'a');
  const values=new Map([['popular-alerts-enabled',true],['popular-alerts',[rule]]]);let sent=0;
  const alerts=load('alerts.ts',{Storage:{get:k=>values.get(k)??null,set:(k,v)=>{values.set(k,v);return true}},Notification:{schedule:async()=>{sent++}}});
  await alerts.evaluateAlerts([row(4)]);assert.equal(sent,0);
