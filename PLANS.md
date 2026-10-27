@@ -1,5 +1,9 @@
 # Melhorias Scripting Pro — 23/10/2026
 
+## 0.2.15 — bloco interno agrupado
+
+Voltar aos offsets internos da 0.2.13 sem reverter ordem fixa, dados ou correções posteriores. Agrupar as três linhas em uma caixa única de 36 pontos e centralizar somente essa caixa no ícone. Preservar ícones, fontes, cores, divisórias e alturas externas; validar small/medium/large, quatro/oito linhas, dados longos/ausentes e prévia com caixa/ícone marcados. iPhone permanece não testado.
+
 ## 0.2.14 — alinhamento interno dos ativos
 
 Construir cada linha a partir da caixa central da linha 2: manter ícone e métricas externas; alinhar centro de gráfico/variação ao centro do ícone; encerrar linha 1 no topo da caixa e linha 3 na base inferior. Não alterar fontes, cores, dados, APIs, divisórias, ordem ou alturas. Validar small/medium/large, nomes longos, valores negativos e datas ausentes com PNG comparativo; iPhone permanece não testado.

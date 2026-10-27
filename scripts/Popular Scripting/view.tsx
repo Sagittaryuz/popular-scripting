@@ -2,14 +2,15 @@ import { Button, Canvas, Image, Rectangle, Text, ZStack, Script } from 'scriptin
 import { pageRows } from './pagination'
 import { assets } from './assets'
 import { drawBadge } from './badges'
-import { GEOMETRY as G, layout, place, movementColor, curvePlan, monthBand, drawCurve } from './draw'
+import { GEOMETRY as G, layout, place, placeInBlock, movementColor, curvePlan, monthBand, drawCurve } from './draw'
 import { RefreshAndOpenMarket } from './app_intents'
 const images:Record<string,UIImage>={}
 const CUB_VARIATION_MIN_SIZE=6.5
-function Label({value,plan,x,y,width,height,size,min,bold=false,color='white',right=false}:any){
+function Label({value,plan,x,y,width,height,size,min,bold=false,color='white',right=false,placeFn=place}:any){
+  const positioned=placeFn(plan,x,y,width,height,right?'trailing':'leading')
   return <Text font={size*plan.scale} fontWeight={bold?'semibold':'regular'} foregroundStyle={color}
-    lineLimit={1} minScaleFactor={min/size} frame={place(plan,x,y,width,height,right?'trailing':'leading').frame}
-    position={place(plan,x,y,width,height).position}>{value}</Text>
+    lineLimit={1} minScaleFactor={min/size} frame={positioned.frame}
+    position={positioned.position}>{value}</Text>
 }
 function variationMinimumSize(row:any,value:string){
   // CUB-GO keeps its published three-decimal M/M value in the fixed 34 pt box.
@@ -34,23 +35,27 @@ export function PopularView({model,width,height}:{model:any;width:number;height:
       const x=Math.floor(i/4)*158,y=(i%4)*(G.row+G.gap),detail=x+G.detail,color=movementColor(row),curve=curvePlan(model.api,row)
       const band=monthBand(curve),custom=['SOJA_JATAI_GO','CUB_GO','IPCA','DIESEL_S10'].includes(row.asset.code)
       const percentMinimum=variationMinimumSize(row,row.percent)
+      const blockLabel=(key:string,value:string,x:number,y:number,w:number,h:number,size:number,min:number,bold=false,color='white',right=false)=>
+        <Label key={key} value={value} plan={plan} x={x} y={y} width={w} height={h} size={size} min={min} bold={bold} color={color} right={right} placeFn={placeInBlock}/>
       return <ZStack key={row.asset.code} alignment="topLeading" frame={{width,height}}>
-        {custom?<Canvas opaque={false} {...place(plan,x,y+5,26,26)} draw={(ctx,size)=>{ctx.scale(size.width/26,size.height/26);drawBadge(ctx,row.asset.code)}}/>
-          :images[row.asset.code]?<Image image={images[row.asset.code]} resizable renderingMode="original" {...place(plan,x,y+5,26,26)}/>:<Image systemName="chart.line.uptrend.xyaxis" font={11*plan.scale} foregroundStyle="#D1D1D6" background={{style:'#34343A',shape:{type:'circle'}}} {...place(plan,x,y+5,26,26)}/>}
-        {label('name',row.name,detail,y+G.line1Top,G.name,G.top,10,8,true)}
-        {label('price',row.price,detail+G.name,y+G.line1Top,G.price,G.top,17.5,8.5,true,'white',true)}
-        <Canvas opaque={false} {...place(plan,detail,y+G.graphTop,G.graph,G.graphHeight)} draw={(ctx,size)=>drawCurve(ctx,size,curve,color)}/>
-        {!curve.points.length?label('missing','—',detail,y+G.graphTop,G.graph,G.graphHeight,5,4,false,color):null}
-        {band.width>0?<ZStack alignment="topLeading" {...place(plan,detail+band.left,y+23,band.width,5)}>
+        {custom?<Canvas opaque={false} {...place(plan,x,y+G.iconTop,26,26)} draw={(ctx,size)=>{ctx.scale(size.width/26,size.height/26);drawBadge(ctx,row.asset.code)}}/>
+          :images[row.asset.code]?<Image image={images[row.asset.code]} resizable renderingMode="original" {...place(plan,x,y+G.iconTop,26,26)}/>:<Image systemName="chart.line.uptrend.xyaxis" font={11*plan.scale} foregroundStyle="#D1D1D6" background={{style:'#34343A',shape:{type:'circle'}}} {...place(plan,x,y+G.iconTop,26,26)}/>}
+        <ZStack key="detail-block" alignment="topLeading" {...place(plan,detail,y+G.blockTop,G.blockWidth,G.blockHeight)}>
+        {blockLabel('name',row.name,0,G.line1Top,G.name,G.top,10,8,true)}
+        {blockLabel('price',row.price,G.name,G.line1Top,G.price,G.top,17.5,8.5,true,'white',true)}
+        <Canvas opaque={false} {...placeInBlock(plan,0,G.graphTop,G.graph,G.graphHeight)} draw={(ctx,size)=>drawCurve(ctx,size,curve,color)}/>
+        {!curve.points.length?blockLabel('missing','—',0,G.graphTop,G.graph,G.graphHeight,5,4,false,color):null}
+        {band.width>0?<ZStack alignment="topLeading" {...placeInBlock(plan,band.left,G.monthTop,band.width,5)}>
         <ZStack alignment="topLeading" frame={{width:band.width*plan.scale,height:5*plan.scale}} clipped
           mask={<Rectangle fill="white" frame={{width:band.width*plan.scale,height:5*plan.scale}}/>}>
           {band.labels.map((month:any,j:number)=><Text key={'month-'+j} font={5*plan.scale} foregroundStyle={color}
             lineLimit={1} minScaleFactor={.8} frame={{width:14*plan.scale,height:5*plan.scale,alignment:'leading'}}
             position={{x:(month.x+7)*plan.scale,y:2.5*plan.scale}}>{month.text}</Text>)}
           </ZStack></ZStack>:null}
-        {label('percent',row.percent,detail+G.graph+3,y+G.line2Top,G.percent,G.middle,10.5,percentMinimum,true,color,true)}
-        {label('unit',row.unit,detail,y+G.line3Top,G.name,G.bottom,6,5,false,'#96969C')}
-        {label('time',row.time,detail+68,y+G.line3Top,48,G.bottom,7.5,6,false,'#96969C',true)}
+        {blockLabel('percent',row.percent,G.graph+3,G.line2Top,G.percent,G.middle,10.5,percentMinimum,true,color,true)}
+        {blockLabel('unit',row.unit,0,G.line3Top,G.name,G.bottom,6,5,false,'#96969C')}
+        {blockLabel('time',row.time,68,G.line3Top,48,G.bottom,7.5,6,false,'#96969C',true)}
+        </ZStack>
         {i%4<3?<Rectangle fill="rgba(255,255,255,0.13)" {...place(plan,x,y+36,146,G.gap)}/>:null}
         </ZStack>
     })}

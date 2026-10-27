@@ -1,3 +1,7 @@
+## 0.2.15 — bloco interno agrupado
+
+Cada ativo preserva a disposição de linhas da 0.2.13 dentro de um super-elemento de 36 pontos. A caixa total do bloco compartilha o centro vertical do ícone; gráfico e variação não são centralizados independentemente. Ícones, fontes, cores, divisórias, alturas externas, ordem fixa e dados permanecem inalterados. A validação cobre small/medium/large, quatro/oito linhas, nomes longos, valores negativos e ausência de data; iPhone nativo não testado.
+
 ## 0.2.14 — alinhamento interno dos ativos
 
 O ícone mantém sua posição e diâmetro. A caixa da linha 2 é a referência: gráfico e variação são centralizados nela e no ícone; nome/valor ficam alinhados pelo topo da linha 1; código/data ficam alinhados pela base da linha 3. As alturas, fontes, cores, divisórias, ordem fixa, dados e fontes API permanecem iguais. A validação desktop cobre os três tamanhos e casos de texto/valor/data extremos; iPhone nativo não foi testado.

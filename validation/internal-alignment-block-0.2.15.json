@@ -1,0 +1,27 @@
+{
+  "version": "0.2.15",
+  "reference": "0.2.13",
+  "repository": "Sagittaryuz/popular-scripting",
+  "branch": "main",
+  "importPath": "scripts/Popular Scripting",
+  "block": {
+    "top": 0,
+    "height": 36,
+    "center": 18,
+    "width": 116,
+    "icon": {"top": 5, "height": 26, "center": 18},
+    "line1": {"top": 0, "height": 17, "bottom": 17},
+    "line2": {"graphTop": 17, "graphHeight": 5.5, "variationTop": 17, "variationHeight": 11},
+    "monthTop": 23,
+    "line3": {"top": 28, "height": 8, "bottom": 36}
+  },
+  "sizes": {"small": 4, "medium": 8, "large": 8},
+  "fixtures": ["long-name", "negative-value", "missing-date-or-value"],
+  "preserved": ["icon-diameter", "row-height", "fonts", "colors", "dividers", "fixed-order", "data", "api-sources", "0.2.14-reference"],
+  "tests": [
+    "npm run check",
+    "npm test",
+    "node scripts/test-internal-alignment.cjs"
+  ],
+  "nativeIPhone": "not-tested"
+}

@@ -1,3 +1,9 @@
+## 0.2.15 — bloco interno centralizado
+
+- Recupera a disposição interna da 0.2.13 e agrupa nome/valor, gráfico/variação e código/data em um único bloco de 36 pontos.
+- Centraliza somente a caixa total do bloco no centro do ícone; a linha 2 não é recentralizada e os dados, fontes, ordem, ícones, cores, divisórias e alturas externas permanecem iguais.
+- Mantém a 0.2.14 no histórico como referência recuperável; iPhone nativo ainda não testado.
+
 ## 0.2.14 — 2026-10-27
 
 - Alinha internamente cada ativo pela caixa da linha 2: gráfico e variação compartilham o centro do ícone; nome/valor usam o topo e código/data usam a base.

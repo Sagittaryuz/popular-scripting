@@ -1,11 +1,12 @@
 // @ts-nocheck
 // Text belongs to native Text views, never to Canvas baselines or clipping boxes.
-const ROW=36,TOP=17,MIDDLE=11,BOTTOM=8,GRAPH_HEIGHT=5.5;
-// The icon remains at y=5..31, so its center is 18. Build the internal
-// rows from the middle box: line 1 ends at its top and line 3 keeps the
-// approved bottom edge. This prevents independent baseline drift.
-const LINE2_TOP=(ROW-MIDDLE)/2;
-export const GEOMETRY=Object.freeze({column:146,columnGap:12,row:ROW,gap:2/3,icon:26,detail:30,name:64,price:52,graph:78,graphHeight:GRAPH_HEIGHT,percent:34,top:TOP,middle:MIDDLE,bottom:BOTTOM,line1Top:LINE2_TOP-TOP,line2Top:LINE2_TOP,graphTop:LINE2_TOP+(MIDDLE-GRAPH_HEIGHT)/2,line3Top:ROW-BOTTOM});
+const ROW=36,TOP=17,MIDDLE=11,BOTTOM=8,GRAPH_HEIGHT=5.5,ICON_TOP=5;
+// Keep the 0.2.13 line arrangement inside one 36 pt super-element. The
+// block is centered once as a whole; its children keep their historical
+// offsets, so line 2 is not independently recentered.
+const BLOCK_TOP=(ROW-ROW)/2,BLOCK_HEIGHT=ROW,BLOCK_CENTER=BLOCK_TOP+BLOCK_HEIGHT/2;
+const LINE1_TOP=BLOCK_TOP,GRAPH_TOP=BLOCK_TOP+TOP,MONTH_TOP=BLOCK_TOP+23,LINE2_TOP=BLOCK_TOP+TOP,LINE3_TOP=BLOCK_TOP+28;
+export const GEOMETRY=Object.freeze({column:146,columnGap:12,row:ROW,gap:2/3,icon:26,iconTop:ICON_TOP,detail:30,blockWidth:146-30,blockTop:BLOCK_TOP,blockHeight:BLOCK_HEIGHT,blockCenter:BLOCK_CENTER,name:64,price:52,graph:78,graphHeight:GRAPH_HEIGHT,percent:34,top:TOP,middle:MIDDLE,bottom:BOTTOM,line1Top:LINE1_TOP,line2Top:LINE2_TOP,graphTop:GRAPH_TOP,monthTop:MONTH_TOP,line3Top:LINE3_TOP});
 export function layout(family,width,height){
   if(!Number.isFinite(width)||!Number.isFinite(height)||width<=12||height<=8)throw Error('Dimensão inválida');
   const wide=family!=='small',large=family==='large',contentWidth=wide?304:146;
@@ -18,6 +19,10 @@ export function layout(family,width,height){
 export function place(plan,x,y,width,height,alignment='center'){
   const s=plan.scale;
   return {frame:{width:width*s,height:height*plan.scaleY,alignment},position:{x:plan.x+(x+width/2)*s,y:plan.y+(y+height/2)*plan.scaleY}};
+}
+export function placeInBlock(plan,x,y,width,height,alignment='center'){
+  const s=plan.scale;
+  return {frame:{width:width*s,height:height*plan.scaleY,alignment},position:{x:(x+width/2)*s,y:(y+height/2)*plan.scaleY}};
 }
 export function movementColor(row){return row.movement>0?'#30C795':row.movement<0?'#FF5967':'#96969C';}
 export function curvePlan(api,row,width=GEOMETRY.graph){

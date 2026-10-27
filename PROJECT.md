@@ -1,4 +1,8 @@
-# Popular Scripting — Pro 0.2.14
+# Popular Scripting — Pro 0.2.15
+
+## 0.2.15 — bloco interno agrupado
+
+A disposição interna recupera os offsets da 0.2.13. Nome/valor, gráfico/variação e código/data ficam dentro de um único bloco de 36 pontos, cuja caixa total é centralizada no centro do ícone. A linha 2 não é recentralizada. Ícones, alturas externas, fontes, cores, divisórias, ordem fixa, dados, fontes API e a referência recuperável da 0.2.14 permanecem preservados; iPhone nativo não testado.
 
 ## 0.2.14 — alinhamento interno pela linha 2
 
