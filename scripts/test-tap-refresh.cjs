@@ -11,7 +11,7 @@ async function runCase(offline){
   const values=new Map(),events=[],definitions={};let release;
   const pending=new Promise(resolve=>{release=resolve});
   const sdk={AppIntentManager:{register:definition=>{definitions[definition.name]=definition;return ()=>({name:definition.name})}},AppIntentProtocol:{AppIntent:0},ControlWidget:{reloadButtons:()=>events.push('control')},Safari:{openURL:async url=>{events.push(['navigate',url]);return true}},Script:{createRunURLScheme:(name,params)=>`scripting://run/${encodeURIComponent(name)}?section=${encodeURIComponent(params.section)}`}};
-  const deps={scripting:sdk,'./pagination':{pageFamily:value=>value,pageKey:value=>`page:${value}`,pageRows:()=>({index:0,count:1,rows:[]})},'./model':{loadModel:async()=>{events.push('query');if(offline)throw Error('offline');return pending}},'./alerts':{evaluateAlerts:async()=>events.push('alerts')},'./pro-common':{reloadWidgets:async()=>events.push('reload')}};
+  const deps={scripting:sdk,'./pagination':{pageFamily:value=>value,pageKey:value=>`page:${value}`,pageRows:()=>({index:0,count:1,rows:[]})},'./model':{loadModel:async()=>{events.push('query');if(offline)throw Error('offline');return pending.then(model=>{events.push('persist');return model})}},'./alerts':{evaluateAlerts:async()=>events.push('alerts')},'./pro-common':{reloadWidgets:async()=>events.push('reload')}};
   load(deps,values);
   const operation=definitions.RefreshAndOpenMarket.perform();
   await tick();
@@ -23,5 +23,6 @@ async function runCase(offline){
   assert(events.includes('reload'),'Tap must request a redraw even when data is unavailable');
   assert.equal(values.get('manual-refresh').state,offline?'failed-cache-preserved':'queried');
   assert(events.indexOf('reload')>navigationIndex,'Redraw happens after navigation was requested');
+  if(!offline){assert(events.includes('persist'));assert(events.indexOf('reload')>events.indexOf('persist'),'Redraw follows persisted data when refresh completes')}
 }
-(async()=>{await runCase(false);await runCase(true);console.log('PASS tap refresh: query, navigation, redraw and offline cache preservation are independent; no retry loop.');})().catch(error=>{console.error(error);process.exitCode=1});
+(async()=>{await runCase(false);await runCase(true);console.log('PASS tap refresh: request starts before navigation; completed refresh persists before redraw, while completion before external-app suspension is not guaranteed.');})().catch(error=>{console.error(error);process.exitCode=1});

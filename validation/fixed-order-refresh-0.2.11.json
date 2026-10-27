@@ -20,6 +20,10 @@
     "intent": "RefreshAndOpenMarket",
     "uri": "scripting://run/Meu%20Painel?section=market",
     "startsRefreshBeforeNavigationRequest": true,
+    "awaitsRefreshBeforeNavigation": false,
+    "dataUpdateGuaranteedBeforeNavigation": false,
+    "externalAppMaySuspendBeforeCompletion": true,
+    "reloadAfterPersistenceWhenRefreshCompletes": true,
     "requestsWidgetReload": true,
     "offlinePreservesCache": true,
     "retryLoop": false

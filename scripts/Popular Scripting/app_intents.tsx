@@ -21,6 +21,9 @@ export const RefreshPopular=AppIntentManager.register({name:'RefreshPopular',pro
 // A widget tap requests the refresh and immediately preserves the existing
 // Meu Painel destination. The query is deliberately not awaited before the
 // URL is opened: network/offline state must never hold navigation hostage.
+// Therefore completion before the external app appears is not guaranteed;
+// when the AppIntent remains alive, refreshPopularData persists first and its
+// finally block requests the redraw afterward.
 export const RefreshAndOpenMarket=AppIntentManager.register({name:'RefreshAndOpenMarket',protocol:AppIntentProtocol.AppIntent,perform:async()=>{
   const refresh=refreshPopularData()
   try{await Safari.openURL(MARKET_URL)}catch{}

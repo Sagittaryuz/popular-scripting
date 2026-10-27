@@ -1,6 +1,6 @@
 ## Atualização 0.2.11 — ordem fixa e toque com refresh
 
-Os oito indicadores aparecem em ordem fixa: Selic, IPCA, Ibovespa, Dólar, Soja GO, CUB-GO, Diesel S10 e Brent. Uma fonte ausente conserva sua posição com a reserva sem cotação; não há ordenação por variação. Tocar qualquer área do widget solicita uma nova coleta e uma recarga pelo AppIntent e, sem esperar a rede, abre `Meu Painel` na seção `Mercado`. O iOS decide quando o render solicitado ocorre; cache e navegação permanecem disponíveis offline. A apresentação nativa no iPhone ainda não foi testada.
+Os oito indicadores aparecem em ordem fixa: Selic, IPCA, Ibovespa, Dólar, Soja GO, CUB-GO, Diesel S10 e Brent. Uma fonte ausente conserva sua posição com a reserva sem cotação; não há ordenação por variação. Tocar qualquer área do widget solicita uma nova coleta e uma recarga pelo AppIntent e, sem esperar a rede, abre `Meu Painel` na seção `Mercado`. A coleta concluída persiste os dados antes de pedir a recarga; como a abertura é imediata, o iOS pode suspender o AppIntent depois da troca de app, portanto a conclusão antes da navegação não é garantida. Cache e navegação permanecem disponíveis offline. A apresentação nativa no iPhone ainda não foi testada.
 
 ## Atualização 0.2.10 — toque para Meu Painel
 

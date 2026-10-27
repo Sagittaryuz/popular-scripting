@@ -2,7 +2,7 @@
 
 ## 0.2.11 — ordem fixa e atualização no toque
 
-Os oito indicadores do widget usam a sequência `Selic, IPCA, Ibovespa, Dólar, Soja GO, CUB-GO, Diesel S10, Brent`. O motor produz uma reserva explícita para qualquer fonte ausente, sem criar cotação, e a superfície Scripting não oferece mais ordenação por variação. O toque em qualquer área é um `Button` de tela inteira ligado ao AppIntent `RefreshAndOpenMarket`: a coleta começa, `Safari.openURL` solicita o URI existente do Meu Painel sem esperar a rede, e `Widget.reloadAll()` é pedido ao final. Não há instalação, fallback ou repetição; offline conserva cache. A API/iOS pode adiar a execução/render; iPhone nativo não foi testado.
+Os oito indicadores do widget usam a sequência `Selic, IPCA, Ibovespa, Dólar, Soja GO, CUB-GO, Diesel S10, Brent`. O motor produz uma reserva explícita para qualquer fonte ausente, sem criar cotação, e a superfície Scripting não oferece mais ordenação por variação. O toque em qualquer área é um `Button` de tela inteira ligado ao AppIntent `RefreshAndOpenMarket`: a coleta começa, `Safari.openURL` solicita o URI existente do Meu Painel sem esperar a rede, e `Widget.reloadAll()` é pedido ao final. Quando o AppIntent continua vivo, a recarga vem depois da persistência; a conclusão da coleta antes da troca para outro app não é garantida pelo iOS. Não há instalação, fallback ou repetição; offline conserva cache. iPhone nativo não foi testado.
 
 ## 0.2.10 — toque Mercado no Meu Painel
 
