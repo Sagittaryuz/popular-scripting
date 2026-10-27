@@ -1,3 +1,7 @@
+## 0.2.14 — alinhamento interno dos ativos
+
+O ícone mantém sua posição e diâmetro. A caixa da linha 2 é a referência: gráfico e variação são centralizados nela e no ícone; nome/valor ficam alinhados pelo topo da linha 1; código/data ficam alinhados pela base da linha 3. As alturas, fontes, cores, divisórias, ordem fixa, dados e fontes API permanecem iguais. A validação desktop cobre os três tamanhos e casos de texto/valor/data extremos; iPhone nativo não foi testado.
+
 ## 0.2.13 — ordem fixa no pequeno
 
 O pequeno não usa mais `popular-small-codes` nem páginas persistidas: sua página é sempre `Selic, IPCA, Ibovespa, Dólar`. Médio e grande usam os oito indicadores na ordem fixa, incluindo Soja GO, CUB-GO, Diesel S10 e Brent. Preferências antigas não são apagadas, mas deixam de controlar a ordem; a tela não oferece uma seleção que contradiga a regra. Slots sem fonte permanecem visíveis. O projeto existente deve ser atualizado pelo endereço `https://github.com/Sagittaryuz/popular-scripting/tree/main/scripts/Popular%20Scripting`, sem reimportar uma cópia em outro caminho. iPhone nativo não testado.

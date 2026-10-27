@@ -1,6 +1,11 @@
 // @ts-nocheck
 // Text belongs to native Text views, never to Canvas baselines or clipping boxes.
-export const GEOMETRY=Object.freeze({column:146,columnGap:12,row:36,gap:2/3,icon:26,detail:30,name:64,price:52,graph:78,percent:34,top:17,middle:11,bottom:8});
+const ROW=36,TOP=17,MIDDLE=11,BOTTOM=8,GRAPH_HEIGHT=5.5;
+// The icon remains at y=5..31, so its center is 18. Build the internal
+// rows from the middle box: line 1 ends at its top and line 3 keeps the
+// approved bottom edge. This prevents independent baseline drift.
+const LINE2_TOP=(ROW-MIDDLE)/2;
+export const GEOMETRY=Object.freeze({column:146,columnGap:12,row:ROW,gap:2/3,icon:26,detail:30,name:64,price:52,graph:78,graphHeight:GRAPH_HEIGHT,percent:34,top:TOP,middle:MIDDLE,bottom:BOTTOM,line1Top:LINE2_TOP-TOP,line2Top:LINE2_TOP,graphTop:LINE2_TOP+(MIDDLE-GRAPH_HEIGHT)/2,line3Top:ROW-BOTTOM});
 export function layout(family,width,height){
   if(!Number.isFinite(width)||!Number.isFinite(height)||width<=12||height<=8)throw Error('Dimensão inválida');
   const wide=family!=='small',large=family==='large',contentWidth=wide?304:146;

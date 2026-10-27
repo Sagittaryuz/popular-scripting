@@ -7,7 +7,7 @@ const model=fs.readFileSync(path.join(root,'model.ts'),'utf8');
 const engine=fs.readFileSync(path.join(root,'original-engine.js'),'utf8');
 const script=JSON.parse(fs.readFileSync(path.join(root,'script.json'),'utf8'));
 
-assert.equal(script.version,'0.2.13');
+assert.equal(script.version,'0.2.14');
 assert.match(view,/import \{ Button, Canvas, Image, Rectangle, Text, ZStack, Script \} from 'scripting'/);
 assert.match(view,/widgetURL=\{Script\.createRunURLScheme\("Meu Painel", \{ section: "market" \}\)\}/);
 assert.match(view,/Button intent=\{RefreshAndOpenMarket\(undefined\)\}/);

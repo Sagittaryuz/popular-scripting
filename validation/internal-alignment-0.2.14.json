@@ -1,0 +1,26 @@
+{
+  "version": "0.2.14",
+  "repository": "Sagittaryuz/popular-scripting",
+  "branch": "main",
+  "importPath": "scripts/Popular Scripting",
+  "alignment": {
+    "rowHeight": 36,
+    "icon": {"top": 5, "height": 26, "center": 18},
+    "line1": {"top": -4.5, "height": 17, "bottom": 12.5, "nameValueTopAligned": true},
+    "line2": {"top": 12.5, "height": 11, "center": 18, "graphTop": 15.25, "graphHeight": 5.5, "graphVariationIconCentersCoincident": true},
+    "line3": {"top": 28, "height": 8, "bottom": 36, "codeDateBottomAligned": true}
+  },
+  "sizes": {
+    "small": 4,
+    "medium": 8,
+    "large": 8
+  },
+  "fixtures": ["long-name", "negative-value", "missing-date-or-value"],
+  "preserved": ["icon-diameter", "row-height", "fonts", "colors", "dividers", "fixed-order", "data", "api-sources"],
+  "nativeIPhone": "not-tested",
+  "tests": [
+    "npm run check",
+    "npm test",
+    "node scripts/test-internal-alignment.cjs"
+  ]
+}

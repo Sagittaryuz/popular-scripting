@@ -1,4 +1,8 @@
-# Popular Scripting — Pro 0.2.13
+# Popular Scripting — Pro 0.2.14
+
+## 0.2.14 — alinhamento interno pela linha 2
+
+Cada ativo mantém a caixa externa aprovada e o ícone no mesmo lugar. A linha 2 usa `GEOMETRY.line2Top`/`middle` como caixa explícita: o centro do gráfico (`graphTop` + `graphHeight/2`) e o centro da variação coincidem com o centro do ícone (`y=5` + `icon/2`). A linha 1 usa `line1Top` e termina no limite superior da caixa; nome e valor compartilham o topo. A linha 3 conserva `line3Top`/`bottom`; código e última apuração compartilham a base. Nenhuma fonte, cor, API, dado, ordem, diâmetro do ícone ou altura externa foi alterada. Testes desktop cobrem small/medium/large, texto longo, valor negativo e ausência de data; iPhone nativo não testado.
 
 ## 0.2.13 — ordem fixa do widget pequeno
 

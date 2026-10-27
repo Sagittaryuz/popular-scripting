@@ -1,3 +1,9 @@
+## 0.2.14 — 2026-10-27
+
+- Alinha internamente cada ativo pela caixa da linha 2: gráfico e variação compartilham o centro do ícone; nome/valor usam o topo e código/data usam a base.
+- Preserva ícones, alturas externas, fontes, cores, divisórias, dados, fontes API e ordem dos quatro/oito indicadores.
+- Adiciona teste medido para small/medium/large, nomes longos, valores negativos e data ausente; iPhone nativo ainda não testado.
+
 ## 0.2.13 — 2026-10-27
 
 - Corrige a entrega do widget pequeno: estado legado de `popular-small-codes` não pode substituir `Selic, IPCA, Ibovespa, Dólar`.
