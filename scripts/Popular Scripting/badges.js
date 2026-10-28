@@ -5,7 +5,7 @@ const Size=class{};const Rect=class{constructor(x,y,width,height){Object.assign(
 const Point=class{constructor(x,y){Object.assign(this,{x,y});}};
 const Color=class{constructor(hex){this.hex=hex;}static white(){return new Color('FFFFFF');}};
 const Path=class{constructor(){this.ops=[];}move(p){this.ops.push(['moveTo',p.x,p.y]);}addLine(p){this.ops.push(['lineTo',p.x,p.y]);}closeSubpath(){this.ops.push(['closePath']);}addRect(r){this.ops.push(['rect',r.x,r.y,r.width,r.height]);}addEllipse(r){this.ops.push(['ellipse',r.x+r.width/2,r.y+r.height/2,r.width/2,r.height/2,0,0,Math.PI*2,false]);}};
-const DrawContext=class{addPath(p){native.beginPath();for(const [name,...args] of p.ops)native[name](...args);}setFillColor(c){native.fillStyle='#'+c.hex;}setStrokeColor(c){native.strokeStyle='#'+c.hex;}setLineWidth(w){native.lineWidth=w;}fillPath(){native.fill();}strokePath(){native.stroke();}getImage(){return null;}};
+const DrawContext=class{addPath(p){native.beginPath();for(const [name,...args] of p.ops)native[name](...args);}setFillColor(c){native.fillStyle='#'+c.hex;}setStrokeColor(c){native.strokeStyle='#'+c.hex;}setLineWidth(w){native.lineWidth=w;}fillPath(){native.fill();}strokePath(){native.stroke();}save(){native.save();}clip(){native.clip();}restore(){native.restore();}getImage(){return null;}};
 function soybeanPolygon(ctx,points,color) {
   const path=new Path();
   points.forEach((p,i)=>i?path.addLine(new Point(p[0],p[1])):path.move(new Point(p[0],p[1])));
@@ -45,6 +45,28 @@ function drawSoybeanBadge() {
   return ctx.getImage();
 }
 
+function drawUSFlagBadge() {
+  const ctx=new DrawContext();ctx.size=new Size(26,26);ctx.opaque=false;ctx.respectScreenScale=true;
+  // The flag fills a square source and is clipped to the same 26 pt disk used
+  // by the other asset badges. Stars are part of the flag; no currency glyph
+  // or second emblem is drawn on top of it.
+  ctx.save();
+  const clip=new Path();clip.addEllipse(new Rect(0,0,26,26));ctx.addPath(clip);ctx.clip();
+  for(let row=0;row<13;row++){
+    const stripe=new Path();stripe.addRect(new Rect(0,row*2,26,2));ctx.addPath(stripe);ctx.setFillColor(new Color(row%2?'FFFFFF':'B22234'));ctx.fillPath();
+  }
+  const canton=new Path();canton.addRect(new Rect(0,0,10.4,14));ctx.addPath(canton);ctx.setFillColor(new Color('3C3B6E'));ctx.fillPath();
+  for(let row=0;row<9;row++){
+    const count=row%2?5:6,offset=row%2?1.35:.65;
+    for(let column=0;column<count;column++){
+      const star=new Path();star.addEllipse(new Rect(offset+column*1.58,1.05+row*1.42,.72,.72));
+      ctx.addPath(star);ctx.setFillColor(new Color('FFFFFF'));ctx.fillPath();
+    }
+  }
+  ctx.restore();
+  return ctx.getImage();
+}
+
 function drawEconomicBadge(code) {
   const ctx=new DrawContext();ctx.size=new Size(26,26);ctx.opaque=false;ctx.respectScreenScale=true;
   const disk=new Path();disk.addEllipse(new Rect(0,0,26,26));ctx.addPath(disk);ctx.setFillColor(new Color(code==='CUB_GO'?'3976B9':code==='IPCA'?'7C4DBA':'288A83'));ctx.fillPath();
@@ -55,5 +77,5 @@ function drawEconomicBadge(code) {
   ctx.addPath(glyph);ctx.setStrokeColor(Color.white());ctx.setLineWidth(1.2);ctx.strokePath();return ctx.getImage();
 }
 
-if(code==='SOJA_JATAI_GO')drawSoybeanBadge();else drawEconomicBadge(code);
+if(code==='SOJA_JATAI_GO')drawSoybeanBadge();else if(code==='USD/BRL')drawUSFlagBadge();else drawEconomicBadge(code);
 }

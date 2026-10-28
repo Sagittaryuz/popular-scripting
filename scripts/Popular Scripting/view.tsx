@@ -35,7 +35,7 @@ export function PopularView({model,width,height}:{model:any;width:number;height:
     {plan.large?label('title','Popular · '+model.status.label,0,-32,304,18,11,8,true):null}
     {visibleRows.map((row:any,i:number)=>{
       const column=Math.floor(i/4),rowIndex=i%4,x=column*(G.column+G.columnGap),y=rowIndex*(G.row+G.gap),detail=G.detail,color=movementColor(row),curve=curvePlan(model.api,row),status=statusFor(row)
-      const band=monthBand(curve),custom=['SOJA_JATAI_GO','CUB_GO','IPCA','DIESEL_S10'].includes(row.asset.code)
+      const band=monthBand(curve),custom=['SOJA_JATAI_GO','CUB_GO','IPCA','DIESEL_S10','USD/BRL'].includes(row.asset.code)
       const percentMinimum=variationMinimumSize(row,row.percent)
       const rowPlan={...plan,x:0,y:0},hitHeight=rowIndex<3?G.row+G.gap:G.row,rowFrame={width:G.column*plan.scale,height:hitHeight*plan.scaleY},rowPosition={x:plan.x+(x+G.column/2)*plan.scale,y:plan.y+(y+hitHeight/2)*plan.scaleY}
       const blockLabel=(key:string,value:string,x:number,y:number,w:number,h:number,size:number,min:number,bold=false,color='white',right=false)=>

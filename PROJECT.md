@@ -1,4 +1,13 @@
-# Popular Scripting - Pro 0.2.23
+# Popular Scripting - Pro 0.2.24
+
+## 0.2.24 - bandeira dos EUA no Dólar
+
+O ícone de `USD/BRL` passa a ser somente a bandeira dos Estados Unidos em
+recorte circular, desenhada no mesmo Canvas de 26 pt dos demais badges. O
+emblema combinado anterior e qualquer símbolo monetário não participam mais da
+renderização. A posição, diâmetro, alinhamento, espaçamento, nome, cotação,
+bolinha de estado, curvas, ordem, refresh e os tamanhos pequeno/médio/grande
+permanecem iguais. iPhone nativo não testado.
 
 ## 0.2.23 - ponto de sessão de mercado
 

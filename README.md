@@ -1,3 +1,11 @@
+## Atualização 0.2.24 - bandeira dos EUA no Dólar
+
+O ativo `USD/BRL` usa somente a bandeira dos Estados Unidos em recorte
+circular, sem símbolo monetário ou emblema sobreposto. A caixa de 26 pt, a
+posição, o espaçamento, os dados, a bolinha de estado, as curvas e os demais
+ícones permanecem iguais em pequeno, médio e grande. O iPhone nativo não foi
+testado.
+
 ## Atualização 0.2.23 - ponto de sessão previsto
 
 A bolinha representa a sessão regular de ações da B3 somente para o
@@ -116,7 +124,7 @@ Testes locais de fontes, observações antigas/futuras, alertas, cache, transpor
 
 # Popular Scripting
 
-**Atual: 0.2.23 - Scripting Pro.** Detalhes, ordem fixa dos oito indicadores, CSV,
+**Atual: 0.2.24 - Scripting Pro.** Detalhes, ordem fixa dos oito indicadores, CSV,
 alertas, assistente, Central de Controle e painel Início. Consulta solicitada em
 1 minuto e links diretos às fontes. [Ativação, testes e limites](PRO.md).
 

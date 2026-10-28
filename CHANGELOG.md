@@ -1,3 +1,9 @@
+## 0.2.24 - bandeira dos EUA no Dólar
+
+- Substitui somente o ícone de `USD/BRL` pela bandeira dos Estados Unidos em recorte circular de 26 pt; não há símbolo `$` nem outro emblema sobreposto.
+- Preserva diâmetro, posição, espaçamento, nome, cotação, bolinha de estado, curvas, ordem fixa, refresh e os demais ícones nos widgets 2×2 e 4×2.
+- Testes de compilação, árvore nativa e operações de desenho cobrem a bandeira, o recorte circular, as 13 faixas/50 estrelas e a caixa de 26 pt; iPhone nativo não testado.
+
 ## 0.2.23 - sessao prevista do mercado
 
 - A bolinha passa a representar horario de sessao regular somente para o Ibovespa, usando a grade efetiva da B3, o calendario de feriados de 2026 e a sessao especial da Quarta-feira de Cinzas no fuso `America/Sao_Paulo`.

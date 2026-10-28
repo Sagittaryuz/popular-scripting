@@ -1,0 +1,32 @@
+{
+  "version": "0.2.24",
+  "repository": "Sagittaryuz/popular-scripting",
+  "branch": "main",
+  "assetCode": "USD/BRL",
+  "rendering": {
+    "path": "custom Canvas badge",
+    "framePt": 26,
+    "crop": "circle centered at (13,13), radius 13",
+    "content": "United States flag only",
+    "currencyGlyphOverlay": false,
+    "legacyCombinedBitmapRendered": false
+  },
+  "preserved": [
+    "icon position and 26 pt diameter",
+    "name/value/graph/variation/unit/date alignment and spacing",
+    "source-status dot semantics and accessibility",
+    "fixed indicator order, data, curves, refresh and Meu Painel link",
+    "small 2x2 and medium/large 4x2 row geometry",
+    "all non-USD asset badges"
+  ],
+  "tests": [
+    "all existing syntax, model, refresh, row, status, data, pagination, alignment and performance checks",
+    "USD/BRL selects the custom Canvas path instead of the old combined image",
+    "circular clip is opened and restored exactly once",
+    "13 stripes, 50 stars and one blue canton are drawn",
+    "no currency glyph or overlaid emblem stroke is drawn",
+    "26 pt icon frame remains covered by small/medium/large row-tree tests"
+  ],
+  "visualReview": "temporary desktop preview and existing asset comparison; native Scripting renderer not available",
+  "nativeIPhone": "not-tested"
+}

@@ -1,5 +1,13 @@
 # Melhorias Scripting Pro — 23/10/2026
 
+## 0.2.24 - ícone circular do USD/BRL
+
+Entregue: substituir somente o emblema do Dólar pela bandeira dos Estados
+Unidos recortada em círculo no Canvas de 26 pt. Preservar caixa, alinhamentos,
+dados, estado da fonte, curvas, ordem, refresh e demais ícones em small,
+medium e large. Validar a árvore renderizada, a geometria e o desenho da
+bandeira; iPhone permanece pendente.
+
 ## 0.2.23 - sessao de mercado por horario oficial
 
 Entregue: o indicador deve representar a sessao regular prevista do mercado de

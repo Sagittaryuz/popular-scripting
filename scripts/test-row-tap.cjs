@@ -40,6 +40,7 @@ for(const [family,width,height,expected] of [['small',158,158,4],['medium',338,1
     assert.deepEqual(content.props.frame,frame,`${family} row ${i} content fills its hitbox`);
     const descendants=walk(content),block=descendants.find(node=>node.props?.key==='detail-block'),nameLine=descendants.find(node=>node.type==='HStack'&&node.props?.key==='name-status-line'),icon=descendants.find(node=>(node.type==='Canvas'||node.type==='Image')&&Math.abs((node.props?.frame?.width??0)-26*plan.scale)<1e-8&&Math.abs((node.props?.frame?.height??0)-26*plan.scaleY)<1e-8),graph=descendants.find(node=>node.type==='Canvas'&&Math.abs((node.props?.frame?.height??0)-G.graphHeight*plan.scaleY)<1e-8),dot=descendants.find(node=>node.type==='Circle'&&node.props?.key==='market-status-dot');
     assert(block&&nameLine&&icon&&graph&&dot,`${family} row ${i} keeps icon, block, graph and status dot inside the target`);
+    if(rows[i].asset.code==='USD/BRL')assert.equal(icon.type,'Canvas',`${family} USD/BRL uses the circular custom flag badge`);
     assert.equal(nameLine.props.frame.width,G.name*plan.scale,`${family} row ${i} measures the name inside the original name column`);
     assert.equal(nameLine.props.spacing,2,`${family} row ${i} keeps a measured-text gap before the dot`);
     assert.equal(nameLine.children.filter(node=>node?.type==='Circle'&&node.props?.key==='market-status-dot').length,1,`${family} row ${i} has one dot after the name`);
