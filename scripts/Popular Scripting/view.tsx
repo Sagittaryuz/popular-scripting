@@ -1,9 +1,10 @@
-import { Button, Canvas, Image, Rectangle, Text, ZStack, Script } from 'scripting'
+import { Button, Canvas, Circle, Image, Rectangle, Text, ZStack, Script } from 'scripting'
 import { pageRows } from './pagination'
 import { assets } from './assets'
 import { drawBadge } from './badges'
 import { GEOMETRY as G, layout, place, placeInBlock, movementColor, curvePlan, monthBand, drawCurve } from './draw'
 import { RefreshAssetsOnTap } from './app_intents'
+import { assetMarketStatus } from './market-status'
 const images:Record<string,UIImage>={}
 const CUB_VARIATION_MIN_SIZE=6.5
 function Label({value,plan,x,y,width,height,size,min,bold=false,color='white',right=false,placeFn=place}:any){
@@ -26,13 +27,14 @@ export function PopularView({model,width,height}:{model:any;width:number;height:
   const page=pageRows(model.rows,model.family,null,0),visibleRows=page.rows
   const label=(key:string,value:string,x:number,y:number,w:number,h:number,size:number,min:number,bold=false,color='white',right=false)=>
     <Label key={key} value={value} plan={plan} x={x} y={y} width={w} height={h} size={size} min={min} bold={bold} color={color} right={right}/>
+  const renderNow=Date.now(),statusFor=(row:any)=>assetMarketStatus(row,renderNow)
   return <ZStack alignment="topLeading" frame={{width,height}} clipped widgetBackground="#1E1E1E"
     widgetURL={Script.createRunURLScheme("Meu Painel", { section: "market" })}
-    accessibilityLabel={visibleRows.map((r:any)=>`${r.name}, ${r.price}, ${r.percent}, ${r.unit}, ${r.time}`).join('. ')}>
+    accessibilityLabel={visibleRows.map((r:any)=>{const status=statusFor(r);return `${r.name}, ${r.price}, ${r.percent}, ${r.unit}, ${r.time}. ${status.accessibility}`}).join('. ')}>
     {images.background?<Image image={images.background} resizable renderingMode="original" frame={{width,height}}/>:null}
     {plan.large?label('title','Popular · '+model.status.label,0,-32,304,18,11,8,true):null}
     {visibleRows.map((row:any,i:number)=>{
-      const column=Math.floor(i/4),rowIndex=i%4,x=column*(G.column+G.columnGap),y=rowIndex*(G.row+G.gap),detail=G.detail,color=movementColor(row),curve=curvePlan(model.api,row)
+      const column=Math.floor(i/4),rowIndex=i%4,x=column*(G.column+G.columnGap),y=rowIndex*(G.row+G.gap),detail=G.detail,color=movementColor(row),curve=curvePlan(model.api,row),status=statusFor(row)
       const band=monthBand(curve),custom=['SOJA_JATAI_GO','CUB_GO','IPCA','DIESEL_S10'].includes(row.asset.code)
       const percentMinimum=variationMinimumSize(row,row.percent)
       const rowPlan={...plan,x:0,y:0},hitHeight=rowIndex<3?G.row+G.gap:G.row,rowFrame={width:G.column*plan.scale,height:hitHeight*plan.scaleY},rowPosition={x:plan.x+(x+G.column/2)*plan.scale,y:plan.y+(y+hitHeight/2)*plan.scaleY}
@@ -58,6 +60,8 @@ export function PopularView({model,width,height}:{model:any;width:number;height:
           </ZStack></ZStack>:null}
         {blockLabel('percent',row.percent,G.graph+3,G.line2Top,G.percent,G.middle,10.5,percentMinimum,true,color,true)}
         {blockLabel('unit',row.unit,0,G.line3Top,G.name,G.bottom,6,5,false,'#96969C')}
+        <Circle key="market-status-dot" fill={status.color} frame={{width:3*plan.scale,height:3*plan.scale}}
+          position={{x:65.5*plan.scale,y:(G.line3Top+G.bottom/2)*plan.scaleY}} accessibilityLabel={status.accessibility}/>
         {blockLabel('time',row.time,68,G.line3Top,48,G.bottom,7.5,6,false,'#96969C',true)}
         </ZStack>
         {rowIndex<3?<Rectangle fill="rgba(255,255,255,0.13)" {...place(rowPlan,0,G.row,G.column,G.gap)}/>:null}

@@ -1,7 +1,7 @@
 import { createEngine } from './original-engine'
 import { createHost } from './host'
 import { dashboardStatus, refreshMinutes } from './pro-common'
-export const VERSION='0.2.17'
+export const VERSION='0.2.18'
 export const TAP_REFRESH_CACHE_KEY='popular-tap-refresh-v1'
 export const TAP_REFRESH_CACHE_MS=5000
 export type TapRefreshState='queried'|'failed-cache-preserved'|'timeout-cache-preserved'

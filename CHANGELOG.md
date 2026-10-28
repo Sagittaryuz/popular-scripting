@@ -1,3 +1,10 @@
+## 0.2.18 — indicador de sessão honesto
+
+- Adiciona uma bolinha de 3 pt imediatamente à esquerda da última data de cada linha, sem alterar a caixa, o ícone, o bloco de três linhas ou as alturas externas.
+- Para o Ibovespa, verde/cinza representam somente a sessão prevista da B3 conforme o horário oficial e o calendário de 2026; o rótulo acessível deixa claro que isso não confirma o frescor da cotação nem a conectividade da fonte.
+- Para Selic, IPCA, CUB-GO, Diesel S10, Brent, Soja GO e Dólar, o ponto é neutro: as fontes atuais são periódicas ou não publicam uma sessão aplicável ao ativo exibido. Não há verde/cinza inferido de HTTP 200, data de coleta ou preço.
+- Preserva refresh por linha, fontes, dados, curvas, ordem fixa, tamanhos e link do Meu Painel. Testes nativos no iPhone continuam pendentes.
+
 ## 0.2.17 — feedback nativo por linha
 
 - O widget pequeno expõe quatro botões independentes e os widgets médio/grande expõem oito, cada um cobrindo sua coluna/linha inteira de conteúdo sem sobreposição.

@@ -1,4 +1,22 @@
-# Popular Scripting — Pro 0.2.17
+# Popular Scripting — Pro 0.2.18
+
+## 0.2.18 — ponto de sessão com estado neutro
+
+Cada linha acrescenta um ponto de 3 pt à esquerda da última data, dentro do
+bloco existente. O ponto verde/cinza do Ibovespa representa exclusivamente a
+sessão prevista do mercado de ações da B3: horário oficial atual, calendário de
+feriados de 2026 e after-market documentado. O rótulo diz que isso não confirma
+frescor da cotação ou conectividade da fonte. Os demais indicadores recebem
+`unknown`/cinza neutro: Selic, IPCA, CUB-GO e Diesel S10 são referências
+periódicas; Brent, Soja GO e Dólar não têm no contrato atual um estado de sessão
+aplicável ao dado exibido. Ano fora do calendário revisado, slot sem cotação e
+fases de pré-abertura/call também não viram verde.
+
+Fontes de horário/calendário usadas na decisão: B3
+`horario-de-negociacao/acoes/` e `calendario-de-negociacao-da-b3-confira-o-funcionamento-da-bolsa-em-2026.htm`.
+Fontes econômicas continuam sem alteração. Nenhum estado é inferido de HTTP
+200, timestamp de consulta, preço ou observação periódica. iPhone nativo não
+testado.
 
 ## 0.2.17 — feedback nativo independente por linha
 

@@ -1,0 +1,50 @@
+{
+  "version": "0.2.18",
+  "repository": "Sagittaryuz/popular-scripting",
+  "branch": "main",
+  "dot": {
+    "diameterPt": 3,
+    "position": "third line, immediately left of the existing update/date label",
+    "localCenterXPt": 65.5,
+    "dateLabelLeftPt": 68,
+    "unknownColor": "#6A6A72",
+    "activeColor": "#30C795",
+    "inactiveColor": "#96969C"
+  },
+  "semantics": {
+    "IBOV": {
+      "active": "B3 regular negotiation 10:00-16:55 or documented after-market 17:30-18:00, Sao Paulo time, on a supported 2026 trading day",
+      "inactive": "B3 weekend, listed 2026 holiday, outside the documented negotiation windows, or an unsupported phase",
+      "caveat": "Session schedule only; does not confirm quote freshness or provider connectivity"
+    },
+    "otherIndicators": {
+      "state": "unknown",
+      "reason": "periodic reference or provider contract without an applicable trading-session status"
+    },
+    "missingSlot": "unknown",
+    "unsupportedCalendarYear": "unknown"
+  },
+  "preserved": [
+    "0.2.17 row refresh intent and native plain-button feedback",
+    "three-line block centered on the icon",
+    "existing date/value/unit boxes and external dimensions",
+    "fixed order, sources, values, curves, refresh and Meu Painel link"
+  ],
+  "officialSources": [
+    "https://www.b3.com.br/pt_br/solucoes/plataformas/puma-trading-system/para-participantes-e-traders/horario-de-negociacao/acoes/",
+    "https://www.b3.com.br/pt_br/noticias/calendario-de-negociacao-da-b3-confira-o-funcionamento-da-bolsa-em-2026.htm",
+    "https://dadosabertos.bcb.gov.br/dataset/432-taxa-de-juros---meta-selic-definida-pelo-copom",
+    "https://www.gov.br/anp/pt-br/assuntos/precos-e-defesa-da-concorrencia/precos/precos-revenda-e-de-distribuicao-combustiveis/serie-historica-do-levantamento-de-precos",
+    "https://www.sinduscongoias.com.br/cub-custo-unitario-basico",
+    "https://docs.awesomeapi.com.br/api-de-moedas",
+    "https://www.eia.gov/dnav/pet/hist/rbrted.htm"
+  ],
+  "tests": [
+    "official-session regular/after-market/holiday/weekend and unsupported-year fixtures",
+    "periodic and venue-unknown sources remain neutral",
+    "missing value cannot become active",
+    "small/medium/large row hitboxes retain a non-overlapping 3 pt dot before the date",
+    "accessibility label exposes the distinction between session schedule, unknown state and quote freshness"
+  ],
+  "nativeIPhone": "not-tested"
+}
