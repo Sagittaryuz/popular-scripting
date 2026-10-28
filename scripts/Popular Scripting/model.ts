@@ -1,7 +1,8 @@
 import { createEngine } from './original-engine'
 import { createHost } from './host'
 import { dashboardStatus, refreshMinutes } from './pro-common'
-export const VERSION='0.2.19'
+import { sourceStatusForRow } from './market-status'
+export const VERSION='0.2.20'
 export const TAP_REFRESH_CACHE_KEY='popular-tap-refresh-v1'
 export const TAP_REFRESH_CACHE_MS=5000
 export type TapRefreshState='queried'|'failed-cache-preserved'|'timeout-cache-preserved'
@@ -21,6 +22,13 @@ export function engine(family='medium',force=false){
   return createEngine(createHost(force),{family,force:force||queryDue})
 }
 export function setOrdering(mode:string){if(!MODES.includes(mode as any))throw Error('Ordenação inválida');engine().writeOrderingMode(mode)}
+export function markPersistedSourceStatus(state:'cached'|'failed',at=Date.now()){
+  const rows=Storage.get<any[]>('popular-pro-rows')
+  if(!Array.isArray(rows)||!rows.length)return false
+  const sourceStatus={state,at,reason:state==='cached'?'cache-preserved-after-source-fallback':'refresh-failed-or-timed-out'}
+  Storage.set('popular-pro-rows',rows.map(row=>row?.asset?.code?{...row,sourceStatus}:row))
+  return true
+}
 export async function loadModel(family='medium',force=false,cacheOnly=false,persistWhen:()=>boolean=()=>true){
   // Collect all eight so a small widget can select any four, not just the legacy first four.
   const api=engine(family==='small'?'medium':family,force),started=Date.now()
@@ -38,8 +46,9 @@ export async function loadModel(family='medium',force=false,cacheOnly=false,pers
   if(extra.length&&persistWhen())Storage.set('popular-extra-rows',additions)
   const combined=fixedIndicatorRows([...orderedRows,...additions])
   const status=api.orderingFeedback(orderedRows)
-  const result={queriedAt:Date.now(),version:VERSION,sourceVersion:api.version,family,mode:'fixed',status,
-    rows:combined.map((row:any)=>({...row,name:api.displayName(row.asset),price:api.displayPrice(row.asset.price,row.asset),
+  const queriedAt=Date.now()
+  const result={queriedAt,version:VERSION,sourceVersion:api.version,family,mode:'fixed',status,
+    rows:combined.map((row:any)=>({...row,sourceStatus:sourceStatusForRow(row,queriedAt),name:api.displayName(row.asset),price:api.displayPrice(row.asset.price,row.asset),
       percent:api.displayPercent(api.presentationPercent(row),row.asset),movement:api.presentationPercent(row),
       time:api.timeText(row),unit:api.unitText(row)})),api}
   if(!persistWhen())return result

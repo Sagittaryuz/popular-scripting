@@ -1,4 +1,17 @@
-# Popular Scripting — Pro 0.2.19
+# Popular Scripting — Pro 0.2.20
+
+## 0.2.20 — evidência recente da fonte por ativo
+
+A bolinha de 3 pt conserva a posição aprovada à esquerda da data, mas deixa de
+representar sessão de mercado. A coleta anexa a cada linha o estado da própria
+consulta: verde somente para payload válido com `fetchedAt` atual e sem cache ou
+fallback histórico (snapshot Git verificado na consulta é aceito); cinza para
+falha, indisponibilidade, payload inválido,
+timeout ou evidência com mais de cinco minutos. O cache preparado de cinco
+segundos pode reutilizar a mesma evidência sem nova consulta. Acessibilidade
+explica esse significado e nega explicitamente que a cor indique bolsa aberta.
+Dados, fontes, curvas, ordem fixa, layout, refresh, link e as dimensões externas
+permanecem inalterados. iPhone nativo não testado.
 
 ## 0.2.19 — ponto neutro sem proxy de sessão
 

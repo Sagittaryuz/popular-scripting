@@ -1,5 +1,14 @@
 # Melhorias Scripting Pro — 23/10/2026
 
+## 0.2.20 — evidência recente da fonte por ativo
+
+Entrega 0.2.20 concluída: a bolinha usa evidência recente da consulta por
+ativo, com payload/fetchedAt válidos em verde e cache, falha, timeout ou
+evidência expirada em cinza; o estado fica junto da observação e a
+acessibilidade não o apresenta como bolsa aberta. Layout, fontes, dados,
+curvas, ordem e refresh foram preservados. Validação nativa no iPhone continua
+pendente.
+
 ## 0.2.17 — feedback de pressionamento por linha
 
 Trocar o botão transparente único por quatro botões independentes no pequeno e oito no médio/grande. Cada alvo deve cobrir a respectiva linha de conteúdo, incluindo ícone, textos e gráfico, sem sobreposição; usar `Button` plain/intent para obter o feedback nativo de pressionamento do Scripting, solicitar o refresh bounded/deduplicado já aprovado e não navegar. Preservar a URL geral fora das linhas, o bloco, dados, fontes, ordem, status de mercado e dimensões. Validar árvore compilada, hitboxes, acessibilidade, 4/8 linhas, repetição e limites de não teste no iPhone.

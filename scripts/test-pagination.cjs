@@ -19,7 +19,7 @@ assert.equal(paging.pageRows([], 'medium',null,20).count,1);assert.throws(()=>pa
  await assert.rejects(defs.NextPopularPage.perform({family:'invalid'}));
  // Cached page render keeps actual query timestamp and makes no provider requests.
  values.set('popular-last-query',1234);
- const model=load('model.ts',{'./host':{createHost:()=>({})},'./pro-common':{refreshMinutes:()=>1},'./original-engine':{createEngine:()=>({version:'fixture',readOrderingMode:()=> 'fixed',orderingFeedback:()=>({label:'fixture'}),collectRows:async()=>{queries++;return []}})}},{Storage:storage});
+ const model=load('model.ts',{'./host':{createHost:()=>({})},'./pro-common':{refreshMinutes:()=>1},'./market-status':{sourceStatusForRow:(row,at)=>({state:'fresh',at})},'./original-engine':{createEngine:()=>({version:'fixture',readOrderingMode:()=> 'fixed',orderingFeedback:()=>({label:'fixture'}),collectRows:async()=>{queries++;return []}})}},{Storage:storage});
  queries=0;const cached=await model.loadModel('medium',false,true);assert.equal(cached.rows.length,16);assert.equal(cached.queriedAt,1234);assert.equal(queries,0);
  const viewCode=buildSync({entryPoints:[path.join(dir,'view.tsx')],bundle:true,write:false,format:'cjs',platform:'node',external:['scripting'],jsxFactory:'createElement'}).outputFiles[0].text;
  const viewModule={exports:{}},sdk=new Proxy({AppIntentProtocol:{AppIntent:0},AppIntentManager:{register:d=>params=>({name:d.name,params})},Script:{createRunURLScheme:()=> 'scripting://run/Meu%20Painel?section=market'},Safari:{openURL:async()=>true}},{get:(o,k)=>o[k]??k});

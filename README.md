@@ -1,3 +1,15 @@
+## Atualização 0.2.20 — saúde recente da fonte
+
+A bolinha de 3 pt continua na mesma posição, mas agora é verde apenas quando a
+consulta que produziu aquela linha registrou um payload válido do provedor para
+o ativo. Cache, arquivo histórico, falha, indisponibilidade, payload inválido,
+timeout e evidência com mais de cinco minutos ficam cinza; um snapshot Git
+verificado na consulta é tratado como resposta atual do provedor de dados. O
+estado é por ativo e acompanha a mesma observação; o resultado preparado de
+cinco segundos pode reutilizar a evidência da mesma consulta. O rótulo de
+acessibilidade diz que o ponto representa saúde da fonte, não bolsa aberta.
+Layout, dados, fontes, curvas, ordem e refresh permanecem inalterados.
+
 ## Atualização 0.2.19 — estado neutro até haver contrato do índice
 
 A bolinha de 3 pt continua à esquerda da última data, mas agora permanece
@@ -75,7 +87,7 @@ Testes locais de fontes, observações antigas/futuras, alertas, cache, transpor
 
 # Popular Scripting
 
-**Atual: 0.2.19 — Scripting Pro.** Detalhes, ordem fixa dos oito indicadores, CSV,
+**Atual: 0.2.20 — Scripting Pro.** Detalhes, ordem fixa dos oito indicadores, CSV,
 alertas, assistente, Central de Controle e painel Início. Consulta solicitada em
 1 minuto e links diretos às fontes. [Ativação, testes e limites](PRO.md).
 
@@ -89,7 +101,7 @@ Na tela **Importar Scripts Remotos** do Scripting, cole:
 https://github.com/Sagittaryuz/popular-scripting/tree/main/scripts/Popular%20Scripting
 ```
 
-Importe **Popular Scripting**, confirme a versão **0.2.19**, abra o projeto e toque em **Atualizar**. Adicione o widget do Scripting à Tela de Início e selecione esse projeto.
+Importe **Popular Scripting**, confirme a versão **0.2.20**, abra o projeto e toque em **Atualizar**. Adicione o widget do Scripting à Tela de Início e selecione esse projeto.
 
 Para receber melhorias de código, use a atualização do script remoto no Scripting. Essa importação vincula o projeto à pasta `main/scripts/Popular Scripting`; não use um endereço de commit ou tag para acompanhar as próximas versões. O botão **Atualizar** dentro da tela do Popular consulta somente os indicadores e solicita recarregar o widget.
 
@@ -106,11 +118,11 @@ Não são solicitadas permissões de Calendário, Lembretes ou Localização. O 
 
 ## Validação e recuperação
 
-A versão 0.2.19 mantém os meses nos extremos da curva, a composição nativa Text, Canvas transparente para ícones/curvas, as dimensões originais e a disposição interna recuperada da 0.2.13. O refresh por toque usa uma janela de 1.500 ms, deduplicação concorrente e um resultado preparado por 5 segundos; cada linha tem seu próprio feedback nativo sem navegação; a bolinha permanece neutra porque não há contrato de sessão/publicação confiável por ativo.
+A versão 0.2.20 mantém os meses nos extremos da curva, a composição nativa Text, Canvas transparente para ícones/curvas, as dimensões originais e a disposição interna recuperada da 0.2.13. O refresh por toque usa uma janela de 1.500 ms, deduplicação concorrente e um resultado preparado por 5 segundos; cada linha tem seu próprio feedback nativo sem navegação; a bolinha registra apenas a evidência recente da consulta daquele ativo, nunca bolsa aberta.
 
 A leitura dos preços AgroLink tem alternativa zlib em JavaScript, independente da descompressão nativa. A atualização manual permite até 20 segundos totais e 6 segundos por consulta AgroLink; o widget mantém 8 e 3 segundos. Falhas das fontes aparecem na tela após Atualizar, e o cache anterior é preservado com suas datas. O IPCA trata o cabeçalho da resposta SIDRA; o CUB trata letras separadas na extração de PDFs, mantendo a conferência de mês/padrão.
 
-Testes locais cobrem os oito indicadores por HTTP, coletores de referência, descompressão com a ponte nativa desativada, entradas inválidas, cache, ordem fixa com fonte ausente, seleção persistida legada ignorada, bloco interno agrupado com nomes longos/valores negativos/datas ausentes, toque com refresh em sucesso/timeout/rejeição, deduplicação, cache preparado/expirado, marcadores inválidos, resposta tardia, quatro/oito hitboxes independentes, bolinha neutra e semântica de índice sem sessão, ausência de sobreposição, contrato de navegação e prévias simuladas. Esses testes não confirmam o comportamento da rede, do pressionamento nativo, dos intents e das fontes no iPhone; a versão 0.2.19 ainda exige essa conferência na Tela de Início.
+Testes locais cobrem os oito indicadores por HTTP, coletores de referência, descompressão com a ponte nativa desativada, entradas inválidas, cache, ordem fixa com fonte ausente, seleção persistida legada ignorada, bloco interno agrupado com nomes longos/valores negativos/datas ausentes, toque com refresh em sucesso/timeout/rejeição, deduplicação, cache preparado/expirado, marcadores inválidos, resposta tardia, quatro/oito hitboxes independentes, payload válido/HTTP-200 inválido, falha parcial, cache/arquivo, timeout e expiração da bolinha por ativo, ausência de sobreposição, contrato de navegação e prévias simuladas. Esses testes não confirmam o comportamento da rede, do pressionamento nativo, dos intents e das fontes no iPhone; a versão 0.2.20 ainda exige essa conferência na Tela de Início.
 
 O histórico Git e as releases preservam versões anteriores para recuperação. Antes de atualizar uma edição personalizada, preserve suas alterações locais. Os dados e preferências do projeto ficam no aparelho; não apague o projeto para atualizar.
 

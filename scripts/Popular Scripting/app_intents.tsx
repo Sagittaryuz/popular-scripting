@@ -1,6 +1,6 @@
 import { pageFamily, pageKey, pageRows } from './pagination'
 import { AppIntentManager, AppIntentProtocol, ControlWidget, Safari, Script } from 'scripting'
-import { loadModel, preparedTapState, TAP_REFRESH_CACHE_KEY, TapRefreshState } from './model'
+import { loadModel, markPersistedSourceStatus, preparedTapState, TAP_REFRESH_CACHE_KEY, TapRefreshState } from './model'
 import { evaluateAlerts } from './alerts'
 import { reloadWidgets } from './pro-common'
 
@@ -21,7 +21,10 @@ async function refreshPopularData(isActive:()=>boolean=()=>true,reload=true):Pro
     Storage.set('manual-refresh',{at:Date.now(),state:'queried'})
     await evaluateAlerts(model.rows)
     state='queried'
-  }catch{if(isActive())Storage.set('manual-refresh',{at:Date.now(),state:'failed-cache-preserved'})}
+  }catch{
+    try{markPersistedSourceStatus('failed')}catch{}
+    if(isActive())Storage.set('manual-refresh',{at:Date.now(),state:'failed-cache-preserved'})
+  }
   finally{if(reload&&isActive())await requestWidgetReload()}
   return isActive()?state:'late-ignored'
 }
@@ -49,8 +52,12 @@ async function refreshForTap():Promise<TapRefreshState>{
     if(outcome.timedOut){
       active.value=false
       state='timeout-cache-preserved'
+      try{markPersistedSourceStatus('failed')}catch{}
       Storage.set('manual-refresh',{at:Date.now(),state})
-    }else state=outcome.state==='late-ignored'?'timeout-cache-preserved':outcome.state
+    }else {
+      state=outcome.state==='late-ignored'?'timeout-cache-preserved':outcome.state
+      if(state!=='queried')try{markPersistedSourceStatus('failed')}catch{}
+    }
     markTapRefresh(state)
     await requestWidgetReload()
     void refresh.catch(()=>{})
@@ -78,7 +85,10 @@ export const NextPopularPage=AppIntentManager.register({name:'NextPopularPage',p
   const valid=pageFamily(family)
   let rows=Storage.get<any[]>('popular-pro-rows')??[]
   try{const model=await loadModel(valid,true);rows=model.rows;await evaluateAlerts(rows);Storage.set('manual-refresh',{at:Date.now(),state:'queried'})}
-  catch{Storage.set('manual-refresh',{at:Date.now(),state:'failed-cache-preserved'})}
+  catch{
+    try{markPersistedSourceStatus('failed')}catch{}
+    Storage.set('manual-refresh',{at:Date.now(),state:'failed-cache-preserved'})
+  }
   const page=pageRows(rows,valid,Storage.get('popular-small-codes'),Storage.get(pageKey(valid)))
   if(!Storage.set(pageKey(valid),(page.index+1)%page.count))throw Error('Não foi possível guardar a página.')
   Storage.set('popular-page-refresh:'+valid,Date.now())

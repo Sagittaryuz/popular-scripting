@@ -15,6 +15,7 @@ function loadModelState(values){
     if(id==='./original-engine')return {createEngine:()=>({})};
     if(id==='./host')return {createHost:()=>({})};
     if(id==='./pro-common')return {dashboardStatus:()=>{},refreshMinutes:()=>1};
+    if(id==='./market-status')return {sourceStatusForRow:(row,at)=>({state:'fresh',at})};
     throw Error('unexpected dependency '+id);
   },Date,Storage:{get:key=>values.get(key),set:(key,value)=>{values.set(key,value);return true}}});
   return module.exports;
@@ -46,6 +47,13 @@ function harness(kind){
     './model':{
       TAP_REFRESH_CACHE_KEY:'popular-tap-refresh-v1',
       TapRefreshState:undefined,
+      markPersistedSourceStatus:(state,at=Date.now())=>{
+        const cached=values.get('popular-pro-rows');
+        if(!Array.isArray(cached)||!cached.length)return false;
+        values.set('popular-pro-rows',cached.map(row=>({...row,sourceStatus:{state,at}})));
+        events.push('source-status:'+state);
+        return true;
+      },
       preparedTapState:()=>{
         const marker=values.get('popular-tap-refresh-v1');
         const rows=values.get('popular-pro-rows'),age=marker&&Date.now()-marker.at;
@@ -100,9 +108,12 @@ async function runSuccessAndDedup(){
 
 async function runRejection(){
   const fixture=harness('rejection');
+  fixture.values.set('popular-pro-rows',fixture.rows.map(row=>({...row,sourceStatus:{state:'fresh',at:Date.now()}})));
   await fixture.definitions.RefreshAndOpenMarket.perform();
   assert.equal(fixture.values.get('manual-refresh').state,'failed-cache-preserved');
   assert.equal(fixture.events.includes('persist'),false,'Rejected refresh must not invent a persisted model');
+  assert(fixture.events.includes('source-status:failed'),'Rejected refresh must gray preserved rows');
+  assert(fixture.values.get('popular-pro-rows').every(row=>row.sourceStatus.state==='failed'),'Rejected refresh must mark every preserved row failed');
   assert.equal(fixture.events.filter(event=>event==='reload').length,1,'Rejected refresh still redraws the cache');
   assert.equal(fixture.events.filter(event=>Array.isArray(event)&&event[0]==='navigate').length,1);
 }
@@ -119,9 +130,12 @@ async function runRowTapNoNavigation(){
 
 async function runTimeoutLateResult(){
   const fixture=harness('timeout');
+  fixture.values.set('popular-pro-rows',fixture.rows.map(row=>({...row,sourceStatus:{state:'fresh',at:Date.now()}})));
   await fixture.definitions.RefreshAndOpenMarket.perform();
   assert.equal(fixture.values.get('manual-refresh').state,'timeout-cache-preserved');
   assert.equal(fixture.events.includes('persist'),false,'Timed out refresh must not fabricate persistence');
+  assert(fixture.events.includes('source-status:failed'),'Timeout must gray preserved rows');
+  assert(fixture.values.get('popular-pro-rows').every(row=>row.sourceStatus.state==='failed'),'Timeout must mark every preserved row failed');
   assert.equal(fixture.events.filter(event=>event==='reload').length,1,'Timeout must redraw the existing cache once');
   assert.equal(fixture.events.filter(event=>Array.isArray(event)&&event[0]==='navigate').length,1);
   fixture.release({rows:fixture.rows});

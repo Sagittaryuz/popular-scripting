@@ -1,3 +1,9 @@
+## 0.2.20 — saúde recente da consulta por ativo
+
+- A bolinha de 3 pt agora fica verde somente quando a coleta atual registra um payload válido do provedor para aquele ativo, com `fetchedAt` válido e sem cache/fallback histórico (um snapshot Git verificado na consulta é aceito); falha, indisponibilidade, resposta inválida, fallback ou evidência expirada ficam cinza.
+- O estado é persistido por linha junto da mesma observação, expira após cinco minutos e um timeout/falha global rebaixa o cache preservado. O resultado preparado de cinco segundos pode reutilizar a mesma evidência recente.
+- Acessibilidade explica que o ponto representa evidência da fonte, não bolsa aberta. Refresh por linha, layout, fontes, dados, curvas, ordem e link do Meu Painel permanecem iguais. iPhone nativo continua não testado.
+
 ## 0.2.19 — neutralidade do estado do Ibovespa
 
 - Mantém a bolinha de 3 pt na mesma posição, mas deixa todos os indicadores neutros até existir um contrato de sessão/publicação por ativo.

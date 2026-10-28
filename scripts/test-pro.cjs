@@ -21,6 +21,7 @@ assert(api.historyCSV([row(5)]).includes('"5"'));assert(api.historyCSV([{...row(
  vm.runInNewContext(modelCode,{module:modelModule,exports:modelModule.exports,Date,Storage:{get:()=>0,set:()=>true},require:id=>{
   if(id==='./host')return {createHost:()=>({})};
   if(id==='./pro-common')return {refreshMinutes:()=>1,dashboardStatus:()=>{}};
+  if(id==='./market-status')return {sourceStatusForRow:(row,at)=>({state:'fresh',at})};
   return {createEngine:(_,options)=>{collectionFamily=options.family;return {collectRows:async()=>nativeRows,orderingFeedback:()=>({label:'fixture'}),readOrderingMode:()=> 'fixed',displayName:a=>a.code,displayPrice:()=> '1',displayPercent:()=> '0',presentationPercent:()=>0,timeText:()=>'',unitText:()=>'',quoteAudit:r=>r.asset.code,failures:[]}}};
  }});
  const small=await modelModule.exports.loadModel('small');assert.equal(collectionFamily,'medium');assert.equal(small.family,'small');assert.equal(small.rows.length,8);assert.equal(api.selectSmall(small.rows,['e','f','g','h'])[0].asset.code,'a');

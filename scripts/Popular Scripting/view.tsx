@@ -41,7 +41,7 @@ export function PopularView({model,width,height}:{model:any;width:number;height:
       const blockLabel=(key:string,value:string,x:number,y:number,w:number,h:number,size:number,min:number,bold=false,color='white',right=false)=>
         <Label key={key} value={value} plan={rowPlan} x={x} y={y} width={w} height={h} size={size} min={min} bold={bold} color={color} right={right} placeFn={placeInBlock}/>
       return <Button key={row.asset.code} intent={RefreshAssetsOnTap(undefined)} buttonStyle="plain"
-        accessibilityLabel={`Atualizar indicadores. ${row.name}. ${row.price}. ${row.percent}. ${row.unit}. ${row.time}`}
+        accessibilityLabel={`Atualizar indicadores. ${row.name}. ${row.price}. ${row.percent}. ${row.unit}. ${row.time}. ${status.accessibility}`}
         frame={rowFrame} position={rowPosition}>
         <ZStack alignment="topLeading" frame={rowFrame}>
         {custom?<Canvas opaque={false} {...place(rowPlan,0,G.iconTop,26,26)} draw={(ctx,size)=>{ctx.scale(size.width/26,size.height/26);drawBadge(ctx,row.asset.code)}}/>

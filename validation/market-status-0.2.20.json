@@ -1,0 +1,46 @@
+{
+  "version": "0.2.20",
+  "repository": "Sagittaryuz/popular-scripting",
+  "branch": "main",
+  "dot": {
+    "diameterPt": 3,
+    "position": "third line, immediately left of the existing update/date label",
+    "localCenterXPt": 65.5,
+    "dateLabelLeftPt": 68,
+    "freshColor": "#30C795",
+    "fallbackColor": "#96969C",
+    "freshEvidenceTTLms": 300000,
+    "state": "per-asset-source-query-evidence"
+  },
+  "greenWhen": [
+    "the current collection produced a valid positive payload for the asset",
+    "the row has a valid non-future fetchedAt",
+    "the row is not marked cached/catalog fallback; an archive row is green only when its current origin is github-verified-snapshot",
+    "the persisted source evidence is no older than five minutes"
+  ],
+  "grayWhen": [
+    "provider failure or unavailability",
+    "missing or invalid payload, including HTTP 200 without a valid payload",
+    "cache, bundled/historical archive, catalog fallback or timeout-preserved data",
+    "a previous fresh result has expired"
+  ],
+  "accessibility": "The dot describes recent source-query evidence for the displayed asset; it does not indicate that a market or exchange is open.",
+  "preparedTapCache": "A prepared result may be reused for five seconds only with the same persisted row evidence; it does not renew the source timestamp.",
+  "preserved": [
+    "0.2.19 dot geometry and placement",
+    "row refresh intent and native plain-button feedback",
+    "three-line block centered on the icon",
+    "fixed order, data, sources, curves and external dimensions",
+    "Meu Painel market link"
+  ],
+  "tests": [
+    "valid live payload turns one row green",
+    "cached/archive/fallback rows turn gray",
+    "invalid payload and HTTP-200-without-payload cannot turn green",
+    "partial collection keeps valid rows green and failed rows gray",
+    "expired/future evidence is not trusted",
+    "small/medium/large retain the same 3 pt dot before the date",
+    "tap success, rejection and timeout preserve the cache and do not accept late persistence"
+  ],
+  "nativeIPhone": "not-tested"
+}
