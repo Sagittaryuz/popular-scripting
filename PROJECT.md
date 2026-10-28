@@ -1,4 +1,14 @@
-# Popular Scripting — Pro 0.2.18
+# Popular Scripting — Pro 0.2.19
+
+## 0.2.19 — ponto neutro sem proxy de sessão
+
+A bolinha de 3 pt permanece na posição aprovada à esquerda da última data,
+mas todos os indicadores ficam `unknown`/neutros. A B3 descreve o cálculo do
+Ibovespa com os preços dos ativos da carteira e publica dados do índice, porém
+os documentos verificados não entregam um estado atual de publicação do índice.
+O horário das ações e o after-market, portanto, não são usados como proxy para
+IBOV. Também não se usa HTTP 200, data de coleta, preço ou calendário para
+fabricar verde/cinza. iPhone nativo não testado.
 
 ## 0.2.18 — ponto de sessão com estado neutro
 

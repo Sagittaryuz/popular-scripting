@@ -1,3 +1,9 @@
+## 0.2.19 — neutralidade do estado do Ibovespa
+
+- Mantém a bolinha de 3 pt na mesma posição, mas deixa todos os indicadores neutros até existir um contrato de sessão/publicação por ativo.
+- O Ibovespa não usa mais o horário de ações ou o after-market como proxy: a B3 define o índice a partir dos ativos da carteira, mas as fontes verificadas não informam o estado atual de divulgação do próprio índice.
+- Preserva refresh por linha, fontes, dados, curvas, ordem fixa, tamanhos e link do Meu Painel. Testes nativos no iPhone continuam pendentes.
+
 ## 0.2.18 — indicador de sessão honesto
 
 - Adiciona uma bolinha de 3 pt imediatamente à esquerda da última data de cada linha, sem alterar a caixa, o ícone, o bloco de três linhas ou as alturas externas.
