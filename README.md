@@ -1,3 +1,7 @@
+## Atualização 0.2.17 — feedback de toque por linha
+
+O pequeno tem quatro áreas de toque independentes e o médio/grande oito. Cada área acompanha uma linha inteira de conteúdo — ícone, nome, valor, gráfico, variação e data — sem sobreposição. O `Button` plain do Scripting fornece o feedback nativo de pressionamento e chama `RefreshAssetsOnTap`, que mantém o refresh limitado/deduplicado sem abrir outro app. A URL geral do widget permanece para áreas fora das linhas. Ícones, alinhamentos, curvas, dados, ordem fixa e status de mercado permanecem inalterados. O efeito nativo não foi testado fisicamente no iPhone.
+
 ## Atualização 0.2.16 — refresh limitado no toque
 
 O toque do widget pequeno 2×2 e dos demais tamanhos compartilha consultas concorrentes, aguarda até 1,5 s antes de abrir o Mercado no Meu Painel e solicita uma recarga após sucesso, falha ou timeout. Um resultado preparado é reutilizado por 5 s; uma resposta tardia não substitui o modelo persistido nem dispara outra recarga. O destino de navegação, o bloco interno centralizado no ícone, a ordem fixa, os dados, as fontes e as dimensões permanecem inalterados.
@@ -50,7 +54,7 @@ Testes locais de fontes, observações antigas/futuras, alertas, cache, transpor
 
 # Popular Scripting
 
-**Atual: 0.2.16 — Scripting Pro.** Detalhes, ordem fixa dos oito indicadores, CSV,
+**Atual: 0.2.17 — Scripting Pro.** Detalhes, ordem fixa dos oito indicadores, CSV,
 alertas, assistente, Central de Controle e painel Início. Consulta solicitada em
 1 minuto e links diretos às fontes. [Ativação, testes e limites](PRO.md).
 
@@ -64,7 +68,7 @@ Na tela **Importar Scripts Remotos** do Scripting, cole:
 https://github.com/Sagittaryuz/popular-scripting/tree/main/scripts/Popular%20Scripting
 ```
 
-Importe **Popular Scripting**, confirme a versão **0.2.16**, abra o projeto e toque em **Atualizar**. Adicione o widget do Scripting à Tela de Início e selecione esse projeto.
+Importe **Popular Scripting**, confirme a versão **0.2.17**, abra o projeto e toque em **Atualizar**. Adicione o widget do Scripting à Tela de Início e selecione esse projeto.
 
 Para receber melhorias de código, use a atualização do script remoto no Scripting. Essa importação vincula o projeto à pasta `main/scripts/Popular Scripting`; não use um endereço de commit ou tag para acompanhar as próximas versões. O botão **Atualizar** dentro da tela do Popular consulta somente os indicadores e solicita recarregar o widget.
 
@@ -81,11 +85,11 @@ Não são solicitadas permissões de Calendário, Lembretes ou Localização. O 
 
 ## Validação e recuperação
 
-A versão 0.2.16 mantém os meses nos extremos da curva, a composição nativa Text, Canvas transparente para ícones/curvas, as dimensões originais e a disposição interna recuperada da 0.2.13. O refresh por toque usa uma janela de 1.500 ms, deduplicação concorrente e um resultado preparado por 5 segundos; não há bolinha de estado sem fonte confiável de sessão.
+A versão 0.2.17 mantém os meses nos extremos da curva, a composição nativa Text, Canvas transparente para ícones/curvas, as dimensões originais e a disposição interna recuperada da 0.2.13. O refresh por toque usa uma janela de 1.500 ms, deduplicação concorrente e um resultado preparado por 5 segundos; cada linha tem seu próprio feedback nativo sem navegação; não há bolinha de estado sem fonte confiável de sessão.
 
 A leitura dos preços AgroLink tem alternativa zlib em JavaScript, independente da descompressão nativa. A atualização manual permite até 20 segundos totais e 6 segundos por consulta AgroLink; o widget mantém 8 e 3 segundos. Falhas das fontes aparecem na tela após Atualizar, e o cache anterior é preservado com suas datas. O IPCA trata o cabeçalho da resposta SIDRA; o CUB trata letras separadas na extração de PDFs, mantendo a conferência de mês/padrão.
 
-Testes locais cobrem os oito indicadores por HTTP, coletores de referência, descompressão com a ponte nativa desativada, entradas inválidas, cache, ordem fixa com fonte ausente, seleção persistida legada ignorada, bloco interno agrupado com nomes longos/valores negativos/datas ausentes, toque com refresh em sucesso/timeout/rejeição, deduplicação, cache preparado/expirado, marcadores inválidos, resposta tardia, contrato de navegação e prévias simuladas. Esses testes não confirmam o comportamento da rede, dos intents e das fontes no iPhone; a versão 0.2.16 ainda exige essa conferência na Tela de Início.
+Testes locais cobrem os oito indicadores por HTTP, coletores de referência, descompressão com a ponte nativa desativada, entradas inválidas, cache, ordem fixa com fonte ausente, seleção persistida legada ignorada, bloco interno agrupado com nomes longos/valores negativos/datas ausentes, toque com refresh em sucesso/timeout/rejeição, deduplicação, cache preparado/expirado, marcadores inválidos, resposta tardia, quatro/oito hitboxes independentes, ausência de sobreposição, contrato de navegação e prévias simuladas. Esses testes não confirmam o comportamento da rede, do pressionamento nativo, dos intents e das fontes no iPhone; a versão 0.2.17 ainda exige essa conferência na Tela de Início.
 
 O histórico Git e as releases preservam versões anteriores para recuperação. Antes de atualizar uma edição personalizada, preserve suas alterações locais. Os dados e preferências do projeto ficam no aparelho; não apague o projeto para atualizar.
 

@@ -31,7 +31,7 @@ assert.equal(paging.pageRows([], 'medium',null,20).count,1);assert.throws(()=>pa
   values.set('popular-page:medium',index);
   const tree=viewModule.exports.PopularView({model:{family:'medium',rows:display,api:fakeApi,status:{label:'fixture'},queriedAt:1234},width:338,height:170});
   assert(tree.props.accessibilityLabel.includes('a0,'),'Rendered medium widget must keep the fixed first page');assert(!tree.props.accessibilityLabel.includes('a8,'),'Persisted page state must not replace the fixed eight');assert.equal(tree.props.widgetURL,'scripting://run/Meu%20Painel?section=market');
-  const walk=n=>n&&typeof n==='object'?[n,...(n.children||[]).flatMap(walk)]:[],tap=walk(tree).find(n=>n.type==='Button');assert.equal(tap.props.intent.name,'RefreshAndOpenMarket');assert.equal(tap.props.frame.width,338);assert.equal(tap.props.frame.height,170);
+  const walk=n=>n&&typeof n==='object'?[n,...(n.children||[]).flatMap(walk)]:[],buttons=walk(tree).filter(n=>n.type==='Button');assert.equal(buttons.length,8);assert(buttons.every(n=>n.props.intent.name==='RefreshAssetsOnTap'));assert(buttons.every(n=>n.props.frame.width<338&&n.props.frame.height<170));
  }
   values.set('popular-small-codes',['a4','a5','a6','a7']);values.set('popular-page:small',0);
   const smallTree=viewModule.exports.PopularView({model:{family:'small',rows:display,api:fakeApi,status:{label:'fixture'},queriedAt:1234},width:158,height:158});

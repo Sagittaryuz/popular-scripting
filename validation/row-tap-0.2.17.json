@@ -1,0 +1,36 @@
+{
+  "version": "0.2.17",
+  "repository": "Sagittaryuz/popular-scripting",
+  "branch": "main",
+  "rowTap": {
+    "smallButtons": 4,
+    "wideButtons": 8,
+    "intent": "RefreshAssetsOnTap",
+    "buttonStyle": "plain",
+    "feedback": "native Scripting/iOS pressed state",
+    "navigation": "none from row buttons",
+    "refresh": {
+      "timeoutMs": 1500,
+      "preparedCacheMs": 5000,
+      "deduplicatesConcurrent": true,
+      "lateResultPolicy": "ignore after timeout"
+    }
+  },
+  "preserved": [
+    "widgetURL outside row buttons",
+    "Meu Painel market entry contract",
+    "three-line block centered on icon",
+    "fixed order and economic data",
+    "small/medium/large dimensions and market status decision"
+  ],
+  "tests": [
+    "four/eight buttons",
+    "full content-column hitboxes",
+    "no overlapping hitboxes",
+    "icon/block/graph inside each target",
+    "row accessibility labels",
+    "refresh-only row intent",
+    "synthetic native-button path"
+  ],
+  "nativeIPhone": "not-tested"
+}

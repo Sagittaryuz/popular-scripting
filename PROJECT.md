@@ -1,4 +1,10 @@
-# Popular Scripting — Pro 0.2.16
+# Popular Scripting — Pro 0.2.17
+
+## 0.2.17 — feedback nativo independente por linha
+
+Cada linha visível agora é um `Button` plain independente: quatro alvos no pequeno e oito no médio/grande. O hitbox acompanha a coluna de conteúdo e a linha, inclui ícone, textos e gráfico, usa o intent `RefreshAssetsOnTap` e não navega para outro app. O estado de pressionamento/animação é o feedback nativo do Scripting/iOS; não foi criada uma transição manual. A URL do widget continua disponível fora das linhas, e a ação `RefreshAndOpenMarket` permanece preservada para seus consumidores.
+
+O refresh por linha reutiliza o limite de 1.500 ms, deduplicação concorrente, preparação de 5 segundos e exclusão de resultado tardio da 0.2.16. Bloco centralizado no ícone, fontes, dados, ordem fixa, dimensões e status de mercado permanecem inalterados. Validação estrutural e sintética concluída; toque/animação nativos no iPhone não testados.
 
 ## 0.2.16 — refresh limitado e deduplicado no toque
 

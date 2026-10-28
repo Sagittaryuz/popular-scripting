@@ -1,5 +1,9 @@
 # Melhorias Scripting Pro — 23/10/2026
 
+## 0.2.17 — feedback de pressionamento por linha
+
+Trocar o botão transparente único por quatro botões independentes no pequeno e oito no médio/grande. Cada alvo deve cobrir a respectiva linha de conteúdo, incluindo ícone, textos e gráfico, sem sobreposição; usar `Button` plain/intent para obter o feedback nativo de pressionamento do Scripting, solicitar o refresh bounded/deduplicado já aprovado e não navegar. Preservar a URL geral fora das linhas, o bloco, dados, fontes, ordem, status de mercado e dimensões. Validar árvore compilada, hitboxes, acessibilidade, 4/8 linhas, repetição e limites de não teste no iPhone.
+
 ## 0.2.16 — refresh limitado no toque e decisão sobre estado
 
 Implementar no pequeno 2×2 e preservar nos demais tamanhos um refresh deduplicado: janela de 1.500 ms, cache preparado de 5 segundos, recarga antes da navegação única para `Meu Painel`/Mercado e exclusão de resultado tardio após timeout. Testar sucesso, concorrência, cache preparado/expirado, rejeição/offline, timeout, resposta tardia, marcadores inválidos e latência sintética. Não alterar bloco centralizado no ícone, ordem fixa, dados ou layout.

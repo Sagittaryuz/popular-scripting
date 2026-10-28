@@ -107,6 +107,16 @@ async function runRejection(){
   assert.equal(fixture.events.filter(event=>Array.isArray(event)&&event[0]==='navigate').length,1);
 }
 
+async function runRowTapNoNavigation(){
+  const fixture=harness('success');
+  const operation=fixture.definitions.RefreshAssetsOnTap.perform();
+  fixture.release({rows:fixture.rows});
+  await operation;
+  assert.equal(fixture.events.filter(event=>event==='query').length,1,'Row tap must request the bounded refresh');
+  assert.equal(fixture.events.filter(event=>event==='reload').length,1,'Row tap must request a redraw');
+  assert.equal(fixture.events.some(event=>Array.isArray(event)&&event[0]==='navigate'),false,'Row tap must not navigate to another app');
+}
+
 async function runTimeoutLateResult(){
   const fixture=harness('timeout');
   await fixture.definitions.RefreshAndOpenMarket.perform();
@@ -141,6 +151,7 @@ function runMarkerValidation(){
 (async()=>{
   await runSuccessAndDedup();
   await runRejection();
+  await runRowTapNoNavigation();
   await runTimeoutLateResult();
   runMarkerValidation();
   console.log('PASS tap refresh: 1500ms bound, concurrent deduplication, five-second prepared cache, invalid markers, offline preservation, one navigation per tap and late-result exclusion. Native iPhone remains untested.');

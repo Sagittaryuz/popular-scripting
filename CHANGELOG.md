@@ -1,3 +1,9 @@
+## 0.2.17 — feedback nativo por linha
+
+- O widget pequeno expõe quatro botões independentes e os widgets médio/grande expõem oito, cada um cobrindo sua coluna/linha inteira de conteúdo sem sobreposição.
+- Cada linha usa `Button` plain com `RefreshAssetsOnTap`: o Scripting/iOS fornece o estado nativo de pressionamento e o mesmo refresh limitado/deduplicado de 0.2.16, sem abrir outro app. A URL do widget e `RefreshAndOpenMarket` permanecem fora dessas áreas.
+- Ícones, bloco de três linhas, gráficos, dados, ordem fixa, fontes, dimensões e indicador de mercado não foram alterados. O feedback de pressionamento nativo não foi testado fisicamente no iPhone.
+
 ## 0.2.16 — refresh limitado e deduplicado no toque
 
 - O toque do widget mantém o destino existente `Meu Painel`/`Mercado`, mas agora compartilha consultas concorrentes, aguarda até 1.500 ms antes de navegar e solicita uma única recarga depois do resultado ou do cache preservado.

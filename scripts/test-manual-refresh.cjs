@@ -21,12 +21,15 @@ function load(name,deps,values=new Map()){
  const native={AppIntentManager:{register:d=>()=>({name:d.name})},AppIntentProtocol:{AppIntent:0},Safari:{openURL:async()=>true},Script:{createRunURLScheme:()=> 'scripting://run/Meu%20Painel?section=market'}};
  const sdk=new Proxy(native,{get:(target,name)=>target[name]??name}),module={exports:{}};
  vm.runInNewContext(code,{module,exports:module.exports,require:()=>sdk,createElement:(type,props,...children)=>typeof type==='function'?type({...props,children}):({type,props,children:children.flat(Infinity).filter(Boolean)}),Date,Storage:{get:()=>null},UIImage:{fromBase64String:()=>null}});
+ const rows=Array.from({length:8},(_,i)=>({asset:{code:'CODE'+i},name:'Nome '+i,price:'1,00',percent:'0%',movement:0,unit:'BRL',time:'27/10',chart:null}));
+ const api={displayChart:chart=>chart,lineCoordinates:()=>[],monthLayout:()=>({labels:[],lines:[]}),gradientStrips:()=>[]};
  for(const [family,width,height] of [['small',158,170],['medium',338,170],['large',338,360]]){
-  const tree=module.exports.PopularView({model:{family,queriedAt:new Date(2026,9,24,9,5).getTime(),rows:[],status:{label:'fixture'}},width,height});
+  const tree=module.exports.PopularView({model:{family,queriedAt:new Date(2026,9,24,9,5).getTime(),rows,api,status:{label:'fixture'}},width,height});
   const walk=n=>n&&typeof n==='object'?[n,...n.children.flatMap(walk)]:[];
-  const allButtons=walk(tree).filter(n=>n.type==='Button');assert.equal(allButtons.length,1,'Whole-widget refresh and pagination share one target');
-  const tap=allButtons.find(n=>n.props.intent.name==='RefreshAndOpenMarket');assert(tap);assert.equal(tap.props.frame.height,height);assert.equal(tap.props.frame.width,width);
-  assert.equal(tap.props.accessibilityLabel,'Atualizar indicadores e abrir Mercado no Meu Painel');
+  const allButtons=walk(tree).filter(n=>n.type==='Button'),expected=family==='small'?4:8;assert.equal(allButtons.length,expected,'Each visible asset row has one independent refresh target');
+  assert(allButtons.every(n=>n.props.intent.name==='RefreshAssetsOnTap'),'Row targets use bounded refresh without navigation');
+  assert.equal(tree.props.widgetURL,'scripting://run/Meu%20Painel?section=market');
+  assert(allButtons.every(n=>n.props.frame.width<width&&n.props.frame.height<height),'Row targets do not cover the whole widget');
  }
  const draw=load('draw.js',{});
  for(const [family,width,height] of [['small',158,158],['medium',338,170],['large',338,360]]){
@@ -37,5 +40,5 @@ function load(name,deps,values=new Map()){
  let globalReloads=0;
  const common=load('pro-common.ts',{scripting:{Widget:{reloadAll:()=>{globalReloads++},reloadUserWidgets:()=>{throw Error('User-only API must not be chosen')}}}});
  await common.reloadWidgets();assert.equal(globalReloads,1,'Actual helper requests all Scripting widgets');
- console.log('PASS manual refresh: actual intent requests current data, preserves offline status and reloads on success/failure. Tap target preserves navigation.');
+ console.log('PASS manual refresh: actual intent requests current data, preserves offline status and reloads on success/failure. Row targets preserve the external widget URL without row navigation.');
 })().catch(e=>{console.error(e);process.exitCode=1});

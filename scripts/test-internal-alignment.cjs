@@ -44,18 +44,19 @@ const rows=codes.map((code,index)=>({asset:{code},name:index===0?'Selic com nome
 const api={displayChart:chart=>chart,lineCoordinates:()=>[],monthLayout:()=>({labels:[],lines:[]}),gradientStrips:()=>[]};
 for(const [family,width,height,expected] of [['small',158,170,4],['medium',338,170,8],['large',338,360,8]]){
   const tree=viewModule.exports.PopularView({model:{family,rows,api,status:{label:'fixture'}},width,height});
-  const rowNodes=tree.children.filter(node=>node.type==='ZStack'&&node.props?.frame?.width===width&&node.props?.frame?.height===height);
-  assert.equal(rowNodes.length,expected,`${family} keeps ${expected} visible rows`);
+  const rowButtons=tree.children.filter(node=>node.type==='Button');
+  assert.equal(rowButtons.length,expected,`${family} keeps ${expected} visible rows`);
+  assert(rowButtons.every(button=>button.props.intent.name==='RefreshAssetsOnTap'),`${family} rows use the refresh-only intent`);
   const plan=draw.layout(family,width,height);
   for(let i=0;i<expected;i++){
-    const rowNode=rowNodes[i],blocks=rowNode.children.filter(node=>node.type==='ZStack'&&node.props?.key==='detail-block'),block=blocks[0];
+    const rowNode=rowButtons[i].children.find(node=>node.type==='ZStack'),blocks=rowNode.children.filter(node=>node.type==='ZStack'&&node.props?.key==='detail-block'),block=blocks[0];
     assert.equal(blocks.length,1,`${family} row ${i} groups the three lines in one block`);
     assert.equal(block.props.frame.width,G.blockWidth*plan.scale,`${family} row ${i} block width is unchanged`);
     assert.equal(block.props.frame.height,G.blockHeight*plan.scaleY,`${family} row ${i} block height is unchanged`);
     const icon=walk(rowNode).find(n=>(n.type==='Canvas'||n.type==='Image')&&Math.abs((n.props?.frame?.width??0)-G.icon*plan.scale)<1e-8&&Math.abs((n.props?.frame?.height??0)-G.icon*plan.scaleY)<1e-8);
     assert(icon,`${family} row ${i} keeps its icon node`);
     assert(Math.abs(block.props.position.y-icon.props.position.y)<1e-8,`${family} row ${i} total block center equals icon center`);
-    assert(Math.abs(block.props.position.y-(plan.y+(i%4)*(G.row+G.gap)*plan.scaleY+G.blockCenter*plan.scaleY))<1e-8,`${family} row ${i} block has one common vertical displacement`);
+    assert(Math.abs(block.props.position.y-G.blockCenter*plan.scaleY)<1e-8,`${family} row ${i} block has one common vertical displacement`);
     const desc=walk(block),texts=desc.filter(n=>n.type==='Text'),namePrice=texts.filter(n=>Math.abs(n.props.frame.height-G.top*plan.scaleY)<1e-8),middle=texts.filter(n=>Math.abs(n.props.frame.height-G.middle*plan.scaleY)<1e-8),bottomTexts=texts.filter(n=>Math.abs(n.props.frame.height-G.bottom*plan.scaleY)<1e-8),name=namePrice[0],price=namePrice[1],percent=middle[0],unit=bottomTexts[0],time=bottomTexts[1],graph=desc.find(n=>n.type==='Canvas'&&Math.abs((n.props?.frame?.height??0)-G.graphHeight*plan.scaleY)<1e-8);
     assert(name&&price&&percent&&unit&&time&&graph,`${family} row ${i} exposes all three alignment lines`);
     const top=n=>n.props.position.y-n.props.frame.height/2,bottom=n=>n.props.position.y+n.props.frame.height/2;

@@ -1,3 +1,9 @@
+## 0.2.17 — toque independente por ativo
+
+O pequeno tem quatro alvos e o médio/grande oito: cada `Button` cobre a linha de conteúdo inteira, sem interseção com a linha vizinha. O intent `RefreshAssetsOnTap` solicita o refresh bounded/deduplicado da 0.2.16 e não abre o Meu Painel nem outro app. O `Button` plain conserva o feedback de pressionamento nativo do Scripting; não há animação manual nem alteração de ícones, fontes, curvas, bloco ou status de mercado.
+
+Testes desktop verificam contagem, dimensões, posições, acessibilidade, conteúdo dentro do hitbox e ausência de sobreposição. A animação física e a resposta do iOS permanecem não testadas.
+
 ## 0.2.16 — refresh do widget no toque
 
 O toque no widget pequeno e nos demais tamanhos compartilha uma consulta já em andamento, aguarda até 1.500 ms e pede uma recarga antes de abrir o Mercado no Meu Painel. O modelo preparado é reutilizado por 5 segundos; rejeição/offline conserva o cache. Um resultado que chega depois do timeout não grava o modelo nem gera uma segunda recarga. O layout aprovado, bloco centralizado no ícone, ordem fixa, fontes e dados não mudam.

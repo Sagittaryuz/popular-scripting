@@ -7,14 +7,16 @@ const model=fs.readFileSync(path.join(root,'model.ts'),'utf8');
 const engine=fs.readFileSync(path.join(root,'original-engine.js'),'utf8');
 const script=JSON.parse(fs.readFileSync(path.join(root,'script.json'),'utf8'));
 
-assert.equal(script.version,'0.2.16');
+assert.equal(script.version,'0.2.17');
 assert.match(view,/import \{ Button, Canvas, Image, Rectangle, Text, ZStack, Script \} from 'scripting'/);
 assert.match(view,/widgetURL=\{Script\.createRunURLScheme\("Meu Painel", \{ section: "market" \}\)\}/);
-assert.match(view,/Button intent=\{RefreshAndOpenMarket\(undefined\)\}/);
-assert.match(view,/accessibilityLabel="Atualizar indicadores e abrir Mercado no Meu Painel"/);
-assert.match(view,/opacity=\{0\.001\}/);
+assert.match(view,/Button key=\{row\.asset\.code\} intent=\{RefreshAssetsOnTap\(undefined\)\}/);
+assert.match(view,/accessibilityLabel=\{`Atualizar indicadores\./);
+assert.match(view,/frame=\{rowFrame\} position=\{rowPosition\}/);
+assert.doesNotMatch(view,/RefreshAndOpenMarket\(undefined\)/);
 assert.doesNotMatch(view,/NextPopularPage|scripting-home/);
 assert.match(intents,/export const RefreshPopular=/);
+assert.match(intents,/export const RefreshAssetsOnTap=/);
 assert.match(intents,/export const RefreshAndOpenMarket=/);
 assert.match(intents,/Safari\.openURL\(MARKET_URL\)/);
 assert.match(intents,/Script\.createRunURLScheme\('Meu Painel',\{section:'market'\}\)/);
@@ -42,4 +44,4 @@ assert.doesNotMatch(view,/popular-small-codes/,'Widget render must not read lega
 // widget does not detect/install Meu Painel and therefore cannot loop/fallback.
 const expected='scripting://run/Meu%20Painel?section=market';
 assert.equal(`scripting://run/${encodeURIComponent('Meu Painel')}?section=${encodeURIComponent('market')}`,expected);
-console.log(JSON.stringify({version:script.version,assetTap:'RefreshAndOpenMarket',expectedURL:expected,section:'market',fixedOrder:['SELIC','IPCA','IBOV','USD/BRL','SOJA_JATAI_GO','CUB_GO','DIESEL_S10','BRENT'],fallback:'none',loop:false,nativeIPhone:false}));
+console.log(JSON.stringify({version:script.version,rowTap:'RefreshAssetsOnTap',widgetURL:expected,section:'market',fixedOrder:['SELIC','IPCA','IBOV','USD/BRL','SOJA_JATAI_GO','CUB_GO','DIESEL_S10','BRENT'],fallback:'none',loop:false,nativeIPhone:false}));

@@ -60,6 +60,12 @@ async function refreshForTap():Promise<TapRefreshState>{
   return tapRefreshPending
 }
 
+// Row taps use the same bounded/deduplicated refresh as the market entry, but
+// deliberately do not leave the widget or open another app.
+export const RefreshAssetsOnTap=AppIntentManager.register({name:'RefreshAssetsOnTap',protocol:AppIntentProtocol.AppIntent,perform:async()=>{
+  await refreshForTap()
+}})
+
 // A widget tap gives the refresh a short foreground opportunity before
 // switching apps. Concurrent taps share one refresh; a prepared result is reused
 // briefly; a slow result is prevented from replacing the model after timeout.

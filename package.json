@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "check": "node scripts/check-pro.cjs",
-    "test": "node scripts/test-market-entry.cjs && node scripts/test-fixed-order.cjs && node scripts/test-tap-refresh.cjs && node scripts/test-pro.cjs && node scripts/validate-data.cjs && node scripts/test-manual-refresh.cjs && node scripts/test-refresh-footer.cjs && node scripts/test-pagination.cjs && node scripts/test-internal-alignment.cjs && node scripts/test-performance.cjs"
+    "test": "node scripts/test-market-entry.cjs && node scripts/test-fixed-order.cjs && node scripts/test-tap-refresh.cjs && node scripts/test-row-tap.cjs && node scripts/test-pro.cjs && node scripts/validate-data.cjs && node scripts/test-manual-refresh.cjs && node scripts/test-refresh-footer.cjs && node scripts/test-pagination.cjs && node scripts/test-internal-alignment.cjs && node scripts/test-performance.cjs"
   },
   "devDependencies": {
     "esbuild": "0.28.2"
