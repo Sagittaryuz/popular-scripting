@@ -1,0 +1,34 @@
+{
+  "version": "0.2.21",
+  "repository": "Sagittaryuz/popular-scripting",
+  "branch": "main",
+  "dot": {
+    "diameterPt": 3,
+    "position": "first line, immediately after the native name text",
+    "nameColumnWidthPt": 64,
+    "textToDotSpacingPt": 2,
+    "valueStartsAtPt": 64,
+    "state": "per-asset-source-query-evidence-preserved-from-0.2.20"
+  },
+  "layoutContract": [
+    "HStack uses the intrinsic Text width for short names",
+    "the name/status group is clipped to the existing 64 pt name column",
+    "long names remain single-line and cannot overlap the value column",
+    "the third-line unit/date boxes are unchanged",
+    "there is exactly one status dot per asset row"
+  ],
+  "semanticsPreserved": [
+    "green only for recent valid provider evidence",
+    "gray for cache, fallback, failure, invalid payload, timeout or expired evidence",
+    "accessibility says the dot is source evidence, not exchange-open status"
+  ],
+  "tests": [
+    "small/medium/large",
+    "short and long names",
+    "3 pt dot and native 2 pt name gap",
+    "title/value top alignment",
+    "no duplicate dot and no line-3 dot",
+    "fixed row hitboxes and preserved refresh intent"
+  ],
+  "nativeIPhone": "not-tested"
+}

@@ -32,7 +32,7 @@ const sdk={
   ControlWidget:{reloadButtons:()=>{}},
   Safari:{openURL:async()=>true},
   Script:{createRunURLScheme:()=> 'scripting://run/Meu%20Painel?section=market'},
-  Button:'Button',Canvas:'Canvas',Image:'Image',Rectangle:'Rectangle',Text:'Text',ZStack:'ZStack'
+  Button:'Button',Canvas:'Canvas',Circle:'Circle',HStack:'HStack',Image:'Image',Rectangle:'Rectangle',Text:'Text',ZStack:'ZStack'
 };
 const viewModule={exports:{}};
 const values=new Map([['popular-page:small',9],['popular-page:medium',9],['popular-page:large',9],['popular-small-codes',['IPCA','CUB_GO','DIESEL_S10','BRENT']]]);
@@ -57,16 +57,20 @@ for(const [family,width,height,expected] of [['small',158,170,4],['medium',338,1
     assert(icon,`${family} row ${i} keeps its icon node`);
     assert(Math.abs(block.props.position.y-icon.props.position.y)<1e-8,`${family} row ${i} total block center equals icon center`);
     assert(Math.abs(block.props.position.y-G.blockCenter*plan.scaleY)<1e-8,`${family} row ${i} block has one common vertical displacement`);
-    const desc=walk(block),texts=desc.filter(n=>n.type==='Text'),namePrice=texts.filter(n=>Math.abs(n.props.frame.height-G.top*plan.scaleY)<1e-8),middle=texts.filter(n=>Math.abs(n.props.frame.height-G.middle*plan.scaleY)<1e-8),bottomTexts=texts.filter(n=>Math.abs(n.props.frame.height-G.bottom*plan.scaleY)<1e-8),name=namePrice[0],price=namePrice[1],percent=middle[0],unit=bottomTexts[0],time=bottomTexts[1],graph=desc.find(n=>n.type==='Canvas'&&Math.abs((n.props?.frame?.height??0)-G.graphHeight*plan.scaleY)<1e-8);
-    assert(name&&price&&percent&&unit&&time&&graph,`${family} row ${i} exposes all three alignment lines`);
+    const desc=walk(block),texts=desc.filter(n=>n.type==='Text'),nameLine=desc.find(n=>n.type==='HStack'&&n.props?.key==='name-status-line'),nameText=desc.find(n=>n.type==='Text'&&n.props?.key==='name-text'),price=texts.find(n=>Math.abs((n.props?.frame?.width??0)-G.price*plan.scale)<1e-8&&Math.abs((n.props?.frame?.height??0)-G.top*plan.scaleY)<1e-8),percent=texts.find(n=>Math.abs((n.props?.frame?.width??0)-G.percent*plan.scale)<1e-8&&Math.abs((n.props?.frame?.height??0)-G.middle*plan.scaleY)<1e-8),unit=texts.find(n=>Math.abs((n.props?.frame?.width??0)-G.name*plan.scale)<1e-8&&Math.abs((n.props?.frame?.height??0)-G.bottom*plan.scaleY)<1e-8),time=texts.find(n=>Math.abs((n.props?.frame?.width??0)-48*plan.scale)<1e-8&&Math.abs((n.props?.frame?.height??0)-G.bottom*plan.scaleY)<1e-8),graph=desc.find(n=>n.type==='Canvas'&&Math.abs((n.props?.frame?.height??0)-G.graphHeight*plan.scaleY)<1e-8);
+    assert(nameLine&&nameText&&price&&percent&&unit&&time&&graph,`${family} row ${i} exposes all three alignment lines`);
+    assert.equal(nameLine.props.frame.width,G.name*plan.scale,`${family} row ${i} keeps the measured name/status column width`);
+    assert.equal(nameLine.props.spacing,2,`${family} row ${i} keeps the native text-to-dot gap`);
+    assert.equal(nameText.props.frame.width,undefined,`${family} row ${i} leaves name width intrinsic for native measurement`);
+    assert.equal(nameLine.children.filter(n=>n.type==='Circle'&&n.props?.key==='market-status-dot').length,1,`${family} row ${i} places one dot after the name`);
     const top=n=>n.props.position.y-n.props.frame.height/2,bottom=n=>n.props.position.y+n.props.frame.height/2;
-    assert(Math.abs(top(name)-G.line1Top*plan.scaleY)<1e-8,`${family} row ${i} name stays at the recovered block top`);
-    assert(Math.abs(top(price)-top(name))<1e-8,`${family} row ${i} name/value top aligned`);
+    assert(Math.abs(top(nameLine)-G.line1Top*plan.scaleY)<1e-8,`${family} row ${i} name/status line stays at the recovered block top`);
+    assert(Math.abs(top(price)-top(nameLine))<1e-8,`${family} row ${i} name/value top aligned`);
     assert(Math.abs(bottom(unit)-(G.line3Top+G.bottom)*plan.scaleY)<1e-8,`${family} row ${i} code stays at the recovered block bottom`);
     assert(Math.abs(bottom(unit)-bottom(time))<1e-8,`${family} row ${i} code/date bottom aligned`);
     assert(Math.abs(percent.props.position.y-(G.line2Top+G.middle/2)*plan.scaleY)<1e-8,`${family} row ${i} variation keeps the recovered line 2 position`);
     assert(Math.abs(graph.props.position.y-(G.graphTop+G.graphHeight/2)*plan.scaleY)<1e-8,`${family} row ${i} graph keeps the recovered line 2 position`);
-    assert(top(name)>=G.blockTop*plan.scaleY&&bottom(unit)<=(G.blockTop+G.blockHeight)*plan.scaleY,`${family} row ${i} grouped content is not clipped`);
+    assert(top(nameLine)>=G.blockTop*plan.scaleY&&bottom(unit)<=(G.blockTop+G.blockHeight)*plan.scaleY,`${family} row ${i} grouped content is not clipped`);
   }
   assert(tree.props.accessibilityLabel.includes('Selic com nome suficientemente longo'),`${family} retains long names`);
   assert(tree.props.accessibilityLabel.includes('-115,22'),`${family} retains negative values`);

@@ -9,7 +9,7 @@ const sdk={
   ControlWidget:{reloadButtons:()=>{}},
   Safari:{openURL:async()=>true},
   Script:{createRunURLScheme:()=> 'scripting://run/Meu%20Painel?section=market'},
-  Button:'Button',Canvas:'Canvas',Circle:'Circle',Image:'Image',Rectangle:'Rectangle',Text:'Text',ZStack:'ZStack'
+  Button:'Button',Canvas:'Canvas',Circle:'Circle',HStack:'HStack',Image:'Image',Rectangle:'Rectangle',Text:'Text',ZStack:'ZStack'
 };
 const viewModule={exports:{}},createElement=(type,props,...children)=>typeof type==='function'?type({...props,children:children.flat(Infinity).filter(Boolean)}):({type,props:props||{},children:children.flat(Infinity).filter(Boolean)});
 vm.runInNewContext(bundle('view.tsx'),{module:viewModule,exports:viewModule.exports,require:()=>sdk,createElement,Date,Storage:{get:()=>null,set:()=>true},UIImage:{fromBase64String:()=>null}});
@@ -38,14 +38,18 @@ for(const [family,width,height,expected] of [['small',158,158,4],['medium',338,1
     assert.equal(position.y,plan.y+(rowIndex*(G.row+G.gap)+hitHeight/2)*plan.scaleY,`${family} row ${i} has the expected vertical hitbox`);
     const content=button.children.find(node=>node.type==='ZStack');
     assert.deepEqual(content.props.frame,frame,`${family} row ${i} content fills its hitbox`);
-    const descendants=walk(content),block=descendants.find(node=>node.props?.key==='detail-block'),icon=descendants.find(node=>(node.type==='Canvas'||node.type==='Image')&&Math.abs((node.props?.frame?.width??0)-26*plan.scale)<1e-8&&Math.abs((node.props?.frame?.height??0)-26*plan.scaleY)<1e-8),graph=descendants.find(node=>node.type==='Canvas'&&Math.abs((node.props?.frame?.height??0)-G.graphHeight*plan.scaleY)<1e-8),dot=descendants.find(node=>node.type==='Circle'&&node.props?.key==='market-status-dot');
-    assert(block&&icon&&graph&&dot,`${family} row ${i} keeps icon, block, graph and status dot inside the target`);
+    const descendants=walk(content),block=descendants.find(node=>node.props?.key==='detail-block'),nameLine=descendants.find(node=>node.type==='HStack'&&node.props?.key==='name-status-line'),icon=descendants.find(node=>(node.type==='Canvas'||node.type==='Image')&&Math.abs((node.props?.frame?.width??0)-26*plan.scale)<1e-8&&Math.abs((node.props?.frame?.height??0)-26*plan.scaleY)<1e-8),graph=descendants.find(node=>node.type==='Canvas'&&Math.abs((node.props?.frame?.height??0)-G.graphHeight*plan.scaleY)<1e-8),dot=descendants.find(node=>node.type==='Circle'&&node.props?.key==='market-status-dot');
+    assert(block&&nameLine&&icon&&graph&&dot,`${family} row ${i} keeps icon, block, graph and status dot inside the target`);
+    assert.equal(nameLine.props.frame.width,G.name*plan.scale,`${family} row ${i} measures the name inside the original name column`);
+    assert.equal(nameLine.props.spacing,2,`${family} row ${i} keeps a measured-text gap before the dot`);
+    assert.equal(nameLine.children.filter(node=>node?.type==='Circle'&&node.props?.key==='market-status-dot').length,1,`${family} row ${i} has one dot after the name`);
+    assert.equal(descendants.filter(node=>node.type==='Circle'&&node.props?.key==='market-status-dot').length,1,`${family} row ${i} has no duplicate status dot`);
     assert.equal(dot.props.frame.width,3*plan.scale,`${family} row ${i} keeps the 3 pt status-dot width`);
     assert.equal(dot.props.frame.height,3*plan.scale,`${family} row ${i} keeps the 3 pt status-dot height`);
-    assert.equal(dot.props.position.x,65.5*plan.scale,`${family} row ${i} keeps the status dot immediately before the date`);
-    assert.equal(dot.props.position.y,(G.line3Top+G.bottom/2)*plan.scaleY,`${family} row ${i} centers the status dot on the date line`);
+    assert.equal(dot.props.position,undefined,`${family} row ${i} lets the native HStack place the dot after the measured name`);
+    assert.equal(nameLine.props.position.y,(G.line1Top+G.top/2)*plan.scaleY,`${family} row ${i} keeps the status dot on the title line`);
     const time=descendants.find(node=>node.type==='Text'&&Math.abs((node.props?.frame?.width??0)-48*plan.scale)<1e-8&&Math.abs((node.props?.frame?.height??0)-G.bottom*plan.scaleY)<1e-8);
-    assert(time&&dot.props.position.x+dot.props.frame.width/2<time.props.position.x-time.props.frame.width/2,`${family} row ${i} keeps a gap before the date label`);
+    assert(time&&nameLine.props.position.x+nameLine.props.frame.width/2<=time.props.position.x-time.props.frame.width/2,`${family} row ${i} keeps the title column separate from the date label`);
     assert.equal(icon.props.position.x,13*plan.scale,`${family} row ${i} icon stays inside the local hitbox`);
     assert.equal(icon.props.position.y,(G.iconTop+13)*plan.scaleY,`${family} row ${i} icon stays inside the local hitbox`);
     assert.equal(block.props.position.y,G.blockCenter*plan.scaleY,`${family} row ${i} preserves block centering`);

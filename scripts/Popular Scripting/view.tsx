@@ -1,4 +1,4 @@
-import { Button, Canvas, Circle, Image, Rectangle, Text, ZStack, Script } from 'scripting'
+import { Button, Canvas, Circle, HStack, Image, Rectangle, Text, ZStack, Script } from 'scripting'
 import { pageRows } from './pagination'
 import { assets } from './assets'
 import { drawBadge } from './badges'
@@ -47,7 +47,12 @@ export function PopularView({model,width,height}:{model:any;width:number;height:
         {custom?<Canvas opaque={false} {...place(rowPlan,0,G.iconTop,26,26)} draw={(ctx,size)=>{ctx.scale(size.width/26,size.height/26);drawBadge(ctx,row.asset.code)}}/>
           :images[row.asset.code]?<Image image={images[row.asset.code]} resizable renderingMode="original" {...place(rowPlan,0,G.iconTop,26,26)}/>:<Image systemName="chart.line.uptrend.xyaxis" font={11*plan.scale} foregroundStyle="#D1D1D6" background={{style:'#34343A',shape:{type:'circle'}}} {...place(rowPlan,0,G.iconTop,26,26)}/>}
         <ZStack key="detail-block" alignment="topLeading" {...place(rowPlan,detail,G.blockTop,G.blockWidth,G.blockHeight)}>
-        {blockLabel('name',row.name,0,G.line1Top,G.name,G.top,10,8,true)}
+        <HStack key="name-status-line" alignment="center" spacing={2} clipped {...placeInBlock(rowPlan,0,G.line1Top,G.name,G.top)}>
+          <Text key="name-text" font={10*plan.scale} fontWeight="semibold" foregroundStyle="white"
+            lineLimit={1} minScaleFactor={8/10} frame={{height:G.top*plan.scaleY,alignment:'leading'}}>{row.name}</Text>
+          <Circle key="market-status-dot" fill={status.color} frame={{width:3*plan.scale,height:3*plan.scale}}
+            accessibilityLabel={status.accessibility}/>
+        </HStack>
         {blockLabel('price',row.price,G.name,G.line1Top,G.price,G.top,17.5,8.5,true,'white',true)}
         <Canvas opaque={false} {...placeInBlock(rowPlan,0,G.graphTop,G.graph,G.graphHeight)} draw={(ctx,size)=>drawCurve(ctx,size,curve,color)}/>
         {!curve.points.length?blockLabel('missing','—',0,G.graphTop,G.graph,G.graphHeight,5,4,false,color):null}
@@ -60,8 +65,6 @@ export function PopularView({model,width,height}:{model:any;width:number;height:
           </ZStack></ZStack>:null}
         {blockLabel('percent',row.percent,G.graph+3,G.line2Top,G.percent,G.middle,10.5,percentMinimum,true,color,true)}
         {blockLabel('unit',row.unit,0,G.line3Top,G.name,G.bottom,6,5,false,'#96969C')}
-        <Circle key="market-status-dot" fill={status.color} frame={{width:3*plan.scale,height:3*plan.scale}}
-          position={{x:65.5*plan.scale,y:(G.line3Top+G.bottom/2)*plan.scaleY}} accessibilityLabel={status.accessibility}/>
         {blockLabel('time',row.time,68,G.line3Top,48,G.bottom,7.5,6,false,'#96969C',true)}
         </ZStack>
         {rowIndex<3?<Rectangle fill="rgba(255,255,255,0.13)" {...place(rowPlan,0,G.row,G.column,G.gap)}/>:null}

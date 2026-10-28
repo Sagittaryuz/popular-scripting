@@ -1,5 +1,13 @@
 # Melhorias Scripting Pro — 23/10/2026
 
+## 0.2.21 — ponto após o nome
+
+Entrega 0.2.21: mover somente a bolinha de 3 pt para após o nome na primeira
+linha, usando medição intrínseca do `HStack`, com espaço e limite antes do
+valor; preservar semântica, frescor, acessibilidade, dados e layout restante.
+Validar nomes curtos/longos, small/medium/large e ausência de ponto duplicado.
+IPhone nativo permanece pendente.
+
 ## 0.2.20 — evidência recente da fonte por ativo
 
 Entrega 0.2.20 concluída: a bolinha usa evidência recente da consulta por

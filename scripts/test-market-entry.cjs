@@ -7,8 +7,8 @@ const model=fs.readFileSync(path.join(root,'model.ts'),'utf8');
 const engine=fs.readFileSync(path.join(root,'original-engine.js'),'utf8');
 const script=JSON.parse(fs.readFileSync(path.join(root,'script.json'),'utf8'));
 
-assert.equal(script.version,'0.2.20');
-assert.match(view,/import \{ Button, Canvas, Circle, Image, Rectangle, Text, ZStack, Script \} from 'scripting'/);
+assert.equal(script.version,'0.2.21');
+assert.match(view,/import \{ Button, Canvas, Circle, HStack, Image, Rectangle, Text, ZStack, Script \} from 'scripting'/);
 assert.match(view,/widgetURL=\{Script\.createRunURLScheme\("Meu Painel", \{ section: "market" \}\)\}/);
 assert.match(view,/Button key=\{row\.asset\.code\} intent=\{RefreshAssetsOnTap\(undefined\)\}/);
 assert.match(view,/accessibilityLabel=\{`Atualizar indicadores\./);

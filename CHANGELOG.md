@@ -1,3 +1,8 @@
+## 0.2.21 — ponto após o nome
+
+- Move a bolinha de saúde da fonte, sem duplicá-la, para o fim do nome na primeira linha. O `HStack` nativo mede o texto intrínseco, mantém espaçamento de 2 pt e comprime/limita nomes longos dentro da coluna de 64 pt antes do valor.
+- Preserva diâmetro de 3 pt, cores, semântica de consulta/frescor, acessibilidade, alinhamento do título/valor, linha 3, dados, fontes, curvas, refresh e dimensões. iPhone nativo continua não testado.
+
 ## 0.2.20 — saúde recente da consulta por ativo
 
 - A bolinha de 3 pt agora fica verde somente quando a coleta atual registra um payload válido do provedor para aquele ativo, com `fetchedAt` válido e sem cache/fallback histórico (um snapshot Git verificado na consulta é aceito); falha, indisponibilidade, resposta inválida, fallback ou evidência expirada ficam cinza.

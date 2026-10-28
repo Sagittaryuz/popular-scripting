@@ -1,4 +1,13 @@
-# Popular Scripting — Pro 0.2.20
+# Popular Scripting — Pro 0.2.21
+
+## 0.2.21 — ponto após o nome
+
+A bolinha de 3 pt sai da linha 3 e passa para o fim do nome na linha 1. Um
+`HStack` nativo usa a medida intrínseca do `Text`, separa o círculo por 2 pt e
+limita o conjunto à coluna de nome de 64 pt, preservando o valor e nomes longos
+sem colisão. Cores, estado por consulta, frescor, acessibilidade, dados,
+fontes, curvas, refresh, ordem e dimensões permanecem inalterados. iPhone
+nativo não testado.
 
 ## 0.2.20 — evidência recente da fonte por ativo
 
