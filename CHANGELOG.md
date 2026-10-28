@@ -1,3 +1,10 @@
+## 0.2.23 - sessao prevista do mercado
+
+- A bolinha passa a representar horario de sessao regular somente para o Ibovespa, usando a grade efetiva da B3, o calendario de feriados de 2026 e a sessao especial da Quarta-feira de Cinzas no fuso `America/Sao_Paulo`.
+- A grade de 10:00–18:00 BRT vale no periodo verificado de 02/01 a 08/03; de 09/03 a 31/10, 10:00–17:00 BRT. Apos 31/10, dias de semana ficam neutros ate haver horario oficial confirmado. Fim de semana e feriados oficiais conhecidos ficam fechados.
+- Selic, IPCA, CUB-GO, Diesel S10, Soja GO, USD/BRL e Brent ficam neutros: os dados atuais nao estabelecem sessao aplicavel por instrumento. Cache, HTTP, timestamp de coleta e saude da fonte nao controlam o ponto.
+- Preserva posicao apos o nome, alinhamento com o grafico, dimensoes, valores, curvas, coleta, cotacao e refresh. Testes de desktop cobrem limites de horario, feriados, fuso, mudanca de horario, series sem pregao e independencia do estado da fonte; iPhone nativo nao testado.
+
 ## 0.2.21 — ponto após o nome
 
 - Move a bolinha de saúde da fonte, sem duplicá-la, para o fim do nome na primeira linha. O `HStack` nativo mede o texto intrínseco, mantém espaçamento de 2 pt e comprime/limita nomes longos dentro da coluna de 64 pt antes do valor.

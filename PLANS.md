@@ -1,5 +1,17 @@
 # Melhorias Scripting Pro — 23/10/2026
 
+## 0.2.23 - sessao de mercado por horario oficial
+
+Entregue: o indicador deve representar a sessao regular prevista do mercado de
+referencia somente quando horario, instrumento e calendario estiverem
+verificados. Para o Ibovespa, usar horario de acoes da B3, feriados e sessoes
+especiais de 2026 em `America/Sao_Paulo`; nao incluir pre-abertura ou
+after-market nem prometer preco em tempo real. Manter neutro para dados
+periodicos e instrumentos sem sessao confirmada. Nao derivar cor de HTTP,
+cache, timestamp ou frescor da cotacao. Grades sem vigencia documentada ficam
+neutras. Validar limites, feriados, mudanca de horario, DST da regiao de
+referencia e datas fora da cobertura. iPhone permanece pendente.
+
 ## 0.2.21 — ponto após o nome
 
 Entrega 0.2.21: mover somente a bolinha de 3 pt para após o nome na primeira

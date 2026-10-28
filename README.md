@@ -1,3 +1,16 @@
+## Atualização 0.2.23 - ponto de sessão previsto
+
+A bolinha representa a sessão regular de ações da B3 somente para o
+Ibovespa. Horários efetivos em 2026, calendário oficial, feriados e Quarta-
+feira de Cinzas são tratados no fuso `America/Sao_Paulo`; fora das grades
+verificadas, o ponto fica neutro. Selic, IPCA, CUB-GO, Diesel S10, Soja GO,
+USD/BRL e Brent permanecem neutros porque o contrato atual da fonte não
+confirma uma sessão aplicável ao dado exibido. A cor não confirma atualização
+de preço, conectividade ou sucesso de consulta. Widgets podem receber novas
+linhas depois do horário solicitado pelo iOS. A posição do ponto, nomes
+alinhados ao gráfico, valores, curvas, fontes e toque de refresh permanecem
+preservados; iPhone nativo não testado.
+
 ## Atualização 0.2.22 - nome alinhado ao gráfico
 
 O nome do ativo e o indicador da consulta ficam ancorados à esquerda na
@@ -103,7 +116,7 @@ Testes locais de fontes, observações antigas/futuras, alertas, cache, transpor
 
 # Popular Scripting
 
-**Atual: 0.2.21 — Scripting Pro.** Detalhes, ordem fixa dos oito indicadores, CSV,
+**Atual: 0.2.23 - Scripting Pro.** Detalhes, ordem fixa dos oito indicadores, CSV,
 alertas, assistente, Central de Controle e painel Início. Consulta solicitada em
 1 minuto e links diretos às fontes. [Ativação, testes e limites](PRO.md).
 

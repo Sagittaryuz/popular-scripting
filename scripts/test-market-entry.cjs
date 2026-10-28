@@ -7,7 +7,7 @@ const model=fs.readFileSync(path.join(root,'model.ts'),'utf8');
 const engine=fs.readFileSync(path.join(root,'original-engine.js'),'utf8');
 const script=JSON.parse(fs.readFileSync(path.join(root,'script.json'),'utf8'));
 
-assert.equal(script.version,'0.2.22');
+assert.equal(script.version,'0.2.23');
 assert.match(view,/import \{ Button, Canvas, Circle, HStack, Image, Rectangle, Text, ZStack, Script \} from 'scripting'/);
 assert.match(view,/widgetURL=\{Script\.createRunURLScheme\("Meu Painel", \{ section: "market" \}\)\}/);
 assert.match(view,/Button key=\{row\.asset\.code\} intent=\{RefreshAssetsOnTap\(undefined\)\}/);
@@ -16,7 +16,7 @@ assert.match(view,/frame=\{rowFrame\} position=\{rowPosition\}/);
 assert.match(view,/key="market-status-dot"/);
 assert.match(view,/assetMarketStatus/);
 assert.match(fs.readFileSync(path.join(root,'market-status.ts'),'utf8'),/sourceStatusForRow/);
-assert.match(fs.readFileSync(path.join(root,'market-status.ts'),'utf8'),/não indica bolsa aberta/);
+assert.match(fs.readFileSync(path.join(root,'market-status.ts'),'utf8'),/não confirma atualiza/);
 assert.doesNotMatch(view,/RefreshAndOpenMarket\(undefined\)/);
 assert.doesNotMatch(view,/NextPopularPage|scripting-home/);
 assert.match(intents,/export const RefreshPopular=/);

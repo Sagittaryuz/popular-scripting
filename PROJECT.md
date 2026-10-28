@@ -1,4 +1,17 @@
-# Popular Scripting — Pro 0.2.21
+# Popular Scripting - Pro 0.2.23
+
+## 0.2.23 - ponto de sessão de mercado
+
+A bolinha passa a indicar sessão regular prevista somente para o Ibovespa,
+com horário e calendário oficial da B3 em 2026 e neutralidade fora da
+cobertura. Para Selic, IPCA, CUB-GO, Diesel S10, Soja GO, USD/BRL e Brent, a
+fonte atual não confirma uma sessão aplicável ao dado mostrado; seus pontos
+permanecem neutros. Frescor, cache e resultado HTTP não alteram a cor. Isso
+não afirma que uma cotação esteja atualizada. O horário usa
+`America/Sao_Paulo`; grades posteriores a 31/10/2026 ficam desconhecidas até
+confirmação oficial. iPhone nativo não testado.
+
+Fontes oficiais consultadas em 28/10/2026: [grade de ações da B3](https://www.b3.com.br/pt_br/solucoes/plataformas/puma-trading-system/para-participantes-e-traders/horario-de-negociacao/acoes/), [calendário de negociação 2026](https://www.b3.com.br/pt_br/noticias/calendario-de-negociacao-da-b3-confira-o-funcionamento-da-bolsa-em-2026.htm), [Quarta-feira de Cinzas 2026](https://www.b3.com.br/pt_br/noticias/confira-o-funcionamento-da-b3-no-carnaval.htm) e [grade a partir de 9 de março de 2026](https://borainvestir.b3.com.br/noticias/mercado/b3-a-bolsa-do-brasil-muda-horarios-de-negociacao-a-partir-de-9-de-marco-confira/). A grade de 10:00–18:00 BRT até 08/03/2026 foi anunciada na [mudança da B3 em novembro de 2025](https://www.b3.com.br/pt_br/noticias/comunicado-b3.htm). A fonte atual de USD/BRL é [documentada pela AwesomeAPI](https://docs.awesomeapi.com.br/api-de-moedas); seu endpoint entrega `bid`/`ask`, horário da cotação e informa cache de um minuto para chamadas sem chave, mas não identifica na resposta um calendário de sessão verificável para o indicador deste widget.
 
 ## 0.2.21 — ponto após o nome
 
