@@ -47,7 +47,7 @@ export function PopularView({model,width,height}:{model:any;width:number;height:
         {custom?<Canvas opaque={false} {...place(rowPlan,0,G.iconTop,26,26)} draw={(ctx,size)=>{ctx.scale(size.width/26,size.height/26);drawBadge(ctx,row.asset.code)}}/>
           :images[row.asset.code]?<Image image={images[row.asset.code]} resizable renderingMode="original" {...place(rowPlan,0,G.iconTop,26,26)}/>:<Image systemName="chart.line.uptrend.xyaxis" font={11*plan.scale} foregroundStyle="#D1D1D6" background={{style:'#34343A',shape:{type:'circle'}}} {...place(rowPlan,0,G.iconTop,26,26)}/>}
         <ZStack key="detail-block" alignment="topLeading" {...place(rowPlan,detail,G.blockTop,G.blockWidth,G.blockHeight)}>
-        <HStack key="name-status-line" alignment="center" spacing={2} clipped {...placeInBlock(rowPlan,0,G.line1Top,G.name,G.top)}>
+        <HStack key="name-status-line" alignment="center" spacing={2} clipped {...placeInBlock(rowPlan,0,G.line1Top,G.name,G.top,'leading')}>
           <Text key="name-text" font={10*plan.scale} fontWeight="semibold" foregroundStyle="white"
             lineLimit={1} minScaleFactor={8/10} frame={{height:G.top*plan.scaleY,alignment:'leading'}}>{row.name}</Text>
           <Circle key="market-status-dot" fill={status.color} frame={{width:3*plan.scale,height:3*plan.scale}}

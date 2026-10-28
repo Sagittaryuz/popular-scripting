@@ -1,4 +1,11 @@
-## Atualização 0.2.21 — ponto após o nome
+## Atualização 0.2.22 - nome alinhado ao gráfico
+
+O nome do ativo e o indicador da consulta ficam ancorados à esquerda na
+mesma origem horizontal do gráfico, em pequeno, médio e grande. A coluna de
+preço e as demais medidas permanecem preservadas. Testes estruturais passam;
+renderização nativa no iPhone não foi testada.
+
+## Atualização 0.2.21 - ponto após o nome
 
 A bolinha de saúde da fonte permanece com 3 pt, mesmas cores e significado,
 mas agora aparece imediatamente após o nome na primeira linha. O `HStack`

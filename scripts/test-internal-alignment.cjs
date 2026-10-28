@@ -60,6 +60,8 @@ for(const [family,width,height,expected] of [['small',158,170,4],['medium',338,1
     const desc=walk(block),texts=desc.filter(n=>n.type==='Text'),nameLine=desc.find(n=>n.type==='HStack'&&n.props?.key==='name-status-line'),nameText=desc.find(n=>n.type==='Text'&&n.props?.key==='name-text'),price=texts.find(n=>Math.abs((n.props?.frame?.width??0)-G.price*plan.scale)<1e-8&&Math.abs((n.props?.frame?.height??0)-G.top*plan.scaleY)<1e-8),percent=texts.find(n=>Math.abs((n.props?.frame?.width??0)-G.percent*plan.scale)<1e-8&&Math.abs((n.props?.frame?.height??0)-G.middle*plan.scaleY)<1e-8),unit=texts.find(n=>Math.abs((n.props?.frame?.width??0)-G.name*plan.scale)<1e-8&&Math.abs((n.props?.frame?.height??0)-G.bottom*plan.scaleY)<1e-8),time=texts.find(n=>Math.abs((n.props?.frame?.width??0)-48*plan.scale)<1e-8&&Math.abs((n.props?.frame?.height??0)-G.bottom*plan.scaleY)<1e-8),graph=desc.find(n=>n.type==='Canvas'&&Math.abs((n.props?.frame?.height??0)-G.graphHeight*plan.scaleY)<1e-8);
     assert(nameLine&&nameText&&price&&percent&&unit&&time&&graph,`${family} row ${i} exposes all three alignment lines`);
     assert.equal(nameLine.props.frame.width,G.name*plan.scale,`${family} row ${i} keeps the measured name/status column width`);
+    assert.equal(nameLine.props.frame.alignment,'leading',`${family} row ${i} anchors the name and status line to the chart's left edge`);
+    assert.equal(nameLine.props.position.x-nameLine.props.frame.width/2,graph.props.position.x-graph.props.frame.width/2,`${family} row ${i} name and chart share the same left edge`);
     assert.equal(nameLine.props.spacing,2,`${family} row ${i} keeps the native text-to-dot gap`);
     assert.equal(nameText.props.frame.width,undefined,`${family} row ${i} leaves name width intrinsic for native measurement`);
     assert.equal(nameLine.children.filter(n=>n.type==='Circle'&&n.props?.key==='market-status-dot').length,1,`${family} row ${i} places one dot after the name`);
@@ -76,4 +78,4 @@ for(const [family,width,height,expected] of [['small',158,170,4],['medium',338,1
   assert(tree.props.accessibilityLabel.includes('-115,22'),`${family} retains negative values`);
   if(expected===8)assert(tree.props.accessibilityLabel.includes('—'),`${family} retains missing-date/value marker`);
 }
-console.log('PASS grouped alignment: recovered 0.2.13 line offsets, one total block centered on the icon, small/medium/large and long/negative/missing fixtures covered. Native iPhone render pending.');
+console.log('PASS grouped alignment: title left edge matches chart in small/medium/large; recovered 0.2.13 vertical offsets and icon-centered block, with long/negative/missing fixtures covered. Native iPhone render pending.');

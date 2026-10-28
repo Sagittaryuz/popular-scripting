@@ -127,3 +127,8 @@
 - Testes locais aprovados; rede, UI e notificações no iPhone não confirmadas.
 
 Versões anteriores: README e tags `v0.1.1` a `v0.1.3`.
+## 0.2.22 - alinhamento do nome com o gráfico
+
+- Alinha pela esquerda o nome do ativo e seu indicador de consulta com a borda esquerda do gráfico em todos os tamanhos.
+- Preserva largura da coluna, reserva de preço, fontes, dados, curvas e posições verticais.
+- Teste estrutural mede a mesma borda esquerda em pequeno, médio e grande; renderização nativa no iPhone não foi testada.
