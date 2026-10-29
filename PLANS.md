@@ -1,5 +1,12 @@
 # Melhorias Scripting Pro — 23/10/2026
 
+## 0.2.27 — quatro colunas do widget
+
+- [x] Dividir small e medium/large em quatro colunas: ícone 26 pt centralizado, identidade com nome/status e `código | data`, gráfico de 24 h e cotação/variação alinhadas à direita.
+- [x] Manter colunas do ícone/identidade iguais, limitar fontes e textos longos antes do gráfico/valor, preservar unidades compactas, ordem, fontes, status, bandeira e refresh.
+- [x] Validar quatro/oito linhas, dados indisponíveis, data ausente, valores negativos, hitboxes, pixels da prévia fixture-only e o limite de não teste no iPhone.
+- [ ] Integrar uma fonte intraday autorizada para `^BVSP` somente quando houver contrato público compatível, acesso permitido e validação de `regularMarketPrice`/`previousClose`; a captura e a página Yahoo limitada não são suficientes.
+
 ## 0.2.26 — código sob o ícone e altura útil do gráfico
 
 - [x] Colocar o código curto de cada ativo abaixo do próprio ícone, manter o nome/status acima e centralizar o conjunto na faixa esquerda sem substituir unidade/origem/data.

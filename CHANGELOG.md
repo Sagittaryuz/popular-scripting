@@ -1,3 +1,10 @@
+## 0.2.27 - distribuição em quatro colunas
+
+- Reorganiza cada linha em quatro colunas reais e estáveis: ícone circular de 26 pt, nome/status com `código | data` abaixo, sparkline e cotação/variação à direita. As colunas do ícone e da identidade têm 32 pt; gráfico e cotação têm 50/26 pt, com 2 pt entre elas.
+- Recoloca o ícone no diâmetro anterior à 0.2.25 e centraliza-o verticalmente na linha de 36 pt. O gráfico mantém altura de 20 pt, janela real de 24 h e `24h indisponível` para séries sem observações intraday válidas; nenhuma série ou preço foi inventado.
+- Preserva bandeira circular dos EUA, bolinha/status e semântica de sessão, ordem fixa, unidades compactadas, cores, refresh/feedback por linha, hitboxes e tamanhos 2×2/4×2. Nomes longos e metadados ficam limitados à coluna de identidade, sem entrar no gráfico ou na cotação.
+- Testes de bundle, ordem, dados, status, refresh, 24 h, geometria e desempenho passam. A prévia `validation/widget-preview-0.2.27.png` é fixture-only; a referência visual externa não foi materializada neste executor. iPhone nativo não testado.
+
 ## 0.2.25 - janela real de 24h e layout redistribuído
 
 - Renderiza somente observações com timestamp real dentro das últimas 24 horas. USD/BRL usa a série sequencial de 1 minuto documentada pela AwesomeAPI; o endpoint `/USD-BRL/100` limita a resposta a 100 amostras, no máximo 100 minutos, e não garante cobertura completa de 24 horas. CUB/IPCA, Diesel, Brent, Selic e soja sem duas observações intraday exibem `24h indisponível`, preservando valor/data sem interpolação ou zero.

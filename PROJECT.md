@@ -1,5 +1,12 @@
-# Popular Scripting - Pro 0.2.26
+# Popular Scripting - Pro 0.2.27
 
+## 0.2.27 - distribuição em quatro colunas
+
+- Cada linha usa quatro colunas medidas: ícone circular de 26 pt; nome/status e `código | data` em uma coluna de 32 pt; sparkline de 50 pt; cotação acima da variação em uma coluna de 26 pt. Há 2 pt entre colunas e o conteúdo útil continua com 146 pt.
+- A linha externa continua com 36 pt; ícone e centro do gráfico ficam no centro vertical, a cotação fica no topo e a unidade compacta na base. Observações sem duas amostras intraday reais continuam como `24h indisponível`.
+- Preserva dados, fontes, ordem fixa, bandeira, status de sessão, cores, refresh por linha, acessibilidade, 2×2/4×2 e semântica de unidade. A prévia é fixture-only; iPhone nativo permanece não testado.
+
+## 0.2.26 - código sob o ícone e altura útil do gráfico
 ## 0.2.26 - código sob o ícone e altura útil do gráfico
 
 - O bloco esquerdo agora é nome/status acima, ícone menor de 20 pt no centro da faixa e código curto abaixo. Os códigos não substituem unidade, origem ou data: esses campos permanecem no bloco de cotação e não colidem com o preço.

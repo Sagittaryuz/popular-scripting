@@ -6,7 +6,7 @@ const path = require('node:path');
 // native renderer and never fetches live data.
 const root = path.resolve(__dirname, '..');
 const assetsFile = path.join(root, 'scripts/Popular Scripting/assets.js');
-const output = path.join(root, 'validation/widget-preview-0.2.26.svg');
+const output = path.join(root, 'validation/widget-preview-0.2.27.svg');
 const assetSource = fs.readFileSync(assetsFile, 'utf8')
   .replace(/^(?:\/\/[^\n]*\n)+/, '')
   .replace(/^export const assets=/, '')
@@ -17,14 +17,22 @@ const ROW = 36;
 const ROW_STEP = ROW + 2 / 3;
 const COLUMN = 146;
 const COLUMN_GAP = 12;
-const DETAIL_LEFT = 30;
-const GRAPH_WIDTH = 82;
+const COL_GAP = 2;
+const COL1 = 32;
+const COL2 = 32;
+const COL3 = 50;
+const COL4 = 26;
+const COL1_X = 0;
+const COL2_X = COL1 + COL_GAP;
+const COL3_X = COL2_X + COL2 + COL_GAP;
+const COL4_X = COL3_X + COL3 + COL_GAP;
+const GRAPH_WIDTH = COL3;
 const GRAPH_TOP = 8;
 const GRAPH_HEIGHT = 20;
-const ICON = 20;
-const ICON_LEFT = 5;
-const CODE_TOP = 29;
-const CODE_HEIGHT = 7;
+const ICON = 26;
+const ICON_LEFT = (COL1 - ICON) / 2;
+const META_TOP = 27;
+const META_HEIGHT = 7;
 const SCALE = ICON / 26;
 const SHORT_CODES = Object.freeze({SELIC: 'SELIC', IPCA: 'IPCA', IBOV: 'IBOV', 'USD/BRL': 'USD/BRL', SOJA_JATAI_GO: 'SOJAGO', CUB_GO: 'CUB-GO', DIESEL_S10: 'DIESEL', BRENT: 'BRENT'});
 
@@ -53,7 +61,7 @@ function text(x, y, value, size = 6, fill = '#96969C', extra = '') {
 }
 
 function badgeGroup(cx, cy, body) {
-  return `<g transform="translate(${cx - 10} ${cy - 10}) scale(${SCALE})">${body}</g>`;
+  return `<g transform="translate(${cx - 13} ${cy - 13}) scale(${SCALE})">${body}</g>`;
 }
 
 function customBadge(row, cx, cy) {
@@ -118,14 +126,14 @@ function icon(row, cx, cy) {
   // combined PNG remains in assets.js. This keeps the flag-only contract.
   if (['USD/BRL', 'SOJA_JATAI_GO', 'CUB_GO', 'IPCA', 'DIESEL_S10'].includes(row.icon)) return customBadge(row, cx, cy);
   if (assets[row.icon]) {
-    return `<image href="data:image/png;base64,${assets[row.icon]}" x="${cx - 10}" y="${cy - 10}" width="20" height="20" preserveAspectRatio="xMidYMid meet"/>`;
+    return `<image href="data:image/png;base64,${assets[row.icon]}" x="${cx - ICON / 2}" y="${cy - ICON / 2}" width="${ICON}" height="${ICON}" preserveAspectRatio="xMidYMid meet"/>`;
   }
   throw new Error(`Missing tracked icon asset for ${row.icon}`);
 }
 
 function curve(row, rowTop, offset) {
   if (!row.available) return '';
-  const x = offset + DETAIL_LEFT;
+  const x = offset + COL3_X;
   const y = rowTop + GRAPH_TOP;
   const points = [[0, 14.5], [18, 10], [38, 12], [59, 7], [GRAPH_WIDTH, 3.5]]
     .map(([px, py]) => [x + px, y + py]);
@@ -135,27 +143,27 @@ function curve(row, rowTop, offset) {
 }
 
 function drawRow(row, rowTop, offset) {
-  // These x positions are the measured text-plus-spacing locations of the
-  // native HStack. Every dot remains inside the 78 pt name/status frame.
-  const dotX = { Selic: 29, IPCA: 30, Ibovespa: 49, Dólar: 34, Soja: 28, 'CUB-GO': 45, 'Diesel S10': 57, 'Brent spot': 51 }[row.name];
+  // The dot is kept at the end of the reserved name cell. The native HStack
+  // performs the final text compression; this preview keeps its cell bounds.
+  const dotX = offset + COL2_X + COL2 - 1.5;
   const cx = offset + ICON_LEFT + ICON / 2;
   const cy = rowTop + 18;
-  const block = offset + DETAIL_LEFT;
+  const graphX = offset + COL3_X;
   const graph = row.available
     ? curve(row, rowTop, offset)
-    : text(block, rowTop + GRAPH_TOP + 9, '24h indisponível', 4.5, '#96969C');
-  const priceX = block + 54 + 62;
-  const timeX = block + 68 + 48;
+    : text(graphX + GRAPH_WIDTH / 2, rowTop + GRAPH_TOP + 12, '24h indisponível', 4.2, '#96969C', 'text-anchor="middle"');
+  const quoteRight = offset + COL4_X + COL4;
+  const meta = `${SHORT_CODES[row.code] || row.code} | ${row.time}`;
+  const unit = { SELIC: '% a.a.', IPCA: 'M/M · pp', IBOV: 'pontos', 'USD/BRL': 'BRL/USD', SOJA_JATAI_GO: 'R$/sc60', CUB_GO: 'R$/m²', DIESEL_S10: 'R$/L', BRENT: 'USD/bbl' }[row.code] || row.unit;
   return [
-    text(offset, rowTop + 8, row.name, 10, '#FFFFFF', 'font-weight="600"'),
-    `<circle cx="${offset + dotX}" cy="${rowTop + 4}" r="1.5" fill="#96969C"/>`,
+    text(offset + COL2_X, rowTop + 8, row.name, 8, '#FFFFFF', 'font-weight="600"'),
+    `<circle cx="${dotX}" cy="${rowTop + 4}" r="1.5" fill="#96969C"/>`,
     icon(row, cx, cy),
-    text(offset + 15, rowTop + CODE_TOP + 5.5, SHORT_CODES[row.code] || row.code, 5.5, '#96969C', 'text-anchor="middle"'),
-    text(priceX, rowTop + 8, row.price, 7.2, '#FFFFFF', 'text-anchor="end" font-weight="600"'),
+    text(offset + COL2_X, rowTop + META_TOP + 5.3, meta, 5.3, '#96969C'),
+    text(quoteRight, rowTop + 8, row.price, 6.8, '#FFFFFF', 'text-anchor="end" font-weight="600"'),
     graph,
-    text(block + 84 + 32, rowTop + 22, row.percent, 5, row.color, 'text-anchor="end"'),
-    text(block, rowTop + 35.5, row.unit, 5.6, '#96969C'),
-    text(timeX, rowTop + 35.5, row.time, 6.5, '#96969C', 'text-anchor="end"')
+    text(quoteRight, rowTop + 22, row.percent, 5, row.color, 'text-anchor="end"'),
+    text(quoteRight, rowTop + 35.5, unit, 4.4, '#96969C', 'text-anchor="end"')
   ].join('');
 }
 
@@ -172,13 +180,14 @@ function widget(x, y, rowsForWidget, title, columns) {
   return `<text x="${x}" y="${y - 14}" fill="#D1D1D6" font-family="-apple-system,Arial,sans-serif" font-size="13" font-weight="600">${title}</text><rect x="${x}" y="${y}" width="${width}" height="292" rx="10" fill="#1E1E1E" stroke="#34343A"/><g transform="translate(${x} ${y}) scale(2)"><g font-family="-apple-system,Arial,sans-serif">${content}${dividers}</g></g>`;
 }
 
-const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="420" viewBox="0 0 1000 420"><title>Popular Scripting 0.2.26 preview</title><desc>Faithful geometry evidence using tracked PNG assets and the published Canvas badge geometry. Each row shows name above icon and short code below; only the USD/BRL fixture has a timestamped curve and all sparse sources say 24h indisponível.</desc><defs><clipPath id="badge-disk" clipPathUnits="userSpaceOnUse"><circle cx="13" cy="13" r="13"/></clipPath></defs><rect width="1000" height="420" rx="22" fill="#0F0F12"/>${widget(30, 42, rows.slice(0, 4), 'small · 2×2', 1)}${widget(360, 42, rows, 'medium/large · 4×2', 2)}${text(360, 366, 'Prévia raster fiel à árvore 0.2.26 · código curto abaixo do ícone · ícones reais/badges Canvas · sem alegação de render nativo/iPhone', 11, '#96969C')}</svg>`;
+const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="420" viewBox="0 0 1000 420"><title>Popular Scripting 0.2.27 preview</title><desc>Fixture-only geometry evidence for four columns: circular icon, name plus code and observation date, sparkline, and right-aligned value above variation. Only USD/BRL has a timestamped curve; sparse sources say 24h indisponível.</desc><defs><clipPath id="badge-disk" clipPathUnits="userSpaceOnUse"><circle cx="13" cy="13" r="13"/></clipPath></defs><rect width="1000" height="420" rx="22" fill="#0F0F12"/>${widget(30, 42, rows.slice(0, 4), 'small · 2×2', 1)}${widget(360, 42, rows, 'medium/large · 4×2', 2)}${text(360, 366, 'Prévia de dados de teste · quatro colunas 32/32/50/26 pt · ícones 26 pt · sem alegação de render nativo/iPhone', 11, '#96969C')}</svg>`;
 
 fs.writeFileSync(output, svg + '\n');
 console.log(JSON.stringify({
   output,
-  version: '0.2.26',
-  shortCodesBelowIcons: true,
+  version: '0.2.27',
+  fourColumns: { icon: COL1, identity: COL2, graph: COL3, quote: COL4, gap: COL_GAP },
+  shortCodeAndDateInIdentityColumn: true,
   icons: ['SELIC', 'IBOV', 'BRENT'],
   canvasBadges: ['IPCA', 'USD/BRL', 'SOJA_JATAI_GO', 'CUB_GO', 'DIESEL_S10'],
   placeholderIcons: [],

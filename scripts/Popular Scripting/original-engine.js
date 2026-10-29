@@ -7,10 +7,10 @@ const config={runsInWidget:true,widgetFamily:options.family||'medium'};
 const args={queryParameters:{popular_refresh:options.force?'1':'0'}};
 const Color=class {constructor(hex,alpha=1){this.hex=hex;this.alpha=alpha;}};
 // Scriptable — Popular small/medium/large. O conjunto normal tem oito indicadores.
-const VERSION = '2026.10.29.78'
+const VERSION = '2026.10.29.79'
 const SETTINGS = { refreshMinutes: 5, rotationMinutes: 5, selection: 'indicadores' };
-// Bloco 146 × 146 pt; ícones circulares 20 pt centralizados nas linhas 36 pt.
-const LAYOUT = { columns: [20, 78, 48], columnGap: 4, valueGap: 4, nameWidth: 78, priceWidth: 62, graphWidth: 82, rowHeight: 36, gap: 2/3, iconSize: 20, chartHeight: 20 };
+// Bloco 146 × 146 pt; quatro colunas e ícones circulares 26 pt centralizados nas linhas 36 pt.
+const LAYOUT = { columns: [32, 32, 50, 26], columnGap: 2, valueGap: 2, nameWidth: 32, priceWidth: 26, graphWidth: 50, rowHeight: 36, gap: 2/3, iconSize: 26, chartHeight: 20 };
 const BASE = 'https://investidor10.com.br';
 const TROY_OUNCE_GRAMS = 31.1034768;
 const AGROLINK = 'https://www.agrolink.com.br';
