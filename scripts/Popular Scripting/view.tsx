@@ -28,6 +28,12 @@ function compactUnit(row:any){
   const code=row?.asset?.code
   return COMPACT_UNITS[code]||String(row?.unit||'—').replace(/\s+/g,' ').slice(0,12)
 }
+function nameLayout(value:any){
+  const text=String(value??'—')
+  const raw=[...text].reduce((sum,char)=>sum+(/[MW@#]/.test(char)?6.2:/[ilI1.,' ]/.test(char)?2.8:4.8),0)
+  const maximum=Math.max(5,G.name-5),font=Math.max(4.8,Math.min(9,9*maximum/Math.max(raw,1))),width=Math.min(maximum,Math.max(5,raw*font/9))
+  return {font,width}
+}
 function Label({labelKey,value,plan,x,y,width,height,size,min,bold=false,color='white',right=false,alignment,placeFn=place}:any){
   const positioned=placeFn(plan,x,y,width,height,alignment||(right?'trailing':'leading'))
   return <Text key={labelKey} font={size*plan.scale} fontWeight={bold?'semibold':'regular'} foregroundStyle={color}
@@ -55,7 +61,7 @@ export function PopularView({model,width,height}:{model:any;width:number;height:
     {visibleRows.map((row:any,i:number)=>{
       const column=Math.floor(i/4),rowIndex=i%4,x=column*(G.column+G.columnGap),y=rowIndex*(G.row+G.gap),color=movementColor(row),curve=curvePlan(model.api,row),status=statusFor(row)
       const band=monthBand(curve),custom=['SOJA_JATAI_GO','CUB_GO','IPCA','DIESEL_S10','USD/BRL'].includes(row.asset.code)
-      const percentMinimum=variationMinimumSize(row,row.percent),meta=`${shortCode(row)} | ${observationDate(row.time)}`
+      const percentMinimum=variationMinimumSize(row,row.percent),meta=`${shortCode(row)} | ${observationDate(row.time)}`,nameMetrics=nameLayout(row.name)
       const chartAccessibility=curve.status==='unavailable-24h'?' Gráfico 24h indisponível':''
       const rowPlan={...plan,x:0,y:0},hitHeight=rowIndex<3?G.row+G.gap:G.row,rowFrame={width:G.column*plan.scale,height:hitHeight*plan.scaleY},rowPosition={x:plan.x+(x+G.column/2)*plan.scale,y:plan.y+(y+hitHeight/2)*plan.scaleY}
       const cellLabel=(key:string,value:string,cx:number,cy:number,w:number,h:number,size:number,min:number,bold=false,cellColor='white',right=false,alignment?:string)=><Label labelKey={key} value={value} plan={rowPlan} x={cx} y={cy} width={w} height={h} size={size} min={min} bold={bold} color={cellColor} right={right} alignment={alignment} placeFn={placeInBlock}/>
@@ -67,8 +73,8 @@ export function PopularView({model,width,height}:{model:any;width:number;height:
           :images[row.asset.code]?<Image key="asset-image" image={images[row.asset.code]} resizable renderingMode="original" {...place(rowPlan,G.iconLeft,G.iconTop,G.icon,G.icon)}/>
           :<Image key="asset-fallback" systemName="chart.line.uptrend.xyaxis" font={10*plan.scale} foregroundStyle="#D1D1D6" background={{style:'#34343A',shape:{type:'circle'}}} {...place(rowPlan,G.iconLeft,G.iconTop,G.icon,G.icon)}/>}
         <HStack key="name-status-line" alignment="center" spacing={2} clipped {...place(rowPlan,G.nameX,G.nameTop,G.name,G.nameHeight,'leading')}>
-          <Text key="name-text" font={9*plan.scale} fontWeight="semibold" foregroundStyle="white"
-            lineLimit={1} minScaleFactor={4.8/9} frame={{height:G.nameHeight*plan.scaleY,alignment:'leading'}}>{row.name}</Text>
+          <Text key="name-text" font={nameMetrics.font*plan.scale} fontWeight="semibold" foregroundStyle="white"
+            lineLimit={1} minScaleFactor={4.8/nameMetrics.font} frame={{width:nameMetrics.width*plan.scale,height:G.nameHeight*plan.scaleY,alignment:'leading'}}>{row.name}</Text>
           <Circle key="market-status-dot" fill={status.color} frame={{width:3*plan.scale,height:3*plan.scale}}
             accessibilityLabel={status.accessibility}/>
         </HStack>

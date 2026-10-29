@@ -1,0 +1,65 @@
+{
+  "version": "0.2.28",
+  "basis": "fixture-only deterministic SVG rendered to PNG; no live quote or synthetic economic series",
+  "svg": "validation/widget-preview-0.2.28.svg",
+  "png": "validation/widget-preview-0.2.28.png",
+  "pngLibraryFileId": "libfile_9e512a0cc8208191b5fcfd50900e0494",
+  "geometry": {
+    "usefulWidthPt": 146,
+    "rowHeightPt": 36,
+    "columnGapPt": 2,
+    "columnsPt": {
+      "icon": 28,
+      "identity": 40,
+      "graph": 46,
+      "quote": 26
+    },
+    "iconDiameterPt": 26,
+    "graphHeightPt": 20,
+    "families": ["small 2x2", "medium 4x2", "large 4x2"]
+  },
+  "identityColumn": {
+    "line1": "asset name followed by the existing 3 pt status dot",
+    "line2": "short code | last-close or observation date",
+    "alignment": "the combined name/meta block is centered on the 26 pt icon",
+    "textFit": "name width is measured/reduced to a 35 pt maximum before the dot; the complete identity stays inside 40 pt",
+    "dateSource": "row.time, reduced to a date or time token without changing the source value"
+  },
+  "quoteColumn": {
+    "line1": "value",
+    "inlineUnit": "compact unit is placed between value and variation, away from the divider",
+    "line2": "variation",
+    "alignment": "the value/variation pair is centered on the icon"
+  },
+  "chartPolicy": {
+    "window": "real timestamped observations inside the last 24 hours",
+    "sparseFallback": "24h indisponível",
+    "availableFixture": "USD/BRL only",
+    "interpolation": false,
+    "hardcodedScreenshotQuotes": false
+  },
+  "fixtures": {
+    "assets": ["SELIC", "IPCA", "IBOV", "USD/BRL", "SOJA_JATAI_GO", "CUB_GO", "DIESEL_S10", "BRENT"],
+    "iconSources": ["tracked PNG", "Canvas badge"],
+    "placeholders": false
+  },
+  "validation": {
+    "tests": [
+      "npm test",
+      "four-column tree geometry for small/medium/large",
+      "4 and 8 independent row refresh hitboxes",
+      "long names, negative values, missing dates and unavailable charts",
+      "26 pt icon with centered identity and quote blocks",
+      "name/status pixels checked for all eight names in small and medium/large",
+      "rendered PNG inspected with view_image"
+    ],
+    "nativeIPhone": false
+  },
+  "priorPreview": "validation/widget-preview-0.2.27.png",
+  "referenceInspection": {
+    "libraryFileId": "libfile_3b3d1e5378c08191b95ca1a2270d5335",
+    "filename": "45AF7469-09CE-4506-8E4C-AE803895B7D1.png",
+    "materializedInThisExecutor": false,
+    "reason": "the one supported signed-transfer attempt failed; the file was absent from the requested destination"
+  }
+}

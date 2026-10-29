@@ -1,5 +1,17 @@
 # Melhorias Scripting Pro — 23/10/2026
 
+## 0.2.28 — correção visual dos blocos internos
+
+- [x] Agrupar nome + `código | data` e valor + variação no centro vertical de
+  cada linha, mantendo o ícone de 26 pt no mesmo centro e evitando linhas
+  encostadas nos divisores.
+- [x] Medir/reduzir nomes dentro da coluna de identidade de 40 pt e posicionar
+  a bolinha de 3 pt depois da largura efetiva do nome, sem colisão; preservar
+  o gráfico de 46 pt e a cotação de 26 pt.
+- [x] Comparar os oito nomes em small e medium/large na prévia fixture-only,
+  executar os testes estruturais e registrar que o iPhone nativo permanece
+  não testado.
+
 ## 0.2.27 — quatro colunas do widget
 
 - [x] Dividir small e medium/large em quatro colunas: ícone 26 pt centralizado, identidade com nome/status e `código | data`, gráfico de 24 h e cotação/variação alinhadas à direita.

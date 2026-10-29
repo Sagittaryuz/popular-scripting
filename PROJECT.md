@@ -1,4 +1,18 @@
-# Popular Scripting - Pro 0.2.27
+# Popular Scripting - Pro 0.2.28
+
+## 0.2.28 - agrupamento vertical e texto contido
+
+- Cada linha mantém quatro colunas medidas: ícone circular de 26 pt em 28 pt;
+  identidade em 40 pt; sparkline em 46 pt; cotação em 26 pt. O intervalo entre
+  colunas permanece em 2 pt e a largura útil em 146 pt.
+- Nome/status e `código | data` formam um bloco vertical centrado no ícone. O
+  valor, a unidade compacta e a variação formam um par compacto centrado na
+  mesma linha; a unidade fica entre os dois sem ser empurrada ao divisor.
+- Nomes longos são reduzidos dentro da coluna antes da bolinha de status, que
+  permanece depois do texto e dentro da reserva. Nenhum texto invade o gráfico
+  ou a cotação; dados, fontes, ordem, 24 h, refresh e tamanhos permanecem.
+- A prévia `validation/widget-preview-0.2.28.png` usa fixtures determinísticas
+  e não representa dados ao vivo. iPhone nativo permanece não testado.
 
 ## 0.2.27 - distribuição em quatro colunas
 

@@ -1,3 +1,17 @@
+## Atualização 0.2.28 - blocos internos compactos e texto contido
+
+Cada linha preserva quatro colunas: ícone circular de 26 pt, identidade de 40
+pt, gráfico de 46 pt e cotação de 26 pt, com 2 pt entre colunas. Nome/status e
+`código | data` agora ficam agrupados e centralizados verticalmente com o
+ícone. Valor e variação também ficam como um par compacto; a unidade curta
+fica entre eles, sem uma linha colada ao divisor.
+
+Nomes longos são medidos e reduzidos dentro da coluna antes da bolinha de
+status, que não cobre letras nem entra no gráfico. A ordem, dados, fontes,
+janela real de 24 horas, fallback `24h indisponível`, refresh por linha,
+hitboxes, cores e tamanhos 2×2/4×2 permanecem. A prévia 0.2.28 é fixture-only;
+o iPhone nativo não foi testado.
+
 ## Atualização 0.2.27 - quatro colunas por linha
 
 Cada linha do widget agora tem quatro colunas medidas: ícone circular de 26 pt;
@@ -143,7 +157,7 @@ Testes locais de fontes, observações antigas/futuras, alertas, cache, transpor
 
 # Popular Scripting
 
-**Atual: 0.2.25 - Scripting Pro.** Detalhes, ordem fixa dos oito indicadores, CSV,
+**Atual: 0.2.28 - Scripting Pro.** Detalhes, ordem fixa dos oito indicadores, CSV,
 alertas, assistente, Central de Controle e painel Início. Consulta solicitada em
 1 minuto e links diretos às fontes. [Ativação, testes e limites](PRO.md).
 
@@ -157,7 +171,7 @@ Na tela **Importar Scripts Remotos** do Scripting, cole:
 https://github.com/Sagittaryuz/popular-scripting/tree/main/scripts/Popular%20Scripting
 ```
 
-Importe **Popular Scripting**, confirme a versão **0.2.27**, abra o projeto e toque em **Atualizar**. Adicione o widget do Scripting à Tela de Início e selecione esse projeto.
+Importe **Popular Scripting**, confirme a versão **0.2.28**, abra o projeto e toque em **Atualizar**. Adicione o widget do Scripting à Tela de Início e selecione esse projeto.
 
 Para receber melhorias de código, use a atualização do script remoto no Scripting. Essa importação vincula o projeto à pasta `main/scripts/Popular Scripting`; não use um endereço de commit ou tag para acompanhar as próximas versões. O botão **Atualizar** dentro da tela do Popular consulta somente os indicadores e solicita recarregar o widget.
 

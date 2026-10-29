@@ -1,3 +1,19 @@
+## 0.2.28 - correção de agrupamento vertical e ajuste de texto
+
+- Corrige a causa visual da 0.2.27: nome/data e valor/variação deixavam de ser
+  pares compactos e alguns pontos eram desenhados sobre nomes longos. A linha
+  agora usa colunas medidas de 28/40/46/26 pt, com ícone de 26 pt, os dois
+  blocos centrados no meio da linha e a unidade compacta entre valor e
+  variação, longe do divisor.
+- A coluna de identidade mede o nome antes de posicionar a bolinha de 3 pt e
+  aplica redução real de fonte dentro da reserva de 40 pt. O código/data fica
+  na segunda linha do mesmo bloco; nenhum texto entra no gráfico ou na
+  cotação.
+- Preserva dados, fontes, ordem fixa, janela real de 24 h, fallback honesto,
+  bandeira, status, refresh, hitboxes, quatro/oito indicadores e os tamanhos
+  2×2/4×2. A prévia `validation/widget-preview-0.2.28.png` é fixture-only;
+  iPhone nativo não testado.
+
 ## 0.2.27 - distribuição em quatro colunas
 
 - Reorganiza cada linha em quatro colunas reais e estáveis: ícone circular de 26 pt, nome/status com `código | data` abaixo, sparkline e cotação/variação à direita. As colunas do ícone e da identidade têm 32 pt; gráfico e cotação têm 50/26 pt, com 2 pt entre elas.

@@ -31,6 +31,7 @@ for(const [family,width,height,expected] of [['small',158,158,4],['medium',338,1
     assert(nameLine&&nameText&&meta&&icon&&graph&&price&&percent&&unit&&dot,family+' row '+i+' contains all four columns')
     if(rows[i].asset.code==='USD/BRL')assert.equal(icon.type,'Canvas')
     assert.equal(nameLine.props.frame.width,G.name*plan.scale)
+    assert(nameText.props.frame.width<=(G.name-5)*plan.scale+1e-8)
     assert.equal(meta.props.frame.width,G.date*plan.scale)
     assert.equal(meta.props.position.x-nameLine.props.position.x,(G.dateX+G.date/2-(G.nameX+G.name/2))*plan.scale)
     assert.equal(icon.props.frame.width,G.icon*plan.scale)

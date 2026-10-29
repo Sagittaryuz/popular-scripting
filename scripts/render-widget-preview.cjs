@@ -6,7 +6,7 @@ const path = require('node:path');
 // native renderer and never fetches live data.
 const root = path.resolve(__dirname, '..');
 const assetsFile = path.join(root, 'scripts/Popular Scripting/assets.js');
-const output = path.join(root, 'validation/widget-preview-0.2.27.svg');
+const output = path.join(root, 'validation/widget-preview-0.2.28.svg');
 const assetSource = fs.readFileSync(assetsFile, 'utf8')
   .replace(/^(?:\/\/[^\n]*\n)+/, '')
   .replace(/^export const assets=/, '')
@@ -18,9 +18,9 @@ const ROW_STEP = ROW + 2 / 3;
 const COLUMN = 146;
 const COLUMN_GAP = 12;
 const COL_GAP = 2;
-const COL1 = 32;
-const COL2 = 32;
-const COL3 = 50;
+const COL1 = 28;
+const COL2 = 40;
+const COL3 = 46;
 const COL4 = 26;
 const COL1_X = 0;
 const COL2_X = COL1 + COL_GAP;
@@ -31,8 +31,13 @@ const GRAPH_TOP = 8;
 const GRAPH_HEIGHT = 20;
 const ICON = 26;
 const ICON_LEFT = (COL1 - ICON) / 2;
-const META_TOP = 27;
-const META_HEIGHT = 7;
+const NAME_TOP = 9;
+const NAME_HEIGHT = 8;
+const META_TOP = 19;
+const META_HEIGHT = 8;
+const UNIT_TOP = 16.5;
+const UNIT_HEIGHT = 3;
+const LINE2_TOP = 20;
 const SCALE = ICON / 26;
 const SHORT_CODES = Object.freeze({SELIC: 'SELIC', IPCA: 'IPCA', IBOV: 'IBOV', 'USD/BRL': 'USD/BRL', SOJA_JATAI_GO: 'SOJAGO', CUB_GO: 'CUB-GO', DIESEL_S10: 'DIESEL', BRENT: 'BRENT'});
 
@@ -58,6 +63,14 @@ const esc = value => String(value)
 
 function text(x, y, value, size = 6, fill = '#96969C', extra = '') {
   return `<text x="${x}" y="${y}" fill="${fill}" font-family="-apple-system,Arial,sans-serif" font-size="${size}" ${extra}>${esc(value)}</text>`;
+}
+
+function nameLayout(value) {
+  const string = String(value ?? '—');
+  const raw = [...string].reduce((sum, char) => sum + (/[MW@#]/.test(char) ? 6.2 : /[ilI1.,' ]/.test(char) ? 2.8 : 4.8), 0);
+  const maximum = Math.max(5, COL2 - 5);
+  const size = Math.max(4.8, Math.min(9, 9 * maximum / Math.max(raw, 1)));
+  return { size, width: Math.min(maximum, Math.max(5, raw * size / 9)) };
 }
 
 function badgeGroup(cx, cy, body) {
@@ -143,9 +156,10 @@ function curve(row, rowTop, offset) {
 }
 
 function drawRow(row, rowTop, offset) {
-  // The dot is kept at the end of the reserved name cell. The native HStack
-  // performs the final text compression; this preview keeps its cell bounds.
-  const dotX = offset + COL2_X + COL2 - 1.5;
+  // The dot follows the measured/compressed name and remains inside the
+  // identity cell instead of being pinned over the last glyph.
+  const name = nameLayout(row.name);
+  const dotX = offset + COL2_X + name.width + 2 + 1.5;
   const cx = offset + ICON_LEFT + ICON / 2;
   const cy = rowTop + 18;
   const graphX = offset + COL3_X;
@@ -156,14 +170,14 @@ function drawRow(row, rowTop, offset) {
   const meta = `${SHORT_CODES[row.code] || row.code} | ${row.time}`;
   const unit = { SELIC: '% a.a.', IPCA: 'M/M · pp', IBOV: 'pontos', 'USD/BRL': 'BRL/USD', SOJA_JATAI_GO: 'R$/sc60', CUB_GO: 'R$/m²', DIESEL_S10: 'R$/L', BRENT: 'USD/bbl' }[row.code] || row.unit;
   return [
-    text(offset + COL2_X, rowTop + 8, row.name, 8, '#FFFFFF', 'font-weight="600"'),
-    `<circle cx="${dotX}" cy="${rowTop + 4}" r="1.5" fill="#96969C"/>`,
+    text(offset + COL2_X, rowTop + NAME_TOP + 7, row.name, name.size, '#FFFFFF', `font-weight="600" textLength="${name.width}" lengthAdjust="spacingAndGlyphs"`),
+    `<circle cx="${dotX}" cy="${rowTop + NAME_TOP + NAME_HEIGHT / 2}" r="1.5" fill="#96969C"/>`,
     icon(row, cx, cy),
-    text(offset + COL2_X, rowTop + META_TOP + 5.3, meta, 5.3, '#96969C'),
-    text(quoteRight, rowTop + 8, row.price, 6.8, '#FFFFFF', 'text-anchor="end" font-weight="600"'),
+    text(offset + COL2_X, rowTop + META_TOP + 6, meta, 5.3, '#96969C'),
+    text(quoteRight, rowTop + 15, row.price, 6.8, '#FFFFFF', 'text-anchor="end" font-weight="600"'),
     graph,
-    text(quoteRight, rowTop + 22, row.percent, 5, row.color, 'text-anchor="end"'),
-    text(quoteRight, rowTop + 35.5, unit, 4.4, '#96969C', 'text-anchor="end"')
+    text(quoteRight, rowTop + UNIT_TOP + UNIT_HEIGHT, unit, 3.4, '#96969C', 'text-anchor="end"'),
+    text(quoteRight, rowTop + LINE2_TOP + 7, row.percent, 5, row.color, 'text-anchor="end"')
   ].join('');
 }
 
@@ -180,12 +194,12 @@ function widget(x, y, rowsForWidget, title, columns) {
   return `<text x="${x}" y="${y - 14}" fill="#D1D1D6" font-family="-apple-system,Arial,sans-serif" font-size="13" font-weight="600">${title}</text><rect x="${x}" y="${y}" width="${width}" height="292" rx="10" fill="#1E1E1E" stroke="#34343A"/><g transform="translate(${x} ${y}) scale(2)"><g font-family="-apple-system,Arial,sans-serif">${content}${dividers}</g></g>`;
 }
 
-const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="420" viewBox="0 0 1000 420"><title>Popular Scripting 0.2.27 preview</title><desc>Fixture-only geometry evidence for four columns: circular icon, name plus code and observation date, sparkline, and right-aligned value above variation. Only USD/BRL has a timestamped curve; sparse sources say 24h indisponível.</desc><defs><clipPath id="badge-disk" clipPathUnits="userSpaceOnUse"><circle cx="13" cy="13" r="13"/></clipPath></defs><rect width="1000" height="420" rx="22" fill="#0F0F12"/>${widget(30, 42, rows.slice(0, 4), 'small · 2×2', 1)}${widget(360, 42, rows, 'medium/large · 4×2', 2)}${text(360, 366, 'Prévia de dados de teste · quatro colunas 32/32/50/26 pt · ícones 26 pt · sem alegação de render nativo/iPhone', 11, '#96969C')}</svg>`;
+const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="420" viewBox="0 0 1000 420"><title>Popular Scripting 0.2.28 preview</title><desc>Fixture-only geometry evidence for four columns: circular icon, grouped name plus code and observation date, sparkline, and grouped right-aligned value, unit, and variation. Only USD/BRL has a timestamped curve; sparse sources say 24h indisponível.</desc><defs><clipPath id="badge-disk" clipPathUnits="userSpaceOnUse"><circle cx="13" cy="13" r="13"/></clipPath></defs><rect width="1000" height="420" rx="22" fill="#0F0F12"/>${widget(30, 42, rows.slice(0, 4), 'small · 2×2', 1)}${widget(360, 42, rows, 'medium/large · 4×2', 2)}${text(360, 366, 'Prévia de dados de teste · quatro colunas 28/40/46/26 pt · ícones 26 pt · sem alegação de render nativo/iPhone', 11, '#96969C')}</svg>`;
 
 fs.writeFileSync(output, svg + '\n');
 console.log(JSON.stringify({
   output,
-  version: '0.2.27',
+  version: '0.2.28',
   fourColumns: { icon: COL1, identity: COL2, graph: COL3, quote: COL4, gap: COL_GAP },
   shortCodeAndDateInIdentityColumn: true,
   icons: ['SELIC', 'IBOV', 'BRENT'],
