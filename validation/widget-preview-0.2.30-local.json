@@ -2,7 +2,14 @@
   "version": "0.2.30-local",
   "packageVersion": "0.2.30",
   "publishedEntryProfile": "b3-btc-7d",
-  "published": false,
+  "artifactKind": "fixture-only-demonstrative-preview",
+  "fixturePublished": false,
+  "packagePublished": true,
+  "publishedPaths": {
+    "manifest": "distribution-manifest.json",
+    "entry": "scripts/Popular Scripting/script.json",
+    "entryDirectory": "scripts/Popular Scripting"
+  },
   "fixtureAssets": [
     { "code": "BBAS3", "name": "Banco do Brasil", "unit": "BRL/ação" },
     { "code": "BBDC4", "name": "Bradesco PN", "unit": "BRL/ação" },
@@ -46,8 +53,10 @@
   ],
   "nativeIPhoneTested": false,
   "publication": {
-    "commit": null,
-    "push": false,
-    "libraryUpload": false
+    "packageCommit": "e52dc9284c8f773fd0362328dcc99388d23151a0",
+    "remote": "https://github.com/Sagittaryuz/popular-scripting",
+    "push": true,
+    "libraryUpload": false,
+    "libraryUploadReason": "The PNG and SVG are tracked in the public repository; no separate Library upload is needed for this preview."
   }
 }
