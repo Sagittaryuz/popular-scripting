@@ -174,3 +174,8 @@ O código do widget fica em `scripts/Popular Scripting`. Cada melhoria deve atua
 O script de coleta usa somente fontes públicas. Para verificar dados em Node 22: `node scripts/validate-data.cjs`. As dependências Python da coleta estão em `scripts/economic-requirements.txt`. Nenhuma dependência de teste é necessária no iPhone.
 
 Canvas, Scripting e as fontes do sistema podem apresentar diferenças de métricas em relação ao Scriptable; não há alegação de fidelidade pixel a pixel. [Documentação do Scripting](https://scriptingapp.github.io/guide/Script/Script).
+## Atualização 0.2.26 - código abaixo do ícone e gráfico mais alto
+
+Cada ativo agora mostra o nome/status acima do ícone e o código curto abaixo dele, com o conjunto centrado na faixa esquerda. A cotação continua no topo do lado direito; gráfico e variação ocupam a altura útil ampliada; unidade e data permanecem alinhadas à base. A largura do gráfico, a ordem fixa, dados, fontes, cores, status e refresh não mudam em small, medium e large.
+
+A fonte intraday do Ibovespa não foi substituída por valores da captura. A página pública usada antes não documenta intraday, o [portal oficial de APIs do Yahoo](https://developer.yahoo.com/api/) requer OAuth e o executor recebeu 429 ao abrir a página Yahoo; portanto a versão mantém o contrato Investidor10/cache até haver uma fonte pública autorizada e testável. O iPhone nativo não foi testado.

@@ -1,0 +1,39 @@
+{
+  "version": "0.2.26",
+  "instrument": {
+    "internalCode": "IBOV",
+    "marketSymbolCandidate": "^BVSP",
+    "unit": "points",
+    "notAnEtfOrProxy": true,
+    "hardcodedScreenshotQuote": false
+  },
+  "existingProvider": {
+    "name": "Investidor10",
+    "page": "https://investidor10.com.br/indices/ibov/",
+    "publicIntradayContract": false,
+    "observedPublicSelectors": ["6 M", "1 A", "5 A", "10 A", "15 A"],
+    "decision": "keep existing validated quote/cache path; do not relabel daily history as 24h"
+  },
+  "candidateProvider": {
+    "name": "Yahoo Finance",
+    "officialApiPortal": "https://developer.yahoo.com/api/",
+    "officialAccess": "OAuth is required by the official API portal",
+    "pageAccessInExecutor": {
+      "target": "https://finance.yahoo.com/quote/%5EBVSP/",
+      "status": 429,
+      "result": "not usable for a published adapter"
+    },
+    "adapterPublished": false,
+    "reason": "A screenshot proves the symbol and display semantics, not an authorized intraday API contract. No credentials, ETF/proxy, alternate route or bypass was added."
+  },
+  "libraryInput": {
+    "libraryFileId": "libfile_d198a7e981388191a5c593c3b3d06f43",
+    "materialization": "prepare_materialize returned a signed transfer, but the bounded local download failed; the destination file was absent",
+    "pixelInspection": "not available for this input; no claim of seeing the attached pixels"
+  },
+  "independentValidation": [
+    "Investidor10 public page inspected for documented intraday selectors",
+    "Yahoo official API portal searched; no unauthenticated chart contract established",
+    "No screenshot values were inserted into code or fixtures"
+  ]
+}

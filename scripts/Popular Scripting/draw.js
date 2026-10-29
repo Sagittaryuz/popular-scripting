@@ -1,12 +1,13 @@
 // @ts-nocheck
 // Text belongs to native Text views, never to Canvas baselines or clipping boxes.
-const ROW=36,TOP=8,MIDDLE=11,BOTTOM=7,GRAPH_HEIGHT=15,ICON_TOP=8,ICON_LEFT=3;
-// The row remains a single centered 36 pt group. The title is the only text
-// above the smaller icon; quote/chart metadata stays in the right-hand group.
-// The graph is intentionally taller than the pre-0.2.25 5.5 pt strip.
+const ROW=36,TOP=8,MIDDLE=11,BOTTOM=5.5,GRAPH_HEIGHT=20,ICON_TOP=8,ICON_LEFT=5;
+// The row remains a single 36 pt group. The left strip is now an explicit
+// name -> icon -> short-code stack; quote/chart metadata stays in the right-
+// hand group. The graph uses the height formerly occupied by the left code
+// line without changing the row's external size or horizontal graph span.
 const BLOCK_TOP=(ROW-ROW)/2,BLOCK_HEIGHT=ROW,BLOCK_CENTER=BLOCK_TOP+BLOCK_HEIGHT/2;
-const NAME_TOP=BLOCK_TOP,NAME_HEIGHT=TOP,GRAPH_TOP=10.5,MONTH_TOP=26,LINE2_TOP=12.5,LINE3_TOP=29;
-export const GEOMETRY=Object.freeze({column:146,columnGap:12,row:ROW,gap:2/3,icon:20,iconTop:ICON_TOP,iconLeft:ICON_LEFT,detail:30,blockWidth:146-30,blockTop:BLOCK_TOP,blockHeight:BLOCK_HEIGHT,blockCenter:BLOCK_CENTER,name:78,nameTop:NAME_TOP,nameHeight:NAME_HEIGHT,price:62,priceX:54,unit:64,timeX:68,time:48,graph:82,graphHeight:GRAPH_HEIGHT,percent:32,percentX:84,top:TOP,middle:MIDDLE,bottom:BOTTOM,line1Top:NAME_TOP,line2Top:LINE2_TOP,graphTop:GRAPH_TOP,monthTop:MONTH_TOP,line3Top:LINE3_TOP});
+const NAME_TOP=BLOCK_TOP,NAME_HEIGHT=TOP,CODE_TOP=29,CODE_HEIGHT=7,GRAPH_TOP=8,MONTH_TOP=25.5,LINE2_TOP=12.5,LINE3_TOP=30.5;
+export const GEOMETRY=Object.freeze({column:146,columnGap:12,row:ROW,gap:2/3,icon:20,iconTop:ICON_TOP,iconLeft:ICON_LEFT,iconColumn:30,detail:30,blockWidth:146-30,blockTop:BLOCK_TOP,blockHeight:BLOCK_HEIGHT,blockCenter:BLOCK_CENTER,name:78,nameTop:NAME_TOP,nameHeight:NAME_HEIGHT,code:30,codeTop:CODE_TOP,codeHeight:CODE_HEIGHT,price:62,priceX:54,unit:64,timeX:68,time:48,graph:82,graphHeight:GRAPH_HEIGHT,percent:32,percentX:84,top:TOP,middle:MIDDLE,bottom:BOTTOM,line1Top:NAME_TOP,line2Top:LINE2_TOP,graphTop:GRAPH_TOP,monthTop:MONTH_TOP,line3Top:LINE3_TOP});
 export function layout(family,width,height){
   if(!Number.isFinite(width)||!Number.isFinite(height)||width<=12||height<=8)throw Error('Dimensão inválida');
   const wide=family!=='small',large=family==='large',contentWidth=wide?304:146;

@@ -153,3 +153,9 @@ Versões anteriores: README e tags `v0.1.1` a `v0.1.3`.
 - Alinha pela esquerda o nome do ativo e seu indicador de consulta com a borda esquerda do gráfico em todos os tamanhos.
 - Preserva largura da coluna, reserva de preço, fontes, dados, curvas e posições verticais.
 - Teste estrutural mede a mesma borda esquerda em pequeno, médio e grande; renderização nativa no iPhone não foi testada.
+## 0.2.26 - código sob o ícone e geometria intraday do Ibovespa
+
+- Move o código curto de cada ativo para abaixo do respectivo ícone, mantendo o nome/status acima e centralizando esse conjunto na faixa esquerda. `IBOV`, `USD/BRL`, `SOJAGO`, `CUB-GO`, `DIESEL` e `BRENT` permanecem códigos curtos; unidade, origem e data continuam no bloco de cotação.
+- Usa a altura liberada no lado do gráfico: a faixa do Canvas passa a 20 pt, com gráfico e variação ainda centrados verticalmente no ícone, enquanto valor fica no topo e unidade/data na base. A largura útil do gráfico e o tamanho externo das linhas permanecem iguais em 2×2 e 4×2.
+- Mantém ordem, dados, fontes, cores intensas, bandeira circular, status, refresh e acessibilidade; nomes longos continuam limitados antes da coluna de preço. A prévia raster é fixture-only e não simula render nativo do iPhone.
+- A investigação do `^BVSP` não publicou uma nova fonte: a página pública do Investidor10 só documenta intervalos históricos, e o [portal oficial de APIs do Yahoo](https://developer.yahoo.com/api/) exige acesso OAuth; o acesso direto à página Yahoo retornou 429 no executor. Não foram fixados os valores da captura, usado ETF/proxy, nem contornado 403/429.

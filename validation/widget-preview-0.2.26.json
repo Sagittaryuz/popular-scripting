@@ -1,0 +1,52 @@
+{
+  "version": "0.2.26",
+  "generator": "scripts/render-widget-preview.cjs",
+  "svg": "validation/widget-preview-0.2.26.svg",
+  "png": "validation/widget-preview-0.2.26.png",
+  "libraryFileId": "libfile_d1617edc6fac81919296c4b715ae591c",
+  "libraryVersion": 0,
+  "fixtureOnly": true,
+  "nativeIPhone": false,
+  "geometry": {
+    "row": 36,
+    "icon": 20,
+    "leftStack": ["name/status", "icon", "short code"],
+    "iconLeft": 5,
+    "iconColumn": 30,
+    "graphWidth": 82,
+    "graphHeight": 20,
+    "graphCenterMatchesIcon": true,
+    "topValue": true,
+    "bottomMetadata": true,
+    "smallRows": 4,
+    "wideRows": 8
+  },
+  "shortCodes": {
+    "IBOV": "IBOV",
+    "USD/BRL": "USD/BRL",
+    "SOJA_JATAI_GO": "SOJAGO",
+    "CUB_GO": "CUB-GO",
+    "DIESEL_S10": "DIESEL",
+    "BRENT": "BRENT"
+  },
+  "icons": {
+    "source": "tracked PNG assets plus published Canvas badge geometry",
+    "placeholders": [],
+    "usdOverlay": false
+  },
+  "pixelInspection": {
+    "viewImage": true,
+    "checks": [
+      "short code is visibly below its own icon in small and 4x2 previews",
+      "long names remain in the top title span and do not enter the price column",
+      "graph band is visibly taller while unit/date remain at the bottom",
+      "USD/BRL flag remains in the Dólar slot",
+      "no fabricated 24h curves appear for sparse fixtures"
+    ]
+  },
+  "data": {
+    "curveFixture": "USD/BRL only",
+    "sparseFallback": "24h indisponível",
+    "screenshotValuesUsed": false
+  }
+}

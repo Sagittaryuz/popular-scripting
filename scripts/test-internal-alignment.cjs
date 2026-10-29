@@ -24,10 +24,10 @@ for(const [family,width,height,expected] of [['small',158,170,4],['medium',338,1
   assert.equal(buttons.length,expected,`${family} keeps the fixed indicator count`);
   const plan=draw.layout(family,width,height);
   for(let i=0;i<expected;i++){
-    const content=buttons[i].children.find(node=>node.type==='ZStack'),desc=walk(content),block=desc.find(node=>node.props?.key==='detail-block'),nameLine=desc.find(node=>node.type==='HStack'&&node.props?.key==='name-status-line'),nameText=desc.find(node=>node.type==='Text'&&node.props?.key==='name-text');
+    const content=buttons[i].children.find(node=>node.type==='ZStack'),desc=walk(content),block=desc.find(node=>node.props?.key==='detail-block'),nameLine=desc.find(node=>node.type==='HStack'&&node.props?.key==='name-status-line'),nameText=desc.find(node=>node.type==='Text'&&node.props?.key==='name-text'),codeText=desc.find(node=>node.type==='Text'&&Math.abs((node.props?.frame?.width??0)-G.code*plan.scale)<1e-8&&node.props?.frame?.alignment==='center');
     const icon=desc.find(n=>(n.type==='Canvas'||n.type==='Image')&&Math.abs((n.props?.frame?.width??0)-G.icon*plan.scale)<1e-8&&Math.abs((n.props?.frame?.height??0)-G.icon*plan.scaleY)<1e-8);
     const texts=walk(block).filter(n=>n.type==='Text'),price=texts.find(n=>Math.abs((n.props?.frame?.width??0)-G.price*plan.scale)<1e-8),percent=texts.find(n=>Math.abs((n.props?.frame?.width??0)-G.percent*plan.scale)<1e-8),unit=texts.find(n=>Math.abs((n.props?.frame?.width??0)-G.unit*plan.scale)<1e-8),time=texts.find(n=>Math.abs((n.props?.frame?.width??0)-G.time*plan.scale)<1e-8),graph=desc.find(n=>n.type==='Canvas'&&Math.abs((n.props?.frame?.height??0)-G.graphHeight*plan.scaleY)<1e-8);
-    assert(block&&nameLine&&nameText&&icon&&price&&percent&&unit&&time&&graph,`${family} row ${i} contains title, icon, value, graph and metadata`);
+    assert(block&&nameLine&&nameText&&codeText&&icon&&price&&percent&&unit&&time&&graph,`${family} row ${i} contains title, icon, code, value, graph and metadata`);
     assert.equal(nameLine.props.frame.width,G.name*plan.scale,`${family} title has the dedicated upper span`);
     assert.equal(nameLine.props.frame.alignment,'leading');
     assert.equal(nameLine.props.spacing,2);
@@ -35,9 +35,16 @@ for(const [family,width,height,expected] of [['small',158,170,4],['medium',338,1
     const top=n=>n.props.position.y-n.props.frame.height/2,bottom=n=>n.props.position.y+n.props.frame.height/2;
     assert(Math.abs(top(nameLine)-G.nameTop*plan.scaleY)<1e-8,`${family} title is above the icon`);
     assert(Math.abs(bottom(nameLine)-(G.nameTop+G.nameHeight)*plan.scaleY)<1e-8);
-    assert(Math.abs(icon.props.position.y-G.blockCenter*plan.scaleY)<1e-8,`${family} icon is centered`);
+    assert(Math.abs(icon.props.position.y-G.blockCenter*plan.scaleY)<1e-8,`${family} icon remains vertically centered`);
+    assert(Math.abs(icon.props.position.x-(G.iconLeft+G.icon/2)*plan.scale)<1e-8,`${family} icon is centered in the left strip`);
+    assert(Math.abs((G.iconLeft+G.icon/2)-G.iconColumn/2)<1e-8,`${family} icon strip is centered`);
+    assert(Math.abs(top(codeText)-(G.codeTop)*plan.scaleY)<1e-8,`${family} short code starts below the icon`);
+    assert(top(codeText)>=bottom(icon)-1e-8,`${family} short code does not overlap its icon`);
+    assert.equal(codeText.props.frame.width,G.code*plan.scale,`${family} short code has a dedicated left-column box`);
+    assert.equal(codeText.props.frame.alignment,'center');
     assert(Math.abs(top(price)-top(nameLine))<1e-8,`${family} price remains top aligned with title`);
     assert(Math.abs(graph.props.position.y-(G.graphTop+G.graphHeight/2)*plan.scaleY)<1e-8,`${family} graph uses the expanded middle band`);
+    assert(Math.abs(graph.props.position.y-icon.props.position.y)<1e-8,`${family} graph center stays aligned with the icon`);
     assert(Math.abs(percent.props.position.y-(G.line2Top+G.middle/2)*plan.scaleY)<1e-8,`${family} variation is centered with graph`);
     assert(Math.abs(bottom(unit)-bottom(time))<1e-8,`${family} metadata is bottom aligned`);
     assert(Math.abs(bottom(unit)-(G.line3Top+G.bottom)*plan.scaleY)<1e-8,`${family} metadata stays inside row`);
@@ -46,4 +53,4 @@ for(const [family,width,height,expected] of [['small',158,170,4],['medium',338,1
     assert(tree.props.accessibilityLabel.includes('Selic com nome suficientemente longo'));
   }
 }
-console.log('PASS 0.2.25 geometry: reduced icons, title-above-icon group, expanded 24h graph band, top/middle/bottom alignment, long/negative/missing fixtures covered. Native iPhone render pending.');
+console.log('PASS 0.2.26 geometry: name/icon/short-code stack, centered left strip, expanded graph band, top/middle/bottom alignment, long/negative/missing fixtures covered. Native iPhone render pending.');

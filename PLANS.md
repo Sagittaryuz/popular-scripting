@@ -1,5 +1,12 @@
 # Melhorias Scripting Pro — 23/10/2026
 
+## 0.2.26 — código sob o ícone e altura útil do gráfico
+
+- [x] Colocar o código curto de cada ativo abaixo do próprio ícone, manter o nome/status acima e centralizar o conjunto na faixa esquerda sem substituir unidade/origem/data.
+- [x] Ampliar a altura do Canvas de 15 para 20 pt em small e medium/large, mantendo centro do gráfico/variação, preço superior, metadados inferiores, largura 82 pt e altura externa de 36 pt.
+- [x] Validar nomes longos, códigos curtos, 4/8 linhas, cores, ordem, dados, refresh e prévia raster; registrar o limite de não teste nativo.
+- [ ] Integrar uma fonte intraday autorizada para `^BVSP` somente quando houver contrato público compatível, acesso permitido e validação de `regularMarketPrice`/`previousClose`; a captura e a página Yahoo limitada não são suficientes.
+
 ## 0.2.25 - janela 24h e layout de gráficos
 
 - [x] Trocar a janela visual por 24 horas reais, filtrando apenas timestamps e sinalizando série intraday indisponível para fontes esparsas.

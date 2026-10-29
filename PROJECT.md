@@ -1,4 +1,11 @@
-# Popular Scripting - Pro 0.2.25
+# Popular Scripting - Pro 0.2.26
+
+## 0.2.26 - código sob o ícone e altura útil do gráfico
+
+- O bloco esquerdo agora é nome/status acima, ícone menor de 20 pt no centro da faixa e código curto abaixo. Os códigos não substituem unidade, origem ou data: esses campos permanecem no bloco de cotação e não colidem com o preço.
+- A faixa do gráfico aumentou para 20 pt, mantendo o seu centro e a variação alinhados ao centro do ícone, o valor no topo e unidade/data no fundo da linha. A largura útil de 82 pt e a linha externa de 36 pt permanecem iguais em small/medium/large.
+- A fonte do Ibovespa não foi trocada sem contrato verificável. O Investidor10 público expõe seletores históricos sem intraday documentado; a [API oficial do Yahoo](https://developer.yahoo.com/api/) requer OAuth e a página Yahoo foi limitada a 429 no executor. O widget não usa `171.006`, `-2,68%`, ETF, proxy ou curva inventada.
+- Validação: bundle, testes de geometria/ordem/refresh/janela de 24h, prévia raster com pixels inspecionados e arquivos de validação. Não houve teste em iPhone nativo.
 
 ## 0.2.25 - janela real de 24h e redistribuição visual
 

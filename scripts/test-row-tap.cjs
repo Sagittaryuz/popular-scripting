@@ -18,14 +18,15 @@ for(const [family,width,height,expected] of [['small',158,158,4],['medium',338,1
   assert.equal(tree.props.widgetURL,expectedURL);
   assert(buttons.every(button=>button.props.intent.name==='RefreshAssetsOnTap'));
   for(let i=0;i<expected;i++){
-    const button=buttons[i],rowIndex=i%4,content=button.children.find(node=>node.type==='ZStack'),desc=walk(content),block=desc.find(node=>node.props?.key==='detail-block'),nameLine=desc.find(node=>node.type==='HStack'&&node.props?.key==='name-status-line'),icon=desc.find(node=>(node.type==='Canvas'||node.type==='Image')&&Math.abs((node.props?.frame?.width??0)-G.icon*plan.scale)<1e-8&&Math.abs((node.props?.frame?.height??0)-G.icon*plan.scaleY)<1e-8),graph=desc.find(node=>node.type==='Canvas'&&Math.abs((node.props?.frame?.height??0)-G.graphHeight*plan.scaleY)<1e-8),dot=desc.find(node=>node.type==='Circle'&&node.props?.key==='market-status-dot');
-    assert(block&&nameLine&&icon&&graph&&dot,`${family} row ${i} keeps icon, graph, block and status dot`);
+    const button=buttons[i],rowIndex=i%4,content=button.children.find(node=>node.type==='ZStack'),desc=walk(content),block=desc.find(node=>node.props?.key==='detail-block'),nameLine=desc.find(node=>node.type==='HStack'&&node.props?.key==='name-status-line'),icon=desc.find(node=>(node.type==='Canvas'||node.type==='Image')&&Math.abs((node.props?.frame?.width??0)-G.icon*plan.scale)<1e-8&&Math.abs((node.props?.frame?.height??0)-G.icon*plan.scaleY)<1e-8),codeText=desc.find(node=>node.type==='Text'&&Math.abs((node.props?.frame?.width??0)-G.code*plan.scale)<1e-8&&node.props?.frame?.alignment==='center'),graph=desc.find(node=>node.type==='Canvas'&&Math.abs((node.props?.frame?.height??0)-G.graphHeight*plan.scaleY)<1e-8),dot=desc.find(node=>node.type==='Circle'&&node.props?.key==='market-status-dot');
+    assert(block&&nameLine&&icon&&codeText&&graph&&dot,`${family} row ${i} keeps icon, short code, graph, block and status dot`);
     if(rows[i].asset.code==='USD/BRL')assert.equal(icon.type,'Canvas');
     assert.equal(nameLine.props.frame.width,G.name*plan.scale);
     assert.equal(nameLine.props.spacing,2);
     assert.equal(dot.props.frame.width,3*plan.scale);
     assert.equal(icon.props.position.x,(G.iconLeft+G.icon/2)*plan.scale);
     assert.equal(icon.props.position.y,(G.iconTop+G.icon/2)*plan.scaleY);
+    assert(codeText.props.position.y-codeText.props.frame.height/2>=icon.props.position.y+icon.props.frame.height/2-1e-8);
     assert.equal(block.props.position.y,G.blockCenter*plan.scaleY);
     assert.equal(button.props.frame.width,G.column*plan.scale);
     assert.equal(button.props.frame.height,(rowIndex<3?G.row+G.gap:G.row)*plan.scaleY);
@@ -37,4 +38,4 @@ for(const [family,width,height,expected] of [['small',158,158,4],['medium',338,1
   }
   for(let i=0;i<buttons.length;i++)for(let j=i+1;j<buttons.length;j++)assert.equal(overlap(box(buttons[i]),box(buttons[j])),false,`${family} row hitboxes ${i}/${j} do not overlap`);
 }
-console.log('PASS row tap targets: full-line refresh buttons remain independent in small/medium/large after 0.2.25 layout redistribution. Physical iOS press animation remains untested.');
+console.log('PASS row tap targets: full-line refresh buttons remain independent in small/medium/large after 0.2.26 code-below-icon layout. Physical iOS press animation remains untested.');

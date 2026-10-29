@@ -6,7 +6,7 @@ const path = require('node:path');
 // native renderer and never fetches live data.
 const root = path.resolve(__dirname, '..');
 const assetsFile = path.join(root, 'scripts/Popular Scripting/assets.js');
-const output = path.join(root, 'validation/widget-preview-0.2.25.svg');
+const output = path.join(root, 'validation/widget-preview-0.2.26.svg');
 const assetSource = fs.readFileSync(assetsFile, 'utf8')
   .replace(/^(?:\/\/[^\n]*\n)+/, '')
   .replace(/^export const assets=/, '')
@@ -19,10 +19,14 @@ const COLUMN = 146;
 const COLUMN_GAP = 12;
 const DETAIL_LEFT = 30;
 const GRAPH_WIDTH = 82;
-const GRAPH_TOP = 10.5;
-const GRAPH_HEIGHT = 15;
+const GRAPH_TOP = 8;
+const GRAPH_HEIGHT = 20;
 const ICON = 20;
+const ICON_LEFT = 5;
+const CODE_TOP = 29;
+const CODE_HEIGHT = 7;
 const SCALE = ICON / 26;
+const SHORT_CODES = Object.freeze({SELIC: 'SELIC', IPCA: 'IPCA', IBOV: 'IBOV', 'USD/BRL': 'USD/BRL', SOJA_JATAI_GO: 'SOJAGO', CUB_GO: 'CUB-GO', DIESEL_S10: 'DIESEL', BRENT: 'BRENT'});
 
 // Values are local, checked fixtures from the repository. No live quote or
 // synthetic chart point is used in this image; only USD/BRL has timestamped
@@ -134,7 +138,7 @@ function drawRow(row, rowTop, offset) {
   // These x positions are the measured text-plus-spacing locations of the
   // native HStack. Every dot remains inside the 78 pt name/status frame.
   const dotX = { Selic: 29, IPCA: 30, Ibovespa: 49, Dólar: 34, Soja: 28, 'CUB-GO': 45, 'Diesel S10': 57, 'Brent spot': 51 }[row.name];
-  const cx = offset + 13;
+  const cx = offset + ICON_LEFT + ICON / 2;
   const cy = rowTop + 18;
   const block = offset + DETAIL_LEFT;
   const graph = row.available
@@ -146,11 +150,12 @@ function drawRow(row, rowTop, offset) {
     text(offset, rowTop + 8, row.name, 10, '#FFFFFF', 'font-weight="600"'),
     `<circle cx="${offset + dotX}" cy="${rowTop + 4}" r="1.5" fill="#96969C"/>`,
     icon(row, cx, cy),
+    text(offset + 15, rowTop + CODE_TOP + 5.5, SHORT_CODES[row.code] || row.code, 5.5, '#96969C', 'text-anchor="middle"'),
     text(priceX, rowTop + 8, row.price, 7.2, '#FFFFFF', 'text-anchor="end" font-weight="600"'),
     graph,
     text(block + 84 + 32, rowTop + 22, row.percent, 5, row.color, 'text-anchor="end"'),
-    text(block, rowTop + 34, row.unit, 5.6, '#96969C'),
-    text(timeX, rowTop + 34, row.time, 6.5, '#96969C', 'text-anchor="end"')
+    text(block, rowTop + 35.5, row.unit, 5.6, '#96969C'),
+    text(timeX, rowTop + 35.5, row.time, 6.5, '#96969C', 'text-anchor="end"')
   ].join('');
 }
 
@@ -167,11 +172,13 @@ function widget(x, y, rowsForWidget, title, columns) {
   return `<text x="${x}" y="${y - 14}" fill="#D1D1D6" font-family="-apple-system,Arial,sans-serif" font-size="13" font-weight="600">${title}</text><rect x="${x}" y="${y}" width="${width}" height="292" rx="10" fill="#1E1E1E" stroke="#34343A"/><g transform="translate(${x} ${y}) scale(2)"><g font-family="-apple-system,Arial,sans-serif">${content}${dividers}</g></g>`;
 }
 
-const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="420" viewBox="0 0 1000 420"><title>Popular Scripting 0.2.25 preview</title><desc>Faithful geometry evidence using tracked PNG assets and the published Canvas badge geometry. Only the USD/BRL fixture has a timestamped curve; all sparse sources say 24h indisponível.</desc><defs><clipPath id="badge-disk" clipPathUnits="userSpaceOnUse"><circle cx="13" cy="13" r="13"/></clipPath></defs><rect width="1000" height="420" rx="22" fill="#0F0F12"/>${widget(30, 42, rows.slice(0, 4), 'small · 2×2', 1)}${widget(360, 42, rows, 'medium/large · 4×2', 2)}${text(360, 366, 'Prévia raster fiel à árvore 0.2.25 · ícones reais/badges Canvas · sem alegação de render nativo/iPhone', 11, '#96969C')}</svg>`;
+const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="420" viewBox="0 0 1000 420"><title>Popular Scripting 0.2.26 preview</title><desc>Faithful geometry evidence using tracked PNG assets and the published Canvas badge geometry. Each row shows name above icon and short code below; only the USD/BRL fixture has a timestamped curve and all sparse sources say 24h indisponível.</desc><defs><clipPath id="badge-disk" clipPathUnits="userSpaceOnUse"><circle cx="13" cy="13" r="13"/></clipPath></defs><rect width="1000" height="420" rx="22" fill="#0F0F12"/>${widget(30, 42, rows.slice(0, 4), 'small · 2×2', 1)}${widget(360, 42, rows, 'medium/large · 4×2', 2)}${text(360, 366, 'Prévia raster fiel à árvore 0.2.26 · código curto abaixo do ícone · ícones reais/badges Canvas · sem alegação de render nativo/iPhone', 11, '#96969C')}</svg>`;
 
 fs.writeFileSync(output, svg + '\n');
 console.log(JSON.stringify({
   output,
+  version: '0.2.26',
+  shortCodesBelowIcons: true,
   icons: ['SELIC', 'IBOV', 'BRENT'],
   canvasBadges: ['IPCA', 'USD/BRL', 'SOJA_JATAI_GO', 'CUB_GO', 'DIESEL_S10'],
   placeholderIcons: [],

@@ -7,8 +7,13 @@ import { RefreshAssetsOnTap } from './app_intents'
 import { assetMarketStatus } from './market-status'
 const images:Record<string,UIImage>={}
 const CUB_VARIATION_MIN_SIZE=6.5
-function Label({value,plan,x,y,width,height,size,min,bold=false,color='white',right=false,placeFn=place}:any){
-  const positioned=placeFn(plan,x,y,width,height,right?'trailing':'leading')
+const SHORT_CODES:Record<string,string>=Object.freeze({SELIC:'SELIC',IPCA:'IPCA',IBOV:'IBOV','USD/BRL':'USD/BRL',SOJA_JATAI_GO:'SOJAGO',CUB_GO:'CUB-GO',DIESEL_S10:'DIESEL',BRENT:'BRENT'})
+function shortCode(row:any){
+  const code=row?.asset?.code
+  return SHORT_CODES[code]||String(code||'—')
+}
+function Label({value,plan,x,y,width,height,size,min,bold=false,color='white',right=false,alignment,placeFn=place}:any){
+  const positioned=placeFn(plan,x,y,width,height,alignment||(right?'trailing':'leading'))
   return <Text font={size*plan.scale} fontWeight={bold?'semibold':'regular'} foregroundStyle={color}
     lineLimit={1} minScaleFactor={min/size} frame={positioned.frame}
     position={positioned.position}>{value}</Text>
@@ -39,10 +44,10 @@ export function PopularView({model,width,height}:{model:any;width:number;height:
       const percentMinimum=variationMinimumSize(row,row.percent)
       const chartAccessibility=curve.status==='unavailable-24h'?' Gráfico 24h indisponível.':''
       const rowPlan={...plan,x:0,y:0},hitHeight=rowIndex<3?G.row+G.gap:G.row,rowFrame={width:G.column*plan.scale,height:hitHeight*plan.scaleY},rowPosition={x:plan.x+(x+G.column/2)*plan.scale,y:plan.y+(y+hitHeight/2)*plan.scaleY}
-      const blockLabel=(key:string,value:string,x:number,y:number,w:number,h:number,size:number,min:number,bold=false,color='white',right=false)=>
-        <Label key={key} value={value} plan={rowPlan} x={x} y={y} width={w} height={h} size={size} min={min} bold={bold} color={color} right={right} placeFn={placeInBlock}/>
+      const blockLabel=(key:string,value:string,x:number,y:number,w:number,h:number,size:number,min:number,bold=false,color='white',right=false,alignment?:string)=>
+        <Label key={key} value={value} plan={rowPlan} x={x} y={y} width={w} height={h} size={size} min={min} bold={bold} color={color} right={right} alignment={alignment} placeFn={placeInBlock}/>
       return <Button key={row.asset.code} intent={RefreshAssetsOnTap(undefined)} buttonStyle="plain"
-        accessibilityLabel={`Atualizar indicadores. ${row.name}. ${row.price}. ${row.percent}. ${row.unit}. ${row.time}. ${status.accessibility}.${chartAccessibility}`}
+        accessibilityLabel={`Atualizar indicadores. ${row.name}. ${shortCode(row)}. ${row.price}. ${row.percent}. ${row.unit}. ${row.time}. ${status.accessibility}.${chartAccessibility}`}
         frame={rowFrame} position={rowPosition}>
         <ZStack alignment="topLeading" frame={rowFrame}>
         <HStack key="name-status-line" alignment="center" spacing={2} clipped {...place(rowPlan,0,G.nameTop,G.name,G.nameHeight,'leading')}>
@@ -53,6 +58,7 @@ export function PopularView({model,width,height}:{model:any;width:number;height:
         </HStack>
         {custom?<Canvas opaque={false} {...place(rowPlan,G.iconLeft,G.iconTop,G.icon,G.icon)} draw={(ctx,size)=>{ctx.scale(size.width/26,size.height/26);drawBadge(ctx,row.asset.code)}}/>
           :images[row.asset.code]?<Image image={images[row.asset.code]} resizable renderingMode="original" {...place(rowPlan,G.iconLeft,G.iconTop,G.icon,G.icon)}/>:<Image systemName="chart.line.uptrend.xyaxis" font={10*plan.scale} foregroundStyle="#D1D1D6" background={{style:'#34343A',shape:{type:'circle'}}} {...place(rowPlan,G.iconLeft,G.iconTop,G.icon,G.icon)}/>}
+        {blockLabel('asset-code',shortCode(row),0,G.codeTop,G.code,G.codeHeight,5.5,4.3,false,'#96969C',false,'center')}
         <ZStack key="detail-block" alignment="topLeading" {...place(rowPlan,detail,G.blockTop,G.blockWidth,G.blockHeight)}>
         {blockLabel('price',row.price,G.priceX,G.line1Top,G.price,G.top,17.5,8.5,true,'white',true)}
         <Canvas opaque={false} {...placeInBlock(rowPlan,0,G.graphTop,G.graph,G.graphHeight)} draw={(ctx,size)=>drawCurve(ctx,size,curve,color)}/>
