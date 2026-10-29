@@ -2,11 +2,17 @@
 
 ## 0.2.25 - janela real de 24h e redistribuição visual
 
-- O desenho agora usa uma janela móvel de exatamente 24 horas e aceita somente observações com timestamp real. O USD/BRL usa a série sequencial de 1 minuto já permitida pela AwesomeAPI; os demais indicadores mensais, semanais ou diários exibem `24h indisponível` sem interpolação, zero ou reaproveitamento visual de 90 dias.
+- O desenho agora usa uma janela móvel de exatamente 24 horas e aceita somente observações com timestamp real. O USD/BRL usa a série sequencial de 1 minuto já permitida pela AwesomeAPI; o endpoint `/USD-BRL/100` retorna no máximo 100 amostras, ou até 100 minutos, não uma cobertura intraday completa de 24 horas. Os demais indicadores mensais, semanais ou diários exibem `24h indisponível` sem interpolação, zero ou reaproveitamento visual de 90 dias.
 - Ícones foram reduzidos para 20 pt, o nome/status fica acima do ícone, e o grupo de cotação mantém valor no topo, gráfico/variação no centro e unidade/data na base. A altura do gráfico subiu para 15 pt nos dois tamanhos.
 - Curvas e valores usam vermelho/verde mais intensos e o preenchimento recebeu maior opacidade. Ordem fixa, bandeira circular dos EUA, indicadores de sessão, refresh por toque e fontes/dados permanecem.
 - Fontes consultadas: [AwesomeAPI](https://docs.awesomeapi.com.br/api-de-moedas) documenta tanto a série diária quanto cotações sequenciais de 1 minuto com timestamp; [BCB/SGS](https://dadosabertos.bcb.gov.br/dataset/11-taxa-de-juros---selic) e [B3](https://www.b3.com.br/pt_br/market-data-e-indices/servicos-de-dados/b3-for-developers/) não autorizam inventar uma série intraday para os indicadores sem essa granularidade.
 - Limite: validação foi por bundle, testes e prévias raster; não houve teste em iPhone nativo.
+
+A prévia raster desta entrega é gerada por `scripts/render-widget-preview.cjs`, usando
+os PNGs rastreados e a geometria real dos badges Canvas. Ela mostra uma curva
+somente para o fixture timestampado de USD/BRL; os demais slots mostram
+`24h indisponível`, sem curva contraditória ou ícone placeholder. A prévia é
+evidência de geometria e não simula um render nativo do iPhone.
 
 ## 0.2.24 - bandeira dos EUA no Dólar
 
@@ -98,7 +104,13 @@ A disposição interna recupera os offsets da 0.2.13. Nome/valor, gráfico/varia
 
 ## 0.2.14 — alinhamento interno pela linha 2
 
-Cada ativo mantém a caixa externa aprovada e o ícone no mesmo lugar. A linha 2 usa `GEOMETRY.line2Top`/`middle` como caixa explícita: o centro do gráfico (`graphTop` + `graphHeight/2`) e o centro da variação coincidem com o centro do ícone (`y=5` + `icon/2`). A linha 1 usa `line1Top` e termina no limite superior da caixa; nome e valor compartilham o topo. A linha 3 conserva `line3Top`/`bottom`; código e última apuração compartilham a base. Nenhuma fonte, cor, API, dado, ordem, diâmetro do ícone ou altura externa foi alterada. Testes desktop cobrem small/medium/large, texto longo, valor negativo e ausência de data; iPhone nativo não testado.
+Cada ativo mantém a caixa externa aprovada e o ícone no mesmo lugar. A
+referência recuperável 0.2.13 foi posteriormente agrupada na caixa de 36 pt
+da 0.2.15; na geometria atual o nome/status ocupa o topo, o gráfico/variação
+fica no centro e código/data ficam na base. Nenhuma fonte, cor, API, dado,
+ordem, diâmetro do ícone ou altura externa foi alterada. Testes desktop cobrem
+small/medium/large, texto longo, valor negativo e ausência de data; iPhone
+nativo não testado.
 
 ## 0.2.13 — ordem fixa do widget pequeno
 

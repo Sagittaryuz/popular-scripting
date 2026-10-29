@@ -1,6 +1,6 @@
 ## Atualização 0.2.25 - janela real de 24h e layout redistribuído
 
-- Gráficos usam somente observações timestampadas nas últimas 24 horas. USD/BRL consulta a série sequencial de 1 minuto existente no provedor; fontes mensais, semanais e diárias sem duas amostras intraday exibem `24h indisponível`, preservando valor/data sem fabricar pontos.
+- Gráficos usam somente observações timestampadas nas últimas 24 horas. USD/BRL consulta a série sequencial de 1 minuto existente no provedor; o endpoint `/USD-BRL/100` limita a resposta a 100 amostras, ou no máximo 100 minutos, portanto a janela de 24 horas pode ter cobertura parcial. Fontes mensais, semanais e diárias sem duas amostras intraday exibem `24h indisponível`, preservando valor/data sem fabricar pontos.
 - Ícones passam a 20 pt, com nome/status acima do ícone; valor fica no topo, gráfico/variação no centro e unidade/data na base. Curvas/valores têm vermelho e verde mais fortes e preenchimento mais visível em small e medium/large.
 - Ordem fixa, bandeira circular, status da sessão, atualização ao toque e dados publicados permanecem.
 

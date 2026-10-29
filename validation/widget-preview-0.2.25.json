@@ -6,6 +6,7 @@
     "hours": 24,
     "basis": "real timestamped observations",
     "timeZone": "America/Sao_Paulo",
+    "coverageMayBePartial": true,
     "civilOrSparseFallback": "24h indisponível",
     "interpolation": false,
     "zeroFill": false
@@ -14,6 +15,8 @@
     "USD/BRL": {
       "endpoint": "https://economia.awesomeapi.com.br/USD-BRL/100",
       "granularity": "1 minute sequential quotes",
+      "maxSamples": 100,
+      "maximumCoverage": "up to 100 minutes at the documented 1-minute endpoint; not a complete 24-hour history",
       "timestampBasis": "UTC timestamp from provider",
       "documentation": "https://docs.awesomeapi.com.br/api-de-moedas"
     },
@@ -41,6 +44,10 @@
     "svg": "validation/widget-preview-0.2.25.svg",
     "png": "validation/widget-preview-0.2.25.png",
     "libraryFileId": "libfile_807a322e4cc48191ad0afde42a49bc6a",
+    "libraryVersion": 1,
+    "generator": "scripts/render-widget-preview.cjs",
+    "iconSource": "tracked PNG assets plus the published Canvas badge geometry",
+    "placeholderIcons": [],
     "rasterized": true,
     "pixelInspection": "view_image completed",
     "fixtureOnly": true,
@@ -53,5 +60,5 @@
     "test-internal-alignment.cjs: small/medium/large title-above-icon, 20 pt icon, 15 pt graph, top/middle/bottom alignment",
     "test-row-tap.cjs: four/eight independent refresh hitboxes and preserved USD custom Canvas path"
   ],
-  "networkLimit": "The executor's direct request to the documented minute endpoint returned HTTP 403; no workaround or live quote was claimed."
+  "networkLimit": "The executor's direct request to the documented minute endpoint returned HTTP 403; no workaround or live quote was claimed. The documented limit of 100 one-minute samples is at most 100 minutes, so the 24-hour axis can have partial coverage."
 }
