@@ -4,7 +4,7 @@
   "publishedEntryProfile": "b3-btc-7d",
   "artifactKind": "fixture-only-demonstrative-preview",
   "fixturePublished": false,
-  "packagePublished": false,
+  "packagePublished": true,
   "fixtureAssets": [
     { "code": "BBAS3", "name": "Banco do Brasil", "unit": "BRL/ação", "badge": "neutral initials BB" },
     { "code": "BBDC4", "name": "Bradesco PN", "unit": "BRL/ação", "badge": "neutral initials BD" },
@@ -43,9 +43,9 @@
   ],
   "nativeIPhoneTested": false,
   "publication": {
-    "packageCommit": null,
+    "packageCommit": "a486fcde6c744d99e868ed096f83229a82f223ba",
     "remote": "https://github.com/Sagittaryuz/popular-scripting",
-    "push": false,
+    "push": true,
     "libraryUpload": false,
     "libraryUploadReason": "The PNG and SVG are tracked in the public repository; no separate Library upload is needed for this preview."
   }
