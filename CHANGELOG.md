@@ -1,3 +1,21 @@
+## 0.2.30 - perfil publicado de quatro ativos e janela de 7 dias
+
+- Ativa no entry publicado o teste reversível `BBAS3`, `BBDC4`, `IBOV` e
+  `BTC/USD`, nessa ordem, em small/medium/large; o formato 4×2 não repete os
+  quatro ativos na segunda coluna.
+- Mantém a lista fixa anterior no código para recuperação. BBAS3, BBDC4 e IBOV
+  são reservas B3 explicitamente sem fonte/cotação/curva até validação; nenhum
+  preço ou variação é inventado.
+- O `BTC/USD` usa o adaptador público Kraken com `XBT/USD`/`ZUSD`, ticker no
+  horário de consulta, variação móvel de 24 h e OHLC horário fechado dentro da
+  janela real de 7 dias (168 h). Falha de rede não vira cotação.
+- O caminho publicado foi testado em `loadModel` → `collectRows`; cache antigo e
+  catálogo adicional não substituem o perfil. A prévia é demonstrativa e
+  fixture-only; iPhone nativo não testado.
+- Documentação primária do contrato: [OHLC](https://docs.kraken.com/api-reference/market-data/get-ohlc-data),
+  [Ticker](https://docs.kraken.com/api-reference/market-data/get-ticker-information)
+  e [AssetPairs](https://docs.kraken.com/api-reference/market-data/get-tradable-asset-pairs).
+
 ## 0.2.29 - folga explícita entre nome e status
 
 - Corrige a colisão residual observada em pixels no fim de `IPCA`, `Ibovespa`

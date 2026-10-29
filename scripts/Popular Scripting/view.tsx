@@ -7,9 +7,9 @@ import { RefreshAssetsOnTap } from './app_intents'
 import { assetMarketStatus } from './market-status'
 const images:Record<string,UIImage>={}
 const CUB_VARIATION_MIN_SIZE=4.2
-const SHORT_CODES:Record<string,string>=Object.freeze({SELIC:'SELIC',IPCA:'IPCA',IBOV:'IBOV','USD/BRL':'USD/BRL',SOJA_JATAI_GO:'SOJAGO',CUB_GO:'CUB-GO',DIESEL_S10:'DIESEL',BRENT:'BRENT'})
+const SHORT_CODES:Record<string,string>=Object.freeze({SELIC:'SELIC',IPCA:'IPCA',IBOV:'IBOV',BBAS3:'BBAS3',BBDC4:'BBDC4','BTC/USD':'BTC/USD','USD/BRL':'USD/BRL',SOJA_JATAI_GO:'SOJAGO',CUB_GO:'CUB-GO',DIESEL_S10:'DIESEL',BRENT:'BRENT'})
 const COMPACT_UNITS:Record<string,string>=Object.freeze({
-  SELIC:'% a.a.',IPCA:'M/M · pp',IBOV:'pontos','USD/BRL':'BRL/USD',
+  SELIC:'% a.a.',IPCA:'M/M · pp',IBOV:'pontos',BBAS3:'BRL/ação',BBDC4:'BRL/ação','BTC/USD':'USD/BTC','USD/BRL':'BRL/USD',
   SOJA_JATAI_GO:'R$/sc60',CUB_GO:'R$/m²',DIESEL_S10:'R$/L',BRENT:'USD/bbl'
 })
 function shortCode(row:any){
@@ -60,9 +60,9 @@ export function PopularView({model,width,height}:{model:any;width:number;height:
     {plan.large?label('title','Popular · '+model.status.label,0,-32,304,18,11,8,true):null}
     {visibleRows.map((row:any,i:number)=>{
       const column=Math.floor(i/4),rowIndex=i%4,x=column*(G.column+G.columnGap),y=rowIndex*(G.row+G.gap),color=movementColor(row),curve=curvePlan(model.api,row),status=statusFor(row)
-      const band=monthBand(curve),custom=['SOJA_JATAI_GO','CUB_GO','IPCA','DIESEL_S10','USD/BRL'].includes(row.asset.code)
+      const band=monthBand(curve),custom=['BBAS3','BBDC4','IBOV','BTC/USD','SOJA_JATAI_GO','CUB_GO','IPCA','DIESEL_S10','USD/BRL'].includes(row.asset.code)
       const percentMinimum=variationMinimumSize(row,row.percent),meta=`${shortCode(row)} | ${observationDate(row.time)}`,nameMetrics=nameLayout(row.name)
-      const chartAccessibility=curve.status==='unavailable-24h'?' Gráfico 24h indisponível':''
+      const chartAccessibility=curve.status==='unavailable-7d'?' Gráfico de 7 dias indisponível':''
       const rowPlan={...plan,x:0,y:0},hitHeight=rowIndex<3?G.row+G.gap:G.row,rowFrame={width:G.column*plan.scale,height:hitHeight*plan.scaleY},rowPosition={x:plan.x+(x+G.column/2)*plan.scale,y:plan.y+(y+hitHeight/2)*plan.scaleY}
       const cellLabel=(key:string,value:string,cx:number,cy:number,w:number,h:number,size:number,min:number,bold=false,cellColor='white',right=false,alignment?:string)=><Label labelKey={key} value={value} plan={rowPlan} x={cx} y={cy} width={w} height={h} size={size} min={min} bold={bold} color={cellColor} right={right} alignment={alignment} placeFn={placeInBlock}/>
       return <Button key={row.asset.code} intent={RefreshAssetsOnTap(undefined)} buttonStyle="plain"
@@ -80,7 +80,7 @@ export function PopularView({model,width,height}:{model:any;width:number;height:
         </HStack>
         {cellLabel('asset-meta',meta,G.dateX,G.dateTop,G.date,G.dateHeight,5.3,3.4,false,'#96969C',false,'leading')}
         <Canvas key="asset-chart" opaque={false} {...placeInBlock(rowPlan,G.graphX,G.graphTop,G.graph,G.graphHeight)} draw={(ctx,size)=>drawCurve(ctx,size,curve,color)}/>
-        {!curve.points.length?cellLabel('missing','24h indisponível',G.graphX,G.graphTop,G.graph,G.graphHeight,4.2,3.2,false,'#96969C'):null}
+        {!curve.points.length?cellLabel('missing','7d indisponível',G.graphX,G.graphTop,G.graph,G.graphHeight,4.2,3.2,false,'#96969C'):null}
         {band.width>0?<ZStack key="month-band" alignment="topLeading" {...placeInBlock(rowPlan,G.graphX+band.left,G.monthTop,band.width,5)}>
           <ZStack alignment="topLeading" frame={{width:band.width*plan.scale,height:5*plan.scale}} clipped
             mask={<Rectangle fill="white" frame={{width:band.width*plan.scale,height:5*plan.scale}}/>}>

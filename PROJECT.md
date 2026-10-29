@@ -1,4 +1,22 @@
-# Popular Scripting - Pro 0.2.29
+# Popular Scripting - Pro 0.2.30
+
+## 0.2.30 - perfil publicado de teste B3/BTC e janela de 7 dias
+
+- O entry publicado ativa, pela configuração reversível `PUBLISHED_TEST_ASSETS`,
+  os quatro ativos `BBAS3`, `BBDC4`, `IBOV` e `BTC/USD`, nessa ordem, sem
+  duplicação no widget 4×2. A lista anterior permanece definida em
+  `FIXED_INDICATOR_CODES` para recuperação direta.
+- Os três slots B3 são reservas explícitas sem preço, variação ou curva até
+  haver fonte autorizada. O quarto slot chama o adaptador público Kraken para
+  `XBT/USD`/`ZUSD`; falha ou indisponibilidade não cria valor nem série.
+- O domínio gráfico é uma janela móvel de 168 horas por timestamps reais,
+  somente com candles horários fechados; a variação do BTC continua baseada
+  em 24 horas e não é o domínio do gráfico. Sem dados válidos, o runtime e a
+  prévia mostram `7d indisponível`.
+- A ativação foi validada pelo caminho real `loadModel` → `engine` →
+  `collectRows`; cache legado e linhas adicionais não conseguem substituir o
+  perfil. A consulta ao vivo da Kraken teve `EAI_AGAIN` neste executor; não
+  houve contorno. A prévia é fixture-only e iPhone nativo permanece não testado.
 
 ## 0.2.29 - folga explícita no nome e na bolinha
 

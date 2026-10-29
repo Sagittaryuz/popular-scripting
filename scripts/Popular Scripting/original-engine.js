@@ -6,8 +6,9 @@ const {FileManager,Request,Data,Timer}=host;
 const config={runsInWidget:true,widgetFamily:options.family||'medium'};
 const args={queryParameters:{popular_refresh:options.force?'1':'0'}};
 const Color=class {constructor(hex,alpha=1){this.hex=hex;this.alpha=alpha;}};
-// Scriptable — Popular small/medium/large. O conjunto normal tem oito indicadores.
-const VERSION = '2026.10.29.81'
+// Scriptable — Popular small/medium/large. O conjunto normal mantém oito
+// indicadores; o entry publicado pode selecionar o perfil de teste reversível.
+const VERSION = '2026.10.29.82'
 const SETTINGS = { refreshMinutes: 5, rotationMinutes: 5, selection: 'indicadores' };
 // Bloco 146 × 146 pt; quatro colunas e ícones circulares 26 pt centralizados nas linhas 36 pt.
 const LAYOUT = { columns: [28, 40, 46, 26], columnGap: 2, valueGap: 2, nameWidth: 40, priceWidth: 26, graphWidth: 46, rowHeight: 36, gap: 2/3, iconSize: 26, chartHeight: 20 };
@@ -36,6 +37,19 @@ const WATCH = [
 // [Variação diária mínima %, máxima %]; política de classificação, não recomendação.
 const MOVEMENT = {acoes:[5,35],stocks:[5,35],bdrs:[5,35],fiis:[2,15],etfs:[3,25],criptomoedas:[8,45],indices:[2,12],commodities:[3,20],cambio:[1,8]};
 const FX = {code:'USD/BRL',name:'Dólar',type:'cambio',currency:'BRL',source:'AwesomeAPI',unit:'BRL/USD',quoteBasis:'bid',price:null,percent:null};
+const KRAKEN_PUBLIC = 'https://api.kraken.com/0/public';
+const KRAKEN_PAIR_KEY = 'XXBTZUSD';
+const KRAKEN_ALT_PAIR = 'XBTUSD';
+const KRAKEN_DISPLAY_PAIR = 'XBT/USD';
+const KRAKEN_QUOTE = 'ZUSD';
+const KRAKEN_INTERVAL_MINUTES = 60;
+const KRAKEN_WINDOW_HOURS = 7 * 24;
+const BTCUSD = Object.freeze({
+  code:'BTC/USD',name:'Bitcoin',type:'criptomoedas',source:'Kraken',currency:'USD',unit:'USD/BTC',
+  unitLabel:'USD/BTC · 24H',instrument:KRAKEN_ALT_PAIR,instrumentConfirmed:true,
+  pair:KRAKEN_DISPLAY_PAIR,quote:KRAKEN_QUOTE,quoteBasis:'last-trade',percentBasis:'rolling24h',
+  price:null,percent:null,delta:null
+});
 const IBOVESPA = Object.freeze({code:'IBOV',name:'Ibovespa',type:'indices',currency:'PTS',source:'Investidor10',url:BASE+'/indices/ibov/',price:null,percent:null});
 const SELIC_URL = 'https://api.bcb.gov.br/dados/serie/bcdata.sgs.432/dados';
 const SELIC = Object.freeze({code:'SELIC',name:'Selic',type:'indices',currency:'BRL',source:'BCB-SGS',unit:'percent-a.a.',unitLabel:'META SELIC % a.a.',instrument:'BCB-SGS-432',instrumentConfirmed:true,referenceOnly:false,url:SELIC_URL,price:null,percent:null,delta:null});
@@ -52,6 +66,12 @@ function isEconomicAsset(asset){return ECONOMIC_ASSETS.some(a=>a.code===asset?.c
 // panel/quantity switch is intentionally no longer a user-facing mode.
 function economicPanel(){return true;}
 const now = new Date(options.now ?? Date.now());
+const localTestMode = options.localTestAssets === true;
+const LOCAL_TEST_ASSETS = Object.freeze([
+  {code:'BBAS3',type:'acoes',name:'Banco do Brasil',source:'B3',currency:'BRL',unit:'BRL/ação',unitLabel:'BRL/ação',instrument:'BBAS3',instrumentConfirmed:true},
+  {code:'BBDC4',type:'acoes',name:'Bradesco PN',source:'B3',currency:'BRL',unit:'BRL/ação',unitLabel:'BRL/ação',instrument:'BBDC4',instrumentConfirmed:true},
+  {code:'IBOV',type:'indices',name:'Ibovespa',source:'B3',currency:'PTS',unit:'points',unitLabel:'pontos',instrument:'IBOV',instrumentConfirmed:true}
+]);
 const forceRefresh = String(args.queryParameters?.popular_refresh || '') === '1';
 const fm = FileManager.local();
 const cacheDir = fm.joinPath(fm.documentsDirectory(), 'popular-widget-cache-v6');
@@ -158,7 +178,65 @@ function validSoybeanValidation(r) {
   if(!Array.isArray(p)||p.length!==readings.length||r.chart.window!=='up-to-30D'||p.some((point,i)=>point.value!==readings[i].price||point.stamp?.day!==readings[i].day||point.stamp?.hasTime!==false||point.stamp?.time!==Date.parse(readings[i].day+'T12:00:00Z')))return false;
   return v.comparisonDate===first.day&&v.comparisonPrice===first.price&&finite(a.delta)&&Math.abs(a.delta-(last.price-first.price))<1e-9&&finite(a.percent)&&Math.abs(a.percent-(last.price/first.price-1)*100)<1e-9;
 }
-function validSnapshot(r) {
+function krakenResult(payload) {
+  if(!payload||!Array.isArray(payload.error)||payload.error.length)throw Error('Resposta Kraken inválida: '+(payload?.error?.join?.(', ')||'erro desconhecido'));
+  if(!payload.result||typeof payload.result!=='object')throw Error('Resposta Kraken sem resultado');
+  return payload.result;
+}
+function krakenQueryStamp(time) {
+  if(!finite(time)||time<=0)throw Error('Horário de consulta Kraken inválido');
+  const iso=new Date(time).toISOString();
+  return {day:iso.slice(0,10),label:'consulta '+iso.slice(11,19)+'Z',hasTime:true,time};
+}
+function parseKrakenAssetPair(payload) {
+  const result=krakenResult(payload),pair=result[KRAKEN_PAIR_KEY];
+  if(!pair||pair.altname!==KRAKEN_ALT_PAIR||pair.wsname!==KRAKEN_DISPLAY_PAIR||pair.base!=='XXBT'||pair.quote!==KRAKEN_QUOTE||pair.status!=='online')throw Error('Par Kraken XBT/USD não confirmado');
+  return {key:KRAKEN_PAIR_KEY,altname:pair.altname,wsname:pair.wsname,base:pair.base,quote:pair.quote,status:pair.status};
+}
+function parseKrakenTicker(payload,time=Date.now()) {
+  const result=krakenResult(payload),ticker=result[KRAKEN_PAIR_KEY],close=ticker?.c;
+  if(!ticker||!Array.isArray(close)||close.length<1)throw Error('Ticker Kraken XBT/USD ausente');
+  const price=Number(close[0]);
+  if(!finite(price)||price<=0)throw Error('Último negócio Kraken inválido');
+  // Ticker.c[0] is a last-trade price; Kraken does not provide its trade time
+  // in this response. The stamp is deliberately the query time, never a made-up
+  // close time.
+  return {price,stamp:krakenQueryStamp(time),quoteTimeBasis:'kraken-query-time',lastTradeTimestamp:null};
+}
+function parseKrakenOHLC(payload,time=Date.now(),lookbackHours=KRAKEN_WINDOW_HOURS) {
+  const result=krakenResult(payload),raw=result[KRAKEN_PAIR_KEY],cursorSeconds=Number(result.last);
+  if(!Array.isArray(raw)||!raw.length||!Number.isInteger(cursorSeconds)||cursorSeconds<=0)throw Error('OHLC Kraken XBT/USD inválido');
+  if(!finite(time)||time<=0||!finite(lookbackHours)||lookbackHours<=0)throw Error('Janela OHLC Kraken inválida');
+  const candles=raw.map((entry,index)=>{
+    if(!Array.isArray(entry)||entry.length<8)throw Error('Candle Kraken incompleto na posição '+index);
+    const seconds=Number(entry[0]),open=Number(entry[1]),high=Number(entry[2]),low=Number(entry[3]),close=Number(entry[4]),vwap=Number(entry[5]),volume=Number(entry[6]),count=Number(entry[7]),at=seconds*1000;
+    if(!Number.isInteger(seconds)||seconds<=0||!finite(at)||at>time||!finite(open)||open<=0||!finite(high)||high<=0||!finite(low)||low<=0||!finite(close)||close<=0||!finite(vwap)||vwap<=0||!finite(volume)||volume<0||!Number.isInteger(count)||count<0||low>high||open<low||open>high||close<low||close>high)throw Error('Candle Kraken inválido na posição '+index);
+    return {time:at,open,high,low,close,vwap,volume,count};
+  }).sort((a,b)=>a.time-b.time);
+  if(candles.some((c,i)=>i&&c.time===candles[i-1].time))throw Error('Candle Kraken duplicado');
+  const cursorLastTime=cursorSeconds*1000;
+  if(!finite(cursorLastTime)||cursorLastTime>time||!candles.some(c=>c.time===cursorLastTime))throw Error('Cursor OHLC Kraken não corresponde à série');
+  const lower=time-lookbackHours*3600000,window=candles.filter(c=>c.time>=lower&&c.time<=time),current=window.filter(c=>c.time>cursorLastTime),closed=window.filter(c=>c.time<=cursorLastTime);
+  if(current.length>1)throw Error('Mais de um candle Kraken em formação');
+  if(closed.length<2)throw Error('OHLC Kraken sem duas observações fechadas na janela');
+  const points=closed.map(c=>({value:c.close,stamp:{time:c.time,day:new Date(c.time).toISOString().slice(0,10),hasTime:true}}));
+  return {source:'Kraken',instrument:KRAKEN_ALT_PAIR,pair:KRAKEN_DISPLAY_PAIR,quote:KRAKEN_QUOTE,window:'7D',windowHours:lookbackHours,intervalMinutes:KRAKEN_INTERVAL_MINUTES,closedOnly:true,cursorLastTime,currentCandleExcluded:current.length===1,excludedCurrentCandleTime:current.length?current[0].time:null,rawWindowPointCount:window.length,closedPointCount:closed.length,points,fetchedAt:time};
+}
+function validKrakenSnapshot(r,time=Date.now()) {
+  const a=r?.asset,c=r?.chart,v=r?.variationReference,p=c?.points||[];
+  if(!a||a.code!==BTCUSD.code||a.name!=='Bitcoin'||a.type!=='criptomoedas'||a.source!=='Kraken'||a.currency!=='USD'||a.unit!=='USD/BTC'||a.instrument!==KRAKEN_ALT_PAIR||a.instrumentConfirmed!==true||a.pair!==KRAKEN_DISPLAY_PAIR||a.quote!==KRAKEN_QUOTE||a.quoteBasis!=='last-trade'||a.percentBasis!=='rolling24h')return false;
+  if(!finite(time)||time<=0||!finite(r.fetchedAt)||r.fetchedAt<=0||r.fetchedAt>time||r.fetchedAt!==time||!finite(a.price)||a.price<=0||!finite(a.percent)||!finite(a.delta)||r.quoteVerified!==true||r.quoteTimeBasis!=='kraken-query-time'||r.lastTradeTimestamp!==null)return false;
+  if(!r.stamp||r.stamp.hasTime!==true||r.stamp.time!==time||r.stamp.day!==new Date(time).toISOString().slice(0,10)||!String(r.stamp.label||'').startsWith('consulta '))return false;
+  if(!c||c.source!=='Kraken'||c.instrument!==KRAKEN_ALT_PAIR||c.pair!==KRAKEN_DISPLAY_PAIR||c.quote!==KRAKEN_QUOTE||c.window!=='7D'||c.windowHours!==KRAKEN_WINDOW_HOURS||c.intervalMinutes!==KRAKEN_INTERVAL_MINUTES||c.closedOnly!==true||!Number.isInteger(c.cursorLastTime)||c.cursorLastTime<=0||c.cursorLastTime>time||!Array.isArray(p)||p.length<2||c.fetchedAt!==time||c.closedPointCount!==p.length||typeof c.currentCandleExcluded!=='boolean')return false;
+  if(c.currentCandleExcluded?( !Number.isInteger(c.excludedCurrentCandleTime)||c.excludedCurrentCandleTime<=c.cursorLastTime||c.excludedCurrentCandleTime>time):(c.excludedCurrentCandleTime!==null))return false;
+  if(p.some((point,i)=>!point||!finite(point.value)||point.value<=0||!point.stamp||point.stamp.hasTime!==true||!finite(point.stamp.time)||point.stamp.time<c.fetchedAt-KRAKEN_WINDOW_HOURS*3600000||point.stamp.time>time||point.stamp.time>c.cursorLastTime||point.stamp.day!==new Date(point.stamp.time).toISOString().slice(0,10)||(i&&point.stamp.time<=p[i-1].stamp.time)))return false;
+  const basePoint=v&&p.filter(point=>point.stamp.time<=v.startTime).at(-1);
+  if(!v||v.source!=='Kraken'||v.basis!=='rolling24h-closed-hourly-v1'||!finite(v.startTime)||!finite(v.endTime)||v.endTime!==time||v.startTime>time-86400000||time-v.startTime>25*3600000||!finite(v.baseValue)||v.baseValue<=0||!basePoint||Math.abs(v.baseValue-basePoint.value)>1e-9||Math.abs(a.delta-(a.price-v.baseValue))>1e-9||Math.abs(a.percent-(a.price/v.baseValue-1)*100)>1e-9)return false;
+  if(!r.pairStatus||r.pairStatus.key!==KRAKEN_PAIR_KEY||r.pairStatus.altname!==KRAKEN_ALT_PAIR||r.pairStatus.wsname!==KRAKEN_DISPLAY_PAIR||r.pairStatus.quote!==KRAKEN_QUOTE||r.pairStatus.status!=='online')return false;
+  return true;
+}
+function validSnapshot(r,time=Date.now()) {
+  if(r?.asset?.source==='Kraken')return validKrakenSnapshot(r,time);
   if(r?.economicSchema===1)return validEconomicRow(r);
   if(r?.asset?.code==='SELIC'&&!validSelicSnapshot(r))return false;
   if(r?.asset?.code===SOYBEAN.code&&!validSoybeanValidation(r))return false;
@@ -358,6 +436,7 @@ function chooseChart(points,asset,stamp,window) {
   if(stamp)points=points.filter(p=>p.stamp.day<=stamp.day);
   if(window==='1D'&&points.length){const day=points[points.length-1].stamp.day;points=points.filter(p=>p.stamp.day===day);}
   if(window==='24H'&&points.length){const end=points[points.length-1].stamp.time,cutoff=end-24*60*60*1000;points=points.filter(p=>p.stamp.hasTime===true&&p.stamp.time>=cutoff&&p.stamp.time<=end);}
+  if(window==='7D'&&points.length){const end=points[points.length-1].stamp.time,cutoff=end-7*86400000;points=points.filter(p=>p.stamp.time>=cutoff&&p.stamp.time<=end);}
   if(window==='90D'&&points.length){const cutoff=points[points.length-1].stamp.time-89*86400000;points=points.filter(p=>p.stamp.time>=cutoff);}
   if(points.length<2)return null;
   const end=points[points.length-1];
@@ -842,16 +921,36 @@ function fxHistory(json,row,time=Date.now()) {
   points.push({value:row.asset.price,stamp:row.stamp});
   const ordered=[...new Map(points.map(p=>[p.stamp.time,p])).values()].sort((a,b)=>a.stamp.time-b.stamp.time);
   if(ordered.some((p,i)=>i&&Math.abs(p.value/ordered[i-1].value-1)>.1))return null;
-  return chooseChart(ordered,row.asset,row.stamp,'24H');
+  return chooseChart(ordered,row.asset,row.stamp,'7D');
 }
 async function loadFX() {
   const key='usd-brl-awesome-v13',cached=snapshotCache(key,FX)||priorInvestingSnapshot(FX),time=Date.now();
   if(cacheFresh(cached))return cached;
   try {const row=parseFX(await request('https://economia.awesomeapi.com.br/last/USD-BRL',true),time);
-    try {row.chart=fxHistory(await request('https://economia.awesomeapi.com.br/USD-BRL/100',true),row,time);}catch(e){console.log('Série 24h USD/BRL AwesomeAPI: '+e);}
+    try {row.chart=fxHistory(await request('https://economia.awesomeapi.com.br/USD-BRL/100',true),row,time);}catch(e){console.log('Série semanal USD/BRL AwesomeAPI: '+e);}
     if(!row.chart&&cached?.asset.source==='AwesomeAPI'&&cached?.chart)row.chart=chooseChart(cached.chart.points,row.asset,row.stamp,cached.chart.window);
-    row.chartStatus=row.chart?'valid-24H':'history-unavailable-or-invalid';cacheWrite(key,row);return row;}
+    row.chartStatus=row.chart?'valid-7D':'history-unavailable-or-invalid';cacheWrite(key,row);return row;}
   catch(e){console.log('USD/BRL AwesomeAPI: '+e);return cached&&time-cached.stamp?.time<=4*86400000?{...cached,cached:true}:{asset:{...FX},stamp:null,chart:null};}
+}
+async function loadBTCUSD(queryTime=Date.now()) {
+  const key='btc-usd-kraken-v1',cached=localTestMode?null:cacheRead(key);
+  if(cacheFresh(cached)&&validKrakenSnapshot(cached,Date.now()))return {...cached,cached:true};
+  try {
+    const pairStatus=parseKrakenAssetPair(await request(KRAKEN_PUBLIC+'/AssetPairs?pair='+KRAKEN_ALT_PAIR,true));
+    const ticker=parseKrakenTicker(await request(KRAKEN_PUBLIC+'/Ticker?pair='+KRAKEN_ALT_PAIR,true),queryTime);
+    const chart=parseKrakenOHLC(await request(KRAKEN_PUBLIC+'/OHLC?pair='+KRAKEN_ALT_PAIR+'&interval='+KRAKEN_INTERVAL_MINUTES,true),queryTime);
+    const base=chart.points.filter(point=>point.stamp.time<=queryTime-86400000).at(-1);
+    if(!base)throw Error('OHLC Kraken sem base fechada de 24H');
+    const percent=(ticker.price/base.value-1)*100,delta=ticker.price-base.value;
+    const row={asset:{...BTCUSD,price:ticker.price,percent,delta},stamp:ticker.stamp,chart,chartStatus:'valid-7D-closed-hourly',quoteVerified:true,quoteTimeBasis:ticker.quoteTimeBasis,lastTradeTimestamp:ticker.lastTradeTimestamp,variationReference:{source:'Kraken',basis:'rolling24h-closed-hourly-v1',startTime:base.stamp.time,endTime:queryTime,baseValue:base.value},pairStatus,fetchedAt:queryTime};
+    if(!validKrakenSnapshot(row,queryTime))throw Error('Snapshot BTC/USD Kraken reprovado na validação');
+    cacheWrite(key,row);
+    return row;
+  } catch(error) {
+    console.log('BTC/USD Kraken: '+error);
+    if(cacheFresh(cached)&&validKrakenSnapshot(cached,Date.now()))return {...cached,cached:true};
+    return {asset:{...BTCUSD},stamp:null,chart:null,chartStatus:'Kraken-unavailable',quoteVerified:false,quoteTimeBasis:null,lastTradeTimestamp:null,fetchedAt:null,sourceError:String(error?.message||error)};
+  }
 }
 async function mapLimited(assets,load,limit=4) {
   const result=new Array(assets.length);let cursor=0;
@@ -1006,6 +1105,10 @@ function orderingDescriptor(row,time=now.getTime()) {
     if(last&&dayOf(last.stamp)===end&&Math.abs(last.value-a.price)<=Math.max(.005,a.price*.00001)&&date(start)&&matches(previous?.value))frame=basis+'|'+start+'|'+end;
   }else if(a.percentBasis==='24H'){
     basis='rolling24h';label='24H';if(row?.stamp?.hasTime&&row.quoteVerified===true&&a.catalogPercentSchema===58){start=new Date(row.stamp.time-86400000).toISOString();frame=basis+'|'+start+'|'+row.stamp.time;}
+  }else if(a.percentBasis==='rolling24h'){
+    basis='rolling24h';label='24H';
+    const reference=row?.variationReference;
+    if(row?.quoteVerified===true&&row.quoteTimeBasis==='kraken-query-time'&&reference?.basis==='rolling24h-closed-hourly-v1'&&finite(reference.startTime)&&finite(reference.endTime)&&reference.endTime===row.stamp?.time){start=new Date(reference.startTime).toISOString();frame=basis+'|'+start+'|'+reference.endTime;}
   }
   let reason=null;
   if(!finite(percent)||!finite(a.price)||a.price<=0)reason='missing-value';
@@ -1103,6 +1206,7 @@ async function presentOrderingFeedback(status) {
 
 // Additional public catalog assets; preserve the dated/validated quote pipeline.
 async function collectAdditionalRows() {
+  if(localTestMode)return [];
   collectionDeadline=Date.now()+(options.force?20000:8000);
   const assets=await catalog(),types=['acoes','fiis','etfs','stocks','bdrs','criptomoedas'];
   const groups=types.map(type=>assets.filter(a=>a.type===type&&a.popular&&!isPinnedWidgetAsset(a)&&!isEconomicAsset(a)));
@@ -1114,7 +1218,23 @@ async function collectAdditionalRows() {
   return rows.filter(row=>row.stamp?.day&&finite(row.asset.price)&&row.asset.price>0);
 }
 
+function localTestUnavailable(asset) {
+  return {asset:{...asset,price:null,percent:null,delta:null},stamp:null,chart:null,chartStatus:'local-test-'+asset.code+'-source-unavailable',quoteVerified:false,cached:false,localTest:true,sourceError:'B3 quote source unavailable in authorized local test'};
+}
+async function collectLocalTestRows() {
+  collectionDeadline=Date.now()+(options.force?20000:8000);
+  const configured=[...LOCAL_TEST_ASSETS,BTCUSD],rows=[];
+  for(const asset of configured){
+    if(asset.code===BTCUSD.code){
+      const row=await loadBTCUSD(now.getTime());
+      rows.push({...row,localTest:true,asset:{...row.asset,localTest:true}});
+    }else rows.push(localTestUnavailable(asset));
+  }
+  return rows;
+}
+
 async function collectRows(mode=readOrderingMode()) {
+  if(localTestMode)return collectLocalTestRows();
   const allIndicators=isDirectionMode(mode);
   collectionDeadline=Date.now()+(options.force?20000:8000);
   const soybeanPromise=loadAgrolinkSoybean(),selicPromise=loadSelic();
@@ -1205,6 +1325,12 @@ function timePresentation(row) {
   if(asset.sourceTag&&!row.economicValidation)return {text:'— '+asset.sourceTag,candidates:['— '+asset.sourceTag],fallback:'— '+asset.sourceTag.slice(0,1)};
   if(row.economicValidation){const d=ECONOMIC_ASSETS.find(a=>a.code===asset.code),period=d?.frequency==='monthly'?monthlyReferenceDay(row.referencePeriod):d&&stamp?.day?stamp.day:null;if(!d||!period)return {text:'— '+(asset.sourceTag||'—'),candidates:['— '+(asset.sourceTag||'—')],fallback:'— '+(asset.sourceTag||'—').slice(0,2)};const compactDay=period.slice(8)+'/'+period.slice(5,7),mark=cached||row.archive?'†':'',base=compactDay+' '+d.sourceTag;return {text:base+mark,candidates:[base+mark,compactDay+' '+d.sourceTag.slice(0,1)+mark,...(mark?[compactDay+' '+d.sourceTag.slice(0,1)+'*']:[])],fallback:'— '+d.sourceTag.slice(0,1)+(mark?'*':'')};}
   if(asset.type==='empty'||asset.source==='pending')return {text:'—',candidates:['—'],fallback:'—'};
+  if(row.localTest&&asset.source==='B3')return {text:'— B3',candidates:['— B3','—'],fallback:'— B3'};
+  if(row.localTest&&asset.source==='Kraken'&&!row.quoteTimeBasis)return {text:'— KR',candidates:['— KR','—'],fallback:'— KR'};
+  if(asset.source==='Kraken'&&row.quoteTimeBasis==='kraken-query-time'&&stamp?.hasTime&&finite(stamp.time)){
+    const iso=new Date(stamp.time).toISOString(),value='consulta '+iso.slice(11,16)+'Z KR',short='consulta '+iso.slice(11,16)+'Z';
+    return {text:value,candidates:[value,short,'— KR'],fallback:'— KR'};
+  }
   const tag=asset.source==='BCB-SGS'?'BCB':asset.source==='FRED'?'FR':asset.source==='AgroLink'?'AG':asset.source==='pending'?'—':asset.source==='Investing'||asset.code==='BRENT'?'INV':asset.code==='USD/BRL'?'AA':'I10',short=tag==='BCB'?'B':tag==='FR'?'F':tag==='AG'?'AG':tag==='—'?'—':tag==='INV'?'I':tag==='AA'?'A':'10';
   const displayNow=Date.now(),today=new Date(displayNow).toLocaleDateString('sv-SE',{timeZone:'America/Sao_Paulo'});
   let label=null,day=null;
@@ -1228,7 +1354,8 @@ function unitText(row) {
   if(isEconomicAsset(asset))return asset.unitLabel;
   if(asset.code==='SELIC')return 'META %a.a. 90D';
   if(asset.code==='COBRE')return (row.archive?'ARQ ':'')+'M/M USD/t';
-  if(asset.type==='criptomoedas')return asset.code+' '+(asset.currency||'—')+(!row.stamp?' S/D':asset.percentBasis==='24H'?' 24H':asset.percentBasis==='daily-series'?' D/D':'');
+  if(asset.source==='Kraken'&&asset.code===BTCUSD.code)return 'USD/BTC · 24H';
+  if(asset.type==='criptomoedas')return asset.code+' '+(asset.currency||'—')+(!row.stamp?' S/D':asset.percentBasis==='24H'||asset.percentBasis==='rolling24h'?' 24H':asset.percentBasis==='daily-series'?' D/D':'');
   return asset.code==='BRENT'?(asset.contract||'BRENT · INV —'):asset.unitLabel||(asset.code.startsWith('—')?'—':asset.code);
 }
 function quoteAudit(row) {
@@ -1244,7 +1371,10 @@ function quoteAudit(row) {
 }
 const FIXED_GEOMETRY=Object.freeze({values:48,center:64,mode:'user-fixed-v26-percent-width'});
 function rowLayout(rows) { return FIXED_GEOMETRY; }
-const CHART_DISPLAY_HOURS = 24;
+// The widget displays a rolling seven-calendar-day domain. Source histories
+// retain their own collection windows; this constant only controls the
+// timestamped observations that are eligible for drawing.
+const CHART_DISPLAY_HOURS = 7*24;
 const CHART_DISPLAY_MS = CHART_DISPLAY_HOURS*60*60*1000;
 function chartDisplayDay(time) {
   if(!finite(time)||!finite(new Date(time).getTime()))return null;
@@ -1277,14 +1407,14 @@ function displayChart(chart,time=now.getTime()) {
   if(!chart||!Array.isArray(chart.points))return null;
   const window=chartDisplayWindow(time);
   // Rendering only: preserve the full source history and comparison bases in
-  // cache, but draw only real timestamped observations in the last 24 hours.
+  // cache, but draw only real timestamped observations in the last seven days.
   // Civil-day/monthly/weekly observations deliberately become unavailable;
   // they are not interpolated, zero-filled, or relabeled as intraday data.
   const points=window?chart.points.filter(point=>{
     const stamp=point?.stamp;
     return stamp?.hasTime===true&&finite(stamp.time)&&stamp.time>=window.startTime&&stamp.time<=window.endTime;
   }):[];
-  return {...chart,points,displayWindow:window,displayDomain:null,displayStatus:points.length>=2?'available-24h':'unavailable-24h'};
+  return {...chart,points,displayWindow:window,displayDomain:null,displayStatus:points.length>=2?'available-7d':'unavailable-7d'};
 }
 function monthlyPeriodSerial(period) {
   if(typeof period!=='string'||!/^[0-9]{4}-[0-9]{2}$/.test(period))return null;
@@ -1385,11 +1515,12 @@ function gradientStrips(points,height=LAYOUT.chartHeight,step=.25) {
 }
 
 const ECONOMIC_SERIES={"schema":1,"verifiedAt":"2026-10-21T19:14:39.159920Z","series":{"CUB_GO":{"instrument":"CUB-GO-R1-N-CUB2006","source":"Sinduscon-GO","sourceURL":"https://www.sinduscongoias.com.br/arquivos/download/cub/cub-setembro-2026.pdf","currency":"BRL","unit":"BRL/m2","frequency":"monthly","valueKind":"level","typology":"R1-N","regime":"not-disclosed-in-source","observations":[{"period":"2025-09","value":2604.22,"sourceURL":"https://www.sinduscongoias.com.br/arquivos/download/cub/cub-setembro-2025.pdf","typology":"R1-N"},{"period":"2025-10","value":2633.49,"sourceURL":"https://www.sinduscongoias.com.br/arquivos/download/cub/cub-outubro-2025.pdf","typology":"R1-N"},{"period":"2025-11","value":2651.93,"sourceURL":"https://www.sinduscongoias.com.br/arquivos/download/cub/cub-novembro-2025.pdf","typology":"R1-N"},{"period":"2025-12","value":2660.21,"sourceURL":"https://www.sinduscongoias.com.br/arquivos/download/cub/cub-dezembro-2025.pdf","typology":"R1-N"},{"period":"2026-01","value":2667.75,"sourceURL":"https://www.sinduscongoias.com.br/arquivos/download/cub/cub-janeiro-2026.pdf","typology":"R1-N"},{"period":"2026-02","value":2661.48,"sourceURL":"https://www.sinduscongoias.com.br/arquivos/download/cub/cub-fevereiro-2026.pdf","typology":"R1-N"},{"period":"2026-03","value":2668.15,"sourceURL":"https://www.sinduscongoias.com.br/arquivos/download/cub/cub-marco-2026.pdf","typology":"R1-N"},{"period":"2026-04","value":2691.83,"sourceURL":"https://www.sinduscongoias.com.br/arquivos/download/cub/cub-abril-2026.pdf","typology":"R1-N"},{"period":"2026-05","value":2698.11,"sourceURL":"https://www.sinduscongoias.com.br/arquivos/download/cub/cub-maio-2026.pdf","typology":"R1-N"},{"period":"2026-06","value":2793.22,"sourceURL":"https://www.sinduscongoias.com.br/arquivos/download/cub/cub-junho-2026.pdf","typology":"R1-N"},{"period":"2026-07","value":2793.02,"sourceURL":"https://www.sinduscongoias.com.br/arquivos/download/cub/cub-julho-2026.pdf","typology":"R1-N"},{"period":"2026-08","value":2794.68,"sourceURL":"https://www.sinduscongoias.com.br/arquivos/download/cub/cub-agosto-2026.pdf","typology":"R1-N"},{"period":"2026-09","value":2795.37,"sourceURL":"https://www.sinduscongoias.com.br/arquivos/download/cub/cub-setembro-2026.pdf","typology":"R1-N"}],"verifiedAt":"2026-10-18T22:12:35.071761Z"},"DIESEL_S10":{"instrument":"ANP-DIESEL-S10-REVENDA","source":"ANP","sourceURL":"https://www.gov.br/anp/pt-br/assuntos/precos-e-defesa-da-concorrencia/precos/precos-revenda-e-de-distribuicao-combustiveis/shlp/semanal/semanal-estados-desde-2013.xlsx","currency":"BRL","unit":"BRL/L","frequency":"weekly","valueKind":"level","municipality":"JATAI","state":"GO","observations":[{"period":"2026-07-25","periodStart":"2026-07-19","value":6.75,"sourceURL":"https://www.gov.br/anp/pt-br/assuntos/precos-e-defesa-da-concorrencia/precos/precos-revenda-e-de-distribuicao-combustiveis/shlp/semanal/semanal-estados-desde-2013.xlsx","stations":140,"min":6.29,"max":7.99,"geography":"GO","noMunicipalResult":true,"municipalitySourceURL":"https://www.gov.br/anp/pt-br/assuntos/precos-e-defesa-da-concorrencia/precos/precos-revenda-e-de-distribuicao-combustiveis/shlp/semanal/semanal-municipios-2026.xlsx"},{"period":"2026-08-01","periodStart":"2026-07-26","value":6.71,"sourceURL":"https://www.gov.br/anp/pt-br/assuntos/precos-e-defesa-da-concorrencia/precos/precos-revenda-e-de-distribuicao-combustiveis/shlp/semanal/semanal-estados-desde-2013.xlsx","stations":124,"min":6.19,"max":7.99,"geography":"GO","noMunicipalResult":true,"municipalitySourceURL":"https://www.gov.br/anp/pt-br/assuntos/precos-e-defesa-da-concorrencia/precos/precos-revenda-e-de-distribuicao-combustiveis/shlp/semanal/semanal-municipios-2026.xlsx"},{"period":"2026-08-08","periodStart":"2026-08-02","value":6.71,"sourceURL":"https://www.gov.br/anp/pt-br/assuntos/precos-e-defesa-da-concorrencia/precos/precos-revenda-e-de-distribuicao-combustiveis/shlp/semanal/semanal-estados-desde-2013.xlsx","stations":140,"min":6.29,"max":7.99,"geography":"GO","noMunicipalResult":true,"municipalitySourceURL":"https://www.gov.br/anp/pt-br/assuntos/precos-e-defesa-da-concorrencia/precos/precos-revenda-e-de-distribuicao-combustiveis/shlp/semanal/semanal-municipios-2026.xlsx"},{"period":"2026-08-15","periodStart":"2026-08-09","value":6.7,"sourceURL":"https://www.gov.br/anp/pt-br/assuntos/precos-e-defesa-da-concorrencia/precos/precos-revenda-e-de-distribuicao-combustiveis/shlp/semanal/semanal-estados-desde-2013.xlsx","stations":129,"min":6.29,"max":7.99,"geography":"GO","noMunicipalResult":true,"municipalitySourceURL":"https://www.gov.br/anp/pt-br/assuntos/precos-e-defesa-da-concorrencia/precos/precos-revenda-e-de-distribuicao-combustiveis/shlp/semanal/semanal-municipios-2026.xlsx"},{"period":"2026-08-22","periodStart":"2026-08-16","value":6.67,"sourceURL":"https://www.gov.br/anp/pt-br/assuntos/precos-e-defesa-da-concorrencia/precos/precos-revenda-e-de-distribuicao-combustiveis/shlp/semanal/semanal-estados-desde-2013.xlsx","stations":136,"min":6.29,"max":7.99,"geography":"GO","noMunicipalResult":true,"municipalitySourceURL":"https://www.gov.br/anp/pt-br/assuntos/precos-e-defesa-da-concorrencia/precos/precos-revenda-e-de-distribuicao-combustiveis/shlp/semanal/semanal-municipios-2026.xlsx"},{"period":"2026-08-29","periodStart":"2026-08-23","value":6.67,"sourceURL":"https://www.gov.br/anp/pt-br/assuntos/precos-e-defesa-da-concorrencia/precos/precos-revenda-e-de-distribuicao-combustiveis/shlp/semanal/semanal-estados-desde-2013.xlsx","stations":137,"min":5.99,"max":7.99,"geography":"GO","noMunicipalResult":true,"municipalitySourceURL":"https://www.gov.br/anp/pt-br/assuntos/precos-e-defesa-da-concorrencia/precos/precos-revenda-e-de-distribuicao-combustiveis/shlp/semanal/semanal-municipios-2026.xlsx"},{"period":"2026-09-05","periodStart":"2026-08-30","value":6.65,"sourceURL":"https://www.gov.br/anp/pt-br/assuntos/precos-e-defesa-da-concorrencia/precos/precos-revenda-e-de-distribuicao-combustiveis/shlp/semanal/semanal-estados-desde-2013.xlsx","stations":133,"min":5.63,"max":7.99,"geography":"GO","noMunicipalResult":true,"municipalitySourceURL":"https://www.gov.br/anp/pt-br/assuntos/precos-e-defesa-da-concorrencia/precos/precos-revenda-e-de-distribuicao-combustiveis/shlp/semanal/semanal-municipios-2026.xlsx"},{"period":"2026-09-12","periodStart":"2026-09-06","value":6.78,"sourceURL":"https://www.gov.br/anp/pt-br/assuntos/precos-e-defesa-da-concorrencia/precos/precos-revenda-e-de-distribuicao-combustiveis/shlp/semanal/semanal-estados-desde-2013.xlsx","stations":139,"min":6.09,"max":7.99,"geography":"GO","noMunicipalResult":true,"municipalitySourceURL":"https://www.gov.br/anp/pt-br/assuntos/precos-e-defesa-da-concorrencia/precos/precos-revenda-e-de-distribuicao-combustiveis/shlp/semanal/semanal-municipios-2026.xlsx"},{"period":"2026-09-19","periodStart":"2026-09-13","value":6.95,"sourceURL":"https://www.gov.br/anp/pt-br/assuntos/precos-e-defesa-da-concorrencia/precos/precos-revenda-e-de-distribuicao-combustiveis/shlp/semanal/semanal-estados-desde-2013.xlsx","stations":136,"min":5.89,"max":7.99,"geography":"GO","noMunicipalResult":true,"municipalitySourceURL":"https://www.gov.br/anp/pt-br/assuntos/precos-e-defesa-da-concorrencia/precos/precos-revenda-e-de-distribuicao-combustiveis/shlp/semanal/semanal-municipios-2026.xlsx"},{"period":"2026-09-26","periodStart":"2026-09-20","value":7.26,"sourceURL":"https://www.gov.br/anp/pt-br/assuntos/precos-e-defesa-da-concorrencia/precos/precos-revenda-e-de-distribuicao-combustiveis/shlp/semanal/semanal-estados-desde-2013.xlsx","stations":139,"min":6.39,"max":7.99,"geography":"GO","noMunicipalResult":true,"municipalitySourceURL":"https://www.gov.br/anp/pt-br/assuntos/precos-e-defesa-da-concorrencia/precos/precos-revenda-e-de-distribuicao-combustiveis/shlp/semanal/semanal-municipios-2026.xlsx"},{"period":"2026-10-03","periodStart":"2026-09-27","value":7.29,"sourceURL":"https://www.gov.br/anp/pt-br/assuntos/precos-e-defesa-da-concorrencia/precos/precos-revenda-e-de-distribuicao-combustiveis/shlp/semanal/semanal-estados-desde-2013.xlsx","stations":140,"min":6.29,"max":7.99,"geography":"GO","noMunicipalResult":true,"municipalitySourceURL":"https://www.gov.br/anp/pt-br/assuntos/precos-e-defesa-da-concorrencia/precos/precos-revenda-e-de-distribuicao-combustiveis/shlp/semanal/semanal-municipios-2026.xlsx"},{"period":"2026-10-10","periodStart":"2026-10-04","value":7.36,"sourceURL":"https://www.gov.br/anp/pt-br/assuntos/precos-e-defesa-da-concorrencia/precos/arquivos-lpc/2026/resumo_semanal_lpc_2026-10-04_2026-10-10.xlsx","stations":140,"min":6.35,"max":8.09,"geography":"GO","noMunicipalResult":true,"municipalitySourceURL":"https://www.gov.br/anp/pt-br/assuntos/precos-e-defesa-da-concorrencia/precos/arquivos-lpc/2026/resumo_semanal_lpc_2026-10-04_2026-10-10.xlsx"},{"period":"2026-10-17","periodStart":"2026-10-11","value":7.35,"sourceURL":"https://www.gov.br/anp/pt-br/assuntos/precos-e-defesa-da-concorrencia/precos/precos-revenda-e-de-distribuicao-combustiveis/shlp/semanal/semanal-estados-desde-2013.xlsx","stations":136,"min":6.59,"max":8.09,"geography":"GO","noMunicipalResult":true,"municipalitySourceURL":"https://www.gov.br/anp/pt-br/assuntos/precos-e-defesa-da-concorrencia/precos/precos-revenda-e-de-distribuicao-combustiveis/shlp/semanal/semanal-municipios-2026.xlsx"}],"product":"OLEO DIESEL S10","priceKind":"retail-mean","verifiedAt":"2026-10-20T20:02:02.335021Z"},"IPCA":{"instrument":"BCB-SGS-433","source":"IBGE/BCB","sourceURL":"https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados/ultimos/13?formato=json","historySourceURL":"https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados?formato=json","annualSourceURL":"https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json","indexSourceURL":"https://apisidra.ibge.gov.br/values/t/1737/n1/all/v/2266/p/last%2013","annualSeries":"BCB-SGS-13522","indexSeries":"IBGE-SIDRA-1737-2266","referenceURL":"https://www.gov.br/fazenda/pt-br/central-de-conteudo/publicacoes/conjuntura-economica/inflacao/defeso-eleitoral-2026/informativo-ipca-set2026.html/view","currency":null,"unit":"%","frequency":"monthly","valueKind":"monthly-change-percent","annualObservations":[{"period":"2025-09","value":5.17,"sourceURL":"https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json"},{"period":"2025-10","value":4.68,"sourceURL":"https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json"},{"period":"2025-11","value":4.46,"sourceURL":"https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json"},{"period":"2025-12","value":4.26,"sourceURL":"https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json"},{"period":"2026-01","value":4.44,"sourceURL":"https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json"},{"period":"2026-02","value":3.81,"sourceURL":"https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json"},{"period":"2026-03","value":4.14,"sourceURL":"https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json"},{"period":"2026-04","value":4.39,"sourceURL":"https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json"},{"period":"2026-05","value":4.72,"sourceURL":"https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json"},{"period":"2026-06","value":4.64,"sourceURL":"https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json"},{"period":"2026-07","value":4.44,"sourceURL":"https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json"},{"period":"2026-08","value":4.22,"sourceURL":"https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json"},{"period":"2026-09","value":4.58,"sourceURL":"https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json"}],"observations":[{"period":"2025-09","value":0.48,"sourceURL":"https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados/ultimos/13?formato=json","annualChange":5.17,"annualChangeSourceURL":"https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json","yearToDate":3.64,"indexValue":7359.06,"indexSourceURL":"https://apisidra.ibge.gov.br/values/t/1737/n1/all/v/2266/p/last%2013","referenceURL":"https://www.gov.br/fazenda/pt-br/central-de-conteudo/publicacoes/conjuntura-economica/inflacao/defeso-eleitoral-2026/informativo-ipca-set2026.html/view"},{"period":"2025-10","value":0.09,"sourceURL":"https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados/ultimos/13?formato=json","annualChange":4.68,"annualChangeSourceURL":"https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json","yearToDate":3.73,"indexValue":7365.68,"indexSourceURL":"https://apisidra.ibge.gov.br/values/t/1737/n1/all/v/2266/p/last%2013","referenceURL":"https://www.gov.br/fazenda/pt-br/central-de-conteudo/publicacoes/conjuntura-economica/inflacao/defeso-eleitoral-2026/informativo-ipca-set2026.html/view"},{"period":"2025-11","value":0.18,"sourceURL":"https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados/ultimos/13?formato=json","annualChange":4.46,"annualChangeSourceURL":"https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json","yearToDate":3.92,"indexValue":7378.94,"indexSourceURL":"https://apisidra.ibge.gov.br/values/t/1737/n1/all/v/2266/p/last%2013","referenceURL":"https://www.gov.br/fazenda/pt-br/central-de-conteudo/publicacoes/conjuntura-economica/inflacao/defeso-eleitoral-2026/informativo-ipca-set2026.html/view"},{"period":"2025-12","value":0.33,"sourceURL":"https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados/ultimos/13?formato=json","annualChange":4.26,"annualChangeSourceURL":"https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json","yearToDate":4.26,"indexValue":7403.29,"indexSourceURL":"https://apisidra.ibge.gov.br/values/t/1737/n1/all/v/2266/p/last%2013","referenceURL":"https://www.gov.br/fazenda/pt-br/central-de-conteudo/publicacoes/conjuntura-economica/inflacao/defeso-eleitoral-2026/informativo-ipca-set2026.html/view"},{"period":"2026-01","value":0.33,"sourceURL":"https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados/ultimos/13?formato=json","annualChange":4.44,"annualChangeSourceURL":"https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json","yearToDate":0.33,"indexValue":7427.72,"indexSourceURL":"https://apisidra.ibge.gov.br/values/t/1737/n1/all/v/2266/p/last%2013","referenceURL":"https://www.gov.br/fazenda/pt-br/central-de-conteudo/publicacoes/conjuntura-economica/inflacao/defeso-eleitoral-2026/informativo-ipca-set2026.html/view"},{"period":"2026-02","value":0.7,"sourceURL":"https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados/ultimos/13?formato=json","annualChange":3.81,"annualChangeSourceURL":"https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json","yearToDate":1.03,"indexValue":7479.71,"indexSourceURL":"https://apisidra.ibge.gov.br/values/t/1737/n1/all/v/2266/p/last%2013","referenceURL":"https://www.gov.br/fazenda/pt-br/central-de-conteudo/publicacoes/conjuntura-economica/inflacao/defeso-eleitoral-2026/informativo-ipca-set2026.html/view"},{"period":"2026-03","value":0.88,"sourceURL":"https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados/ultimos/13?formato=json","annualChange":4.14,"annualChangeSourceURL":"https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json","yearToDate":1.92,"indexValue":7545.53,"indexSourceURL":"https://apisidra.ibge.gov.br/values/t/1737/n1/all/v/2266/p/last%2013","referenceURL":"https://www.gov.br/fazenda/pt-br/central-de-conteudo/publicacoes/conjuntura-economica/inflacao/defeso-eleitoral-2026/informativo-ipca-set2026.html/view"},{"period":"2026-04","value":0.67,"sourceURL":"https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados/ultimos/13?formato=json","annualChange":4.39,"annualChangeSourceURL":"https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json","yearToDate":2.6,"indexValue":7596.09,"indexSourceURL":"https://apisidra.ibge.gov.br/values/t/1737/n1/all/v/2266/p/last%2013","referenceURL":"https://www.gov.br/fazenda/pt-br/central-de-conteudo/publicacoes/conjuntura-economica/inflacao/defeso-eleitoral-2026/informativo-ipca-set2026.html/view"},{"period":"2026-05","value":0.58,"sourceURL":"https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados/ultimos/13?formato=json","annualChange":4.72,"annualChangeSourceURL":"https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json","yearToDate":3.2,"indexValue":7640.15,"indexSourceURL":"https://apisidra.ibge.gov.br/values/t/1737/n1/all/v/2266/p/last%2013","referenceURL":"https://www.gov.br/fazenda/pt-br/central-de-conteudo/publicacoes/conjuntura-economica/inflacao/defeso-eleitoral-2026/informativo-ipca-set2026.html/view"},{"period":"2026-06","value":0.16,"sourceURL":"https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados/ultimos/13?formato=json","annualChange":4.64,"annualChangeSourceURL":"https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json","yearToDate":3.36,"indexValue":7652.37,"indexSourceURL":"https://apisidra.ibge.gov.br/values/t/1737/n1/all/v/2266/p/last%2013","referenceURL":"https://www.gov.br/fazenda/pt-br/central-de-conteudo/publicacoes/conjuntura-economica/inflacao/defeso-eleitoral-2026/informativo-ipca-set2026.html/view"},{"period":"2026-07","value":0.07,"sourceURL":"https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados/ultimos/13?formato=json","annualChange":4.44,"annualChangeSourceURL":"https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json","yearToDate":3.44,"indexValue":7657.73,"indexSourceURL":"https://apisidra.ibge.gov.br/values/t/1737/n1/all/v/2266/p/last%2013","referenceURL":"https://www.gov.br/fazenda/pt-br/central-de-conteudo/publicacoes/conjuntura-economica/inflacao/defeso-eleitoral-2026/informativo-ipca-set2026.html/view"},{"period":"2026-08","value":-0.32,"sourceURL":"https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados/ultimos/13?formato=json","annualChange":4.22,"annualChangeSourceURL":"https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json","yearToDate":3.11,"indexValue":7633.23,"indexSourceURL":"https://apisidra.ibge.gov.br/values/t/1737/n1/all/v/2266/p/last%2013","referenceURL":"https://www.gov.br/fazenda/pt-br/central-de-conteudo/publicacoes/conjuntura-economica/inflacao/defeso-eleitoral-2026/informativo-ipca-set2026.html/view"},{"period":"2026-09","value":0.82,"sourceURL":"https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados/ultimos/13?formato=json","annualChange":4.58,"annualChangeSourceURL":"https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json","yearToDate":3.95,"indexValue":7695.82,"indexSourceURL":"https://apisidra.ibge.gov.br/values/t/1737/n1/all/v/2266/p/last%2013","referenceURL":"https://www.gov.br/fazenda/pt-br/central-de-conteudo/publicacoes/conjuntura-economica/inflacao/defeso-eleitoral-2026/informativo-ipca-set2026.html/view"}],"verifiedAt":"2026-10-21T19:14:39.159920Z"},"BRENT":{"instrument":"DCOILBRENTEU","source":"EIA/FRED","sourceURL":"https://www.eia.gov/dnav/pet/pet_pri_spt_s1_d.htm","currency":"USD","unit":"USD/bbl","frequency":"daily","valueKind":"level","modality":"spot-Europe","publishedAt":"2026-10-21","observations":[{"period":"2026-10-07","value":126,"sourceURL":"https://www.eia.gov/dnav/pet/pet_pri_spt_s1_d.htm"},{"period":"2026-10-08","value":130.18,"sourceURL":"https://www.eia.gov/dnav/pet/pet_pri_spt_s1_d.htm"},{"period":"2026-10-09","value":130.03,"sourceURL":"https://www.eia.gov/dnav/pet/pet_pri_spt_s1_d.htm"},{"period":"2026-10-12","value":129.95,"sourceURL":"https://www.eia.gov/dnav/pet/pet_pri_spt_s1_d.htm"},{"period":"2026-10-13","value":125.78,"sourceURL":"https://www.eia.gov/dnav/pet/pet_pri_spt_s1_d.htm"},{"period":"2026-10-14","value":126.55,"sourceURL":"https://www.eia.gov/dnav/pet/pet_pri_spt_s1_d.htm"},{"period":"2026-10-15","value":126.35,"sourceURL":"https://www.eia.gov/dnav/pet/pet_pri_spt_s1_d.htm"},{"period":"2026-10-16","value":119.33,"sourceURL":"https://www.eia.gov/dnav/pet/pet_pri_spt_s1_d.htm"},{"period":"2026-10-19","value":118.82,"sourceURL":"https://www.eia.gov/dnav/pet/pet_pri_spt_s1_d.htm"},{"period":"2026-10-20","value":115.22,"sourceURL":"https://www.eia.gov/dnav/pet/pet_pri_spt_s1_d.htm"}],"verifiedAt":"2026-10-21T19:14:39.159920Z"}}};
- return {version:VERSION,collectRows,collectAdditionalRows,readOrderingMode,writeOrderingMode,orderingFeedback,orderRows,orderedWidgetRows,
+ return {version:VERSION,collectRows,collectAdditionalRows,loadBTCUSD,localTestMode,localTestAssets:[...LOCAL_TEST_ASSETS,BTCUSD].map(asset=>({...asset})),readOrderingMode,writeOrderingMode,orderingFeedback,orderRows,orderedWidgetRows,
  modes:ORDERING_MODES,displayName,displayPrice,displayPercent,presentationPercent,timeText,unitText,
  displayChart,lineCoordinates,monthLayout,gradientStrips,quoteAudit,economicRow,ECONOMIC_ASSETS,SOYBEAN,SELIC,IBOVESPA,FX,
  fixedIndicatorCodes:FIXED_INDICATOR_CODES,fixedIndicatorRows,
- parseFX,parseBCBStamp,agrolinkSnapshot,validSnapshot,validEconomicRow,validEconomicSeries,cacheRead,cacheWrite,
+ parseFX,parseBCBStamp,parseKrakenAssetPair,parseKrakenTicker,parseKrakenOHLC,validKrakenSnapshot,agrolinkSnapshot,validSnapshot,validEconomicRow,validEconomicSeries,cacheRead,cacheWrite,
+ BTCUSD,
  bundledRows:()=>ECONOMIC_ASSETS.map(d=>economicRow(d,ECONOMIC_SERIES.series[d.code])),
  failures:networkFailures};
 }

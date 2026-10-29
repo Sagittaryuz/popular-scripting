@@ -1,0 +1,53 @@
+{
+  "version": "0.2.30-local",
+  "packageVersion": "0.2.30",
+  "publishedEntryProfile": "b3-btc-7d",
+  "published": false,
+  "fixtureAssets": [
+    { "code": "BBAS3", "name": "Banco do Brasil", "unit": "BRL/ação" },
+    { "code": "BBDC4", "name": "Bradesco PN", "unit": "BRL/ação" },
+    { "code": "IBOV", "name": "Ibovespa", "unit": "pontos" },
+    { "code": "BTC/USD", "name": "Bitcoin", "unit": "USD/BTC" }
+  ],
+  "fixtureOrderPreservedInSmallAndWide": true,
+  "wideDuplicates": 0,
+  "widePlacement": "same four rows in the first column; second column intentionally empty rather than repeated or fabricated",
+  "localTestMode": {
+    "enabledBy": "createEngine({ localTestAssets: true })",
+    "activeOrder": ["BBAS3", "BBDC4", "IBOV", "BTC/USD"],
+    "b3Rows": "explicit source-unavailable rows with null price/chart",
+    "btcPath": "collectRows -> collectLocalTestRows -> loadBTCUSD -> Kraken mock transport",
+    "oldCache": "bypassed in local test mode",
+    "additionalRows": "disabled"
+  },
+  "quotesAndVariations": "fixture omits live values; local BTC/USD adapter uses public Kraken XBT/USD with rolling-24H variation against the last closed hourly candle",
+  "curves": "none: no synthetic points, interpolation, weekend fill, or screenshot values",
+  "window": {
+    "label": "7D",
+    "hours": 168,
+    "semantics": "rolling seven calendar days by real timestamp"
+  },
+  "sourcesReviewed": [
+    { "source": "Investidor10", "result": "existing IBOV/economic adapter; BBAS3/BBDC4 remain without an authorized adapter" },
+    { "source": "Kraken", "result": "public XBT/USD adapter; AssetPairs confirms XXBTZUSD/ZUSD online, Ticker c[0] is query-time last trade, OHLC uses closed hourly candles over 7D and excludes the current candle; no key or USDT" },
+    { "source": "AwesomeAPI", "result": "existing USD/BRL adapter only; not used for BTC/USD" },
+    { "source": "Yahoo Finance", "result": "not used; repository records OAuth/429 limitation" },
+    { "source": "B3 and Bitcoin session semantics", "result": "not inferred for fixture-only preview; Kraken availability is source/payload evidence, not a market-session claim" }
+  ],
+  "layout": {
+    "columns": { "icon": 28, "identity": 40, "graph": 46, "quote": 26, "gap": 2 },
+    "iconPt": 26,
+    "small": "2x2",
+    "wide": "4x2"
+  },
+  "previewFiles": [
+    "validation/widget-preview-0.2.30-local.svg",
+    "validation/widget-preview-0.2.30-local.png"
+  ],
+  "nativeIPhoneTested": false,
+  "publication": {
+    "commit": null,
+    "push": false,
+    "libraryUpload": false
+  }
+}

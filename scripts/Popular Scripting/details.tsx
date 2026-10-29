@@ -16,12 +16,12 @@ export function PopularDetails({model}:{model:any}){
       {row?<VStack spacing={8}>
         <Text>{row.name+' · '+row.price+' · '+row.percent}</Text><Text>{row.unit+' · '+row.time}</Text>
         <Text>{'Fonte: '+row.asset.source+' · '+(row.referencePeriod??row.stamp?.day??'Data de observação indisponível')}</Text>
-        <HStack>{[[90,'90 dias'],[365,'1 ano'],[0,'Disponível']].map(([days,label])=><Button key={String(days)} title={String(label)} action={()=>setHistoryDays(Number(days))}/>)}</HStack>
+        <HStack>{[[7,'7 dias'],[90,'90 dias'],[0,'Disponível']].map(([days,label])=><Button key={String(days)} title={String(label)} action={()=>setHistoryDays(Number(days))}/>)}</HStack>
         <Canvas opaque={false} frame={{width:300,height:100}} draw={(ctx,size)=>drawCurve(ctx,size,curvePlan({...model.api,displayChart:(chart:any)=>chart},{...row,chart:history},300),'#4BAEFF')}/>
         <Link url={sourceURL(row)}><Text>Abrir fonte</Text></Link>
         <Text>Histórico disponível da própria fonte; períodos e unidades podem variar entre indicadores.</Text>
       </VStack>:null}
-      <Text>Widget pequeno fixo: Selic · IPCA · Ibovespa · Dólar</Text>
+      <Text>Perfil publicado: BBAS3 · BBDC4 · Ibovespa · BTC/USD · janela móvel de 7 dias</Text>
       <Button title="Exportar histórico CSV" action={()=>run(async()=>{await exportText('popular-historico.csv',historyCSV(row?[row]:model.rows))})}/>
       <Button title="Explicar indicadores" action={()=>run(()=>explain('Explique os indicadores e compare somente valores de mesma base/unidade/período. Não recomende investimentos nem invente causas de variações. Dados: '+JSON.stringify(summaryRows(row?[row]:model.rows))))}/>
       <Button title="Criar alerta por cruzamento" action={()=>run(async()=>{await addAlert(model.rows);setMessage('Alerta configurado. A primeira observação estabelece a base; o aviso depende de nova execução.')} )}/>

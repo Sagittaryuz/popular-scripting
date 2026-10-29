@@ -17,10 +17,14 @@ assert.equal(paging.pageRows([], 'medium',null,20).count,1);assert.throws(()=>pa
  await defs.NextPopularPage.perform({family:'medium'});assert.equal(values.get('popular-page:medium'),1);assert.equal(queries,1);assert.equal(reloads,1);assert(values.get('popular-page-refresh:medium')>0);
  await defs.NextPopularPage.perform({family:'medium'});assert.equal(values.get('popular-page:medium'),0);
  await assert.rejects(defs.NextPopularPage.perform({family:'invalid'}));
- // Cached page render keeps actual query timestamp and makes no provider requests.
+ // The published test profile must not render a legacy cached list. It
+ // collects the active four rows even on the widget's cache-only path.
  values.set('popular-last-query',1234);
- const model=load('model.ts',{'./host':{createHost:()=>({})},'./pro-common':{refreshMinutes:()=>1},'./market-status':{sourceStatusForRow:(row,at)=>({state:'fresh',at})},'./original-engine':{createEngine:()=>({version:'fixture',readOrderingMode:()=> 'fixed',orderingFeedback:()=>({label:'fixture'}),collectRows:async()=>{queries++;return []}})}},{Storage:storage});
- queries=0;const cached=await model.loadModel('medium',false,true);assert.equal(cached.rows.length,16);assert.equal(cached.queriedAt,1234);assert.equal(queries,0);
+ const activeRows=['BBAS3','BBDC4','IBOV','BTC/USD'].map(code=>({asset:{code,name:code,price:null},stamp:null,chart:null}));
+ queries=0;
+ const modelApi={version:'fixture',readOrderingMode:()=> 'fixed',orderingFeedback:()=>({label:'fixture'}),collectRows:async()=>{queries++;return activeRows},collectAdditionalRows:async()=>[],displayName:asset=>asset.name||asset.code,displayPrice:()=> '—',displayPercent:()=> '—',presentationPercent:()=>null,timeText:()=> '—',unitText:()=> '—',quoteAudit:row=>({code:row.asset.code}),failures:[]};
+ const activeModel=load('model.ts',{'./host':{createHost:()=>({})},'./pro-common':{refreshMinutes:()=>1,dashboardStatus:()=>{}},'./market-status':{sourceStatusForRow:(row,at)=>({state:'fresh',at})},'./original-engine':{createEngine:()=>modelApi}},{Storage:storage});
+ const published=await activeModel.loadModel('medium',false,true);assert.equal(JSON.stringify(published.rows.map(row=>row.asset.code)),JSON.stringify(['BBAS3','BBDC4','IBOV','BTC/USD']));assert.equal(published.queriedAt===1234,false);assert.equal(queries,1);
  const viewCode=buildSync({entryPoints:[path.join(dir,'view.tsx')],bundle:true,write:false,format:'cjs',platform:'node',external:['scripting'],jsxFactory:'createElement'}).outputFiles[0].text;
  const viewModule={exports:{}},sdk=new Proxy({AppIntentProtocol:{AppIntent:0},AppIntentManager:{register:d=>params=>({name:d.name,params})},Script:{createRunURLScheme:()=> 'scripting://run/Meu%20Painel?section=market'},Safari:{openURL:async()=>true}},{get:(o,k)=>o[k]??k});
  const createElement=(type,props,...children)=>typeof type==='function'?type({...props,children}):({type,props:props||{},children:children.flat(Infinity).filter(Boolean)});
@@ -37,5 +41,5 @@ assert.equal(paging.pageRows([], 'medium',null,20).count,1);assert.throws(()=>pa
   const smallTree=viewModule.exports.PopularView({model:{family:'small',rows:display,api:fakeApi,status:{label:'fixture'},queriedAt:1234},width:158,height:158});
   assert(smallTree.props.accessibilityLabel.startsWith('a0,'),'Small widget must start with Selic slot from fixed model order');
   assert(!smallTree.props.accessibilityLabel.includes('a4,'),'Persisted legacy small selection must be ignored');
- console.log('PASS pagination: full universe, distinct pages, wraparound, fixed small order despite legacy selection, family isolation, actual intent with forced data collection, cached render preserves observation time. Tap target preserves navigation.');
+ console.log('PASS pagination: full universe, distinct pages, wraparound, fixed small order despite legacy selection, family isolation, active profile bypasses legacy cache, actual intent with forced data collection, and tap target navigation.');
 })().catch(e=>{console.error(e);process.exitCode=1});

@@ -40,4 +40,4 @@ assert.equal(fills.filter(call=>call.style==='#3C3B6E').length,1,'USD flag has o
 assert.equal(fills.filter(call=>call.path.some(op=>op[0]==='rect')).length,14,'USD flag draws thirteen stripes and one canton as rectangles');
 assert.equal(fills.filter(call=>call.path.some(op=>op[0]==='ellipse')).length,50,'USD flag draws 50 stars as part of the flag');
 assert.equal(state.calls.at(-1).op,'restore','USD flag closes its clipping scope');
-console.log(JSON.stringify({version:'0.2.29',icon:'USD/BRL',shape:'26pt circular US flag crop',glyphOverlay:false,smallAndMediumPath:'custom Canvas badge',nativeIPhone:false}));
+console.log(JSON.stringify({version:'0.2.30',icon:'USD/BRL',shape:'26pt circular US flag crop',glyphOverlay:false,smallAndMediumPath:'custom Canvas badge',nativeIPhone:false}));

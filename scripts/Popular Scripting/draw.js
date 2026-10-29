@@ -32,7 +32,7 @@ export function placeInBlock(plan,x,y,width,height,alignment='center'){
 export function movementColor(row){return row.movement>0?'#00E676':row.movement<0?'#FF1744':'#96969C';}
 export function curvePlan(api,row,width=GEOMETRY.graph){
   const visible=api.displayChart(row.chart),points=api.lineCoordinates(visible,width,GEOMETRY.graphHeight);
-  return {width,points,months:api.monthLayout(visible,width),strips:api.gradientStrips(points,GEOMETRY.graphHeight,.5),status:visible?.displayStatus||'unavailable-24h'};
+  return {width,points,months:api.monthLayout(visible,width),strips:api.gradientStrips(points,GEOMETRY.graphHeight,.5),status:visible?.displayStatus||'unavailable-7d'};
 }
 export function monthBand(curve){
   if(!curve.points.length)return {left:0,width:0,labels:[]};

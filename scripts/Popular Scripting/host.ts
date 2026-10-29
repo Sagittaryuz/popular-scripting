@@ -17,7 +17,7 @@ export function files(){
 export function allowedURL(value:string){
   const u=new URL(value)
   if(u.protocol!=='https:'||u.username||u.password||u.port)throw Error('Destino não autorizado')
-  const hosts=['investidor10.com.br','api.bcb.gov.br','economia.awesomeapi.com.br','www.agrolink.com.br','fred.stlouisfed.org']
+  const hosts=['investidor10.com.br','api.bcb.gov.br','economia.awesomeapi.com.br','www.agrolink.com.br','fred.stlouisfed.org','api.kraken.com']
   const github=u.hostname==='raw.githubusercontent.com'&&u.pathname==='/Sagittaryuz/popular-scripting/main/data/economic-series.json'
   if(!hosts.includes(u.hostname)&&!github)throw Error('Destino não autorizado')
   return u

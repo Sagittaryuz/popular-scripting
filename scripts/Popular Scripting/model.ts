@@ -2,9 +2,13 @@ import { createEngine } from './original-engine'
 import { createHost } from './host'
 import { dashboardStatus, refreshMinutes } from './pro-common'
 import { sourceStatusForRow } from './market-status'
-export const VERSION='0.2.29'
+export const VERSION='0.2.30'
 export const TAP_REFRESH_CACHE_KEY='popular-tap-refresh-v1'
 export const TAP_REFRESH_CACHE_MS=5000
+// Published, reversible test profile: keep the former eight-indicator list
+// below so one config change can restore it without losing its definition.
+export const PUBLISHED_TEST_ASSETS=true
+export const PUBLISHED_TEST_PROFILE='b3-btc-7d' as const
 export type TapRefreshState='queried'|'failed-cache-preserved'|'timeout-cache-preserved'
 export function preparedTapState(now=Date.now()):TapRefreshState|null{
   const marker=Storage.get<{at:number;state:TapRefreshState}>(TAP_REFRESH_CACHE_KEY),rows=Storage.get<any[]>('popular-pro-rows')
@@ -19,7 +23,7 @@ function fixedIndicatorRows(rows:any[]){
 }
 export function engine(family='medium',force=false){
   const queryDue=Date.now()-(Storage.get<number>('popular-last-query')??0)>=refreshMinutes()*60000
-  return createEngine(createHost(force),{family,force:force||queryDue})
+  return createEngine(createHost(force),{family,force:force||queryDue,localTestAssets:PUBLISHED_TEST_ASSETS})
 }
 export function setOrdering(mode:string){if(!MODES.includes(mode as any))throw Error('Ordenação inválida');engine().writeOrderingMode(mode)}
 export function markPersistedSourceStatus(state:'cached'|'failed',at=Date.now()){
@@ -30,21 +34,25 @@ export function markPersistedSourceStatus(state:'cached'|'failed',at=Date.now())
   return true
 }
 export async function loadModel(family='medium',force=false,cacheOnly=false,persistWhen:()=>boolean=()=>true){
-  // Collect all eight so a small widget can select any four, not just the legacy first four.
+  // The former path collects all eight; the published test profile collects
+  // exactly its four configured rows so a small widget and wide first column
+  // cannot be replaced by legacy selection/cache state.
   const api=engine(family==='small'?'medium':family,force),started=Date.now()
   const cached=Storage.get<any[]>('popular-pro-rows')
-  if(cacheOnly&&Array.isArray(cached)&&cached.length&&cached.every(r=>typeof r?.asset?.code==='string')){
+  // The published test profile must not be shadowed by a pre-existing cache
+  // from the former production list, including the cache-only widget path.
+  if(!PUBLISHED_TEST_ASSETS&&cacheOnly&&Array.isArray(cached)&&cached.length&&cached.every(r=>typeof r?.asset?.code==='string')){
     const ordered=fixedIndicatorRows(cached)
     return {version:VERSION,sourceVersion:api.version,family,mode:'fixed',status:api.orderingFeedback(ordered.slice(0,8)),
       rows:ordered,queriedAt:Storage.get<number>('popular-last-query')??0,api}
   }
   const [rows,extra]=await Promise.all([api.collectRows(),api.collectAdditionalRows?.().catch(()=>[])??Promise.resolve([])])
-  const orderedRows=fixedIndicatorRows(rows)
+  const orderedRows=PUBLISHED_TEST_ASSETS?rows:fixedIndicatorRows(rows)
   const baseCodes=new Set(orderedRows.map((r:any)=>r.asset.code))
   const saved=Storage.get<any[]>('popular-extra-rows')
-  const additions=(extra.length?extra:Array.isArray(saved)?saved.map(r=>({...r,cached:true})):[]).filter((r:any)=>r?.asset&&typeof r.asset.code==='string'&&!baseCodes.has(r.asset.code)).slice(0,8)
+  const additions=PUBLISHED_TEST_ASSETS?[]:(extra.length?extra:Array.isArray(saved)?saved.map(r=>({...r,cached:true})):[]).filter((r:any)=>r?.asset&&typeof r.asset.code==='string'&&!baseCodes.has(r.asset.code)).slice(0,8)
   if(extra.length&&persistWhen())Storage.set('popular-extra-rows',additions)
-  const combined=fixedIndicatorRows([...orderedRows,...additions])
+  const combined=PUBLISHED_TEST_ASSETS?[...orderedRows,...additions]:fixedIndicatorRows([...orderedRows,...additions])
   const status=api.orderingFeedback(orderedRows)
   const queriedAt=Date.now()
   const result={queriedAt,version:VERSION,sourceVersion:api.version,family,mode:'fixed',status,

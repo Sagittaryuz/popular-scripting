@@ -6,7 +6,7 @@ const path = require('node:path');
 // native renderer and never fetches live data.
 const root = path.resolve(__dirname, '..');
 const assetsFile = path.join(root, 'scripts/Popular Scripting/assets.js');
-const output = path.join(root, 'validation/widget-preview-0.2.29.svg');
+const output = path.join(root, 'validation/widget-preview-0.2.30-local.svg');
 const assetSource = fs.readFileSync(assetsFile, 'utf8')
   .replace(/^(?:\/\/[^\n]*\n)+/, '')
   .replace(/^export const assets=/, '')
@@ -43,20 +43,17 @@ const UNIT_TOP = 16.5;
 const UNIT_HEIGHT = 3;
 const LINE2_TOP = 20;
 const SCALE = ICON / 26;
-const SHORT_CODES = Object.freeze({SELIC: 'SELIC', IPCA: 'IPCA', IBOV: 'IBOV', 'USD/BRL': 'USD/BRL', SOJA_JATAI_GO: 'SOJAGO', CUB_GO: 'CUB-GO', DIESEL_S10: 'DIESEL', BRENT: 'BRENT'});
+const SHORT_CODES = Object.freeze({BBAS3: 'BBAS3', BBDC4: 'BBDC4', IBOV: 'IBOV', 'BTC/USD': 'BTC/USD', SELIC: 'SELIC', IPCA: 'IPCA', 'USD/BRL': 'USD/BRL', SOJA_JATAI_GO: 'SOJAGO', CUB_GO: 'CUB-GO', DIESEL_S10: 'DIESEL', BRENT: 'BRENT'});
 
-// Values are local, checked fixtures from the repository. No live quote or
-// synthetic chart point is used in this image; only USD/BRL has timestamped
-// chart fixture data and therefore receives a curve.
+// Local-only fixture list requested for layout validation. It deliberately
+// carries no price, variation, timestamp, or curve: BBAS3/BBDC4/IBOV remain
+// unavailable in the authorized checkout, while the BTC/USD engine adapter is
+// validated separately and does not inject a live quote into this preview.
 const rows = [
-  { code: 'SELIC', name: 'Selic', price: '15,00%', percent: '—', unit: 'META SELIC % a.a.', time: '29/10', icon: 'SELIC', color: '#96969C' },
-  { code: 'IPCA', name: 'IPCA', price: '0,82%', percent: '+1,14 pp', unit: 'M/M % · Δpp', time: '30/09', icon: 'IPCA', color: '#00E676' },
-  { code: 'IBOV', name: 'Ibovespa', price: '145.000', percent: '—', unit: 'IBOV pontos', time: '29/10', icon: 'IBOV', color: '#96969C' },
-  { code: 'USD/BRL', name: 'Dólar', price: '5,40', percent: '—', unit: 'BRL/USD · bid', time: 'fixture', icon: 'USD/BRL', color: '#96969C', available: true },
-  { code: 'SOJA_JATAI_GO', name: 'Soja', price: '130,00', percent: '—', unit: 'JATAÍ R$/SC60', time: '07/10', icon: 'SOJA_JATAI_GO', color: '#96969C' },
-  { code: 'CUB_GO', name: 'CUB-GO', price: '2.795,37', percent: '+0,025%', unit: 'R1-N R$/m² M/M', time: '30/09', icon: 'CUB_GO', color: '#00E676' },
-  { code: 'DIESEL_S10', name: 'Diesel S10', price: '7,35', percent: '-0,14%', unit: 'JATAÍ R$/L S/S', time: '17/10', icon: 'DIESEL_S10', color: '#FF1744' },
-  { code: 'BRENT', name: 'Brent spot', price: '115,22', percent: '-3,03%', unit: 'SPOT USD/bbl D/D', time: '20/10', icon: 'BRENT', color: '#FF1744' }
+  { code: 'BBAS3', name: 'Banco do Brasil', price: '—', percent: '—', unit: 'BRL/ação', time: 'sem amostra', icon: 'BBAS3', color: '#96969C', testFixture: true },
+  { code: 'BBDC4', name: 'Bradesco PN', price: '—', percent: '—', unit: 'BRL/ação', time: 'sem amostra', icon: 'BBDC4', color: '#96969C', testFixture: true },
+  { code: 'IBOV', name: 'Ibovespa', price: '—', percent: '—', unit: 'pontos', time: 'sem amostra', icon: 'IBOV', color: '#96969C', testFixture: true },
+  { code: 'BTC/USD', name: 'Bitcoin', price: '—', percent: '—', unit: 'USD/BTC', time: 'sem amostra', icon: 'BTC/USD', color: '#96969C', testFixture: true }
 ];
 
 const esc = value => String(value)
@@ -82,6 +79,11 @@ function badgeGroup(cx, cy, body) {
 }
 
 function customBadge(row, cx, cy) {
+  if (['BBAS3', 'BBDC4', 'IBOV', 'BTC/USD'].includes(row.icon)) {
+    const glyph = { BBAS3: 'BB', BBDC4: 'BD', IBOV: 'IB', 'BTC/USD': 'BTC' }[row.icon];
+    const size = glyph.length === 3 ? 5.4 : 7;
+    return badgeGroup(cx, cy, `<circle cx="13" cy="13" r="13" fill="#34343A"/><text x="13" y="15.5" fill="#FFFFFF" font-family="-apple-system,Arial,sans-serif" font-size="${size}" font-weight="700" text-anchor="middle">${glyph}</text>`);
+  }
   if (row.icon === 'USD/BRL') {
     const stripes = Array.from({ length: 13 }, (_, i) =>
       `<rect x="0" y="${i * 2}" width="26" height="2" fill="${i % 2 ? '#FFFFFF' : '#B22234'}"/>`).join('');
@@ -141,7 +143,7 @@ function customBadge(row, cx, cy) {
 function icon(row, cx, cy) {
   // USD/BRL deliberately takes the custom Canvas path even though an older
   // combined PNG remains in assets.js. This keeps the flag-only contract.
-  if (['USD/BRL', 'SOJA_JATAI_GO', 'CUB_GO', 'IPCA', 'DIESEL_S10'].includes(row.icon)) return customBadge(row, cx, cy);
+  if (['BBAS3', 'BBDC4', 'IBOV', 'BTC/USD', 'USD/BRL', 'SOJA_JATAI_GO', 'CUB_GO', 'IPCA', 'DIESEL_S10'].includes(row.icon)) return customBadge(row, cx, cy);
   if (assets[row.icon]) {
     return `<image href="data:image/png;base64,${assets[row.icon]}" x="${cx - ICON / 2}" y="${cy - ICON / 2}" width="${ICON}" height="${ICON}" preserveAspectRatio="xMidYMid meet"/>`;
   }
@@ -169,10 +171,10 @@ function drawRow(row, rowTop, offset) {
   const graphX = offset + COL3_X;
   const graph = row.available
     ? curve(row, rowTop, offset)
-    : text(graphX + GRAPH_WIDTH / 2, rowTop + GRAPH_TOP + 12, '24h indisponível', 4.2, '#96969C', 'text-anchor="middle"');
+    : text(graphX + GRAPH_WIDTH / 2, rowTop + GRAPH_TOP + 12, '7d indisponível', 4.2, '#96969C', 'text-anchor="middle"');
   const quoteRight = offset + COL4_X + COL4;
   const meta = `${SHORT_CODES[row.code] || row.code} | ${row.time}`;
-  const unit = { SELIC: '% a.a.', IPCA: 'M/M · pp', IBOV: 'pontos', 'USD/BRL': 'BRL/USD', SOJA_JATAI_GO: 'R$/sc60', CUB_GO: 'R$/m²', DIESEL_S10: 'R$/L', BRENT: 'USD/bbl' }[row.code] || row.unit;
+  const unit = { BBAS3: 'BRL/ação', BBDC4: 'BRL/ação', IBOV: 'pontos', 'BTC/USD': 'USD/BTC', SELIC: '% a.a.', IPCA: 'M/M · pp', 'USD/BRL': 'BRL/USD', SOJA_JATAI_GO: 'R$/sc60', CUB_GO: 'R$/m²', DIESEL_S10: 'R$/L', BRENT: 'USD/bbl' }[row.code] || row.unit;
   return [
     text(offset + COL2_X, rowTop + NAME_TOP + 7, row.name, name.size, '#FFFFFF', `font-weight="600" textLength="${name.width}" lengthAdjust="spacingAndGlyphs"`),
     `<circle cx="${dotX}" cy="${rowTop + NAME_TOP + NAME_HEIGHT / 2}" r="${STATUS_DOT / 2}" fill="#96969C"/>`,
@@ -198,19 +200,25 @@ function widget(x, y, rowsForWidget, title, columns) {
   return `<text x="${x}" y="${y - 14}" fill="#D1D1D6" font-family="-apple-system,Arial,sans-serif" font-size="13" font-weight="600">${title}</text><rect x="${x}" y="${y}" width="${width}" height="292" rx="10" fill="#1E1E1E" stroke="#34343A"/><g transform="translate(${x} ${y}) scale(2)"><g font-family="-apple-system,Arial,sans-serif">${content}${dividers}</g></g>`;
 }
 
-const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="420" viewBox="0 0 1000 420"><title>Popular Scripting 0.2.29 preview</title><desc>Fixture-only geometry evidence for four columns: circular icon, grouped name plus code and observation date, sparkline, and grouped right-aligned value, unit, and variation. The native name reservation is 27 pt, followed by 8 pt spacing, a 3 pt status dot, and 2 pt trailing room. Only USD/BRL has a timestamped curve; sparse sources say 24h indisponível.</desc><defs><clipPath id="badge-disk" clipPathUnits="userSpaceOnUse"><circle cx="13" cy="13" r="13"/></clipPath></defs><rect width="1000" height="420" rx="22" fill="#0F0F12"/>${widget(30, 42, rows.slice(0, 4), 'small · 2×2', 1)}${widget(360, 42, rows, 'medium/large · 4×2', 2)}${text(360, 366, 'Prévia de dados de teste · quatro colunas 28/40/46/26 pt · nome 27 pt + espaço 8 pt + ponto 3 pt + folga 2 pt · sem alegação de render nativo/iPhone', 11, '#96969C')}</svg>`;
+const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="420" viewBox="0 0 1000 420"><title>Popular Scripting 0.2.30 preview</title><desc>Fixture-only geometry evidence for four columns: circular icon, grouped name plus code and observation date, sparkline, and grouped right-aligned value, unit, and variation. The native name reservation is 27 pt, followed by 8 pt spacing, a 3 pt status dot, and 2 pt trailing room. The four requested identifiers are fixture-only; no quote or curve is claimed. The display domain is seven days.</desc><defs><clipPath id="badge-disk" clipPathUnits="userSpaceOnUse"><circle cx="13" cy="13" r="13"/></clipPath></defs><rect width="1000" height="420" rx="22" fill="#0F0F12"/>${widget(30, 42, rows.slice(0, 4), 'small · 2×2', 1)}${widget(360, 42, rows, 'medium/large · 4×2', 2)}${text(360, 366, 'Prévia de dados de teste · quatro colunas 28/40/46/26 pt · nome 27 pt + espaço 8 pt + ponto 3 pt + folga 2 pt · domínio 7D · sem alegação de render nativo/iPhone', 11, '#96969C')}</svg>`;
 
-fs.writeFileSync(output, svg + '\n');
+const localSvg = svg
+  .replace('Popular Scripting 0.2.29 preview', 'Popular Scripting 0.2.30 local fixture')
+  .replaceAll('24h indisponível', '7d indisponível')
+  .replace('Only USD/BRL has a timestamped curve; sparse sources say 7d indisponível.', 'The four requested identifiers are fixture-only; no quote or curve is claimed. The display domain is seven days.');
+fs.writeFileSync(output, localSvg + '\n');
 console.log(JSON.stringify({
   output,
-  version: '0.2.29',
+  version: '0.2.30-local',
   fourColumns: { icon: COL1, identity: COL2, graph: COL3, quote: COL4, gap: COL_GAP },
   nameReservation: { text: NAME_TEXT_MAX, spacing: STATUS_SPACING, dot: STATUS_DOT, trailingGap: STATUS_TRAILING_GAP },
   shortCodeAndDateInIdentityColumn: true,
-  icons: ['SELIC', 'IBOV', 'BRENT'],
-  canvasBadges: ['IPCA', 'USD/BRL', 'SOJA_JATAI_GO', 'CUB_GO', 'DIESEL_S10'],
+  icons: ['BBAS3', 'BBDC4', 'IBOV', 'BTC/USD'],
+  canvasBadges: ['BBAS3', 'BBDC4', 'IBOV', 'BTC/USD'],
   placeholderIcons: [],
-  curves: ['USD/BRL fixture only'],
-  sparseFallback: '24h indisponível',
+  curves: [],
+  sparseFallback: '7d indisponível',
+  sourceStatus: 'BTC/USD Kraken adapter covered by engine tests; fixture values intentionally omitted; B3 rows unavailable',
+  window: { label: '7D', hours: 168, calendarDays: 7 },
   coverage: 'fixture-only'
 }));

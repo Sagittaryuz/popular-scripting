@@ -1,3 +1,23 @@
+## Atualização 0.2.30 - perfil publicado de quatro ativos e janela de 7 dias
+
+O entry publicado agora ativa, de forma reversível, o perfil de teste
+`BBAS3`, `BBDC4`, `IBOV` e `BTC/USD`, exatamente nessa ordem, em pequeno e
+grande. A lista fixa anterior de oito indicadores continua preservada em
+`FIXED_INDICATOR_CODES` para recuperação; não é usada pelo perfil ativo.
+
+BBAS3, BBDC4 e IBOV permanecem explicitamente sem cotação, variação ou curva
+até existir uma fonte autorizada e validada. `BTC/USD` consulta o adaptador
+público Kraken para `XBT/USD`/`ZUSD` quando disponível; nenhum valor é fixado
+ou fabricado, e indisponibilidade conserva a linha sem amostra. Gráficos usam
+somente observações reais timestampadas numa janela móvel de 7 dias; a
+variação do BTC continua sendo móvel de 24 horas, separada do domínio gráfico.
+
+A prévia [widget-preview-0.2.30-local.svg](validation/widget-preview-0.2.30-local.svg)
+e o PNG adjacente são demonstrativos/fixture-only, sem preços, curvas ou
+dados pessoais. A consulta ao vivo da Kraken falhou por DNS neste executor
+(`EAI_AGAIN`), sem contorno; os testes usam payloads determinísticos. iPhone
+nativo não foi testado.
+
 ## Atualização 0.2.29 - folga explícita entre nome e status
 
 A identidade de cada linha reserva 27 pt para o nome, 8 pt de espaçamento, 3
@@ -6,7 +26,7 @@ nativo é comprimido nessa reserva; a bolinha continua depois do nome, sem
 cobrir a última letra nem entrar no gráfico. A prévia usa a mesma geometria e
 foi conferida em recortes ampliados para os oito ativos nas duas dimensões.
 
-Valor, variação, unidades, ícones, dados, fontes, ordem, 24 h, refresh e
+Valor, variação, unidades, ícones, dados, fontes, ordem, janela de 7 dias, refresh e
 demais colunas permanecem iguais. A prévia é fixture-only e o iPhone nativo
 não foi testado.
 
@@ -169,9 +189,10 @@ Testes locais de fontes, observações antigas/futuras, alertas, cache, transpor
 
 # Popular Scripting
 
-**Atual: 0.2.29 - Scripting Pro.** Detalhes, ordem fixa dos oito indicadores, CSV,
-alertas, assistente, Central de Controle e painel Início. Consulta solicitada em
-1 minuto e links diretos às fontes. [Ativação, testes e limites](PRO.md).
+**Atual: 0.2.30 - Scripting Pro.** Perfil publicado de quatro ativos
+(`BBAS3`, `BBDC4`, `IBOV`, `BTC/USD`) em janela móvel de 7 dias, com detalhes,
+CSV, alertas, assistente, Central de Controle e painel Início. [Ativação,
+testes e limites](PRO.md).
 
 Widget econômico para o aplicativo Scripting, com acesso público e sem token de GitHub no aplicativo.
 
@@ -183,15 +204,17 @@ Na tela **Importar Scripts Remotos** do Scripting, cole:
 https://github.com/Sagittaryuz/popular-scripting/tree/main/scripts/Popular%20Scripting
 ```
 
-Importe **Popular Scripting**, confirme a versão **0.2.29**, abra o projeto e toque em **Atualizar**. Adicione o widget do Scripting à Tela de Início e selecione esse projeto.
+Importe **Popular Scripting**, confirme a versão **0.2.30**, abra o projeto e toque em **Atualizar**. Adicione o widget do Scripting à Tela de Início e selecione esse projeto.
 
 Para receber melhorias de código, use a atualização do script remoto no Scripting. Essa importação vincula o projeto à pasta `main/scripts/Popular Scripting`; não use um endereço de commit ou tag para acompanhar as próximas versões. O botão **Atualizar** dentro da tela do Popular consulta somente os indicadores e solicita recarregar o widget.
 
 ## Tamanhos e dados
 
-- Pequeno: quatro indicadores. Médio e grande: oito.
-- Ordem fixa dos oito indicadores, fundo original, ícones e gráficos.
-- Fontes: BCB, AgroLink, Investidor10, AwesomeAPI, FRED e referências públicas documentadas em `data/economic-series.json`.
+- Pequeno, médio e grande: o perfil publicado mostra os quatro ativos de teste na mesma ordem; o médio/grande não repete linhas na segunda coluna.
+- Os três slots B3 permanecem reservados sem cotação até fonte validada; o BTC/USD usa somente o adaptador público Kraken quando a resposta for válida.
+- O domínio de gráfico ativo é 7D por timestamp real; sem amostras válidas aparece `7d indisponível`, sem interpolação, weekend fill ou valor fictício.
+- A lista anterior de oito, fontes e ícones continua preservada no histórico/código para recuperação; não é a configuração ativa desta versão.
+- Fontes anteriores incluem BCB, AgroLink, Investidor10, AwesomeAPI e FRED; a documentação da Kraken para o perfil ativo está registrada no changelog.
 - Dados econômicos de referência são consultados diretamente deste Git, sem autenticação. Rede indisponível ou resposta inválida preserva o cache validado ou a reserva versionada, com suas datas originais.
 - O workflow `economic-data.yml` é programado a cada hora útil, 11h17–23h17 UTC, sujeito a atrasos do GitHub. Falha de uma fonte mantém a série anterior e é registrada no workflow; dados antigos não recebem data de observação nova.
 - Política de atualização do widget: a partir de um minuto, configurável em 1/5/15, sujeita ao iOS.
@@ -220,3 +243,38 @@ Canvas, Scripting e as fontes do sistema podem apresentar diferenças de métric
 Cada ativo agora mostra o nome/status acima do ícone e o código curto abaixo dele, com o conjunto centrado na faixa esquerda. A cotação continua no topo do lado direito; gráfico e variação ocupam a altura útil ampliada; unidade e data permanecem alinhadas à base. A largura do gráfico, a ordem fixa, dados, fontes, cores, status e refresh não mudam em small, medium e large.
 
 A fonte intraday do Ibovespa não foi substituída por valores da captura. A página pública usada antes não documenta intraday, o [portal oficial de APIs do Yahoo](https://developer.yahoo.com/api/) requer OAuth e o executor recebeu 429 ao abrir a página Yahoo; portanto a versão mantém o contrato Investidor10/cache até haver uma fonte pública autorizada e testável. O iPhone nativo não foi testado.
+## Perfil publicado 0.2.30 - quatro ativos e janela de 7 dias
+
+O entry publicado usa BBAS3 (Banco do Brasil), BBDC4 (Bradesco PN), IBOV
+(Ibovespa) e BTC/USD (Bitcoin), nessa ordem, sem repetir ativos no formato
+4x2. A lista fixa de produção anterior permanece recuperável e inalterada.
+
+O perfil `PUBLISHED_TEST_ASSETS` passa essa seleção pelo caminho real de
+`loadModel`/`collectRows`: reserva explicitamente os três slots B3 como
+indisponíveis e chama `loadBTCUSD` para o quarto. Cache antigo e
+`collectAdditionalRows` não substituem o perfil ativo; alterar essa constante
+restitui a lista anterior sem apagar sua definição.
+
+O domínio visual agora é uma janela móvel de 7 dias corridos (168 horas) por
+timestamp. Só observações reais timestampadas entram na curva; fins de
+semana, lacunas e fontes mensais/semanais não são preenchidos. A fixture local
+não exibe preços, variações ou curvas para BBAS3/BBDC4/IBOV. O adaptador local
+de BTC/USD agora usa somente a API pública da Kraken, com o par confirmado
+`XBT/USD`/`ZUSD`, sem chave e sem USDT: o ticker fornece o último negócio no
+horário da consulta, enquanto a curva usa candles horários fechados em 7 dias
+e exclui o candle atual. A variação é uma referência móvel de 24 horas contra
+a última observação fechada disponível, separada do domínio gráfico de 7 dias;
+não há valor hardcoded. O adaptador existente do Ibovespa/Investidor10 e o
+Yahoo Finance não foram substituídos nem contornados; BBAS3/BBDC4 continuam
+sem fonte autorizada neste checkout. A resolução DNS deste executor falhou com
+`EAI_AGAIN api.kraken.com` durante a tentativa ao vivo; os testes usam payloads
+determinísticos e não afirmam cotação atual. B3 e Bitcoin não têm estado de
+sessão inferido da captura. O contrato foi conferido na documentação oficial
+de [OHLC](https://docs.kraken.com/api-reference/market-data/get-ohlc-data),
+[Ticker](https://docs.kraken.com/api-reference/market-data/get-ticker-information)
+e [AssetPairs](https://docs.kraken.com/api-reference/market-data/get-tradable-asset-pairs).
+
+Os arquivos `validation/widget-preview-0.2.30-local.svg`,
+`validation/widget-preview-0.2.30-local.png` e o JSON adjacente são evidência
+fixture-only e demonstrativa, não uma cotação ao vivo. O iPhone nativo não
+foi testado.
