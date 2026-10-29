@@ -1,4 +1,15 @@
-# Popular Scripting - Pro 0.2.28
+# Popular Scripting - Pro 0.2.29
+
+## 0.2.29 - folga explícita no nome e na bolinha
+
+- A coluna de identidade continua com 40 pt, mas agora separa explicitamente
+  27 pt para o nome, 8 pt de espaçamento, 3 pt para a bolinha e 2 pt de folga
+  final. O `Text` nativo comprime nomes longos dentro dos 27 pt.
+- O renderer da prévia usa a mesma reserva, tamanho nominal e separação; a
+  validação ampliada confirma que IPCA, Ibovespa, Diesel S10 e os demais nomes
+  não têm o ponto sobre a última letra.
+- Ícone, gráfico, cotação, blocos verticais, dados, fontes, ordem, janela,
+  refresh e tamanhos não foram alterados. iPhone nativo permanece não testado.
 
 ## 0.2.28 - agrupamento vertical e texto contido
 

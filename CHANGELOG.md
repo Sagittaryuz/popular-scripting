@@ -1,3 +1,16 @@
+## 0.2.29 - folga explícita entre nome e status
+
+- Corrige a colisão residual observada em pixels no fim de `IPCA`, `Ibovespa`
+  e `Diesel S10`: a coluna de identidade reserva 27 pt para o nome, 8 pt de
+  espaço, 3 pt para a bolinha e 2 pt de folga final dentro dos 40 pt.
+- Runtime e prévia usam a mesma reserva e a mesma compressão nominal; o
+  `Text` nativo continua limitado à sua caixa, e o ponto permanece depois do
+  texto sem sair da coluna. O restante da geometria, dados, fontes, ordem,
+  curvas, refresh e unidades permanece inalterado.
+- A prévia `validation/widget-preview-0.2.29.png` inclui recortes ampliados
+  verificados dos nomes curtos e longos. É fixture-only; iPhone nativo não
+  testado.
+
 ## 0.2.28 - correção de agrupamento vertical e ajuste de texto
 
 - Corrige a causa visual da 0.2.27: nome/data e valor/variação deixavam de ser

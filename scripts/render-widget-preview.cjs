@@ -6,7 +6,7 @@ const path = require('node:path');
 // native renderer and never fetches live data.
 const root = path.resolve(__dirname, '..');
 const assetsFile = path.join(root, 'scripts/Popular Scripting/assets.js');
-const output = path.join(root, 'validation/widget-preview-0.2.28.svg');
+const output = path.join(root, 'validation/widget-preview-0.2.29.svg');
 const assetSource = fs.readFileSync(assetsFile, 'utf8')
   .replace(/^(?:\/\/[^\n]*\n)+/, '')
   .replace(/^export const assets=/, '')
@@ -26,6 +26,10 @@ const COL1_X = 0;
 const COL2_X = COL1 + COL_GAP;
 const COL3_X = COL2_X + COL2 + COL_GAP;
 const COL4_X = COL3_X + COL3 + COL_GAP;
+const STATUS_DOT = 3;
+const STATUS_SPACING = 8;
+const STATUS_TRAILING_GAP = 2;
+const NAME_TEXT_MAX = COL2 - STATUS_DOT - STATUS_SPACING - STATUS_TRAILING_GAP;
 const GRAPH_WIDTH = COL3;
 const GRAPH_TOP = 8;
 const GRAPH_HEIGHT = 20;
@@ -68,7 +72,7 @@ function text(x, y, value, size = 6, fill = '#96969C', extra = '') {
 function nameLayout(value) {
   const string = String(value ?? '—');
   const raw = [...string].reduce((sum, char) => sum + (/[MW@#]/.test(char) ? 6.2 : /[ilI1.,' ]/.test(char) ? 2.8 : 4.8), 0);
-  const maximum = Math.max(5, COL2 - 5);
+  const maximum = Math.max(5, NAME_TEXT_MAX);
   const size = Math.max(4.8, Math.min(9, 9 * maximum / Math.max(raw, 1)));
   return { size, width: Math.min(maximum, Math.max(5, raw * size / 9)) };
 }
@@ -159,7 +163,7 @@ function drawRow(row, rowTop, offset) {
   // The dot follows the measured/compressed name and remains inside the
   // identity cell instead of being pinned over the last glyph.
   const name = nameLayout(row.name);
-  const dotX = offset + COL2_X + name.width + 2 + 1.5;
+  const dotX = offset + COL2_X + name.width + STATUS_SPACING + STATUS_DOT / 2;
   const cx = offset + ICON_LEFT + ICON / 2;
   const cy = rowTop + 18;
   const graphX = offset + COL3_X;
@@ -171,7 +175,7 @@ function drawRow(row, rowTop, offset) {
   const unit = { SELIC: '% a.a.', IPCA: 'M/M · pp', IBOV: 'pontos', 'USD/BRL': 'BRL/USD', SOJA_JATAI_GO: 'R$/sc60', CUB_GO: 'R$/m²', DIESEL_S10: 'R$/L', BRENT: 'USD/bbl' }[row.code] || row.unit;
   return [
     text(offset + COL2_X, rowTop + NAME_TOP + 7, row.name, name.size, '#FFFFFF', `font-weight="600" textLength="${name.width}" lengthAdjust="spacingAndGlyphs"`),
-    `<circle cx="${dotX}" cy="${rowTop + NAME_TOP + NAME_HEIGHT / 2}" r="1.5" fill="#96969C"/>`,
+    `<circle cx="${dotX}" cy="${rowTop + NAME_TOP + NAME_HEIGHT / 2}" r="${STATUS_DOT / 2}" fill="#96969C"/>`,
     icon(row, cx, cy),
     text(offset + COL2_X, rowTop + META_TOP + 6, meta, 5.3, '#96969C'),
     text(quoteRight, rowTop + 15, row.price, 6.8, '#FFFFFF', 'text-anchor="end" font-weight="600"'),
@@ -194,13 +198,14 @@ function widget(x, y, rowsForWidget, title, columns) {
   return `<text x="${x}" y="${y - 14}" fill="#D1D1D6" font-family="-apple-system,Arial,sans-serif" font-size="13" font-weight="600">${title}</text><rect x="${x}" y="${y}" width="${width}" height="292" rx="10" fill="#1E1E1E" stroke="#34343A"/><g transform="translate(${x} ${y}) scale(2)"><g font-family="-apple-system,Arial,sans-serif">${content}${dividers}</g></g>`;
 }
 
-const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="420" viewBox="0 0 1000 420"><title>Popular Scripting 0.2.28 preview</title><desc>Fixture-only geometry evidence for four columns: circular icon, grouped name plus code and observation date, sparkline, and grouped right-aligned value, unit, and variation. Only USD/BRL has a timestamped curve; sparse sources say 24h indisponível.</desc><defs><clipPath id="badge-disk" clipPathUnits="userSpaceOnUse"><circle cx="13" cy="13" r="13"/></clipPath></defs><rect width="1000" height="420" rx="22" fill="#0F0F12"/>${widget(30, 42, rows.slice(0, 4), 'small · 2×2', 1)}${widget(360, 42, rows, 'medium/large · 4×2', 2)}${text(360, 366, 'Prévia de dados de teste · quatro colunas 28/40/46/26 pt · ícones 26 pt · sem alegação de render nativo/iPhone', 11, '#96969C')}</svg>`;
+const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="420" viewBox="0 0 1000 420"><title>Popular Scripting 0.2.29 preview</title><desc>Fixture-only geometry evidence for four columns: circular icon, grouped name plus code and observation date, sparkline, and grouped right-aligned value, unit, and variation. The native name reservation is 27 pt, followed by 8 pt spacing, a 3 pt status dot, and 2 pt trailing room. Only USD/BRL has a timestamped curve; sparse sources say 24h indisponível.</desc><defs><clipPath id="badge-disk" clipPathUnits="userSpaceOnUse"><circle cx="13" cy="13" r="13"/></clipPath></defs><rect width="1000" height="420" rx="22" fill="#0F0F12"/>${widget(30, 42, rows.slice(0, 4), 'small · 2×2', 1)}${widget(360, 42, rows, 'medium/large · 4×2', 2)}${text(360, 366, 'Prévia de dados de teste · quatro colunas 28/40/46/26 pt · nome 27 pt + espaço 8 pt + ponto 3 pt + folga 2 pt · sem alegação de render nativo/iPhone', 11, '#96969C')}</svg>`;
 
 fs.writeFileSync(output, svg + '\n');
 console.log(JSON.stringify({
   output,
-  version: '0.2.28',
+  version: '0.2.29',
   fourColumns: { icon: COL1, identity: COL2, graph: COL3, quote: COL4, gap: COL_GAP },
+  nameReservation: { text: NAME_TEXT_MAX, spacing: STATUS_SPACING, dot: STATUS_DOT, trailingGap: STATUS_TRAILING_GAP },
   shortCodeAndDateInIdentityColumn: true,
   icons: ['SELIC', 'IBOV', 'BRENT'],
   canvasBadges: ['IPCA', 'USD/BRL', 'SOJA_JATAI_GO', 'CUB_GO', 'DIESEL_S10'],

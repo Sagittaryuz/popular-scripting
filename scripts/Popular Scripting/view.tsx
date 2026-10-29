@@ -31,7 +31,7 @@ function compactUnit(row:any){
 function nameLayout(value:any){
   const text=String(value??'—')
   const raw=[...text].reduce((sum,char)=>sum+(/[MW@#]/.test(char)?6.2:/[ilI1.,' ]/.test(char)?2.8:4.8),0)
-  const maximum=Math.max(5,G.name-5),font=Math.max(4.8,Math.min(9,9*maximum/Math.max(raw,1))),width=Math.min(maximum,Math.max(5,raw*font/9))
+  const maximum=Math.max(5,G.nameTextMax),font=Math.max(4.8,Math.min(9,9*maximum/Math.max(raw,1))),width=Math.min(maximum,Math.max(5,raw*font/9))
   return {font,width}
 }
 function Label({labelKey,value,plan,x,y,width,height,size,min,bold=false,color='white',right=false,alignment,placeFn=place}:any){
@@ -72,10 +72,10 @@ export function PopularView({model,width,height}:{model:any;width:number;height:
         {custom?<Canvas key="asset-icon" opaque={false} {...place(rowPlan,G.iconLeft,G.iconTop,G.icon,G.icon)} draw={(ctx,size)=>{ctx.scale(size.width/26,size.height/26);drawBadge(ctx,row.asset.code)}}/>
           :images[row.asset.code]?<Image key="asset-image" image={images[row.asset.code]} resizable renderingMode="original" {...place(rowPlan,G.iconLeft,G.iconTop,G.icon,G.icon)}/>
           :<Image key="asset-fallback" systemName="chart.line.uptrend.xyaxis" font={10*plan.scale} foregroundStyle="#D1D1D6" background={{style:'#34343A',shape:{type:'circle'}}} {...place(rowPlan,G.iconLeft,G.iconTop,G.icon,G.icon)}/>}
-        <HStack key="name-status-line" alignment="center" spacing={2} clipped {...place(rowPlan,G.nameX,G.nameTop,G.name,G.nameHeight,'leading')}>
+        <HStack key="name-status-line" alignment="center" spacing={G.statusSpacing} clipped {...place(rowPlan,G.nameX,G.nameTop,G.name,G.nameHeight,'leading')}>
           <Text key="name-text" font={nameMetrics.font*plan.scale} fontWeight="semibold" foregroundStyle="white"
             lineLimit={1} minScaleFactor={4.8/nameMetrics.font} frame={{width:nameMetrics.width*plan.scale,height:G.nameHeight*plan.scaleY,alignment:'leading'}}>{row.name}</Text>
-          <Circle key="market-status-dot" fill={status.color} frame={{width:3*plan.scale,height:3*plan.scale}}
+          <Circle key="market-status-dot" fill={status.color} frame={{width:G.statusDot*plan.scale,height:G.statusDot*plan.scale}}
             accessibilityLabel={status.accessibility}/>
         </HStack>
         {cellLabel('asset-meta',meta,G.dateX,G.dateTop,G.date,G.dateHeight,5.3,3.4,false,'#96969C',false,'leading')}

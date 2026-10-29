@@ -9,6 +9,7 @@ assert.equal(G.icon,26,'icons return to the pre-0.2.25 diameter')
 assert.equal(G.col1,28,'icon column keeps the 26 pt badge with a measured margin')
 assert.equal(G.col2,40,'identity column is widened for readable code/date text')
 assert(G.col2>G.col1,'identity column is wider than the icon column when text needs it')
+assert.equal(G.nameTextMax+G.statusSpacing+G.statusDot+G.statusTrailingGap,G.name,'name reservation leaves explicit dot spacing and trailing room')
 assert.equal(G.col1+G.col2+G.col3+G.col4+G.colGap*3,G.column,'four columns fill the useful row width')
 assert.equal(G.iconLeft+G.icon/2,G.col1/2,'icon is centered in its column')
 assert.equal(G.graphX,G.col1+G.colGap+G.col2+G.colGap,'graph starts after icon and identity columns')
@@ -47,4 +48,4 @@ for(const [family,width,height,expected] of [['small',158,170,4],['medium',338,1
     assert(tree.props.accessibilityLabel.includes('Selic com nome suficientemente long'))
   }
 }
-console.log('PASS 0.2.28 geometry: widened identity column, grouped centered text blocks, 26 pt icons, graph/quote separation and long/missing fixtures covered. Native iPhone render pending.')
+console.log('PASS 0.2.29 geometry: widened identity column, explicit name/dot reservation, grouped centered text blocks, 26 pt icons, graph/quote separation and long/missing fixtures covered. Native iPhone render pending.')

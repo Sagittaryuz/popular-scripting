@@ -1,5 +1,14 @@
 # Melhorias Scripting Pro — 23/10/2026
 
+## 0.2.29 — folga medida do nome/status
+
+- [x] Reservar explicitamente 27/8/3/2 pt para nome, espaçamento, bolinha e
+  folga final dentro da coluna de identidade, mantendo a bolinha após o texto.
+- [x] Usar a mesma reserva no `Text` nativo e no renderer fixture-only, com
+  compressão do nome e sem alterar as outras colunas ou dados.
+- [x] Inspecionar recortes ampliados de IPCA, Ibovespa, Diesel S10 e demais
+  nomes em small e medium/large; iPhone nativo permanece não testado.
+
 ## 0.2.28 — correção visual dos blocos internos
 
 - [x] Agrupar nome + `código | data` e valor + variação no centro vertical de

@@ -1,3 +1,15 @@
+## Atualização 0.2.29 - folga explícita entre nome e status
+
+A identidade de cada linha reserva 27 pt para o nome, 8 pt de espaçamento, 3
+pt para a bolinha e 2 pt de folga final dentro da coluna de 40 pt. O texto
+nativo é comprimido nessa reserva; a bolinha continua depois do nome, sem
+cobrir a última letra nem entrar no gráfico. A prévia usa a mesma geometria e
+foi conferida em recortes ampliados para os oito ativos nas duas dimensões.
+
+Valor, variação, unidades, ícones, dados, fontes, ordem, 24 h, refresh e
+demais colunas permanecem iguais. A prévia é fixture-only e o iPhone nativo
+não foi testado.
+
 ## Atualização 0.2.28 - blocos internos compactos e texto contido
 
 Cada linha preserva quatro colunas: ícone circular de 26 pt, identidade de 40
@@ -157,7 +169,7 @@ Testes locais de fontes, observações antigas/futuras, alertas, cache, transpor
 
 # Popular Scripting
 
-**Atual: 0.2.28 - Scripting Pro.** Detalhes, ordem fixa dos oito indicadores, CSV,
+**Atual: 0.2.29 - Scripting Pro.** Detalhes, ordem fixa dos oito indicadores, CSV,
 alertas, assistente, Central de Controle e painel Início. Consulta solicitada em
 1 minuto e links diretos às fontes. [Ativação, testes e limites](PRO.md).
 
@@ -171,7 +183,7 @@ Na tela **Importar Scripts Remotos** do Scripting, cole:
 https://github.com/Sagittaryuz/popular-scripting/tree/main/scripts/Popular%20Scripting
 ```
 
-Importe **Popular Scripting**, confirme a versão **0.2.28**, abra o projeto e toque em **Atualizar**. Adicione o widget do Scripting à Tela de Início e selecione esse projeto.
+Importe **Popular Scripting**, confirme a versão **0.2.29**, abra o projeto e toque em **Atualizar**. Adicione o widget do Scripting à Tela de Início e selecione esse projeto.
 
 Para receber melhorias de código, use a atualização do script remoto no Scripting. Essa importação vincula o projeto à pasta `main/scripts/Popular Scripting`; não use um endereço de commit ou tag para acompanhar as próximas versões. O botão **Atualizar** dentro da tela do Popular consulta somente os indicadores e solicita recarregar o widget.
 
