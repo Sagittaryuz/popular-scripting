@@ -6,8 +6,8 @@ const manifest=JSON.parse(fs.readFileSync(path.join(root,'scripts/Popular Script
 const view=fs.readFileSync(path.join(root,'scripts/Popular Scripting/view.tsx'),'utf8');
 const engine=fs.readFileSync(path.join(root,'scripts/Popular Scripting/original-engine.js'),'utf8');
 
-assert.equal(manifest.version,'0.2.30','published script manifest is bumped with the active profile');
-assert.match(model,/export const VERSION='0\.2\.30'/);
+assert.equal(manifest.version,'0.2.31','published script manifest is bumped with the active profile');
+assert.match(model,/export const VERSION='0\.2\.31'/);
 assert.match(model,/export const PUBLISHED_TEST_ASSETS=true/);
 assert.match(model,/PUBLISHED_TEST_PROFILE='b3-btc-7d'/);
 assert.match(model,/localTestAssets:PUBLISHED_TEST_ASSETS/);
@@ -21,4 +21,4 @@ assert.match(engine,/window:'7D'/);
 assert.match(view,/BBAS3.*BBDC4.*IBOV.*BTC\/USD/,'the published UI accepts the four test identifiers');
 assert.match(view,/curve\.status==='unavailable-7d'/);
 
-console.log('PASS published profile: version 0.2.30 activates BBAS3/BBDC4/IBOV/BTCUSD, bypasses legacy cache/additions, preserves the old fixed list, and keeps the 7D UI contract.');
+console.log('PASS published profile: version 0.2.31 activates BBAS3/BBDC4/IBOV/BTCUSD, bypasses legacy cache/additions, preserves the old fixed list, and keeps the 7D UI contract.');

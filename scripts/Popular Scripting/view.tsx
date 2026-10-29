@@ -7,6 +7,8 @@ import { RefreshAssetsOnTap } from './app_intents'
 import { assetMarketStatus } from './market-status'
 const images:Record<string,UIImage>={}
 const CUB_VARIATION_MIN_SIZE=4.2
+const NAME_FONT_MIN=3.6
+const NAME_WIDTH_SAFETY=1.12
 const SHORT_CODES:Record<string,string>=Object.freeze({SELIC:'SELIC',IPCA:'IPCA',IBOV:'IBOV',BBAS3:'BBAS3',BBDC4:'BBDC4','BTC/USD':'BTC/USD','USD/BRL':'USD/BRL',SOJA_JATAI_GO:'SOJAGO',CUB_GO:'CUB-GO',DIESEL_S10:'DIESEL',BRENT:'BRENT'})
 const COMPACT_UNITS:Record<string,string>=Object.freeze({
   SELIC:'% a.a.',IPCA:'M/M · pp',IBOV:'pontos',BBAS3:'BRL/ação',BBDC4:'BRL/ação','BTC/USD':'USD/BTC','USD/BRL':'BRL/USD',
@@ -31,7 +33,10 @@ function compactUnit(row:any){
 function nameLayout(value:any){
   const text=String(value??'—')
   const raw=[...text].reduce((sum,char)=>sum+(/[MW@#]/.test(char)?6.2:/[ilI1.,' ]/.test(char)?2.8:4.8),0)
-  const maximum=Math.max(5,G.nameTextMax),font=Math.max(4.8,Math.min(9,9*maximum/Math.max(raw,1))),width=Math.min(maximum,Math.max(5,raw*font/9))
+  // Keep the status dot in its reserved slot. The native font metrics are
+  // wider than the compact estimate for names such as Banco do Brasil, so a
+  // conservative width factor plus a lower floor prevents native truncation.
+  const maximum=Math.max(5,G.nameTextMax),font=Math.max(NAME_FONT_MIN,Math.min(9,9*maximum/Math.max(raw*NAME_WIDTH_SAFETY,1))),width=Math.min(maximum,Math.max(5,raw*font/9))
   return {font,width}
 }
 function Label({labelKey,value,plan,x,y,width,height,size,min,bold=false,color='white',right=false,alignment,placeFn=place}:any){
@@ -74,7 +79,7 @@ export function PopularView({model,width,height}:{model:any;width:number;height:
           :<Image key="asset-fallback" systemName="chart.line.uptrend.xyaxis" font={10*plan.scale} foregroundStyle="#D1D1D6" background={{style:'#34343A',shape:{type:'circle'}}} {...place(rowPlan,G.iconLeft,G.iconTop,G.icon,G.icon)}/>}
         <HStack key="name-status-line" alignment="center" spacing={G.statusSpacing} clipped {...place(rowPlan,G.nameX,G.nameTop,G.name,G.nameHeight,'leading')}>
           <Text key="name-text" font={nameMetrics.font*plan.scale} fontWeight="semibold" foregroundStyle="white"
-            lineLimit={1} minScaleFactor={4.8/nameMetrics.font} frame={{width:nameMetrics.width*plan.scale,height:G.nameHeight*plan.scaleY,alignment:'leading'}}>{row.name}</Text>
+            lineLimit={1} minScaleFactor={0.72} frame={{width:nameMetrics.width*plan.scale,height:G.nameHeight*plan.scaleY,alignment:'leading'}}>{row.name}</Text>
           <Circle key="market-status-dot" fill={status.color} frame={{width:G.statusDot*plan.scale,height:G.statusDot*plan.scale}}
             accessibilityLabel={status.accessibility}/>
         </HStack>

@@ -1,3 +1,15 @@
+## 0.2.31 - fallback visual dos quatro ativos
+
+- Substitui o badge genérico de documento nos quatro ativos do perfil de teste
+  por círculos neutros com iniciais vetoriais (`BB`, `BD`, `IB`, `BTC`), sem
+  alegar marcas ou inventar imagens.
+- Reduz de forma conservadora a tipografia de nomes longos e aplica escala
+  nativa limitada dentro da coluna de identidade, mantendo o ponto de estado
+  após o texto e fora do gráfico.
+- Preserva dados, ordem, fontes, lista anterior recuperável, período 7D,
+  `7d indisponível`, refresh e todas as dimensões. Prévia fixture-only;
+  iPhone nativo não testado.
+
 ## 0.2.30 - perfil publicado de quatro ativos e janela de 7 dias
 
 - Ativa no entry publicado o teste reversível `BBAS3`, `BBDC4`, `IBOV` e

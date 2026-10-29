@@ -1,3 +1,18 @@
+## Atualização 0.2.31 - ícones de fallback e nomes completos no perfil de teste
+
+Os quatro ativos do perfil publicado agora usam badges circulares neutros com
+iniciais legíveis (`BB`, `BD`, `IB` e `BTC`) quando não há imagem de marca
+aprovada. Isso remove o fallback genérico de documento sem inventar logos.
+Banco do Brasil e Bradesco PN passam a usar a métrica compacta conservadora,
+com piso de fonte reduzido e escala nativa limitada dentro da coluna de
+identidade; o ponto de estado mantém sua reserva e não cobre o nome.
+
+Dados, ordem, fontes, lista recuperável, janela de 7 dias, fallback
+`7d indisponível`, refresh e layout 2×2/4×2 permanecem. A prévia
+[widget-preview-0.2.31-local.svg](validation/widget-preview-0.2.31-local.svg) e
+o PNG adjacente são fixture-only, sem preços, curvas ou dados pessoais.
+O iPhone nativo não foi testado.
+
 ## Atualização 0.2.30 - perfil publicado de quatro ativos e janela de 7 dias
 
 O entry publicado agora ativa, de forma reversível, o perfil de teste
@@ -189,7 +204,7 @@ Testes locais de fontes, observações antigas/futuras, alertas, cache, transpor
 
 # Popular Scripting
 
-**Atual: 0.2.30 - Scripting Pro.** Perfil publicado de quatro ativos
+**Atual: 0.2.31 - Scripting Pro.** Perfil publicado de quatro ativos
 (`BBAS3`, `BBDC4`, `IBOV`, `BTC/USD`) em janela móvel de 7 dias, com detalhes,
 CSV, alertas, assistente, Central de Controle e painel Início. [Ativação,
 testes e limites](PRO.md).
@@ -204,7 +219,7 @@ Na tela **Importar Scripts Remotos** do Scripting, cole:
 https://github.com/Sagittaryuz/popular-scripting/tree/main/scripts/Popular%20Scripting
 ```
 
-Importe **Popular Scripting**, confirme a versão **0.2.30**, abra o projeto e toque em **Atualizar**. Adicione o widget do Scripting à Tela de Início e selecione esse projeto.
+Importe **Popular Scripting**, confirme a versão **0.2.31**, abra o projeto e toque em **Atualizar**. Adicione o widget do Scripting à Tela de Início e selecione esse projeto.
 
 Para receber melhorias de código, use a atualização do script remoto no Scripting. Essa importação vincula o projeto à pasta `main/scripts/Popular Scripting`; não use um endereço de commit ou tag para acompanhar as próximas versões. O botão **Atualizar** dentro da tela do Popular consulta somente os indicadores e solicita recarregar o widget.
 

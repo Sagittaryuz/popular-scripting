@@ -1,5 +1,5 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
-const root=path.join(__dirname,'..'),renderer=path.join(__dirname,'render-widget-preview.cjs'),preview=path.join(root,'validation/widget-preview-0.2.30-local.svg');
+const root=path.join(__dirname,'..'),renderer=path.join(__dirname,'render-widget-preview.cjs'),preview=path.join(root,'validation/widget-preview-0.2.31-local.svg');
 const source=fs.readFileSync(renderer,'utf8'),svg=fs.readFileSync(preview,'utf8');
 const codes=['BBAS3','BBDC4','IBOV','BTC/USD'],names=['Banco do Brasil','Bradesco PN','Ibovespa','Bitcoin'];
 let previous=-1;
@@ -13,8 +13,11 @@ for(const name of names)assert.equal((svg.match(new RegExp(name,'g'))||[]).lengt
 assert.match(source,/'7d indisponível'/);
 assert.match(source,/curves: \[\]/);
 assert.match(source,/window: \{ label: '7D', hours: 168, calendarDays: 7 \}/);
+assert.match(source,/NAME_FONT_MIN = 3\.6/);
+assert.match(source,/NAME_WIDTH_SAFETY = 1\.12/);
 assert(!/price: '\\d/.test(source),'fixture must not embed a price');
 assert(!/available: true/.test(source),'fixture must not embed a synthetic curve');
 assert(!svg.includes('24h indisponível'));
 assert(svg.includes('7d indisponível'));
-console.log('PASS local fixture: BBAS3, BBDC4, IBOV, BTC/USD in order; four unique rows in small/wide; no price or curve fixture; 7D fallback visible.');
+assert(svg.includes('fill="#34343A"'),'preview uses neutral initials badges rather than the generic document glyph');
+console.log('PASS local fixture: BBAS3, BBDC4, IBOV, BTC/USD in order; full names use the bounded compact font; four unique rows in small/wide; no price or curve fixture; 7D fallback visible.');

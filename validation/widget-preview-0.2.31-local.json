@@ -1,0 +1,52 @@
+{
+  "version": "0.2.31-local",
+  "packageVersion": "0.2.31",
+  "publishedEntryProfile": "b3-btc-7d",
+  "artifactKind": "fixture-only-demonstrative-preview",
+  "fixturePublished": false,
+  "packagePublished": false,
+  "fixtureAssets": [
+    { "code": "BBAS3", "name": "Banco do Brasil", "unit": "BRL/ação", "badge": "neutral initials BB" },
+    { "code": "BBDC4", "name": "Bradesco PN", "unit": "BRL/ação", "badge": "neutral initials BD" },
+    { "code": "IBOV", "name": "Ibovespa", "unit": "pontos", "badge": "neutral initials IB" },
+    { "code": "BTC/USD", "name": "Bitcoin", "unit": "USD/BTC", "badge": "neutral initials BTC" }
+  ],
+  "fixtureOrderPreservedInSmallAndWide": true,
+  "wideDuplicates": 0,
+  "widePlacement": "same four rows in the first column; second column intentionally empty rather than repeated or fabricated",
+  "nameFit": {
+    "textReservationPt": 27,
+    "fontMinPt": 3.6,
+    "widthSafety": 1.12,
+    "nativeMinScaleFactor": 0.72,
+    "statusSpacingPt": 8,
+    "statusDotPt": 3,
+    "trailingGapPt": 2,
+    "fullNamesInPreview": true
+  },
+  "quotesAndVariations": "fixture omits live values; no prices, variations, or curves are claimed",
+  "curves": "none: no synthetic points, interpolation, weekend fill, or screenshot values",
+  "window": {
+    "label": "7D",
+    "hours": 168,
+    "semantics": "rolling seven calendar days by real timestamp"
+  },
+  "layout": {
+    "columns": { "icon": 28, "identity": 40, "graph": 46, "quote": 26, "gap": 2 },
+    "iconPt": 26,
+    "small": "2x2",
+    "wide": "4x2"
+  },
+  "previewFiles": [
+    "validation/widget-preview-0.2.31-local.svg",
+    "validation/widget-preview-0.2.31-local.png"
+  ],
+  "nativeIPhoneTested": false,
+  "publication": {
+    "packageCommit": null,
+    "remote": "https://github.com/Sagittaryuz/popular-scripting",
+    "push": false,
+    "libraryUpload": false,
+    "libraryUploadReason": "The PNG and SVG are tracked in the public repository; no separate Library upload is needed for this preview."
+  }
+}

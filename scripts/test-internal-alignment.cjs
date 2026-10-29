@@ -34,6 +34,11 @@ for(const [family,width,height,expected] of [['small',158,170,4],['medium',338,1
     const content=buttons[i].children.find(node=>node.type==='ZStack'),desc=walk(content)
     const nameLine=desc.find(node=>node.type==='HStack'&&node.props?.key==='name-status-line'),nameText=desc.find(node=>node.type==='Text'&&node.props?.key==='name-text'),meta=desc.find(node=>node.type==='Text'&&node.props?.key==='asset-meta'),icon=desc.find(node=>node.props?.key==='asset-icon'||node.props?.key==='asset-image'||node.props?.key==='asset-fallback'),price=desc.find(node=>node.type==='Text'&&node.props?.key==='price'),percent=desc.find(node=>node.type==='Text'&&node.props?.key==='percent'),unit=desc.find(node=>node.type==='Text'&&node.props?.key==='unit'),graph=desc.find(node=>node.type==='Canvas'&&node.props?.key==='asset-chart')
     assert(nameLine&&nameText&&meta&&icon&&price&&percent&&unit&&graph,family+' row '+i+' contains measured column elements')
+    if(i===0){
+      assert(nameText.props.font<4.8*plan.scale,family+' long name drops below the old truncating font floor')
+      assert(nameText.props.frame.width<=G.nameTextMax*plan.scale+1e-8,family+' long name stays inside the reserved text width')
+      assert.equal(nameText.props.minScaleFactor,.72,family+' long name has bounded native fallback scaling')
+    }
     const top=n=>n.props.position.y-n.props.frame.height/2,bottom=n=>n.props.position.y+n.props.frame.height/2
     assert(Math.abs(top(nameLine)-G.nameTop*plan.scaleY)<1e-8,family+' name starts at top')
     assert(Math.abs(icon.props.position.y-G.blockCenter*plan.scaleY)<1e-8,family+' icon is vertically centered')
@@ -48,4 +53,4 @@ for(const [family,width,height,expected] of [['small',158,170,4],['medium',338,1
     assert(tree.props.accessibilityLabel.includes('Selic com nome suficientemente long'))
   }
 }
-console.log('PASS 0.2.30 geometry: widened identity column, explicit name/dot reservation, grouped centered text blocks, 26 pt icons, graph/quote separation and long/missing fixtures covered. Native iPhone render pending.')
+console.log('PASS 0.2.31 geometry: widened identity column, explicit name/dot reservation, grouped centered text blocks, 26 pt icons, graph/quote separation and long/missing fixtures covered. Native iPhone render pending.')

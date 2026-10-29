@@ -67,6 +67,32 @@ function drawUSFlagBadge() {
   return ctx.getImage();
 }
 
+// These four instruments do not have approved image assets in the published
+// test profile. Use a neutral circular badge with readable initials instead of
+// the old generic document glyph; the initials identify the fallback without
+// pretending to be a bank, exchange, or Bitcoin brand mark.
+const INITIAL_BADGES=Object.freeze({BBAS3:'BB',BBDC4:'BD',IBOV:'IB','BTC/USD':'BTC'});
+const INITIAL_GLYPHS=Object.freeze({
+  B:['11110','10001','10001','11110','10001','10001','11110'],
+  D:['11110','10001','10001','10001','10001','10001','11110'],
+  I:['11111','00100','00100','00100','00100','00100','11111'],
+  T:['11111','00100','00100','00100','00100','00100','00100'],
+  C:['01111','10000','10000','10000','10000','10000','01111']
+});
+function drawInitialsBadge(code) {
+  const ctx=new DrawContext();ctx.size=new Size(26,26);ctx.opaque=false;ctx.respectScreenScale=true;
+  const disk=new Path();disk.addEllipse(new Rect(0,0,26,26));ctx.addPath(disk);ctx.setFillColor(new Color('34343A'));ctx.fillPath();
+  const label=INITIAL_BADGES[code],cell=label.length===3?1.25:1.7,gap=label.length===3?1.2:1.4,total=label.length*5*cell+(label.length-1)*gap,left=(26-total)/2,top=(26-7*cell)/2;
+  const pixels=new Path();
+  [...label].forEach((letter,letterIndex)=>{
+    const glyph=INITIAL_GLYPHS[letter]||[];
+    glyph.forEach((line,row)=>[...line].forEach((filled,column)=>{
+      if(filled==='1')pixels.addRect(new Rect(left+letterIndex*(5*cell+gap)+column*cell,top+row*cell,cell,cell));
+    }));
+  });
+  ctx.addPath(pixels);ctx.setFillColor(Color.white());ctx.fillPath();return ctx.getImage();
+}
+
 function drawEconomicBadge(code) {
   const ctx=new DrawContext();ctx.size=new Size(26,26);ctx.opaque=false;ctx.respectScreenScale=true;
   const disk=new Path();disk.addEllipse(new Rect(0,0,26,26));ctx.addPath(disk);ctx.setFillColor(new Color(code==='CUB_GO'?'3976B9':code==='IPCA'?'7C4DBA':'288A83'));ctx.fillPath();
@@ -77,5 +103,5 @@ function drawEconomicBadge(code) {
   ctx.addPath(glyph);ctx.setStrokeColor(Color.white());ctx.setLineWidth(1.2);ctx.strokePath();return ctx.getImage();
 }
 
-if(code==='SOJA_JATAI_GO')drawSoybeanBadge();else if(code==='USD/BRL')drawUSFlagBadge();else drawEconomicBadge(code);
+if(code==='SOJA_JATAI_GO')drawSoybeanBadge();else if(code==='USD/BRL')drawUSFlagBadge();else if(INITIAL_BADGES[code])drawInitialsBadge(code);else drawEconomicBadge(code);
 }

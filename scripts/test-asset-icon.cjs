@@ -3,6 +3,9 @@ const root=path.resolve(__dirname,'Popular Scripting'),view=fs.readFileSync(path
 
 assert.match(view,/custom=\[[^\n]*'USD\/BRL'\]/,'USD/BRL uses the custom badge path instead of the legacy combined image');
 assert.doesNotMatch(badges,/\$|dollar/i,'the badge renderer contains no currency glyph overlay');
+assert.match(badges,/INITIAL_BADGES=.*BBAS3:'BB'.*BBDC4:'BD'.*IBOV:'IB'.*'BTC\/USD':'BTC'/,'the four published test assets have explicit neutral initial fallbacks');
+assert.match(view,/const NAME_FONT_MIN=3\.6/,'compact names can shrink below the old truncating floor');
+assert.match(view,/minScaleFactor=\{0\.72\}/,'native text has a bounded fallback scale instead of ellipsis');
 
 const bundled=buildSync({entryPoints:[path.join(root,'badges.js')],bundle:true,write:false,format:'cjs',platform:'node'}).outputFiles[0].text;
 const badgeModule={exports:{}};
@@ -40,4 +43,11 @@ assert.equal(fills.filter(call=>call.style==='#3C3B6E').length,1,'USD flag has o
 assert.equal(fills.filter(call=>call.path.some(op=>op[0]==='rect')).length,14,'USD flag draws thirteen stripes and one canton as rectangles');
 assert.equal(fills.filter(call=>call.path.some(op=>op[0]==='ellipse')).length,50,'USD flag draws 50 stars as part of the flag');
 assert.equal(state.calls.at(-1).op,'restore','USD flag closes its clipping scope');
-console.log(JSON.stringify({version:'0.2.30',icon:'USD/BRL',shape:'26pt circular US flag crop',glyphOverlay:false,smallAndMediumPath:'custom Canvas badge',nativeIPhone:false}));
+
+for(const code of ['BBAS3','BBDC4','IBOV','BTC/USD']){
+  const rendered=nativeContext();badgeModule.exports.drawBadge(rendered.native,code);
+  const fillsForCode=rendered.state.calls.filter(call=>call.op==='fill');
+  assert.equal(fillsForCode.filter(call=>call.style==='#34343A').length,1,`${code} uses one neutral circular fallback disk`);
+  assert(fillsForCode.some(call=>call.style==='#FFFFFF'&&call.path.some(op=>op[0]==='rect')),`${code} renders readable vector initials, not the generic document glyph`);
+}
+console.log(JSON.stringify({version:'0.2.31',icons:['BBAS3','BBDC4','IBOV','BTC/USD'],shape:'26pt circular neutral initials fallback',glyphOverlay:false,smallAndMediumPath:'custom Canvas badge',nativeIPhone:false}));

@@ -1,4 +1,14 @@
-# Popular Scripting - Pro 0.2.30
+# Popular Scripting - Pro 0.2.31
+
+## 0.2.31 - fallback de ícones e nomes sem truncagem
+
+- BBAS3, BBDC4, IBOV e BTC/USD usam badges circulares neutros com iniciais
+  legíveis quando não existe asset gráfico aprovado; o fallback genérico de
+  documento não é usado nesses quatro slots.
+- A coluna de identidade calcula nomes longos com margem conservadora e piso
+  nativo menor, mantendo a bolinha em sua reserva sem cobrir letras. Dados,
+  ordem, fontes, lista recuperável, janela 7D e layout 2×2/4×2 permanecem.
+- A prévia 0.2.31 é fixture-only; iPhone nativo não testado.
 
 ## 0.2.30 - perfil publicado de teste B3/BTC e janela de 7 dias
 

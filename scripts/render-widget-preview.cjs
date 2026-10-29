@@ -6,7 +6,7 @@ const path = require('node:path');
 // native renderer and never fetches live data.
 const root = path.resolve(__dirname, '..');
 const assetsFile = path.join(root, 'scripts/Popular Scripting/assets.js');
-const output = path.join(root, 'validation/widget-preview-0.2.30-local.svg');
+const output = path.join(root, 'validation/widget-preview-0.2.31-local.svg');
 const assetSource = fs.readFileSync(assetsFile, 'utf8')
   .replace(/^(?:\/\/[^\n]*\n)+/, '')
   .replace(/^export const assets=/, '')
@@ -30,6 +30,8 @@ const STATUS_DOT = 3;
 const STATUS_SPACING = 8;
 const STATUS_TRAILING_GAP = 2;
 const NAME_TEXT_MAX = COL2 - STATUS_DOT - STATUS_SPACING - STATUS_TRAILING_GAP;
+const NAME_FONT_MIN = 3.6;
+const NAME_WIDTH_SAFETY = 1.12;
 const GRAPH_WIDTH = COL3;
 const GRAPH_TOP = 8;
 const GRAPH_HEIGHT = 20;
@@ -70,7 +72,7 @@ function nameLayout(value) {
   const string = String(value ?? '—');
   const raw = [...string].reduce((sum, char) => sum + (/[MW@#]/.test(char) ? 6.2 : /[ilI1.,' ]/.test(char) ? 2.8 : 4.8), 0);
   const maximum = Math.max(5, NAME_TEXT_MAX);
-  const size = Math.max(4.8, Math.min(9, 9 * maximum / Math.max(raw, 1)));
+  const size = Math.max(NAME_FONT_MIN, Math.min(9, 9 * maximum / Math.max(raw * NAME_WIDTH_SAFETY, 1)));
   return { size, width: Math.min(maximum, Math.max(5, raw * size / 9)) };
 }
 
@@ -200,18 +202,18 @@ function widget(x, y, rowsForWidget, title, columns) {
   return `<text x="${x}" y="${y - 14}" fill="#D1D1D6" font-family="-apple-system,Arial,sans-serif" font-size="13" font-weight="600">${title}</text><rect x="${x}" y="${y}" width="${width}" height="292" rx="10" fill="#1E1E1E" stroke="#34343A"/><g transform="translate(${x} ${y}) scale(2)"><g font-family="-apple-system,Arial,sans-serif">${content}${dividers}</g></g>`;
 }
 
-const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="420" viewBox="0 0 1000 420"><title>Popular Scripting 0.2.30 preview</title><desc>Fixture-only geometry evidence for four columns: circular icon, grouped name plus code and observation date, sparkline, and grouped right-aligned value, unit, and variation. The native name reservation is 27 pt, followed by 8 pt spacing, a 3 pt status dot, and 2 pt trailing room. The four requested identifiers are fixture-only; no quote or curve is claimed. The display domain is seven days.</desc><defs><clipPath id="badge-disk" clipPathUnits="userSpaceOnUse"><circle cx="13" cy="13" r="13"/></clipPath></defs><rect width="1000" height="420" rx="22" fill="#0F0F12"/>${widget(30, 42, rows.slice(0, 4), 'small · 2×2', 1)}${widget(360, 42, rows, 'medium/large · 4×2', 2)}${text(360, 366, 'Prévia de dados de teste · quatro colunas 28/40/46/26 pt · nome 27 pt + espaço 8 pt + ponto 3 pt + folga 2 pt · domínio 7D · sem alegação de render nativo/iPhone', 11, '#96969C')}</svg>`;
+const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="420" viewBox="0 0 1000 420"><title>Popular Scripting 0.2.31 preview</title><desc>Fixture-only geometry evidence for four columns: circular initials fallback, grouped name plus code and observation date, sparkline, and grouped right-aligned value, unit, and variation. The native name reservation is 27 pt, followed by 8 pt spacing, a 3 pt status dot, and 2 pt trailing room. The four requested identifiers are fixture-only; no quote or curve is claimed. The display domain is seven days.</desc><defs><clipPath id="badge-disk" clipPathUnits="userSpaceOnUse"><circle cx="13" cy="13" r="13"/></clipPath></defs><rect width="1000" height="420" rx="22" fill="#0F0F12"/>${widget(30, 42, rows.slice(0, 4), 'small · 2×2', 1)}${widget(360, 42, rows, 'medium/large · 4×2', 2)}${text(360, 366, 'Fixture · 4 colunas · nomes completos · janela 7D · sem render nativo/iPhone', 11, '#96969C')}</svg>`;
 
 const localSvg = svg
-  .replace('Popular Scripting 0.2.29 preview', 'Popular Scripting 0.2.30 local fixture')
+  .replace('Popular Scripting 0.2.31 preview', 'Popular Scripting 0.2.31 local fixture')
   .replaceAll('24h indisponível', '7d indisponível')
   .replace('Only USD/BRL has a timestamped curve; sparse sources say 7d indisponível.', 'The four requested identifiers are fixture-only; no quote or curve is claimed. The display domain is seven days.');
 fs.writeFileSync(output, localSvg + '\n');
 console.log(JSON.stringify({
   output,
-  version: '0.2.30-local',
+  version: '0.2.31-local',
   fourColumns: { icon: COL1, identity: COL2, graph: COL3, quote: COL4, gap: COL_GAP },
-  nameReservation: { text: NAME_TEXT_MAX, spacing: STATUS_SPACING, dot: STATUS_DOT, trailingGap: STATUS_TRAILING_GAP },
+  nameReservation: { text: NAME_TEXT_MAX, spacing: STATUS_SPACING, dot: STATUS_DOT, trailingGap: STATUS_TRAILING_GAP, fontMin: NAME_FONT_MIN, widthSafety: NAME_WIDTH_SAFETY },
   shortCodeAndDateInIdentityColumn: true,
   icons: ['BBAS3', 'BBDC4', 'IBOV', 'BTC/USD'],
   canvasBadges: ['BBAS3', 'BBDC4', 'IBOV', 'BTC/USD'],
