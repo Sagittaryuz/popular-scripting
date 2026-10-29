@@ -8,7 +8,7 @@ const args={queryParameters:{popular_refresh:options.force?'1':'0'}};
 const Color=class {constructor(hex,alpha=1){this.hex=hex;this.alpha=alpha;}};
 // Scriptable — Popular small/medium/large. O conjunto normal mantém oito
 // indicadores; o entry publicado pode selecionar o perfil de teste reversível.
-const VERSION = '2026.10.29.83'
+const VERSION = '2026.10.29.84'
 const SETTINGS = { refreshMinutes: 5, rotationMinutes: 5, selection: 'indicadores' };
 // Bloco 146 × 146 pt; quatro colunas e ícones circulares 26 pt centralizados nas linhas 36 pt.
 const LAYOUT = { columns: [28, 40, 46, 26], columnGap: 2, valueGap: 2, nameWidth: 40, priceWidth: 26, graphWidth: 46, rowHeight: 36, gap: 2/3, iconSize: 26, chartHeight: 20 };
@@ -50,6 +50,7 @@ const KRAKEN_WINDOW_HOURS = 7 * 24;
 const DADOSB3_BASE = 'https://dadosb3.com';
 const DADOSB3_WINDOW_DAYS = 7;
 const DADOSB3_QUERY_PADDING_DAYS = 8;
+const BRAPI_LOGO_LIST = 'https://brapi.dev/api/quote/list';
 const BTCUSD = Object.freeze({
   code:'BTC/USD',name:'Bitcoin',type:'criptomoedas',source:'Kraken',currency:'USD',unit:'USD/BTC',
   unitLabel:'USD/BTC · 24H',instrument:KRAKEN_ALT_PAIR,instrumentConfirmed:true,
@@ -156,6 +157,18 @@ async function request(url,json=false) {
   let result;try{result=await bounded(json?r.loadJSON():r.loadString(),milliseconds);}catch(error){networkFailures.push({url,reason:String(error.message||error)});throw error;}const status=r.response?.statusCode;
   if(status!=null&&(status<200||status>=300)){networkFailures.push({url,reason:'HTTP '+status});throw Error('HTTP '+status);}
   return result;
+}
+async function requestBinary(url) {
+  const remaining=collectionDeadline-Date.now();
+  if(remaining<=0)throw Error('Orçamento de consulta encerrado');
+  const milliseconds=Math.min(options.force?6000:3000,remaining),r=new Request(url);r.timeoutInterval=milliseconds/1000;
+  if(forceRefresh)r.headers={'Cache-Control':'no-cache','Pragma':'no-cache'};
+  let data;try{data=await bounded(r.load(),milliseconds);}catch(error){networkFailures.push({url,reason:String(error.message||error)});throw error;}
+  const status=r.response?.statusCode;
+  if(status!=null&&(status<200||status>=300)){networkFailures.push({url,reason:'HTTP '+status});throw Error('HTTP '+status);}
+  const base64=data?.toBase64String?.();
+  if(typeof base64!=='string'||base64.length<50||base64.length>2800000||!/^[A-Za-z0-9+/=]+$/.test(base64))throw Error('Imagem de metadado inválida');
+  return base64;
 }
 function validCatalog(c) { return !!c&&finite(c.fetchedAt)&&c.fetchedAt>0&&c.fetchedAt<=Date.now()&&Array.isArray(c.assets)&&c.assets.length>=1&&c.assets.every(a=>a&&typeof a.code==='string'&&typeof a.type==='string'&&typeof a.url==='string'&&a.url.startsWith(BASE+'/')&&(!a.source||a.source==='Investidor10')); }
 function validStamp(s) { return !!s&&finite(s.time)&&s.time>0&&(s.hasTime?s.time<=Date.now():typeof s.day==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(s.day)&&s.day<=new Date().toISOString().slice(0,10)); }
@@ -281,6 +294,18 @@ function dadosB3Rows(payload) {
   for(const key of ['precos','prices','data','dados','result','results','items'])if(Array.isArray(payload[key]))return payload[key];
   return null;
 }
+const DADOSB3_IMAGE_FIELDS=Object.freeze(['iconURL','iconUrl','imageURL','imageUrl','logoURL','logoUrl','imagemURL','imagemUrl','icon','image','logo','imagem']);
+function dadosB3ImageURL(payload) {
+  const seen=new Set(),visit=(value,depth)=>{
+    if(depth>3||!value||typeof value!=='object'||seen.has(value))return null;
+    seen.add(value);
+    if(Array.isArray(value)){for(const item of value.slice(0,3)){const found=visit(item,depth+1);if(found)return found;}return null;}
+    for(const field of DADOSB3_IMAGE_FIELDS){const candidate=value[field];if(typeof candidate==='string'&&/^https:\/\//.test(candidate.trim()))return candidate.trim();if(candidate&&typeof candidate==='object'){const found=visit(candidate,depth+1);if(found)return found;}}
+    for(const key of ['metadata','meta','empresa','company','indice','index','ativo','asset','instrument']){const found=visit(value[key],depth+1);if(found)return found;}
+    return null;
+  };
+  return visit(payload,0);
+}
 function dadosB3URL(asset,time=now.getTime()) {
   const end=dadosB3LocalDay(time),start=end&&isoDayAdd(end,-DADOSB3_QUERY_PADDING_DAYS),kind=asset.code==='IBOV'?'indices':'empresas',instrument=encodeURIComponent(asset.instrument||asset.code);
   if(!start||!end)throw Error('Janela DadosB3 inválida');
@@ -303,18 +328,62 @@ function parseDadosB3Rows(payload,asset,time=now.getTime()) {
   if(!last)throw Error('DadosB3 sem fechamento válido');
   const firstDay=isoDayAdd(last.stamp.day,-(DADOSB3_WINDOW_DAYS-1)),windowPoints=points.filter(point=>point.stamp.day>=firstDay&&point.stamp.day<=last.stamp.day),previous=windowPoints.at(-2),percent=previous?(last.value/previous.value-1)*100:null,delta=previous?last.value-previous.value:null;
   const chart=windowPoints.length>=2?{source:'DadosB3',instrument:asset.instrument||asset.code,window:'7D',windowDays:DADOSB3_WINDOW_DAYS,timeBasis:'eod-civil-day',closedOnly:true,points:windowPoints,sourceStartDay:firstDay,sourceEndDay:last.stamp.day}:null;
-  return {asset:{...asset,price:last.value,percent,delta,quoteBasis:'eod-close',percentBasis:'daily-close'},stamp:last.stamp,chart,chartStatus:chart?'valid-7D-eod':'price-only-eod',quoteVerified:true,quoteTimeBasis:'supplier-eod-date',fetchedAt:Date.now()};
+  const iconURL=dadosB3ImageURL(payload)||asset.iconURL||null;
+  return {asset:{...asset, ...(iconURL?{iconURL}:{}),price:last.value,percent,delta,quoteBasis:'eod-close',percentBasis:'daily-close'},stamp:last.stamp,chart,chartStatus:chart?'valid-7D-eod':'price-only-eod',quoteVerified:true,quoteTimeBasis:'supplier-eod-date',fetchedAt:Date.now()};
 }
 function validDadosB3Snapshot(row,time=Date.now()) {
   const asset=row?.asset,chart=row?.chart,points=chart?.points||[];
   return !!asset&&asset.source==='DadosB3'&&asset.instrumentConfirmed===true&&asset.instrument===asset.code&&asset.quoteBasis==='eod-close'&&asset.percentBasis==='daily-close'&&row.quoteVerified===true&&row.quoteTimeBasis==='supplier-eod-date'&&row.stamp?.hasTime===false&&validSnapshot(row,time)&&(!chart||(chart.source==='DadosB3'&&chart.window==='7D'&&chart.windowDays===DADOSB3_WINDOW_DAYS&&chart.timeBasis==='eod-civil-day'&&chart.closedOnly===true&&points.length>=2));
 }
+function parseBrapiLogoMap(payload) {
+  const stocks=Array.isArray(payload?.stocks)?payload.stocks:[],map={};
+  for(const item of stocks){
+    const code=String(item?.stock||'').trim();
+    if(!['BBAS3','BBDC4'].includes(code)||typeof item?.logo!=='string'||!/^https:\/\//.test(item.logo.trim())||map[code])continue;
+    map[code]={iconURL:item.logo.trim(),iconSource:'brapi-metadata'};
+  }
+  if(!Object.keys(map).length)throw Error('Brapi sem logos BBAS3/BBDC4');
+  return map;
+}
+function validBrapiLogoCache(value) {
+  return !!value&&value.source==='brapi-logo-list'&&finite(value.fetchedAt)&&value.fetchedAt<=Date.now()&&Date.now()-value.fetchedAt<30*86400000&&value.map&&typeof value.map==='object'&&Object.values(value.map).every(item=>item&&typeof item.iconURL==='string'&&/^https:\/\//.test(item.iconURL)&&item.iconSource==='brapi-metadata');
+}
+async function loadBrapiLogos() {
+  const key='brapi-logo-metadata-v1',saved=cacheRead(key);
+  if(cacheFresh(saved)&&validBrapiLogoCache(saved))return saved.map;
+  try {
+    const map=parseBrapiLogoMap(await request(BRAPI_LOGO_LIST,true));
+    cacheWrite(key,{source:'brapi-logo-list',fetchedAt:Date.now(),map});
+    return map;
+  } catch(error) {
+    console.log('Brapi logos: '+error);
+    return validBrapiLogoCache(saved)?saved.map:{};
+  }
+}
+function validApiIconCache(value,url) {
+  return !!value&&value.source==='api-logo'&&value.url===url&&typeof value.base64==='string'&&value.base64.length>=50&&value.base64.length<=2800000&&/^[A-Za-z0-9+/=]+$/.test(value.base64)&&finite(value.fetchedAt)&&value.fetchedAt<=Date.now()&&Date.now()-value.fetchedAt<30*86400000;
+}
+async function attachApiIcon(row) {
+  const url=row?.asset?.iconURL;
+  if(typeof url!=='string'||!/^https:\/\//.test(url))return row;
+  const key='api-icon-v1-'+row.asset.code.replace(/\W/g,'_'),saved=cacheRead(key);
+  if(validApiIconCache(saved,url))return {...row,asset:{...row.asset,iconData:saved.base64,iconSource:row.asset.iconSource||'api-metadata',iconCached:true}};
+  try {
+    const base64=await requestBinary(url);
+    cacheWrite(key,{source:'api-logo',url,base64,fetchedAt:Date.now()});
+    return {...row,asset:{...row.asset,iconData:base64,iconSource:row.asset.iconSource||'api-metadata',iconCached:false}};
+  } catch(error) {
+    console.log('Imagem API '+row.asset.code+': '+error);
+    return row;
+  }
+}
 async function loadDadosB3(asset) {
   const key='dadosb3-eod-v1-'+asset.code.replace(/\W/g,'_'),saved=cacheRead(key),cached=saved&&validDadosB3Snapshot(saved)?saved:null;
   if(cacheFresh(cached))return {...cached,cached:true};
   try {
-    const row=parseDadosB3Rows(await request(dadosB3URL(asset,now.getTime()),true),asset,now.getTime());
-    if(!validDadosB3Snapshot(row))throw Error('Snapshot DadosB3 reprovado na validação');
+    const parsed=parseDadosB3Rows(await request(dadosB3URL(asset,now.getTime()),true),asset,now.getTime());
+    if(!validDadosB3Snapshot(parsed))throw Error('Snapshot DadosB3 reprovado na validação');
+    const row=await attachApiIcon(parsed);
     cacheWrite(key,row);return row;
   } catch(error) {
     console.log('DadosB3 '+asset.code+': '+error);
@@ -1292,13 +1361,13 @@ async function collectAdditionalRows() {
 
 async function collectLocalTestRows() {
   collectionDeadline=Date.now()+(options.force?20000:8000);
-  const configured=[...LOCAL_TEST_ASSETS,BTCUSD],rows=[];
+  const logos=await loadBrapiLogos(),configured=[...LOCAL_TEST_ASSETS,BTCUSD],rows=[];
   for(const asset of configured){
     if(asset.code===BTCUSD.code){
       const row=await loadBTCUSD(now.getTime());
       rows.push({...row,localTest:true,asset:{...row.asset,localTest:true}});
     }else {
-      const row=await loadDadosB3(asset);
+      const row=await loadDadosB3(logos[asset.code]?{...asset,...logos[asset.code]}:asset);
       rows.push({...row,localTest:true,asset:{...row.asset,localTest:true}});
     }
   }
@@ -1593,7 +1662,7 @@ const ECONOMIC_SERIES={"schema":1,"verifiedAt":"2026-10-21T19:14:39.159920Z","se
  modes:ORDERING_MODES,displayName,displayPrice,displayPercent,presentationPercent,timeText,unitText,
  displayChart,lineCoordinates,monthLayout,gradientStrips,quoteAudit,economicRow,ECONOMIC_ASSETS,SOYBEAN,SELIC,IBOVESPA,FX,
  fixedIndicatorCodes:FIXED_INDICATOR_CODES,fixedIndicatorRows,
- parseFX,parseBCBStamp,parseKrakenAssetPair,parseKrakenTicker,parseKrakenOHLC,validKrakenSnapshot,parseDadosB3Rows,validDadosB3Snapshot,dadosB3URL,agrolinkSnapshot,validSnapshot,validEconomicRow,validEconomicSeries,cacheRead,cacheWrite,
+ parseFX,parseBCBStamp,parseKrakenAssetPair,parseKrakenTicker,parseKrakenOHLC,validKrakenSnapshot,parseDadosB3Rows,validDadosB3Snapshot,dadosB3URL,loadDadosB3,dadosB3ImageURL,parseBrapiLogoMap,loadBrapiLogos,agrolinkSnapshot,validSnapshot,validEconomicRow,validEconomicSeries,cacheRead,cacheWrite,
  BTCUSD,
  bundledRows:()=>ECONOMIC_ASSETS.map(d=>economicRow(d,ECONOMIC_SERIES.series[d.code])),
  failures:networkFailures};

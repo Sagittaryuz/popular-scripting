@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),{buildSync}=require('esbuild');
 const root=path.resolve(__dirname,'Popular Scripting'),view=fs.readFileSync(path.join(root,'view.tsx'),'utf8'),badges=fs.readFileSync(path.join(root,'badges.js'),'utf8');
 
-assert.match(view,/custom=\[[^\n]*'USD\/BRL'\]/,'USD/BRL uses the custom badge path instead of the legacy combined image');
+assert.match(view,/custom=!remoteIcon&&\[[^\n]*'USD\/BRL'\]/,'USD/BRL uses the custom badge path unless an API image decoded successfully');
 assert.doesNotMatch(badges,/\$|dollar/i,'the badge renderer contains no currency glyph overlay');
 assert.match(badges,/INITIAL_BADGES=.*BBAS3:'BB'.*BBDC4:'BD'.*IBOV:'IB'.*'BTC\/USD':'BTC'/,'the four published test assets have explicit neutral initial fallbacks');
 assert.match(view,/const NAME_FONT_MIN=3\.6/,'compact names can shrink below the old truncating floor');
@@ -50,4 +50,4 @@ for(const code of ['BBAS3','BBDC4','IBOV','BTC/USD']){
   assert.equal(fillsForCode.filter(call=>call.style==='#34343A').length,1,`${code} uses one neutral circular fallback disk`);
   assert(fillsForCode.some(call=>call.style==='#FFFFFF'&&call.path.some(op=>op[0]==='rect')),`${code} renders readable vector initials, not the generic document glyph`);
 }
-console.log(JSON.stringify({version:'0.2.31',icons:['BBAS3','BBDC4','IBOV','BTC/USD'],shape:'26pt circular neutral initials fallback',glyphOverlay:false,smallAndMediumPath:'custom Canvas badge',nativeIPhone:false}));
+console.log(JSON.stringify({version:'0.2.32',icons:['BBAS3','BBDC4','IBOV','BTC/USD'],shape:'26pt circular neutral initials fallback',glyphOverlay:false,smallAndMediumPath:'custom Canvas badge',nativeIPhone:false}));

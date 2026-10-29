@@ -1,3 +1,21 @@
+## 0.2.32 - versão identificável da integração DadosB3
+
+- Bump coerente do pacote Scripting, modelo, bundle do motor e manifesto para
+  permitir que instalações existentes obtenham e identifiquem o cliente
+  DadosB3 publicado.
+- Mantém BBAS3, BBDC4 e IBOV em consulta direta EOD, cache privado, ausência
+  honesta quando a fonte falha e todos os ajustes de layout, ordem, BTC e
+  janela de 7 dias. Nenhum payload real é empacotado; iPhone nativo não foi
+  testado.
+- O renderer aceita somente URL de imagem explicitamente presente nos
+  metadados (`logoUrl`, `logoURL`, `imageUrl`, `imageURL`, `iconUrl`,
+  `iconURL` e equivalentes); baixa/cacheia a imagem apenas localmente e usa
+  as iniciais circulares quando o campo não existe ou falha. Os metadados B3
+  verificados até aqui não fornecem logo.
+- Para BBAS3/BBDC4, a lista pública da Brapi é consultada uma vez apenas para
+  `stocks[].logo`; nenhuma cotação Brapi é usada. IBOV e BTC/USD continuam com
+  fallback de iniciais, sem URL montada ou proxy de imagem.
+
 ## 0.2.31 - fallback visual dos quatro ativos
 
 - Substitui o badge genérico de documento nos quatro ativos do perfil de teste

@@ -1,4 +1,13 @@
-# Popular Scripting - Pro 0.2.31
+# Popular Scripting - Pro 0.2.32
+
+## 0.2.32 - pacote identificável com cliente DadosB3
+
+- O pacote e o modelo usam `0.2.32`; o bundle do motor foi identificado como
+  `2026.10.29.84`, permitindo distinguir a integração publicada de uma
+  instalação 0.2.31. O manifesto de distribuição acompanha os hashes novos.
+- A fonte continua sendo chamada diretamente pelo widget para uso pessoal;
+  nenhum payload real é versionado ou redistribuído. O repositório não oferece
+  API, banco, proxy ou serviço de dados a terceiros. iPhone nativo não testado.
 
 ## 0.2.31 - fallback de ícones e nomes sem truncagem
 
@@ -11,6 +20,12 @@
 - BBAS3, BBDC4 e IBOV consultam diretamente DadosB3 para fechamentos COTAHIST
   EOD. O cliente mantém apenas cache privado no aparelho; não há payload real,
   proxy, backend, credencial ou redistribuição de dados neste repositório.
+- Um logo só é usado quando a própria resposta traz uma URL HTTPS em metadado
+  reconhecido; a URL passa pela allowlist existente, a imagem fica em cache
+  privado e o fallback continua sendo o badge circular de iniciais. Os
+  metadados B3 verificados não fornecem imagem. BBAS3/BBDC4 usam, quando
+  disponível, somente `stocks[].logo` retornado pela lista pública da Brapi;
+  seus preços e variações continuam exclusivamente DadosB3.
 - A prévia 0.2.31 é fixture-only; iPhone nativo não testado.
 
 ## 0.2.30 - perfil publicado de teste B3/BTC e janela de 7 dias

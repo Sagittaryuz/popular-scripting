@@ -7,8 +7,11 @@ const model=fs.readFileSync(path.join(root,'model.ts'),'utf8');
 const engine=fs.readFileSync(path.join(root,'original-engine.js'),'utf8');
 const script=JSON.parse(fs.readFileSync(path.join(root,'script.json'),'utf8'));
 
-assert.equal(script.version,'0.2.31');
+assert.equal(script.version,'0.2.32');
 assert.match(view,/import \{ Button, Canvas, Circle, HStack, Image, Rectangle, Text, ZStack, Script \} from 'scripting'/);
+assert.match(view,/iconData/,'API-provided icon data has a render path');
+assert.match(view,/mask=\{<Circle/,'remote icons remain circular in the existing 26pt slot');
+assert.match(engine,/BRAPI_LOGO_LIST/,'the logo source is explicit and separate from quote collection');
 assert.match(view,/widgetURL=\{Script\.createRunURLScheme\("Meu Painel", \{ section: "market" \}\)\}/);
 assert.match(view,/Button key=\{row\.asset\.code\} intent=\{RefreshAssetsOnTap\(undefined\)\}/);
 assert.match(view,/accessibilityLabel=\{`Atualizar indicadores\./);

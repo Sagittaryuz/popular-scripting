@@ -11,6 +11,7 @@ const b3Dates=['2026-10-22','2026-10-23','2026-10-26','2026-10-27','2026-10-28']
 const bbasURL='https://dadosb3.com/empresas/BBAS3/precos?de=2026-10-21&ate=2026-10-29';
 const bbdcURL='https://dadosb3.com/empresas/BBDC4/precos?de=2026-10-21&ate=2026-10-29';
 const ibovURL='https://dadosb3.com/indices/IBOV/precos?de=2026-10-21&ate=2026-10-29';
+const brapiURL='https://brapi.dev/api/quote/list',bbasLogoURL='https://icons.brapi.dev/icons/BBAS3.svg',bbdcLogoURL='https://icons.brapi.dev/icons/BBDC4.svg',syntheticIcon='iVBORw0KGgo'+'A'.repeat(80);
 const pairURL='https://api.kraken.com/0/public/AssetPairs?pair=XBTUSD';
 const tickerURL='https://api.kraken.com/0/public/Ticker?pair=XBTUSD';
 const ohlcURL='https://api.kraken.com/0/public/OHLC?pair=XBTUSD&interval=60';
@@ -20,6 +21,7 @@ for(let i=0;i<=168;i++){
   candles.push([Math.floor(at/1000),String(close-2),String(close+2),String(close-4),String(close),String(close-1),'4.2','3']);
 }
 const responses={
+  [brapiURL]:{stocks:[{stock:'BBAS3',logo:bbasLogoURL},{stock:'BBDC4',logo:bbdcLogoURL},{stock:'^BVSP',logo:'https://icons.brapi.dev/icons/BVSP.svg'}]},
   [bbasURL]:{precos:b3Dates.map((data,index)=>({data,precoFechamento:(22.1+index*.1).toFixed(2)}))},
   [bbdcURL]:{precos:b3Dates.map((data,index)=>({data,precoFechamento:(10.1+index*.05).toFixed(2)}))},
   [ibovURL]:{precos:b3Dates.map((data,index)=>({data,precoFechamento:String(170000+index*250)}))},
@@ -36,6 +38,7 @@ const requests=[];
 class MockRequest {
   constructor(url){this.url=url;this.response={statusCode:200};requests.push(url);}
   async loadJSON(){if(!responses[this.url])throw Error('unexpected URL '+this.url);return responses[this.url];}
+  async load(){if(![bbasLogoURL,bbdcLogoURL].includes(this.url))throw Error('unexpected binary fixture');return {toBase64String:()=>syntheticIcon};}
 }
 
 (async()=>{
@@ -48,6 +51,11 @@ class MockRequest {
   assert.equal(JSON.stringify(rows.map(row=>row.asset.code)),JSON.stringify(['BBAS3','BBDC4','IBOV','BTC/USD']));
   assert.equal(new Set(rows.map(row=>row.asset.code)).size,4,'local mode does not duplicate assets');
   assert(rows.slice(0,3).every(row=>row.localTest===true&&row.asset.source==='DadosB3'&&Number.isFinite(row.asset.price)&&row.chart?.window==='7D'&&row.chart?.timeBasis==='eod-civil-day'&&row.chart.points.length===5&&row.stamp.day==='2026-10-28'&&row.quoteVerified===true&&row.chartStatus==='valid-7D-eod'),'B3 rows use the direct EOD adapter');
+  assert.equal(rows[0].asset.iconURL,bbasLogoURL,'BBAS3 uses the URL returned by Brapi metadata');
+  assert.equal(rows[1].asset.iconURL,bbdcLogoURL,'BBDC4 uses the URL returned by Brapi metadata');
+  assert.equal(rows[0].asset.iconSource,'brapi-metadata');
+  assert.equal(rows[1].asset.iconData,syntheticIcon,'logo bytes remain a private cache payload');
+  assert.equal(rows[2].asset.iconURL,undefined,'IBOV keeps the initials fallback because Brapi list has no IBOV logo');
   assert.equal(rows[0].asset.percent,(22.5/22.4-1)*100,'BBAS3 variation uses the last two real closes');
   assert.equal(rows[1].asset.delta,10.3-10.25,'BBDC4 variation uses the last two real closes');
   assert.equal(rows[2].asset.price,171000,'IBOV uses points, not an ETF or proxy');
@@ -63,7 +71,7 @@ class MockRequest {
   assert.equal(btc.chart.points.length,167);
   assert.equal(btc.chart.currentCandleExcluded,true);
   assert.equal(btc.cached,undefined,'old cache does not leak into local test mode');
-  assert.equal(JSON.stringify(requests),JSON.stringify([bbasURL,bbdcURL,ibovURL,pairURL,tickerURL,ohlcURL]),'collectRows calls the three direct DadosB3 endpoints and Kraken');
+  assert.equal(JSON.stringify(requests),JSON.stringify([brapiURL,bbasURL,bbasLogoURL,bbdcURL,bbdcLogoURL,ibovURL,pairURL,tickerURL,ohlcURL]),'collectRows calls Brapi only for metadata, DadosB3 for quotes and Kraken for BTC');
   assert.equal(JSON.stringify(api.fixedIndicatorCodes),JSON.stringify(['SELIC','IPCA','IBOV','USD/BRL','SOJA_JATAI_GO','CUB_GO','DIESEL_S10','BRENT']),'production order remains separate');
   assert.deepEqual(Array.from(await api.collectAdditionalRows()),[],'local mode disables catalog additions');
 

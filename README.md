@@ -1,3 +1,10 @@
+## Atualização 0.2.32 - pacote identificável com cliente DadosB3
+
+O pacote e o modelo publicados agora são identificados como `0.2.32`; o
+bundle do motor também foi refeito (`2026.10.29.84`) para que uma instalação
+existente possa distinguir e obter a integração DadosB3. A fonte continua
+sendo consultada diretamente pelo widget, com uso pessoal e cache privado.
+
 ## Atualização 0.2.31 - ícones de fallback e nomes completos no perfil de teste
 
 Os quatro ativos do perfil publicado agora usam badges circulares neutros com
@@ -11,7 +18,12 @@ Dados, ordem, fontes, lista recuperável, janela de 7 dias, fallback
 `7d indisponível`, refresh e layout 2×2/4×2 permanecem. BBAS3, BBDC4 e
 IBOV agora consultam diretamente o DadosB3 para fechamentos COTAHIST EOD;
 o widget mantém somente cache privado no aparelho e não inclui respostas reais
-no repositório. A prévia
+no repositório. Este repositório contém somente o cliente do widget para uso
+pessoal; não oferece API, banco, proxy ou serviço de dados a terceiros, nem
+autoriza redistribuição das respostas do fornecedor. Para BBAS3 e BBDC4, o
+widget aceita somente o campo `stocks[].logo` retornado pela lista pública da
+Brapi; a Brapi não fornece as cotações usadas aqui. IBOV e BTC/USD mantêm o
+fallback de iniciais até haver metadado de imagem validado. A prévia
 [widget-preview-0.2.31-local.svg](validation/widget-preview-0.2.31-local.svg) e
 o PNG adjacente são fixture-only, sem preços, curvas ou dados pessoais.
 O iPhone nativo não foi testado.
@@ -210,7 +222,7 @@ Testes locais de fontes, observações antigas/futuras, alertas, cache, transpor
 
 # Popular Scripting
 
-**Atual: 0.2.31 - Scripting Pro.** Perfil publicado de quatro ativos
+**Atual: 0.2.32 - Scripting Pro.** Perfil publicado de quatro ativos
 (`BBAS3`, `BBDC4`, `IBOV`, `BTC/USD`) em janela móvel de 7 dias, com detalhes,
 CSV, alertas, assistente, Central de Controle e painel Início. [Ativação,
 testes e limites](PRO.md).
@@ -225,7 +237,7 @@ Na tela **Importar Scripts Remotos** do Scripting, cole:
 https://github.com/Sagittaryuz/popular-scripting/tree/main/scripts/Popular%20Scripting
 ```
 
-Importe **Popular Scripting**, confirme a versão **0.2.31**, abra o projeto e toque em **Atualizar**. Adicione o widget do Scripting à Tela de Início e selecione esse projeto.
+Importe **Popular Scripting**, confirme a versão **0.2.32**, abra o projeto e toque em **Atualizar**. Adicione o widget do Scripting à Tela de Início e selecione esse projeto.
 
 Para receber melhorias de código, use a atualização do script remoto no Scripting. Essa importação vincula o projeto à pasta `main/scripts/Popular Scripting`; não use um endereço de commit ou tag para acompanhar as próximas versões. O botão **Atualizar** dentro da tela do Popular consulta somente os indicadores e solicita recarregar o widget.
 
