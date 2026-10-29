@@ -44,6 +44,12 @@ const KRAKEN_DISPLAY_PAIR = 'XBT/USD';
 const KRAKEN_QUOTE = 'ZUSD';
 const KRAKEN_INTERVAL_MINUTES = 60;
 const KRAKEN_WINDOW_HOURS = 7 * 24;
+// DadosB3 is used only as a direct, personal-client source for the published
+// test profile. The service exposes EOD COTAHIST observations; this project
+// never embeds or republishes a response payload.
+const DADOSB3_BASE = 'https://dadosb3.com';
+const DADOSB3_WINDOW_DAYS = 7;
+const DADOSB3_QUERY_PADDING_DAYS = 8;
 const BTCUSD = Object.freeze({
   code:'BTC/USD',name:'Bitcoin',type:'criptomoedas',source:'Kraken',currency:'USD',unit:'USD/BTC',
   unitLabel:'USD/BTC · 24H',instrument:KRAKEN_ALT_PAIR,instrumentConfirmed:true,
@@ -68,9 +74,9 @@ function economicPanel(){return true;}
 const now = new Date(options.now ?? Date.now());
 const localTestMode = options.localTestAssets === true;
 const LOCAL_TEST_ASSETS = Object.freeze([
-  {code:'BBAS3',type:'acoes',name:'Banco do Brasil',source:'B3',currency:'BRL',unit:'BRL/ação',unitLabel:'BRL/ação',instrument:'BBAS3',instrumentConfirmed:true},
-  {code:'BBDC4',type:'acoes',name:'Bradesco PN',source:'B3',currency:'BRL',unit:'BRL/ação',unitLabel:'BRL/ação',instrument:'BBDC4',instrumentConfirmed:true},
-  {code:'IBOV',type:'indices',name:'Ibovespa',source:'B3',currency:'PTS',unit:'points',unitLabel:'pontos',instrument:'IBOV',instrumentConfirmed:true}
+  {code:'BBAS3',type:'acoes',name:'Banco do Brasil',source:'DadosB3',currency:'BRL',unit:'BRL/ação',unitLabel:'BRL/ação',instrument:'BBAS3',instrumentConfirmed:true},
+  {code:'BBDC4',type:'acoes',name:'Bradesco PN',source:'DadosB3',currency:'BRL',unit:'BRL/ação',unitLabel:'BRL/ação',instrument:'BBDC4',instrumentConfirmed:true},
+  {code:'IBOV',type:'indices',name:'Ibovespa',source:'DadosB3',currency:'PTS',unit:'points',unitLabel:'pontos',instrument:'IBOV',instrumentConfirmed:true}
 ]);
 const forceRefresh = String(args.queryParameters?.popular_refresh || '') === '1';
 const fm = FileManager.local();
@@ -249,6 +255,72 @@ function validSnapshot(r,time=Date.now()) {
   if(r.chart&&(!Array.isArray(r.chart.points)||r.chart.points.length<2||r.chart.points.some((p,i)=>!finite(p.value)||p.value<=0||!validStamp(p.stamp)||(i&&p.stamp.time<=r.chart.points[i-1].stamp.time))))return false;
   if(r.asset.code==='OURO'&&(r.asset.source!=='Investidor10'||r.asset.instrument!=='I10-GOLD-REFERENCE'||r.asset.referenceOnly!==true||r.asset.currency!=='USD'||r.asset.unit!=='ozt'||r.quoteVerified!==true||!validGoldValidation(r.goldValidation,r.asset.price)))return false;
   return r.asset.code!=='USD/BRL'||(r.asset.currency==='BRL'&&!!r.stamp&&r.asset.price>=.1&&r.asset.price<=100);
+}
+
+function dadosB3LocalDay(time) {
+  return finite(time)?new Date(time).toLocaleDateString('sv-SE',{timeZone:'America/Sao_Paulo'}):null;
+}
+function dadosB3Day(value) {
+  const text=String(value??'').trim(),iso=text.match(/^(\d{4})-(\d{2})-(\d{2})/),br=text.match(/^(\d{2})\/(\d{2})\/(\d{4})/);
+  const day=iso?iso[1]+'-'+iso[2]+'-'+iso[3]:br?br[3]+'-'+br[2]+'-'+br[1]:null;
+  if(!day||!/^\d{4}-\d{2}-\d{2}$/.test(day))return null;
+  const time=Date.parse(day+'T12:00:00Z');
+  return finite(time)&&new Date(time).toISOString().slice(0,10)===day?day:null;
+}
+function dadosB3Number(value) {
+  if(typeof value==='number')return finite(value)?value:null;
+  const text=String(value??'').trim().replace(/R\$|%/g,'').replace(/\s/g,'');
+  if(!text)return null;
+  const comma=text.lastIndexOf(','),dot=text.lastIndexOf('.'),normalized=comma>=0&&comma>dot?text.replace(/\./g,'').replace(',','.'):text.replace(/,/g,'');
+  const number=Number(normalized);
+  return finite(number)?number:null;
+}
+function dadosB3Rows(payload) {
+  if(Array.isArray(payload))return payload;
+  if(!payload||typeof payload!=='object')return null;
+  for(const key of ['precos','prices','data','dados','result','results','items'])if(Array.isArray(payload[key]))return payload[key];
+  return null;
+}
+function dadosB3URL(asset,time=now.getTime()) {
+  const end=dadosB3LocalDay(time),start=end&&isoDayAdd(end,-DADOSB3_QUERY_PADDING_DAYS),kind=asset.code==='IBOV'?'indices':'empresas',instrument=encodeURIComponent(asset.instrument||asset.code);
+  if(!start||!end)throw Error('Janela DadosB3 inválida');
+  return DADOSB3_BASE+'/'+kind+'/'+instrument+'/precos?de='+start+'&ate='+end;
+}
+function parseDadosB3Rows(payload,asset,time=now.getTime()) {
+  const rows=dadosB3Rows(payload),queryDay=dadosB3LocalDay(time),byDay=new Map();
+  if(!rows)throw Error('Resposta DadosB3 sem lista de preços');
+  for(const row of rows){
+    if(!row||typeof row!=='object')continue;
+    const rawDay=row.data??row.date??row.dataPregao??row.data_pregao??row.tradingDate??row.datePregao,
+      rawClose=row.precoFechamento??row.preco_fechamento??row.fechamento??row.close??row.closingPrice??row.price??row.valor;
+    if(rawDay==null&&rawClose==null)continue;
+    const day=dadosB3Day(rawDay),value=dadosB3Number(rawClose);
+    if(!day||day>queryDay||!finite(value)||value<=0)throw Error('Observação EOD DadosB3 inválida');
+    if(byDay.has(day))throw Error('Observação EOD DadosB3 duplicada');
+    byDay.set(day,{value,stamp:{day,time:Date.parse(day+'T12:00:00Z'),hasTime:false,label:day.slice(8)+'/'+day.slice(5,7)}});
+  }
+  const points=[...byDay.values()].sort((a,b)=>a.stamp.time-b.stamp.time),last=points.at(-1);
+  if(!last)throw Error('DadosB3 sem fechamento válido');
+  const firstDay=isoDayAdd(last.stamp.day,-(DADOSB3_WINDOW_DAYS-1)),windowPoints=points.filter(point=>point.stamp.day>=firstDay&&point.stamp.day<=last.stamp.day),previous=windowPoints.at(-2),percent=previous?(last.value/previous.value-1)*100:null,delta=previous?last.value-previous.value:null;
+  const chart=windowPoints.length>=2?{source:'DadosB3',instrument:asset.instrument||asset.code,window:'7D',windowDays:DADOSB3_WINDOW_DAYS,timeBasis:'eod-civil-day',closedOnly:true,points:windowPoints,sourceStartDay:firstDay,sourceEndDay:last.stamp.day}:null;
+  return {asset:{...asset,price:last.value,percent,delta,quoteBasis:'eod-close',percentBasis:'daily-close'},stamp:last.stamp,chart,chartStatus:chart?'valid-7D-eod':'price-only-eod',quoteVerified:true,quoteTimeBasis:'supplier-eod-date',fetchedAt:Date.now()};
+}
+function validDadosB3Snapshot(row,time=Date.now()) {
+  const asset=row?.asset,chart=row?.chart,points=chart?.points||[];
+  return !!asset&&asset.source==='DadosB3'&&asset.instrumentConfirmed===true&&asset.instrument===asset.code&&asset.quoteBasis==='eod-close'&&asset.percentBasis==='daily-close'&&row.quoteVerified===true&&row.quoteTimeBasis==='supplier-eod-date'&&row.stamp?.hasTime===false&&validSnapshot(row,time)&&(!chart||(chart.source==='DadosB3'&&chart.window==='7D'&&chart.windowDays===DADOSB3_WINDOW_DAYS&&chart.timeBasis==='eod-civil-day'&&chart.closedOnly===true&&points.length>=2));
+}
+async function loadDadosB3(asset) {
+  const key='dadosb3-eod-v1-'+asset.code.replace(/\W/g,'_'),saved=cacheRead(key),cached=saved&&validDadosB3Snapshot(saved)?saved:null;
+  if(cacheFresh(cached))return {...cached,cached:true};
+  try {
+    const row=parseDadosB3Rows(await request(dadosB3URL(asset,now.getTime()),true),asset,now.getTime());
+    if(!validDadosB3Snapshot(row))throw Error('Snapshot DadosB3 reprovado na validação');
+    cacheWrite(key,row);return row;
+  } catch(error) {
+    console.log('DadosB3 '+asset.code+': '+error);
+    if(cached)return {...cached,cached:true};
+    return {asset:{...asset,price:null,percent:null,delta:null},stamp:null,chart:null,chartStatus:'DadosB3-unavailable',quoteVerified:false,cached:false,localTest:true,sourceError:String(error?.message||error)};
+  }
 }
 
 function brentUnavailable(asset) { const last=priorInvestingSnapshot({...asset,type:'commodities',currency:'USD'});if(last)return last;return {asset:{...asset,source:'Investing',price:null,percent:null,delta:null,currency:'USD',unit:'bbl',referenceOnly:false,instrumentConfirmed:false},stamp:null,chart:null,chartStatus:'Investing-contract-not-verifiable',quoteVerified:false}; }
@@ -1218,9 +1290,6 @@ async function collectAdditionalRows() {
   return rows.filter(row=>row.stamp?.day&&finite(row.asset.price)&&row.asset.price>0);
 }
 
-function localTestUnavailable(asset) {
-  return {asset:{...asset,price:null,percent:null,delta:null},stamp:null,chart:null,chartStatus:'local-test-'+asset.code+'-source-unavailable',quoteVerified:false,cached:false,localTest:true,sourceError:'B3 quote source unavailable in authorized local test'};
-}
 async function collectLocalTestRows() {
   collectionDeadline=Date.now()+(options.force?20000:8000);
   const configured=[...LOCAL_TEST_ASSETS,BTCUSD],rows=[];
@@ -1228,7 +1297,10 @@ async function collectLocalTestRows() {
     if(asset.code===BTCUSD.code){
       const row=await loadBTCUSD(now.getTime());
       rows.push({...row,localTest:true,asset:{...row.asset,localTest:true}});
-    }else rows.push(localTestUnavailable(asset));
+    }else {
+      const row=await loadDadosB3(asset);
+      rows.push({...row,localTest:true,asset:{...row.asset,localTest:true}});
+    }
   }
   return rows;
 }
@@ -1325,13 +1397,13 @@ function timePresentation(row) {
   if(asset.sourceTag&&!row.economicValidation)return {text:'— '+asset.sourceTag,candidates:['— '+asset.sourceTag],fallback:'— '+asset.sourceTag.slice(0,1)};
   if(row.economicValidation){const d=ECONOMIC_ASSETS.find(a=>a.code===asset.code),period=d?.frequency==='monthly'?monthlyReferenceDay(row.referencePeriod):d&&stamp?.day?stamp.day:null;if(!d||!period)return {text:'— '+(asset.sourceTag||'—'),candidates:['— '+(asset.sourceTag||'—')],fallback:'— '+(asset.sourceTag||'—').slice(0,2)};const compactDay=period.slice(8)+'/'+period.slice(5,7),mark=cached||row.archive?'†':'',base=compactDay+' '+d.sourceTag;return {text:base+mark,candidates:[base+mark,compactDay+' '+d.sourceTag.slice(0,1)+mark,...(mark?[compactDay+' '+d.sourceTag.slice(0,1)+'*']:[])],fallback:'— '+d.sourceTag.slice(0,1)+(mark?'*':'')};}
   if(asset.type==='empty'||asset.source==='pending')return {text:'—',candidates:['—'],fallback:'—'};
-  if(row.localTest&&asset.source==='B3')return {text:'— B3',candidates:['— B3','—'],fallback:'— B3'};
+  if(row.localTest&&asset.source==='DadosB3'&&!row.stamp)return {text:'— B3',candidates:['— B3','—'],fallback:'— B3'};
   if(row.localTest&&asset.source==='Kraken'&&!row.quoteTimeBasis)return {text:'— KR',candidates:['— KR','—'],fallback:'— KR'};
   if(asset.source==='Kraken'&&row.quoteTimeBasis==='kraken-query-time'&&stamp?.hasTime&&finite(stamp.time)){
     const iso=new Date(stamp.time).toISOString(),value='consulta '+iso.slice(11,16)+'Z KR',short='consulta '+iso.slice(11,16)+'Z';
     return {text:value,candidates:[value,short,'— KR'],fallback:'— KR'};
   }
-  const tag=asset.source==='BCB-SGS'?'BCB':asset.source==='FRED'?'FR':asset.source==='AgroLink'?'AG':asset.source==='pending'?'—':asset.source==='Investing'||asset.code==='BRENT'?'INV':asset.code==='USD/BRL'?'AA':'I10',short=tag==='BCB'?'B':tag==='FR'?'F':tag==='AG'?'AG':tag==='—'?'—':tag==='INV'?'I':tag==='AA'?'A':'10';
+  const tag=asset.source==='BCB-SGS'?'BCB':asset.source==='FRED'?'FR':asset.source==='AgroLink'?'AG':asset.source==='DadosB3'?'B3':asset.source==='pending'?'—':asset.source==='Investing'||asset.code==='BRENT'?'INV':asset.code==='USD/BRL'?'AA':'I10',short=tag==='BCB'?'B':tag==='FR'?'F':tag==='AG'?'AG':tag==='B3'?'B3':tag==='—'?'—':tag==='INV'?'I':tag==='AA'?'A':'10';
   const displayNow=Date.now(),today=new Date(displayNow).toLocaleDateString('sv-SE',{timeZone:'America/Sao_Paulo'});
   let label=null,day=null;
   if(row.referencePeriod&&asset.source==='FRED'&&/^\d{4}-\d{2}$/.test(row.referencePeriod)){const period=row.referencePeriod.slice(5)+'/'+row.referencePeriod.slice(2,4),mark=cached||row.archive?'†':'';return {text:period+' FR'+mark,candidates:[period+' FR'+mark,period+' F'+mark,...(mark?[period+' F*']:[])],fallback:'— F'+(mark?'*':'')};}
@@ -1406,15 +1478,17 @@ function monthlyPublicationDisplayWindow(chart,time=now.getTime()) {
 function displayChart(chart,time=now.getTime()) {
   if(!chart||!Array.isArray(chart.points))return null;
   const window=chartDisplayWindow(time);
+  const eod=chart.timeBasis==='eod-civil-day',endDay=eod?(chart.sourceEndDay||chart.points.at(-1)?.stamp?.day):null,startDay=eod?(chart.sourceStartDay||(endDay&&isoDayAdd(endDay,-(DADOSB3_WINDOW_DAYS-1)))):null;
   // Rendering only: preserve the full source history and comparison bases in
-  // cache, but draw only real timestamped observations in the last seven days.
-  // Civil-day/monthly/weekly observations deliberately become unavailable;
-  // they are not interpolated, zero-filled, or relabeled as intraday data.
+  // cache. Intraday curves require real instants; the documented DadosB3 EOD
+  // contract is the explicit exception and uses civil-date observations only.
   const points=window?chart.points.filter(point=>{
     const stamp=point?.stamp;
+    if(eod)return stamp?.hasTime===false&&typeof stamp.day==='string'&&stamp.day>=startDay&&stamp.day<=endDay&&finite(stamp.time);
     return stamp?.hasTime===true&&finite(stamp.time)&&stamp.time>=window.startTime&&stamp.time<=window.endTime;
   }):[];
-  return {...chart,points,displayWindow:window,displayDomain:null,displayStatus:points.length>=2?'available-7d':'unavailable-7d'};
+  const displayDomain=eod&&points.length>=2?{startTime:points[0].stamp.time,endTime:points.at(-1).stamp.time,startDay:points[0].stamp.day,endDay:points.at(-1).stamp.day,timeBasis:'eod-civil-day'}:null;
+  return {...chart,points,displayWindow:window,displayDomain,displayStatus:points.length>=2?(eod?'available-7d-eod':'available-7d'):'unavailable-7d'};
 }
 function monthlyPeriodSerial(period) {
   if(typeof period!=='string'||!/^[0-9]{4}-[0-9]{2}$/.test(period))return null;
@@ -1519,7 +1593,7 @@ const ECONOMIC_SERIES={"schema":1,"verifiedAt":"2026-10-21T19:14:39.159920Z","se
  modes:ORDERING_MODES,displayName,displayPrice,displayPercent,presentationPercent,timeText,unitText,
  displayChart,lineCoordinates,monthLayout,gradientStrips,quoteAudit,economicRow,ECONOMIC_ASSETS,SOYBEAN,SELIC,IBOVESPA,FX,
  fixedIndicatorCodes:FIXED_INDICATOR_CODES,fixedIndicatorRows,
- parseFX,parseBCBStamp,parseKrakenAssetPair,parseKrakenTicker,parseKrakenOHLC,validKrakenSnapshot,agrolinkSnapshot,validSnapshot,validEconomicRow,validEconomicSeries,cacheRead,cacheWrite,
+ parseFX,parseBCBStamp,parseKrakenAssetPair,parseKrakenTicker,parseKrakenOHLC,validKrakenSnapshot,parseDadosB3Rows,validDadosB3Snapshot,dadosB3URL,agrolinkSnapshot,validSnapshot,validEconomicRow,validEconomicSeries,cacheRead,cacheWrite,
  BTCUSD,
  bundledRows:()=>ECONOMIC_ASSETS.map(d=>economicRow(d,ECONOMIC_SERIES.series[d.code])),
  failures:networkFailures};

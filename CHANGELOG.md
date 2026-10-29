@@ -9,6 +9,11 @@
 - Preserva dados, ordem, fontes, lista anterior recuperável, período 7D,
   `7d indisponível`, refresh e todas as dimensões. Prévia fixture-only;
   iPhone nativo não testado.
+- Integra o cliente direto DadosB3 para BBAS3, BBDC4 e IBOV: fechamentos
+  COTAHIST EOD, variação entre os dois últimos fechamentos, janela de sete
+  dias sem preencher lacunas e cache somente privado. Nenhum dado real é
+  empacotado ou redistribuído; a consulta exige uso pessoal conforme os termos
+  do serviço. A validação ao vivo deste executor retornou HTTP 403.
 
 ## 0.2.30 - perfil publicado de quatro ativos e janela de 7 dias
 

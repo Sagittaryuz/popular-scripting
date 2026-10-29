@@ -8,7 +8,10 @@ com piso de fonte reduzido e escala nativa limitada dentro da coluna de
 identidade; o ponto de estado mantém sua reserva e não cobre o nome.
 
 Dados, ordem, fontes, lista recuperável, janela de 7 dias, fallback
-`7d indisponível`, refresh e layout 2×2/4×2 permanecem. A prévia
+`7d indisponível`, refresh e layout 2×2/4×2 permanecem. BBAS3, BBDC4 e
+IBOV agora consultam diretamente o DadosB3 para fechamentos COTAHIST EOD;
+o widget mantém somente cache privado no aparelho e não inclui respostas reais
+no repositório. A prévia
 [widget-preview-0.2.31-local.svg](validation/widget-preview-0.2.31-local.svg) e
 o PNG adjacente são fixture-only, sem preços, curvas ou dados pessoais.
 O iPhone nativo não foi testado.
@@ -20,11 +23,14 @@ O entry publicado agora ativa, de forma reversível, o perfil de teste
 grande. A lista fixa anterior de oito indicadores continua preservada em
 `FIXED_INDICATOR_CODES` para recuperação; não é usada pelo perfil ativo.
 
-BBAS3, BBDC4 e IBOV permanecem explicitamente sem cotação, variação ou curva
-até existir uma fonte autorizada e validada. `BTC/USD` consulta o adaptador
-público Kraken para `XBT/USD`/`ZUSD` quando disponível; nenhum valor é fixado
-ou fabricado, e indisponibilidade conserva a linha sem amostra. Gráficos usam
-somente observações reais timestampadas numa janela móvel de 7 dias; a
+BBAS3, BBDC4 e IBOV consultam diretamente os endpoints públicos EOD do
+DadosB3, com preço no último fechamento e variação entre os dois últimos
+fechamentos disponíveis. A curva usa somente observações reais dos últimos
+sete dias corridos; fins de semana e lacunas não são preenchidos. Como o
+fornecedor entrega data civil, não horário intradiário, a curva é identificada
+como EOD. Falha ou indisponibilidade conserva cache privado validado ou deixa
+a linha sem amostra. `BTC/USD` consulta o adaptador público Kraken para
+`XBT/USD`/`ZUSD` quando disponível; nenhum valor é fixado ou fabricado, e a
 variação do BTC continua sendo móvel de 24 horas, separada do domínio gráfico.
 
 A prévia [widget-preview-0.2.30-local.svg](validation/widget-preview-0.2.30-local.svg)
@@ -226,10 +232,10 @@ Para receber melhorias de código, use a atualização do script remoto no Scrip
 ## Tamanhos e dados
 
 - Pequeno, médio e grande: o perfil publicado mostra os quatro ativos de teste na mesma ordem; o médio/grande não repete linhas na segunda coluna.
-- Os três slots B3 permanecem reservados sem cotação até fonte validada; o BTC/USD usa somente o adaptador público Kraken quando a resposta for válida.
-- O domínio de gráfico ativo é 7D por timestamp real; sem amostras válidas aparece `7d indisponível`, sem interpolação, weekend fill ou valor fictício.
+- BBAS3, BBDC4 e IBOV usam consulta direta EOD do DadosB3; sem resposta válida, o cache privado validado ou o slot vazio é preservado. O BTC/USD usa somente o adaptador público Kraken quando a resposta for válida.
+- O domínio de gráfico ativo é 7D: BTC usa timestamps reais e DadosB3 usa datas civis EOD explicitamente; sem amostras válidas aparece `7d indisponível`, sem interpolação, weekend fill ou valor fictício.
 - A lista anterior de oito, fontes e ícones continua preservada no histórico/código para recuperação; não é a configuração ativa desta versão.
-- Fontes anteriores incluem BCB, AgroLink, Investidor10, AwesomeAPI e FRED; a documentação da Kraken para o perfil ativo está registrada no changelog.
+- Fontes incluem DadosB3 (COTAHIST EOD pessoal), BCB, AgroLink, Investidor10, AwesomeAPI, FRED e Kraken; respostas reais não são empacotadas nem redistribuídas.
 - Dados econômicos de referência são consultados diretamente deste Git, sem autenticação. Rede indisponível ou resposta inválida preserva o cache validado ou a reserva versionada, com suas datas originais.
 - O workflow `economic-data.yml` é programado a cada hora útil, 11h17–23h17 UTC, sujeito a atrasos do GitHub. Falha de uma fonte mantém a série anterior e é registrada no workflow; dados antigos não recebem data de observação nova.
 - Política de atualização do widget: a partir de um minuto, configurável em 1/5/15, sujeita ao iOS.
@@ -265,23 +271,23 @@ O entry publicado usa BBAS3 (Banco do Brasil), BBDC4 (Bradesco PN), IBOV
 4x2. A lista fixa de produção anterior permanece recuperável e inalterada.
 
 O perfil `PUBLISHED_TEST_ASSETS` passa essa seleção pelo caminho real de
-`loadModel`/`collectRows`: reserva explicitamente os três slots B3 como
-indisponíveis e chama `loadBTCUSD` para o quarto. Cache antigo e
+`loadModel`/`collectRows`: consulta diretamente os três endpoints EOD do
+DadosB3 e chama `loadBTCUSD` para o quarto. Cache antigo e
 `collectAdditionalRows` não substituem o perfil ativo; alterar essa constante
 restitui a lista anterior sem apagar sua definição.
 
-O domínio visual agora é uma janela móvel de 7 dias corridos (168 horas) por
-timestamp. Só observações reais timestampadas entram na curva; fins de
-semana, lacunas e fontes mensais/semanais não são preenchidos. A fixture local
-não exibe preços, variações ou curvas para BBAS3/BBDC4/IBOV. O adaptador local
-de BTC/USD agora usa somente a API pública da Kraken, com o par confirmado
+O domínio visual agora é uma janela móvel de 7 dias corridos (168 horas). Só
+observações reais entram na curva; fins de semana e lacunas não são
+preenchidos. As prévias fixture-only não exibem dados reais. O adaptador
+DadosB3 entrega fechamentos EOD com data civil explícita; o adaptador local de
+BTC/USD usa somente a API pública da Kraken, com o par confirmado
 `XBT/USD`/`ZUSD`, sem chave e sem USDT: o ticker fornece o último negócio no
 horário da consulta, enquanto a curva usa candles horários fechados em 7 dias
 e exclui o candle atual. A variação é uma referência móvel de 24 horas contra
 a última observação fechada disponível, separada do domínio gráfico de 7 dias;
-não há valor hardcoded. O adaptador existente do Ibovespa/Investidor10 e o
-Yahoo Finance não foram substituídos nem contornados; BBAS3/BBDC4 continuam
-sem fonte autorizada neste checkout. A resolução DNS deste executor falhou com
+não há valor hardcoded. DadosB3 é consultado diretamente pelo widget, sem
+proxy, backend, credencial, payload real versionado ou redistribuição de
+dados; o uso autorizado é pessoal. A resolução DNS deste executor falhou com
 `EAI_AGAIN api.kraken.com` durante a tentativa ao vivo; os testes usam payloads
 determinísticos e não afirmam cotação atual. B3 e Bitcoin não têm estado de
 sessão inferido da captura. O contrato foi conferido na documentação oficial
