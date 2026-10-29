@@ -1,0 +1,57 @@
+{
+  "version": "0.2.25",
+  "repository": "Sagittaryuz/popular-scripting",
+  "branch": "main",
+  "window": {
+    "hours": 24,
+    "basis": "real timestamped observations",
+    "timeZone": "America/Sao_Paulo",
+    "civilOrSparseFallback": "24h indisponível",
+    "interpolation": false,
+    "zeroFill": false
+  },
+  "sourceDecision": {
+    "USD/BRL": {
+      "endpoint": "https://economia.awesomeapi.com.br/USD-BRL/100",
+      "granularity": "1 minute sequential quotes",
+      "timestampBasis": "UTC timestamp from provider",
+      "documentation": "https://docs.awesomeapi.com.br/api-de-moedas"
+    },
+    "monthlyWeeklyDailyIndicators": "preserve value/date; do not render a 24h curve without two real intraday samples"
+  },
+  "geometry": {
+    "rowPt": 36,
+    "iconPt": 20,
+    "iconTopPt": 8,
+    "titleHeightPt": 8,
+    "graphHeightPt": 15,
+    "graphTopPt": 10.5,
+    "middleCenterPt": 18,
+    "bottomMetadataTopPt": 29,
+    "smallRows": 4,
+    "mediumLargeRows": 8,
+    "statusDotPt": 3
+  },
+  "contrast": {
+    "positive": "#00E676",
+    "negative": "#FF1744",
+    "gradientMaximumAlpha": 0.36
+  },
+  "preview": {
+    "svg": "validation/widget-preview-0.2.25.svg",
+    "png": "validation/widget-preview-0.2.25.png",
+    "libraryFileId": "libfile_807a322e4cc48191ad0afde42a49bc6a",
+    "rasterized": true,
+    "pixelInspection": "view_image completed",
+    "fixtureOnly": true,
+    "nativeIPhone": "not-tested"
+  },
+  "tests": [
+    "npm test",
+    "npm run check",
+    "test-24h-window.cjs: excludes 25h points, accepts real timestamps, rejects monthly/CUB civil points, verifies no interpolation/zero fill and stronger fill",
+    "test-internal-alignment.cjs: small/medium/large title-above-icon, 20 pt icon, 15 pt graph, top/middle/bottom alignment",
+    "test-row-tap.cjs: four/eight independent refresh hitboxes and preserved USD custom Canvas path"
+  ],
+  "networkLimit": "The executor's direct request to the documented minute endpoint returned HTTP 403; no workaround or live quote was claimed."
+}

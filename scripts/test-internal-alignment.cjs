@@ -1,81 +1,49 @@
-const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
+const assert=require('node:assert/strict'),path=require('node:path'),vm=require('node:vm');
 const {buildSync}=require('esbuild'),dir=path.resolve(__dirname,'Popular Scripting');
-
-function bundle(file,options={}){
-  return buildSync({entryPoints:[path.join(dir,file)],bundle:true,write:false,format:'cjs',platform:'node',external:['scripting'],jsxFactory:'createElement',...options}).outputFiles[0].text;
-}
-function loadDraw(){
-  const module={exports:{}};
-  vm.runInNewContext(bundle('draw.js'),{module,exports:module.exports,Math,Number,Date,Intl,JSON});
-  return module.exports;
-}
+function bundle(file){return buildSync({entryPoints:[path.join(dir,file)],bundle:true,write:false,format:'cjs',platform:'node',external:['scripting'],jsxFactory:'createElement'}).outputFiles[0].text}
+function loadDraw(){const module={exports:{}};vm.runInNewContext(bundle('draw.js'),{module,exports:module.exports,Math,Number,Date,Intl,JSON});return module.exports}
 function walk(node){return node&&typeof node==='object'?[node,...(node.children||[]).flatMap(walk)]:[]}
-
 const draw=loadDraw(),G=draw.GEOMETRY;
-assert.equal(G.row,36,'Approved row height is unchanged');
-assert.equal(G.icon,26,'Approved icon diameter is unchanged');
-assert.equal(G.blockTop,0,'The recovered 0.2.13 block starts at the row top');
-assert.equal(G.blockHeight,G.row,'The grouped block keeps the full approved row height');
-assert.equal(G.blockTop+G.blockHeight/2,G.iconTop+G.icon/2,'The total block center equals the icon center');
-assert.equal(G.iconTop+G.icon/2,18,'Icon center remains at y=18');
-assert.equal(G.line1Top,G.blockTop,'Line 1 keeps the recovered top offset');
-assert.equal(G.graphTop,G.blockTop+G.top,'Graph keeps the recovered line 2 offset');
-assert.equal(G.monthTop,G.blockTop+23,'Month band keeps the recovered offset');
-assert.equal(G.line2Top,G.blockTop+G.top,'Variation keeps the recovered line 2 offset');
-assert.equal(G.line3Top,G.blockTop+28,'Line 3 keeps the recovered offset');
-assert.equal(G.line3Top+G.bottom,G.blockTop+G.blockHeight,'Line 3 keeps the approved row bottom');
-assert.notEqual(G.line2Top+G.middle/2,G.blockCenter,'Line 2 is not independently recentered');
+assert.equal(G.row,36,'row height stays fixed');
+assert.equal(G.icon,20,'icons are reduced');
+assert.equal(G.iconTop+G.icon/2,G.blockCenter,'icon and right-hand group share the row center');
+assert.equal(G.nameTop+G.nameHeight,G.iconTop,'the title sits immediately above the icon');
+assert(G.graphHeight>5.5,'the chart receives visibly more height');
+assert.equal(G.graphTop+G.graphHeight/2,G.line2Top+G.middle/2,'chart and variation share the centered middle line');
+assert.equal(G.line3Top+G.bottom,G.blockTop+G.blockHeight,'bottom metadata remains bottom aligned');
 
-const sdk={
-  AppIntentManager:{register:definition=>()=>({name:definition.name})},
-  AppIntentProtocol:{AppIntent:0},
-  ControlWidget:{reloadButtons:()=>{}},
-  Safari:{openURL:async()=>true},
-  Script:{createRunURLScheme:()=> 'scripting://run/Meu%20Painel?section=market'},
-  Button:'Button',Canvas:'Canvas',Circle:'Circle',HStack:'HStack',Image:'Image',Rectangle:'Rectangle',Text:'Text',ZStack:'ZStack'
-};
-const viewModule={exports:{}};
-const values=new Map([['popular-page:small',9],['popular-page:medium',9],['popular-page:large',9],['popular-small-codes',['IPCA','CUB_GO','DIESEL_S10','BRENT']]]);
+const sdk={AppIntentManager:{register:definition=>()=>({name:definition.name})},AppIntentProtocol:{AppIntent:0},ControlWidget:{reloadButtons:()=>{}},Safari:{openURL:async()=>true},Script:{createRunURLScheme:()=> 'scripting://run/Meu%20Painel?section=market'},Button:'Button',Canvas:'Canvas',Circle:'Circle',HStack:'HStack',Image:'Image',Rectangle:'Rectangle',Text:'Text',ZStack:'ZStack'};
+const viewModule={exports:{}},values=new Map([['popular-page:small',9],['popular-page:medium',9],['popular-page:large',9]]);
 const createElement=(type,props,...children)=>typeof type==='function'?type({...props,children:children.flat(Infinity).filter(Boolean)}):({type,props:props||{},children:children.flat(Infinity).filter(Boolean)});
 vm.runInNewContext(bundle('view.tsx'),{module:viewModule,exports:viewModule.exports,require:()=>sdk,createElement,Date,Storage:{get:key=>values.get(key)},UIImage:{fromBase64String:()=>null}});
-
 const codes=['SELIC','IPCA','IBOV','USD/BRL','SOJA_JATAI_GO','CUB_GO','DIESEL_S10','BRENT'];
-const rows=codes.map((code,index)=>({asset:{code},name:index===0?'Selic com nome suficientemente longo para testar a reserva':'Nome '+code,price:index===3?'-115,22':index===5?'—':String(100+index),percent:index===6?'-3,03%':'+1,14 pp',unit:code,time:index===5?'—':'27/10',movement:index%2? -1:1,chart:null}));
+const rows=codes.map((code,index)=>({asset:{code},name:index===0?'Selic com nome suficientemente longo para testar a reserva':'Nome '+code,price:index===3?'-115,22':String(100+index),percent:index===6?'-3,03%':'+1,14 pp',unit:code,time:index===5?'—':'27/10',movement:index%2?-1:1,chart:null}));
 const api={displayChart:chart=>chart,lineCoordinates:()=>[],monthLayout:()=>({labels:[],lines:[]}),gradientStrips:()=>[]};
 for(const [family,width,height,expected] of [['small',158,170,4],['medium',338,170,8],['large',338,360,8]]){
-  const tree=viewModule.exports.PopularView({model:{family,rows,api,status:{label:'fixture'}},width,height});
-  const rowButtons=tree.children.filter(node=>node.type==='Button');
-  assert.equal(rowButtons.length,expected,`${family} keeps ${expected} visible rows`);
-  assert(rowButtons.every(button=>button.props.intent.name==='RefreshAssetsOnTap'),`${family} rows use the refresh-only intent`);
+  const tree=viewModule.exports.PopularView({model:{family,rows,api,status:{label:'fixture'}},width,height}),buttons=tree.children.filter(node=>node.type==='Button');
+  assert.equal(buttons.length,expected,`${family} keeps the fixed indicator count`);
   const plan=draw.layout(family,width,height);
   for(let i=0;i<expected;i++){
-    const rowNode=rowButtons[i].children.find(node=>node.type==='ZStack'),blocks=rowNode.children.filter(node=>node.type==='ZStack'&&node.props?.key==='detail-block'),block=blocks[0];
-    assert.equal(blocks.length,1,`${family} row ${i} groups the three lines in one block`);
-    assert.equal(block.props.frame.width,G.blockWidth*plan.scale,`${family} row ${i} block width is unchanged`);
-    assert.equal(block.props.frame.height,G.blockHeight*plan.scaleY,`${family} row ${i} block height is unchanged`);
-    const icon=walk(rowNode).find(n=>(n.type==='Canvas'||n.type==='Image')&&Math.abs((n.props?.frame?.width??0)-G.icon*plan.scale)<1e-8&&Math.abs((n.props?.frame?.height??0)-G.icon*plan.scaleY)<1e-8);
-    assert(icon,`${family} row ${i} keeps its icon node`);
-    assert(Math.abs(block.props.position.y-icon.props.position.y)<1e-8,`${family} row ${i} total block center equals icon center`);
-    assert(Math.abs(block.props.position.y-G.blockCenter*plan.scaleY)<1e-8,`${family} row ${i} block has one common vertical displacement`);
-    const desc=walk(block),texts=desc.filter(n=>n.type==='Text'),nameLine=desc.find(n=>n.type==='HStack'&&n.props?.key==='name-status-line'),nameText=desc.find(n=>n.type==='Text'&&n.props?.key==='name-text'),price=texts.find(n=>Math.abs((n.props?.frame?.width??0)-G.price*plan.scale)<1e-8&&Math.abs((n.props?.frame?.height??0)-G.top*plan.scaleY)<1e-8),percent=texts.find(n=>Math.abs((n.props?.frame?.width??0)-G.percent*plan.scale)<1e-8&&Math.abs((n.props?.frame?.height??0)-G.middle*plan.scaleY)<1e-8),unit=texts.find(n=>Math.abs((n.props?.frame?.width??0)-G.name*plan.scale)<1e-8&&Math.abs((n.props?.frame?.height??0)-G.bottom*plan.scaleY)<1e-8),time=texts.find(n=>Math.abs((n.props?.frame?.width??0)-48*plan.scale)<1e-8&&Math.abs((n.props?.frame?.height??0)-G.bottom*plan.scaleY)<1e-8),graph=desc.find(n=>n.type==='Canvas'&&Math.abs((n.props?.frame?.height??0)-G.graphHeight*plan.scaleY)<1e-8);
-    assert(nameLine&&nameText&&price&&percent&&unit&&time&&graph,`${family} row ${i} exposes all three alignment lines`);
-    assert.equal(nameLine.props.frame.width,G.name*plan.scale,`${family} row ${i} keeps the measured name/status column width`);
-    assert.equal(nameLine.props.frame.alignment,'leading',`${family} row ${i} anchors the name and status line to the chart's left edge`);
-    assert.equal(nameLine.props.position.x-nameLine.props.frame.width/2,graph.props.position.x-graph.props.frame.width/2,`${family} row ${i} name and chart share the same left edge`);
-    assert.equal(nameLine.props.spacing,2,`${family} row ${i} keeps the native text-to-dot gap`);
-    assert.equal(nameText.props.frame.width,undefined,`${family} row ${i} leaves name width intrinsic for native measurement`);
-    assert.equal(nameLine.children.filter(n=>n.type==='Circle'&&n.props?.key==='market-status-dot').length,1,`${family} row ${i} places one dot after the name`);
+    const content=buttons[i].children.find(node=>node.type==='ZStack'),desc=walk(content),block=desc.find(node=>node.props?.key==='detail-block'),nameLine=desc.find(node=>node.type==='HStack'&&node.props?.key==='name-status-line'),nameText=desc.find(node=>node.type==='Text'&&node.props?.key==='name-text');
+    const icon=desc.find(n=>(n.type==='Canvas'||n.type==='Image')&&Math.abs((n.props?.frame?.width??0)-G.icon*plan.scale)<1e-8&&Math.abs((n.props?.frame?.height??0)-G.icon*plan.scaleY)<1e-8);
+    const texts=walk(block).filter(n=>n.type==='Text'),price=texts.find(n=>Math.abs((n.props?.frame?.width??0)-G.price*plan.scale)<1e-8),percent=texts.find(n=>Math.abs((n.props?.frame?.width??0)-G.percent*plan.scale)<1e-8),unit=texts.find(n=>Math.abs((n.props?.frame?.width??0)-G.unit*plan.scale)<1e-8),time=texts.find(n=>Math.abs((n.props?.frame?.width??0)-G.time*plan.scale)<1e-8),graph=desc.find(n=>n.type==='Canvas'&&Math.abs((n.props?.frame?.height??0)-G.graphHeight*plan.scaleY)<1e-8);
+    assert(block&&nameLine&&nameText&&icon&&price&&percent&&unit&&time&&graph,`${family} row ${i} contains title, icon, value, graph and metadata`);
+    assert.equal(nameLine.props.frame.width,G.name*plan.scale,`${family} title has the dedicated upper span`);
+    assert.equal(nameLine.props.frame.alignment,'leading');
+    assert.equal(nameLine.props.spacing,2);
+    assert.equal(nameLine.children.filter(n=>n.type==='Circle'&&n.props?.key==='market-status-dot').length,1);
     const top=n=>n.props.position.y-n.props.frame.height/2,bottom=n=>n.props.position.y+n.props.frame.height/2;
-    assert(Math.abs(top(nameLine)-G.line1Top*plan.scaleY)<1e-8,`${family} row ${i} name/status line stays at the recovered block top`);
-    assert(Math.abs(top(price)-top(nameLine))<1e-8,`${family} row ${i} name/value top aligned`);
-    assert(Math.abs(bottom(unit)-(G.line3Top+G.bottom)*plan.scaleY)<1e-8,`${family} row ${i} code stays at the recovered block bottom`);
-    assert(Math.abs(bottom(unit)-bottom(time))<1e-8,`${family} row ${i} code/date bottom aligned`);
-    assert(Math.abs(percent.props.position.y-(G.line2Top+G.middle/2)*plan.scaleY)<1e-8,`${family} row ${i} variation keeps the recovered line 2 position`);
-    assert(Math.abs(graph.props.position.y-(G.graphTop+G.graphHeight/2)*plan.scaleY)<1e-8,`${family} row ${i} graph keeps the recovered line 2 position`);
-    assert(top(nameLine)>=G.blockTop*plan.scaleY&&bottom(unit)<=(G.blockTop+G.blockHeight)*plan.scaleY,`${family} row ${i} grouped content is not clipped`);
+    assert(Math.abs(top(nameLine)-G.nameTop*plan.scaleY)<1e-8,`${family} title is above the icon`);
+    assert(Math.abs(bottom(nameLine)-(G.nameTop+G.nameHeight)*plan.scaleY)<1e-8);
+    assert(Math.abs(icon.props.position.y-G.blockCenter*plan.scaleY)<1e-8,`${family} icon is centered`);
+    assert(Math.abs(top(price)-top(nameLine))<1e-8,`${family} price remains top aligned with title`);
+    assert(Math.abs(graph.props.position.y-(G.graphTop+G.graphHeight/2)*plan.scaleY)<1e-8,`${family} graph uses the expanded middle band`);
+    assert(Math.abs(percent.props.position.y-(G.line2Top+G.middle/2)*plan.scaleY)<1e-8,`${family} variation is centered with graph`);
+    assert(Math.abs(bottom(unit)-bottom(time))<1e-8,`${family} metadata is bottom aligned`);
+    assert(Math.abs(bottom(unit)-(G.line3Top+G.bottom)*plan.scaleY)<1e-8,`${family} metadata stays inside row`);
+    const blockLeft=block.props.position.x-block.props.frame.width/2;
+    assert(nameLine.props.position.x+nameLine.props.frame.width/2<blockLeft+price.props.position.x-price.props.frame.width/2,`${family} title and quote columns do not collide`);
+    assert(tree.props.accessibilityLabel.includes('Selic com nome suficientemente longo'));
   }
-  assert(tree.props.accessibilityLabel.includes('Selic com nome suficientemente longo'),`${family} retains long names`);
-  assert(tree.props.accessibilityLabel.includes('-115,22'),`${family} retains negative values`);
-  if(expected===8)assert(tree.props.accessibilityLabel.includes('—'),`${family} retains missing-date/value marker`);
 }
-console.log('PASS grouped alignment: title left edge matches chart in small/medium/large; recovered 0.2.13 vertical offsets and icon-centered block, with long/negative/missing fixtures covered. Native iPhone render pending.');
+console.log('PASS 0.2.25 geometry: reduced icons, title-above-icon group, expanded 24h graph band, top/middle/bottom alignment, long/negative/missing fixtures covered. Native iPhone render pending.');

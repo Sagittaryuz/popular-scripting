@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="420" viewBox="0 0 1000 420">
+  <defs>
+    <clipPath id="flag-small"><circle cx="56" cy="18" r="10"/></clipPath>
+    <clipPath id="flag-medium"><circle cx="13" cy="128.01" r="10"/></clipPath>
+  </defs>
+  <rect width="1000" height="420" rx="22" fill="#0f0f12"/>
+  <text x="30" y="28" fill="#d1d1d6" font-family="-apple-system,Arial,sans-serif" font-size="13" font-weight="600">small · 2×2</text>
+  <text x="360" y="28" fill="#d1d1d6" font-family="-apple-system,Arial,sans-serif" font-size="13" font-weight="600">medium/large · 4×2</text>
+  <rect x="30" y="42" width="292" height="292" rx="10" fill="#1e1e1e" stroke="#34343a"/>
+  <rect x="360" y="42" width="608" height="292" rx="10" fill="#1e1e1e" stroke="#34343a"/>
+  <!-- small widget: four fixed rows -->
+  <g transform="translate(30 42) scale(2)" font-family="-apple-system,Arial,sans-serif">
+    <g fill="#fff" font-size="10" font-weight="600"><text x="0" y="8">Selic</text><text x="0" y="44.67">IPCA</text><text x="0" y="81.34">Ibovespa</text><text x="0" y="118.01">Dólar</text></g>
+    <g fill="#96969c"><circle cx="31" cy="4" r="1.5"/><circle cx="31" cy="40.67" r="1.5"/><circle cx="52" cy="77.34" r="1.5"/><circle cx="31" cy="114.01" r="1.5"/></g>
+    <g><circle cx="13" cy="18" r="10" fill="#34343a"/><path d="M7 12h12v12H7z" fill="#767680" opacity=".75"/><circle cx="13" cy="18" r="10" fill="none" stroke="#55555d"/></g>
+    <g><circle cx="13" cy="54.67" r="10" fill="#34343a"/><path d="M8 50h10v9H8z" fill="#6f6f78" opacity=".75"/><circle cx="13" cy="54.67" r="10" fill="none" stroke="#55555d"/></g>
+    <g><circle cx="13" cy="91.34" r="10" fill="#34343a"/><path d="M8 86h10v10H8z" fill="#6f6f78" opacity=".75"/><circle cx="13" cy="91.34" r="10" fill="none" stroke="#55555d"/></g>
+    <g clip-path="url(#flag-small)"><path d="M43 8h26v2H43zm0 4h26v2H43zm0 4h26v2H43zm0 4h26v2H43zm0 4h26v2H43z" fill="#b22234"/><path d="M43 10h26v2H43zm0 4h26v2H43zm0 4h26v2H43zm0 4h26v2H43z" fill="#fff"/><path d="M43 8h10v7H43z" fill="#3c3b6e"/></g>
+    <circle cx="56" cy="18" r="10" fill="none" stroke="#55555d"/>
+    <g fill="#fff" font-size="7.2" font-weight="600" text-anchor="end"><text x="146" y="8">15,00%</text><text x="146" y="44.67" fill="#ff1744">-0,32%</text><text x="146" y="81.34" fill="#00e676">+1,14 pp</text><text x="146" y="118.01">5,42</text></g>
+    <g fill="#96969c" font-size="5.6"><text x="30" y="34">META SELIC % a.a.</text><text x="30" y="70.67">M/M % · Δpp</text><text x="30" y="107.34">IBOV % S/B</text><text x="30" y="144.01">BRL/USD</text></g>
+    <g fill="#96969c" font-size="6.5" text-anchor="end"><text x="146" y="34">29/10</text><text x="146" y="70.67">30/09</text><text x="146" y="107.34">29/10</text><text x="146" y="144.01">12:00</text></g>
+    <g fill="#96969c" font-size="4.5"><text x="30" y="25">24h indisponível</text><text x="30" y="61.67">24h indisponível</text><text x="30" y="98.34">24h indisponível</text></g>
+    <!-- actual timestamped 24h fixture path for USD/BRL -->
+    <path d="M90 126 L105 121 L122 124 L138 115" fill="none" stroke="#00e676" stroke-width="1.1"/>
+    <path d="M90 126 L105 121 L122 124 L138 115 L138 128 L90 128 Z" fill="#00e676" opacity=".34"/>
+    <path d="M90 126 L105 121 L122 124 L138 115" fill="none" stroke="#00e676" stroke-width="1.1"/>
+    <g stroke="#fff" stroke-opacity=".13"><path d="M0 36.33h146M0 73h146M0 109.67h146"/></g>
+  </g>
+  <!-- medium/large widget: same geometry in two columns -->
+  <g transform="translate(360 42) scale(2)" font-family="-apple-system,Arial,sans-serif">
+    <g fill="#fff" font-size="10" font-weight="600"><text x="0" y="8">Selic</text><text x="0" y="44.67">IPCA</text><text x="0" y="81.34">Ibovespa</text><text x="0" y="118.01">Dólar</text><text x="158" y="8">Soja</text><text x="158" y="44.67">CUB-GO</text><text x="158" y="81.34">Diesel S10</text><text x="158" y="118.01">Brent spot</text></g>
+    <g fill="#96969c"><circle cx="31" cy="4" r="1.5"/><circle cx="31" cy="40.67" r="1.5"/><circle cx="52" cy="77.34" r="1.5"/><circle cx="31" cy="114.01" r="1.5"/><circle cx="189" cy="4" r="1.5"/><circle cx="189" cy="40.67" r="1.5"/><circle cx="189" cy="77.34" r="1.5"/><circle cx="189" cy="114.01" r="1.5"/></g>
+    <g fill="#34343a" stroke="#55555d"><circle cx="13" cy="18" r="10"/><circle cx="13" cy="54.67" r="10"/><circle cx="13" cy="91.34" r="10"/><circle cx="13" cy="128.01" r="10"/><circle cx="171" cy="18" r="10"/><circle cx="171" cy="54.67" r="10"/><circle cx="171" cy="91.34" r="10"/><circle cx="171" cy="128.01" r="10"/></g>
+    <g clip-path="url(#flag-medium)"><path d="M0 118.01h26v2H0zm0 4h26v2H0zm0 4h26v2H0zm0 4h26v2H0zm0 4h26v2H0z" fill="#b22234"/><path d="M0 120.01h26v2H0zm0 4h26v2H0zm0 4h26v2H0zm0 4h26v2H0z" fill="#fff"/><path d="M0 118.01h10v7H0z" fill="#3c3b6e"/></g><circle cx="13" cy="128.01" r="10" fill="none" stroke="#55555d"/>
+    <g fill="#fff" font-size="7.2" font-weight="600" text-anchor="end"><text x="146" y="8">15,00%</text><text x="146" y="44.67" fill="#ff1744">-0,32%</text><text x="146" y="81.34" fill="#00e676">+1,14 pp</text><text x="146" y="118.01">5,42</text><text x="304" y="8">130,00</text><text x="304" y="44.67">2.795,37</text><text x="304" y="81.34" fill="#ff1744">-0,14%</text><text x="304" y="118.01" fill="#ff1744">-3,03%</text></g>
+    <g fill="#96969c" font-size="5.6"><text x="30" y="34">META SELIC % a.a.</text><text x="30" y="70.67">M/M % · Δpp</text><text x="30" y="107.34">IBOV % S/B</text><text x="30" y="144.01">BRL/USD</text><text x="188" y="34">JATAÍ R$/SC60</text><text x="188" y="70.67">R1-N R$/m² M/M</text><text x="188" y="107.34">JATAÍ R$/L S/S</text><text x="188" y="144.01">SPOT USD/bbl D/D</text></g>
+    <g fill="#96969c" font-size="6.5" text-anchor="end"><text x="146" y="34">29/10</text><text x="146" y="70.67">30/09</text><text x="146" y="107.34">29/10</text><text x="146" y="144.01">12:00</text><text x="304" y="34">07/10</text><text x="304" y="70.67">30/09</text><text x="304" y="107.34">17/10</text><text x="304" y="144.01">20/10</text></g>
+    <g fill="#96969c" font-size="4.5"><text x="30" y="25">24h indisponível</text><text x="30" y="61.67">24h indisponível</text><text x="30" y="98.34">24h indisponível</text><text x="188" y="25">24h indisponível</text><text x="188" y="61.67">24h indisponível</text><text x="188" y="98.34">24h indisponível</text><text x="188" y="134.67">24h indisponível</text></g>
+    <path d="M248 126 L263 121 L280 124 L296 115" fill="none" stroke="#ff1744" stroke-width="1.1"/><path d="M248 126 L263 121 L280 124 L296 115 L296 128 L248 128 Z" fill="#ff1744" opacity=".34"/>
+    <g stroke="#fff" stroke-opacity=".13"><path d="M0 36.33h146M0 73h146M0 109.67h146M158 36.33h146M158 73h146M158 109.67h146"/></g>
+    <text x="0" y="158" fill="#96969c" font-size="5.5">24h = observação real timestampada; fontes esparsas ficam identificadas</text>
+  </g>
+  <text x="30" y="382" fill="#96969c" font-family="-apple-system,Arial,sans-serif" font-size="11">Prévia raster da árvore 0.2.25 · fixture visual, sem alegação de render nativo/iPhone</text>
+</svg>

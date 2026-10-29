@@ -1,4 +1,12 @@
-# Popular Scripting - Pro 0.2.24
+# Popular Scripting - Pro 0.2.25
+
+## 0.2.25 - janela real de 24h e redistribuição visual
+
+- O desenho agora usa uma janela móvel de exatamente 24 horas e aceita somente observações com timestamp real. O USD/BRL usa a série sequencial de 1 minuto já permitida pela AwesomeAPI; os demais indicadores mensais, semanais ou diários exibem `24h indisponível` sem interpolação, zero ou reaproveitamento visual de 90 dias.
+- Ícones foram reduzidos para 20 pt, o nome/status fica acima do ícone, e o grupo de cotação mantém valor no topo, gráfico/variação no centro e unidade/data na base. A altura do gráfico subiu para 15 pt nos dois tamanhos.
+- Curvas e valores usam vermelho/verde mais intensos e o preenchimento recebeu maior opacidade. Ordem fixa, bandeira circular dos EUA, indicadores de sessão, refresh por toque e fontes/dados permanecem.
+- Fontes consultadas: [AwesomeAPI](https://docs.awesomeapi.com.br/api-de-moedas) documenta tanto a série diária quanto cotações sequenciais de 1 minuto com timestamp; [BCB/SGS](https://dadosabertos.bcb.gov.br/dataset/11-taxa-de-juros---selic) e [B3](https://www.b3.com.br/pt_br/market-data-e-indices/servicos-de-dados/b3-for-developers/) não autorizam inventar uma série intraday para os indicadores sem essa granularidade.
+- Limite: validação foi por bundle, testes e prévias raster; não houve teste em iPhone nativo.
 
 ## 0.2.24 - bandeira dos EUA no Dólar
 

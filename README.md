@@ -1,7 +1,11 @@
-## Atualização 0.2.24 - bandeira dos EUA no Dólar
+## Atualização 0.2.25 - janela real de 24h e layout redistribuído
+
+- Gráficos usam somente observações timestampadas nas últimas 24 horas. USD/BRL consulta a série sequencial de 1 minuto existente no provedor; fontes mensais, semanais e diárias sem duas amostras intraday exibem `24h indisponível`, preservando valor/data sem fabricar pontos.
+- Ícones passam a 20 pt, com nome/status acima do ícone; valor fica no topo, gráfico/variação no centro e unidade/data na base. Curvas/valores têm vermelho e verde mais fortes e preenchimento mais visível em small e medium/large.
+- Ordem fixa, bandeira circular, status da sessão, atualização ao toque e dados publicados permanecem.
 
 O ativo `USD/BRL` usa somente a bandeira dos Estados Unidos em recorte
-circular, sem símbolo monetário ou emblema sobreposto. A caixa de 26 pt, a
+circular, sem símbolo monetário ou emblema sobreposto. A caixa de 20 pt, a
 posição, o espaçamento, os dados, a bolinha de estado, as curvas e os demais
 ícones permanecem iguais em pequeno, médio e grande. O iPhone nativo não foi
 testado.
@@ -124,7 +128,7 @@ Testes locais de fontes, observações antigas/futuras, alertas, cache, transpor
 
 # Popular Scripting
 
-**Atual: 0.2.24 - Scripting Pro.** Detalhes, ordem fixa dos oito indicadores, CSV,
+**Atual: 0.2.25 - Scripting Pro.** Detalhes, ordem fixa dos oito indicadores, CSV,
 alertas, assistente, Central de Controle e painel Início. Consulta solicitada em
 1 minuto e links diretos às fontes. [Ativação, testes e limites](PRO.md).
 

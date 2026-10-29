@@ -1,3 +1,10 @@
+## 0.2.25 - janela real de 24h e layout redistribuído
+
+- Renderiza somente observações com timestamp real dentro das últimas 24 horas. USD/BRL usa a série sequencial de 1 minuto documentada pela AwesomeAPI; CUB/IPCA, Diesel, Brent, Selic e soja sem duas observações intraday exibem `24h indisponível`, preservando valor/data sem interpolação ou zero.
+- Reduz os ícones para 20 pt e coloca nome/status acima do ícone; valor fica no topo, gráfico/variação no meio e unidade/data na base. A faixa do gráfico vai a 15 pt, com verde `#00E676`, vermelho `#FF1744` e preenchimento mais intenso.
+- Preserva ordem fixa, bandeira circular dos EUA, status de sessão, dados, refresh por toque e tamanhos 2×2/4×2. Prévia raster e testes cobrem a mudança; iPhone nativo não testado.
+- A requisição direta ao endpoint de minuto recebeu HTTP 403 da política do executor; não houve contorno nem alegação de cotação ao vivo.
+
 ## 0.2.24 - bandeira dos EUA no Dólar
 
 - Substitui somente o ícone de `USD/BRL` pela bandeira dos Estados Unidos em recorte circular de 26 pt; não há símbolo `$` nem outro emblema sobreposto.

@@ -9,8 +9,8 @@ const Color=class {constructor(hex,alpha=1){this.hex=hex;this.alpha=alpha;}};
 // Scriptable — Popular small/medium/large. O conjunto normal tem oito indicadores.
 const VERSION = '2026.10.21.77'
 const SETTINGS = { refreshMinutes: 5, rotationMinutes: 5, selection: 'indicadores' };
-// Bloco 146 × 146 pt; ícones circulares 26 pt centralizados nas linhas 36 pt.
-const LAYOUT = { columns: [26, 64, 48], columnGap: 4, valueGap: 4, nameWidth: 64, priceWidth: 52, graphWidth: 64, rowHeight: 36, gap: 2/3, iconSize: 26, chartHeight: 11 };
+// Bloco 146 × 146 pt; ícones circulares 20 pt centralizados nas linhas 36 pt.
+const LAYOUT = { columns: [20, 78, 48], columnGap: 4, valueGap: 4, nameWidth: 78, priceWidth: 62, graphWidth: 82, rowHeight: 36, gap: 2/3, iconSize: 20, chartHeight: 15 };
 const BASE = 'https://investidor10.com.br';
 const TROY_OUNCE_GRAMS = 31.1034768;
 const AGROLINK = 'https://www.agrolink.com.br';
@@ -357,6 +357,7 @@ function chooseChart(points,asset,stamp,window) {
   points=points.filter(p=>p.stamp.day<=today&&(!p.stamp.hasTime||p.stamp.time<=now.getTime()));
   if(stamp)points=points.filter(p=>p.stamp.day<=stamp.day);
   if(window==='1D'&&points.length){const day=points[points.length-1].stamp.day;points=points.filter(p=>p.stamp.day===day);}
+  if(window==='24H'&&points.length){const end=points[points.length-1].stamp.time,cutoff=end-24*60*60*1000;points=points.filter(p=>p.stamp.hasTime===true&&p.stamp.time>=cutoff&&p.stamp.time<=end);}
   if(window==='90D'&&points.length){const cutoff=points[points.length-1].stamp.time-89*86400000;points=points.filter(p=>p.stamp.time>=cutoff);}
   if(points.length<2)return null;
   const end=points[points.length-1];
@@ -841,15 +842,15 @@ function fxHistory(json,row,time=Date.now()) {
   points.push({value:row.asset.price,stamp:row.stamp});
   const ordered=[...new Map(points.map(p=>[p.stamp.time,p])).values()].sort((a,b)=>a.stamp.time-b.stamp.time);
   if(ordered.some((p,i)=>i&&Math.abs(p.value/ordered[i-1].value-1)>.1))return null;
-  return chooseChart(ordered,row.asset,row.stamp,'90D');
+  return chooseChart(ordered,row.asset,row.stamp,'24H');
 }
 async function loadFX() {
   const key='usd-brl-awesome-v13',cached=snapshotCache(key,FX)||priorInvestingSnapshot(FX),time=Date.now();
   if(cacheFresh(cached))return cached;
   try {const row=parseFX(await request('https://economia.awesomeapi.com.br/last/USD-BRL',true),time);
-    try {row.chart=fxHistory(await request('https://economia.awesomeapi.com.br/json/daily/USD-BRL/90',true),row,time);}catch(e){console.log('Histórico USD/BRL AwesomeAPI: '+e);}
+    try {row.chart=fxHistory(await request('https://economia.awesomeapi.com.br/USD-BRL/100',true),row,time);}catch(e){console.log('Série 24h USD/BRL AwesomeAPI: '+e);}
     if(!row.chart&&cached?.asset.source==='AwesomeAPI'&&cached?.chart)row.chart=chooseChart(cached.chart.points,row.asset,row.stamp,cached.chart.window);
-    row.chartStatus=row.chart?'valid-90D':'history-unavailable-or-invalid';cacheWrite(key,row);return row;}
+    row.chartStatus=row.chart?'valid-24H':'history-unavailable-or-invalid';cacheWrite(key,row);return row;}
   catch(e){console.log('USD/BRL AwesomeAPI: '+e);return cached&&time-cached.stamp?.time<=4*86400000?{...cached,cached:true}:{asset:{...FX},stamp:null,chart:null};}
 }
 async function mapLimited(assets,load,limit=4) {
@@ -1243,14 +1244,16 @@ function quoteAudit(row) {
 }
 const FIXED_GEOMETRY=Object.freeze({values:48,center:64,mode:'user-fixed-v26-percent-width'});
 function rowLayout(rows) { return FIXED_GEOMETRY; }
-const CHART_DISPLAY_DAYS = 90;
+const CHART_DISPLAY_HOURS = 24;
+const CHART_DISPLAY_MS = CHART_DISPLAY_HOURS*60*60*1000;
 function chartDisplayDay(time) {
   if(!finite(time)||!finite(new Date(time).getTime()))return null;
   const parts=new Intl.DateTimeFormat('en-US',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date(time)),part=type=>parts.find(p=>p.type===type).value;
   return part('year')+'-'+part('month')+'-'+part('day');
 }
 function chartDisplayWindow(time=now.getTime()) {
-  const endDay=chartDisplayDay(time);return endDay?{startDay:isoDayAdd(endDay,1-CHART_DISPLAY_DAYS),endDay,days:CHART_DISPLAY_DAYS,timeZone:'America/Sao_Paulo'}:null;
+  const endDay=chartDisplayDay(time),startTime=time-CHART_DISPLAY_MS,startDay=chartDisplayDay(startTime);
+  return endDay&&startDay?{startTime,endTime:time,startDay,endDay,hours:CHART_DISPLAY_HOURS,timeZone:'America/Sao_Paulo'}:null;
 }
 function monthlyEndDay(period) {
   const [year,month]=period.split('-').map(Number),next=month===12?`${year+1}-01`:`${year}-${String(month+1).padStart(2,'0')}`;
@@ -1272,20 +1275,16 @@ function monthlyPublicationDisplayWindow(chart,time=now.getTime()) {
 }
 function displayChart(chart,time=now.getTime()) {
   if(!chart||!Array.isArray(chart.points))return null;
-  const window=chart?.window==='monthly'?monthlyPublicationDisplayWindow(chart,time):accumulationDisplayWindow(chart)||chartDisplayWindow(time);
-  // Rendering only: keep full source histories and comparison bases in cache.
+  const window=chartDisplayWindow(time);
+  // Rendering only: preserve the full source history and comparison bases in
+  // cache, but draw only real timestamped observations in the last 24 hours.
+  // Civil-day/monthly/weekly observations deliberately become unavailable;
+  // they are not interpolated, zero-filled, or relabeled as intraday data.
   const points=window?chart.points.filter(point=>{
-    const stamp=point?.stamp;if(!finite(stamp?.time))return false;
-    const day=stamp.day,civil=stamp.hasTime!==true&&typeof day==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(day)&&finite(Date.parse(day+'T00:00:00Z'))&&new Date(day+'T00:00:00Z').toISOString().slice(0,10)===day;
-    if(!civil&&stamp.time>time)return false;
-    const observedDay=civil?day:chartDisplayDay(stamp.time);
-    return observedDay!==null&&observedDay>=window.startDay&&observedDay<=window.endDay;
+    const stamp=point?.stamp;
+    return stamp?.hasTime===true&&finite(stamp.time)&&stamp.time>=window.startTime&&stamp.time<=window.endTime;
   }):[];
-  // Monthly publications are sparse by design. A 3M accumulation includes
-  // the preceding base level and the three published competencies; it does
-  // not invent daily observations or turn monthly rates into a rate curve.
-  const displayDomain=['monthly','monthly-3m'].includes(chart.window)&&window?{startDay:window.startDay,endDay:window.endDay,startTime:Date.parse(window.startDay+'T12:00:00Z'),endTime:Date.parse(window.endDay+'T12:00:00Z')}:null;
-  return {...chart,points,displayWindow:window,displayDomain};
+  return {...chart,points,displayWindow:window,displayDomain:null,displayStatus:points.length>=2?'available-24h':'unavailable-24h'};
 }
 function monthlyPeriodSerial(period) {
   if(typeof period!=='string'||!/^[0-9]{4}-[0-9]{2}$/.test(period))return null;
@@ -1319,7 +1318,7 @@ function lineCoordinates(chart,width=LAYOUT.graphWidth,height=LAYOUT.chartHeight
   chart=displayChart(chart);
   if(!chart||!Array.isArray(chart.points)||chart.points.length<2||chart.points.some((p,i)=>!finite(p.value)||(p.value<=0&&chart.valueKind!=='monthly-change-percent')||!finite(p.stamp?.time)||(i&&p.stamp.time<=chart.points[i-1].stamp.time)))return [];
   const points=chart.points,values=points.map(p=>p.value),min=Math.min(...values),max=Math.max(...values);
-  const first=chart.displayDomain?.startTime||points[0].stamp.time,last=chart.displayDomain?.endTime||points[points.length-1].stamp.time,duration=last-first;
+  const first=chart.displayDomain?.startTime||chart.displayWindow?.startTime||points[0].stamp.time,last=chart.displayDomain?.endTime||chart.displayWindow?.endTime||points[points.length-1].stamp.time,duration=last-first;
   if(!finite(duration)||duration<=0)return [];
   const x=time=>.75+(time-first)/duration*(width-1.5);
   return points.map(p=>({x:monthlyCategoryX(chart,p,width)??x(p.stamp.time),y:.75+(max===min?.5:1-(p.value-min)/(max-min))*(height-1.5)}));
@@ -1333,7 +1332,7 @@ let monthLabelImages = {},monthLabelMetrics = {};
 // normalize that published-center span to the useful canvas limits.
 function monthCalendar(chart,width=LAYOUT.graphWidth) {
   chart=displayChart(chart);
-  if(!finite(width)||width<2||!lineCoordinates(chart,width).length)return {lines:[],months:[]};
+  if(!chart||chart.displayWindow?.hours===CHART_DISPLAY_HOURS||!finite(width)||width<2||!lineCoordinates(chart,width).length)return {lines:[],months:[]};
   const points=chart.points,first=chart.displayDomain?.startTime||points[0].stamp.time,last=chart.displayDomain?.endTime||points[points.length-1].stamp.time;
   const validDay=monthlyCivilDay;
   const dayOf=time=>{const parts=new Intl.DateTimeFormat('en-US',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date(time)),part=type=>parts.find(p=>p.type===type).value;return part('year')+'-'+part('month')+'-'+part('day');};
@@ -1381,7 +1380,7 @@ function gradientStrips(points,height=LAYOUT.chartHeight,step=.25) {
   if(points.length<2)return [];
   const area=[...points,{x:points[points.length-1].x,y:height},{x:points[0].x,y:height}],strips=[];
   const clip=(polygon,y,above)=>{const out=[];for(let i=0;i<polygon.length;i++){const a=polygon[i],b=polygon[(i+1)%polygon.length],inside=p=>above?p.y>=y:p.y<=y,A=inside(a),B=inside(b);if(A)out.push(a);if(A!==B){const f=(y-a.y)/(b.y-a.y);out.push({x:a.x+f*(b.x-a.x),y});}}return out;};
-  for(let y=0;y<height;y+=step){const end=Math.min(height,y+step),polygon=clip(clip(area,y,true),end,false),alpha=.24*(1-(y+end)/2/height);if(polygon.length>=3&&alpha>0)strips.push({polygon,alpha});}
+  for(let y=0;y<height;y+=step){const end=Math.min(height,y+step),polygon=clip(clip(area,y,true),end,false),alpha=.36*(1-(y+end)/2/height);if(polygon.length>=3&&alpha>0)strips.push({polygon,alpha});}
   return strips;
 }
 

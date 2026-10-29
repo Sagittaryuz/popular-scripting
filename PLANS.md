@@ -1,5 +1,11 @@
 # Melhorias Scripting Pro — 23/10/2026
 
+## 0.2.25 - janela 24h e layout de gráficos
+
+- [x] Trocar a janela visual por 24 horas reais, filtrando apenas timestamps e sinalizando série intraday indisponível para fontes esparsas.
+- [x] Reduzir ícones, posicionar nome/status acima, redistribuir valor/gráfico/variação/unidade/data e aumentar altura/contraste do gráfico em small e medium/large.
+- [x] Validar dados escassos, janela, alinhamento, contraste e refresh por toque; gerar prévia raster. iPhone nativo permanece não testado.
+
 ## 0.2.24 - ícone circular do USD/BRL
 
 Entregue: substituir somente o emblema do Dólar pela bandeira dos Estados
