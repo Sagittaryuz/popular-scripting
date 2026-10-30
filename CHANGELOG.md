@@ -1,3 +1,16 @@
+## 0.2.36 - código seguro da falha upstream
+
+- A linha **Fonte privada:** passa a mostrar, quando o Worker fornecer, apenas
+  `upstreamCode` de uma allow-list fixa (`BAD_REQUEST`, `VALIDATION_ERROR`,
+  `QUOTES_PER_REQUEST_EXCEEDED`, `INVALID_RANGE`, `INVALID_INTERVAL`,
+  `MISSING_TOKEN`, `INVALID_TOKEN`, `FEATURE_NOT_AVAILABLE`,
+  `MODULES_NOT_AVAILABLE` ou `NOT_FOUND`). Mensagens, `details`, corpo HTTP e
+  credenciais continuam descartados.
+- Mantém token, endpoint, parâmetros, layout, perfil BBAS3/BBDC4/IBOV/BTC/USD,
+  ordem, cache e janela de 7 dias. Não migra a API nem inventa cotações.
+- Testes locais cobrem código permitido e código desconhecido filtrado; o
+  Worker e o iPhone nativo não foram executados neste checkout.
+
 ## 0.2.35 - diagnóstico seguro da fonte privada
 
 - O app em primeiro plano mostra uma categoria segura para a fonte privada:

@@ -1,4 +1,14 @@
-# Popular Scripting - Pro 0.2.35
+# Popular Scripting - Pro 0.2.36
+
+## 0.2.36 - código seguro da falha upstream
+
+- O diagnóstico do app aceita opcionalmente `upstreamCode`, mas preserva
+  somente a allow-list oficial de categorias conhecidas. Mensagens, `details`,
+  corpo HTTP, headers e tokens não atravessam o transporte.
+- A requisição upstream, o endpoint, o layout, o perfil B3/BTC, a ordem e a
+  janela de 7 dias permanecem iguais à versão anterior.
+- A versão não declara dados reais corrigidos: o código upstream serve para
+  distinguir parâmetro/plano/fonte antes de qualquer ajuste no Worker.
 
 ## 0.2.35 - diagnóstico seguro da fonte privada
 

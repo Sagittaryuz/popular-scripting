@@ -110,13 +110,20 @@ class MockRequest {
   await unauthorized.collectRows();
   assert.equal(unauthorized.privateMarketStatus.code,'worker-unauthorized','a private endpoint 401 is not mislabeled as an absent token');assert.equal(unauthorized.privateMarketStatus.cached,false);assert.equal(unauthorized.privateMarketStatus.at,now);
 
-  class UpstreamDiagnosticRequest extends MockRequest { async loadJSON(){if(this.url===privateURL){const error=Error('HTTP 503');error.privateMarketDiagnostic={upstreamStatus:403,upstreamAsset:'IBOV',token:'never-expose'};throw error}return super.loadJSON()} }
+  class UpstreamDiagnosticRequest extends MockRequest { async loadJSON(){if(this.url===privateURL){const error=Error('HTTP 503');error.privateMarketDiagnostic={upstreamStatus:403,upstreamAsset:'IBOV',upstreamCode:'INVALID_INTERVAL',token:'never-expose'};throw error}return super.loadJSON()} }
   const upstreamDiagnostic=bundled.exports.createEngine({FileManager:{local:emptyFM},Request:UpstreamDiagnosticRequest,Data:{},Timer:undefined,privateMarket},{family:'medium',now,localTestAssets:true});
   await upstreamDiagnostic.collectRows();
   assert.equal(upstreamDiagnostic.privateMarketStatus.code,'worker-unavailable');
   assert.equal(upstreamDiagnostic.privateMarketStatus.upstreamStatus,403,'a safe upstream status is retained for foreground diagnosis');
   assert.equal(upstreamDiagnostic.privateMarketStatus.upstreamAsset,'IBOV');
+  assert.equal(upstreamDiagnostic.privateMarketStatus.upstreamCode,'INVALID_INTERVAL','the allow-listed upstream code is retained for foreground diagnosis');
   assert.equal(upstreamDiagnostic.privateMarketStatus.token,undefined,'credentials never enter the status snapshot');
+
+  class UnsafeDiagnosticRequest extends MockRequest { async loadJSON(){if(this.url===privateURL){const error=Error('HTTP 503');error.privateMarketDiagnostic={upstreamStatus:400,upstreamAsset:'BBAS3',upstreamCode:'PRIVATE_INTERNAL',message:'never-expose'};throw error}return super.loadJSON()} }
+  const unsafeDiagnostic=bundled.exports.createEngine({FileManager:{local:emptyFM},Request:UnsafeDiagnosticRequest,Data:{},Timer:undefined,privateMarket},{family:'medium',now,localTestAssets:true});
+  await unsafeDiagnostic.collectRows();
+  assert.equal(unsafeDiagnostic.privateMarketStatus.upstreamCode,undefined,'unknown upstream codes are discarded');
+  assert.equal(unsafeDiagnostic.privateMarketStatus.message,undefined,'upstream messages never enter the status snapshot');
 
   class InvalidResponseRequest extends MockRequest { async loadJSON(){if(this.url===privateURL)return {schema:1};return super.loadJSON()} }
   const invalid=bundled.exports.createEngine({FileManager:{local:emptyFM},Request:InvalidResponseRequest,Data:{},Timer:undefined,privateMarket},{family:'medium',now,localTestAssets:true});

@@ -2,7 +2,7 @@ import { createEngine } from './original-engine'
 import { createHost } from './host'
 import { dashboardStatus, refreshMinutes } from './pro-common'
 import { sourceStatusForRow } from './market-status'
-export const VERSION='0.2.35'
+export const VERSION='0.2.36'
 export const TAP_REFRESH_CACHE_KEY='popular-tap-refresh-v1'
 export const TAP_REFRESH_CACHE_MS=5000
 // Published, reversible test profile: keep the former eight-indicator list
@@ -31,7 +31,10 @@ export function privateMarketStatusText(status:any):string{
   const label=PRIVATE_MARKET_STATUS_LABELS[code]||(http?'Worker respondeu HTTP '+http[1]:'estado não reconhecido')
   const upstreamStatus=Number.isInteger(status?.upstreamStatus)&&status.upstreamStatus>=400&&status.upstreamStatus<=599?status.upstreamStatus:null
   const upstreamAsset=['BBAS3','BBDC4','IBOV'].includes(status?.upstreamAsset)?status.upstreamAsset:null
-  const upstream=upstreamStatus==null?'':` · origem upstream HTTP ${upstreamStatus}${upstreamAsset?' · '+upstreamAsset:''}`
+  const upstreamCodes=['BAD_REQUEST','VALIDATION_ERROR','QUOTES_PER_REQUEST_EXCEEDED','INVALID_RANGE','INVALID_INTERVAL','MISSING_TOKEN','INVALID_TOKEN','FEATURE_NOT_AVAILABLE','MODULES_NOT_AVAILABLE','NOT_FOUND']
+  const upstreamCode=upstreamCodes.includes(status?.upstreamCode)?status.upstreamCode:null
+  const upstreamParts=[upstreamStatus==null?'':'origem upstream HTTP '+upstreamStatus,upstreamAsset||'',upstreamCode?'código upstream '+upstreamCode:''].filter(Boolean)
+  const upstream=upstreamParts.length?' · '+upstreamParts.join(' · '):''
   if(code.startsWith('cache-fallback-'))return 'Fonte privada: cache privado preservado; nova consulta indisponível'+upstream
   return 'Fonte privada: '+label+upstream+(cached?' · cache privado':'')
 }

@@ -37,7 +37,7 @@ assert.equal(hostApi.createHost().privateMarket.endpoint,privateURL);
 assert.equal(typeof hostApi.createHost().privateMarket.readToken,'function');
 assert.equal(typeof hostApi.createHost().privateMarket.readTokenState,'function');
 
-const diagnosticContext={module:{exports:{}},exports:{},Keychain,Storage,Date,URL,Map,Set,JSON,Uint8Array,ArrayBuffer,console:{log(){}},setTimeout,clearTimeout,Data:{},fetch:async()=>({status:503,ok:false,text:async()=>JSON.stringify({upstreamStatus:401,upstreamAsset:'BBAS3',token:'never-expose',body:'never-expose'})})};
+const diagnosticContext={module:{exports:{}},exports:{},Keychain,Storage,Date,URL,Map,Set,JSON,Uint8Array,ArrayBuffer,console:{log(){}},setTimeout,clearTimeout,Data:{},fetch:async()=>({status:503,ok:false,text:async()=>JSON.stringify({upstreamStatus:401,upstreamAsset:'BBAS3',upstreamCode:'INVALID_RANGE',token:'never-expose',body:'never-expose'})})};
 vm.runInNewContext(hostCode,diagnosticContext);
 const diagnosticRequest=new (diagnosticContext.module.exports.createHost(true).Request)(privateURL);
 diagnosticRequest.headers={Authorization:'Bearer '+token};
@@ -45,7 +45,8 @@ await assert.rejects(()=>diagnosticRequest.loadJSON(),error=>{
   assert.equal(error.message,'HTTP 503');
   assert.equal(error.privateMarketDiagnostic.upstreamStatus,401);
   assert.equal(error.privateMarketDiagnostic.upstreamAsset,'BBAS3');
-  assert.deepEqual(Object.keys(error.privateMarketDiagnostic).sort(),['upstreamAsset','upstreamStatus'],'only the allow-listed upstream fields cross the transport boundary');
+  assert.equal(error.privateMarketDiagnostic.upstreamCode,'INVALID_RANGE');
+  assert.deepEqual(Object.keys(error.privateMarketDiagnostic).sort(),['upstreamAsset','upstreamCode','upstreamStatus'],'only the allow-listed upstream fields cross the transport boundary');
   return true;
 },'a private Worker error can expose only the safe upstream category');
 
@@ -58,6 +59,6 @@ assert.match(details,/removePrivateMarketToken/);
 assert.match(hostSource,/PRIVATE_MARKET_ENDPOINT/);
 assert.match(privateSource,/Keychain/);
 assert.doesNotMatch(privateSource,/Storage\.set|FileManager|console\.log/,'token helper has no file/storage/log write path');
-console.log('PASS private market client: Keychain-only setup/removal/state, exact endpoint allowlist, authenticated transport, public-header rejection, and no token persistence path. Native iPhone prompt and Worker end-to-end remain untested here.');
+console.log('PASS private market client: Keychain-only setup/removal/state, exact endpoint allowlist, authenticated transport, public-header rejection, allow-listed upstream diagnostic code, and no token persistence path. Native iPhone prompt and Worker end-to-end remain untested here.');
 }
 main().catch(error=>{console.error(error);process.exitCode=1});

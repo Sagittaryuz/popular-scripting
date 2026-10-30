@@ -32,10 +32,12 @@ export async function within<T>(task:Promise<T>,ms:number):Promise<T>{
 }
 
 const PRIVATE_MARKET_DIAGNOSTIC_ASSETS=['BBAS3','BBDC4','IBOV']
+const PRIVATE_MARKET_DIAGNOSTIC_CODES=['BAD_REQUEST','VALIDATION_ERROR','QUOTES_PER_REQUEST_EXCEEDED','INVALID_RANGE','INVALID_INTERVAL','MISSING_TOKEN','INVALID_TOKEN','FEATURE_NOT_AVAILABLE','MODULES_NOT_AVAILABLE','NOT_FOUND']
 function safePrivateMarketDiagnostic(payload:unknown):Record<string,number|string>|null{
   const value=payload as any,diagnostic:Record<string,number|string>={}
   if(Number.isInteger(value?.upstreamStatus)&&value.upstreamStatus>=400&&value.upstreamStatus<=599)diagnostic.upstreamStatus=value.upstreamStatus
   if(typeof value?.upstreamAsset==='string'&&PRIVATE_MARKET_DIAGNOSTIC_ASSETS.includes(value.upstreamAsset))diagnostic.upstreamAsset=value.upstreamAsset
+  if(typeof value?.upstreamCode==='string'&&PRIVATE_MARKET_DIAGNOSTIC_CODES.includes(value.upstreamCode))diagnostic.upstreamCode=value.upstreamCode
   return Object.keys(diagnostic).length?diagnostic:null
 }
 

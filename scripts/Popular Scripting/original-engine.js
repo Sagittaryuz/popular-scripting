@@ -9,7 +9,7 @@ const args={queryParameters:{popular_refresh:options.force?'1':'0'}};
 const Color=class {constructor(hex,alpha=1){this.hex=hex;this.alpha=alpha;}};
 // Scriptable — Popular small/medium/large. O conjunto normal mantém oito
 // indicadores; o entry publicado pode selecionar o perfil de teste reversível.
-const VERSION = '2026.10.30.87'
+const VERSION = '2026.10.30.88'
 const SETTINGS = { refreshMinutes: 5, rotationMinutes: 5, selection: 'indicadores' };
 // Bloco 146 × 146 pt; quatro colunas e ícones circulares 26 pt centralizados nas linhas 36 pt.
 const LAYOUT = { columns: [28, 40, 46, 26], columnGap: 2, valueGap: 2, nameWidth: 40, priceWidth: 26, graphWidth: 46, rowHeight: 36, gap: 2/3, iconSize: 26, chartHeight: 20 };
@@ -148,6 +148,7 @@ function safePrivateMarketDiagnostic(value) {
   const diagnostic={};
   if(Number.isInteger(value?.upstreamStatus)&&value.upstreamStatus>=400&&value.upstreamStatus<=599)diagnostic.upstreamStatus=value.upstreamStatus;
   if(typeof value?.upstreamAsset==='string'&&PRIVATE_MARKET_CODES.includes(value.upstreamAsset))diagnostic.upstreamAsset=value.upstreamAsset;
+  if(typeof value?.upstreamCode==='string'&&['BAD_REQUEST','VALIDATION_ERROR','QUOTES_PER_REQUEST_EXCEEDED','INVALID_RANGE','INVALID_INTERVAL','MISSING_TOKEN','INVALID_TOKEN','FEATURE_NOT_AVAILABLE','MODULES_NOT_AVAILABLE','NOT_FOUND'].includes(value.upstreamCode))diagnostic.upstreamCode=value.upstreamCode;
   return Object.keys(diagnostic).length?diagnostic:null;
 }
 function setPrivateMarketStatus(code,cached=false,diagnostic=null) {

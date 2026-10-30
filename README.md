@@ -1,3 +1,13 @@
+## Atualização 0.2.36 - código seguro da falha upstream
+
+- A linha **Fonte privada:** pode mostrar o código upstream allow-listed
+  (`INVALID_RANGE`, `INVALID_INTERVAL`, `BAD_REQUEST` e categorias correlatas)
+  quando o Worker o fornecer. O cliente descarta mensagens, `details`, corpo e
+  credenciais.
+- Não houve troca de endpoint/parâmetros, alteração visual ou fabricação de
+  dados. A causa upstream ainda deve ser corrigida no Worker conforme o código
+  real observado.
+
 ## Atualização 0.2.35 - diagnóstico seguro da fonte privada
 
 - A tela do app mostra o estado seguro da fonte privada: token/Keychain,
@@ -260,7 +270,7 @@ Testes locais de fontes, observações antigas/futuras, alertas, cache, transpor
 
 # Popular Scripting
 
-**Atual: 0.2.35 - Scripting Pro.** Perfil publicado de quatro ativos
+**Atual: 0.2.36 - Scripting Pro.** Perfil publicado de quatro ativos
 (`BBAS3`, `BBDC4`, `IBOV`, `BTC/USD`) em janela móvel de 7 dias, com detalhes,
 CSV, alertas, assistente, Central de Controle e painel Início. [Ativação,
 testes e limites](PRO.md).
@@ -275,7 +285,7 @@ Na tela **Importar Scripts Remotos** do Scripting, cole:
 https://github.com/Sagittaryuz/popular-scripting/tree/main/scripts/Popular%20Scripting
 ```
 
-Importe **Popular Scripting**, confirme a versão **0.2.35**, abra o projeto e toque em **Atualizar**. Leia a linha **Fonte privada:** para distinguir token, Worker, fonte, parsing e cache. Em **Detalhes dos indicadores**, toque em **Configurar fonte privada**, cole o token no campo seguro e salve. Adicione o widget do Scripting à Tela de Início e selecione esse projeto.
+Importe **Popular Scripting**, confirme a versão **0.2.36**, abra o projeto e toque em **Atualizar**. Leia a linha **Fonte privada:** para distinguir token, Worker, código da fonte, parsing e cache. Em **Detalhes dos indicadores**, toque em **Configurar fonte privada**, cole o token no campo seguro e salve. Adicione o widget do Scripting à Tela de Início e selecione esse projeto.
 
 Para receber melhorias de código, use a atualização do script remoto no Scripting. Essa importação vincula o projeto à pasta `main/scripts/Popular Scripting`; não use um endereço de commit ou tag para acompanhar as próximas versões. O botão **Atualizar** dentro da tela do Popular consulta somente os indicadores e solicita recarregar o widget.
 

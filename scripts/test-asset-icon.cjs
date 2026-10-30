@@ -52,4 +52,4 @@ for(const code of ['BBAS3','BBDC4','IBOV','BTC/USD']){
   assert.equal(fillsForCode.filter(call=>call.style==='#34343A').length,1,`${code} uses one neutral circular fallback disk`);
   assert(fillsForCode.some(call=>call.style==='#FFFFFF'&&call.path.some(op=>op[0]==='rect')),`${code} renders readable vector initials, not the generic document glyph`);
 }
-console.log(JSON.stringify({version:'0.2.35',icons:['BBAS3','BBDC4','IBOV','BTC/USD'],shape:'26pt circular neutral initials fallback',glyphOverlay:false,smallAndMediumPath:'custom Canvas badge',nativeIPhone:false}));
+console.log(JSON.stringify({version:'0.2.36',icons:['BBAS3','BBDC4','IBOV','BTC/USD'],shape:'26pt circular neutral initials fallback',glyphOverlay:false,smallAndMediumPath:'custom Canvas badge',nativeIPhone:false}));
