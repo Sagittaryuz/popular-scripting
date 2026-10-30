@@ -1,3 +1,17 @@
+## Atualização 0.2.33 - fonte privada autenticada para o perfil B3/BTC
+
+- O pacote e o modelo usam `0.2.33`; o bundle do motor é `2026.10.30.85`.
+  O perfil publicado continua com `BBAS3`, `BBDC4`, `IBOV` e `BTC/USD`, nessa
+  ordem, em janela móvel de 7 dias; a lista anterior permanece recuperável.
+- Os três ativos B3 consultam o endpoint privado configurado pelo proprietário.
+  O token é solicitado em campo seguro e armazenado somente no Keychain do
+  iPhone; não há token, payload real, cache ou proxy versionado no repositório.
+  O cliente não chama DadosB3 nem Brapi diretamente para cotações.
+- Sem token, resposta válida ou cache privado recente, os slots B3 ficam
+  honestamente sem cotação/curva. BTC/USD mantém o adaptador público Kraken.
+  Esta entrega foi validada por testes locais; não houve teste ponta a ponta
+  nem teste nativo no iPhone neste executor.
+
 ## Atualização 0.2.32 - pacote identificável com cliente DadosB3
 
 O pacote e o modelo publicados agora são identificados como `0.2.32`; o
@@ -222,7 +236,7 @@ Testes locais de fontes, observações antigas/futuras, alertas, cache, transpor
 
 # Popular Scripting
 
-**Atual: 0.2.32 - Scripting Pro.** Perfil publicado de quatro ativos
+**Atual: 0.2.33 - Scripting Pro.** Perfil publicado de quatro ativos
 (`BBAS3`, `BBDC4`, `IBOV`, `BTC/USD`) em janela móvel de 7 dias, com detalhes,
 CSV, alertas, assistente, Central de Controle e painel Início. [Ativação,
 testes e limites](PRO.md).
@@ -237,17 +251,17 @@ Na tela **Importar Scripts Remotos** do Scripting, cole:
 https://github.com/Sagittaryuz/popular-scripting/tree/main/scripts/Popular%20Scripting
 ```
 
-Importe **Popular Scripting**, confirme a versão **0.2.32**, abra o projeto e toque em **Atualizar**. Adicione o widget do Scripting à Tela de Início e selecione esse projeto.
+Importe **Popular Scripting**, confirme a versão **0.2.33**, abra o projeto e toque em **Atualizar**. Em **Detalhes dos indicadores**, toque em **Configurar fonte privada**, cole o token no campo seguro e salve. Adicione o widget do Scripting à Tela de Início e selecione esse projeto.
 
 Para receber melhorias de código, use a atualização do script remoto no Scripting. Essa importação vincula o projeto à pasta `main/scripts/Popular Scripting`; não use um endereço de commit ou tag para acompanhar as próximas versões. O botão **Atualizar** dentro da tela do Popular consulta somente os indicadores e solicita recarregar o widget.
 
 ## Tamanhos e dados
 
 - Pequeno, médio e grande: o perfil publicado mostra os quatro ativos de teste na mesma ordem; o médio/grande não repete linhas na segunda coluna.
-- BBAS3, BBDC4 e IBOV usam consulta direta EOD do DadosB3; sem resposta válida, o cache privado validado ou o slot vazio é preservado. O BTC/USD usa somente o adaptador público Kraken quando a resposta for válida.
-- O domínio de gráfico ativo é 7D: BTC usa timestamps reais e DadosB3 usa datas civis EOD explicitamente; sem amostras válidas aparece `7d indisponível`, sem interpolação, weekend fill ou valor fictício.
+- BBAS3, BBDC4 e IBOV usam o endpoint privado autenticado; sem token, resposta válida ou cache privado recente, o slot vazio é preservado. O BTC/USD usa somente o adaptador público Kraken quando a resposta for válida.
+- O domínio de gráfico ativo é 7D: o perfil privado usa timestamps reais e o BTC usa observações do Kraken; sem amostras válidas aparece `7d indisponível`, sem interpolação, weekend fill ou valor fictício.
 - A lista anterior de oito, fontes e ícones continua preservada no histórico/código para recuperação; não é a configuração ativa desta versão.
-- Fontes incluem DadosB3 (COTAHIST EOD pessoal), BCB, AgroLink, Investidor10, AwesomeAPI, FRED e Kraken; respostas reais não são empacotadas nem redistribuídas.
+- Fontes incluem o endpoint privado do proprietário, BCB, AgroLink, Investidor10, AwesomeAPI, FRED e Kraken; respostas reais não são empacotadas nem redistribuídas.
 - Dados econômicos de referência são consultados diretamente deste Git, sem autenticação. Rede indisponível ou resposta inválida preserva o cache validado ou a reserva versionada, com suas datas originais.
 - O workflow `economic-data.yml` é programado a cada hora útil, 11h17–23h17 UTC, sujeito a atrasos do GitHub. Falha de uma fonte mantém a série anterior e é registrada no workflow; dados antigos não recebem data de observação nova.
 - Política de atualização do widget: a partir de um minuto, configurável em 1/5/15, sujeita ao iOS.

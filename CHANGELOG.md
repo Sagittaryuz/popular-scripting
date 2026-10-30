@@ -1,3 +1,14 @@
+## 0.2.33 - cliente privado B3/BTC
+
+- Publica o perfil `BBAS3`, `BBDC4`, `IBOV` e `BTC/USD` com janela de 7 dias,
+  preservando a lista fixa anterior como recuperação.
+- Troca a consulta pública direta dos três ativos B3 por um endpoint privado
+  autenticado. O token é configurado por campo seguro no Scripting e lido
+  somente do Keychain; nenhum segredo, payload real ou cache é versionado.
+- Mantém o BTC/USD, o layout, logos/fallbacks, ordem e ausência honesta quando
+  a fonte privada não estiver disponível. Testes locais passaram; não houve
+  teste nativo no iPhone nem validação ponta a ponta neste executor.
+
 ## 0.2.32 - versão identificável da integração DadosB3
 
 - Bump coerente do pacote Scripting, modelo, bundle do motor e manifesto para

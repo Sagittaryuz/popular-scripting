@@ -1,4 +1,5 @@
 import { readPriceSprites, inflateZlib } from './png'
+import { isPrivateMarketEndpoint, PRIVATE_MARKET_ENDPOINT, readPrivateMarketToken } from './private-market'
 
 // Remove only the legacy credential owned by this script, never global app settings.
 export function removeLegacyAccess(){try{Keychain.remove('popular-github-read-token')}catch{}}
@@ -17,7 +18,8 @@ export function files(){
 export function allowedURL(value:string){
   const u=new URL(value)
   if(u.protocol!=='https:'||u.username||u.password||u.port)throw Error('Destino não autorizado')
-  const hosts=['investidor10.com.br','api.bcb.gov.br','economia.awesomeapi.com.br','www.agrolink.com.br','fred.stlouisfed.org','api.kraken.com','dadosb3.com','brapi.dev','icons.brapi.dev']
+  const hosts=['investidor10.com.br','api.bcb.gov.br','economia.awesomeapi.com.br','www.agrolink.com.br','fred.stlouisfed.org','api.kraken.com','brapi.dev','icons.brapi.dev']
+  if(isPrivateMarketEndpoint(value))return u
   const github=u.hostname==='raw.githubusercontent.com'&&u.pathname==='/Sagittaryuz/popular-scripting/main/data/economic-series.json'
   if(!hosts.includes(u.hostname)&&!github)throw Error('Destino não autorizado')
   return u
@@ -50,7 +52,9 @@ export function createHost(foreground=false){
     async download(binary=false){
       const url=allowedURL(this.url),remaining=deadline-Date.now()
       if(remaining<=0)throw Error('Orçamento de rede encerrado')
-      if(Object.keys(this.headers).some(k=>['authorization','cookie','proxy-authorization'].includes(k.toLowerCase())))throw Error('Esta edição usa somente acesso público')
+      const hasAuthorization=Object.keys(this.headers).some(k=>k.toLowerCase()==='authorization')
+      const hasOtherCredential=Object.keys(this.headers).some(k=>['cookie','proxy-authorization'].includes(k.toLowerCase()))
+      if(hasOtherCredential||hasAuthorization&&!isPrivateMarketEndpoint(url.href))throw Error('Acesso autenticado permitido somente ao endpoint privado')
       if(!['GET','POST'].includes(this.method)||this.method==='POST'&&(url.hostname!=='www.agrolink.com.br'||url.pathname!=='/cotacoes/graos/soja'))throw Error('Método não autorizado')
       const timeout=Math.max(.05,Math.min(foreground?6:3,this.timeoutInterval,remaining/1000))
       const result=await within((async()=>{
@@ -76,5 +80,6 @@ export function createHost(foreground=false){
     return inflateZlib(bytes,expected)
   }
   return {FileManager:{local:files},Request:EngineRequest,Data,Timer:undefined,
+    privateMarket:{endpoint:PRIVATE_MARKET_ENDPOINT,readToken:readPrivateMarketToken},
     readSprites:(quotes:any,sprites:any,decode:any,glyphs:any)=>readPriceSprites(quotes,sprites,decode,glyphs,inflate)}
 }

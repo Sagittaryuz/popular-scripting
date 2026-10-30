@@ -1,4 +1,4 @@
-import { Button, Canvas, Circle, HStack, Image, Rectangle, Text, ZStack, Script } from 'scripting'
+import { Button, Canvas, Circle, HStack, Image, Rectangle, SVG, Text, ZStack, Script } from 'scripting'
 import { pageRows } from './pagination'
 import { assets } from './assets'
 import { drawBadge } from './badges'
@@ -57,6 +57,11 @@ function apiImage(row:any){
   if(!(key in images))try{images[key]=UIImage.fromBase64String(data)||null}catch{images[key]=null}
   return images[key]||null
 }
+function apiSVG(row:any){
+  const value=row?.asset?.iconURL
+  if(typeof value!=='string'||!/^https:\/\//.test(value))return null
+  try{return new URL(value).pathname.toLowerCase().endsWith('.svg')?value:null}catch{return null}
+}
 export function PopularView({model,width,height}:{model:any;width:number;height:number}){
   for(const [key,value] of Object.entries(assets))if(!images[key]){const image=UIImage.fromBase64String(value as string);if(image)images[key]=image}
   const plan=layout(model.family,width,height)
@@ -72,7 +77,7 @@ export function PopularView({model,width,height}:{model:any;width:number;height:
     {plan.large?label('title','Popular · '+model.status.label,0,-32,304,18,11,8,true):null}
     {visibleRows.map((row:any,i:number)=>{
       const column=Math.floor(i/4),rowIndex=i%4,x=column*(G.column+G.columnGap),y=rowIndex*(G.row+G.gap),color=movementColor(row),curve=curvePlan(model.api,row),status=statusFor(row)
-      const band=monthBand(curve),remoteIcon=apiImage(row),custom=!remoteIcon&&['BBAS3','BBDC4','IBOV','BTC/USD','SOJA_JATAI_GO','CUB_GO','IPCA','DIESEL_S10','USD/BRL'].includes(row.asset.code)
+      const band=monthBand(curve),remoteSvg=apiSVG(row),remoteIcon=remoteSvg?null:apiImage(row),custom=!remoteSvg&&!remoteIcon&&['BBAS3','BBDC4','IBOV','BTC/USD','SOJA_JATAI_GO','CUB_GO','IPCA','DIESEL_S10','USD/BRL'].includes(row.asset.code)
       const percentMinimum=variationMinimumSize(row,row.percent),meta=`${shortCode(row)} | ${observationDate(row.time)}`,nameMetrics=nameLayout(row.name)
       const chartAccessibility=curve.status==='unavailable-7d'?' Gráfico de 7 dias indisponível':''
       const rowPlan={...plan,x:0,y:0},hitHeight=rowIndex<3?G.row+G.gap:G.row,rowFrame={width:G.column*plan.scale,height:hitHeight*plan.scaleY},rowPosition={x:plan.x+(x+G.column/2)*plan.scale,y:plan.y+(y+hitHeight/2)*plan.scaleY}
@@ -81,7 +86,9 @@ export function PopularView({model,width,height}:{model:any;width:number;height:
         accessibilityLabel={`Atualizar indicadores. ${row.name}. ${shortCode(row)}. ${row.price}. ${row.percent}. ${row.unit}. ${row.time}. ${status.accessibility}.${chartAccessibility}`}
         frame={rowFrame} position={rowPosition}>
         <ZStack alignment="topLeading" frame={rowFrame}>
-        {remoteIcon?<ZStack key="asset-remote-mask" alignment="topLeading" {...place(rowPlan,G.iconLeft,G.iconTop,G.icon,G.icon)} mask={<Circle fill="white" frame={{width:G.icon*plan.scale,height:G.icon*plan.scale}}/>}>
+        {remoteSvg?<ZStack key="asset-remote-svg-mask" alignment="topLeading" {...place(rowPlan,G.iconLeft,G.iconTop,G.icon,G.icon)} mask={<Circle fill="white" frame={{width:G.icon*plan.scale,height:G.icon*plan.scale}}/>}>
+          <SVG key="asset-remote-svg" url={remoteSvg} resizable renderingMode="original" frame={{width:G.icon*plan.scale,height:G.icon*plan.scale}}/>
+        </ZStack> :remoteIcon?<ZStack key="asset-remote-mask" alignment="topLeading" {...place(rowPlan,G.iconLeft,G.iconTop,G.icon,G.icon)} mask={<Circle fill="white" frame={{width:G.icon*plan.scale,height:G.icon*plan.scale}}/>}>
           <Image key="asset-remote" image={remoteIcon} resizable renderingMode="original" frame={{width:G.icon*plan.scale,height:G.icon*plan.scale}}/>
         </ZStack> :custom?<Canvas key="asset-icon" opaque={false} {...place(rowPlan,G.iconLeft,G.iconTop,G.icon,G.icon)} draw={(ctx,size)=>{ctx.scale(size.width/26,size.height/26);drawBadge(ctx,row.asset.code)}}/>
           :images[row.asset.code]?<Image key="asset-image" image={images[row.asset.code]} resizable renderingMode="original" {...place(rowPlan,G.iconLeft,G.iconTop,G.icon,G.icon)}/>

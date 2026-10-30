@@ -1,4 +1,18 @@
-# Popular Scripting - Pro 0.2.32
+# Popular Scripting - Pro 0.2.33
+
+## 0.2.33 - cliente de cotações com fonte privada autenticada
+
+- O pacote e o modelo usam `0.2.33`; o bundle do motor foi identificado como
+  `2026.10.30.85`. O entry publicado mantém BBAS3, BBDC4, IBOV e BTC/USD nessa
+  ordem, com janela de 7 dias e a lista anterior recuperável.
+- BBAS3, BBDC4 e IBOV consultam somente o endpoint privado configurado pelo
+  proprietário; a credencial é lida do Keychain do iPhone e nunca fica no
+  código, Storage, logs, GitHub ou widget. O cliente não chama DadosB3 nem
+  Brapi diretamente para cotações.
+- Sem token, resposta válida ou cache privado recente, os três slots B3 ficam
+  sem cotação/curva; nenhum valor é inventado. BTC/USD preserva o adaptador
+  público Kraken. A validação ponta a ponta e o render nativo no iPhone ainda
+  não foram realizados neste executor.
 
 ## 0.2.32 - pacote identificável com cliente DadosB3
 
