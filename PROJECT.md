@@ -1,4 +1,18 @@
-# Popular Scripting - Pro 0.2.40
+# Popular Scripting - Pro 0.2.41
+
+## 0.2.41 - pictogramas locais e decisão de fonte do Dow
+
+- O perfil continua `IBOV`, `DOW_JONES`, `USD/BRL`, `BRENT`, nessa ordem.
+- Os badges do perfil ativo são pictogramas vetoriais locais reconhecíveis:
+  tendência de índice, barras de mercado, bandeira circular dos EUA e barril
+  de petróleo. Não são iniciais nem logos remotos.
+- O FRED confirma que `DJIA` é índice diário de fechamento da S&P Dow Jones
+  Indices LLC, mas a página também diz que os dados são protegidos e que a
+  reprodução exige permissão prévia. Por isso o slot segue sem cotação e sem
+  consulta; não há substituição por ETF/proxy.
+- A cadeia USD/BRL continua consumindo a data efetiva do `timestamp` do
+  AwesomeAPI; Brent continua sendo EOD diário EIA/FRED. O preview é sintético
+  e não representa dados ao vivo. iPhone nativo não testado.
 
 ## 0.2.40 - novo perfil de quatro ativos
 

@@ -1,3 +1,17 @@
+## 0.2.41 - pictogramas locais e DJIA sem reprodução indevida
+
+- Substitui as iniciais do perfil ativo por pictogramas vetoriais locais para
+  Ibovespa, Dow Jones e Brent; a bandeira circular dos EUA permanece para
+  USD/BRL. A identidade continua uniforme, sem bolinha de status e sem
+  dependência de logo remoto.
+- Verifica o DJIA no FRED: a série é diária, de fechamento e tem fonte S&P Dow
+  Jones Indices LLC, mas a nota de direitos exige permissão prévia para
+  reprodução. O slot permanece indisponível, sem ETF, proxy ou valor inventado.
+- Mantém USD/BRL baseado no `timestamp` efetivo do AwesomeAPI e Brent baseado
+  nas observações EOD da EIA/FRED; não embute payload real no repositório.
+- Gera `validation/market-profile-0.2.41-preview.{png,svg,json}` como
+  evidência fixture-only. iPhone nativo não testado.
+
 ## 0.2.40 - perfil IBOV/Dow/USD/Brent e fallback visual completo
 
 - Ativa `IBOV`, `DOW_JONES`, `USD/BRL` e `BRENT` nessa ordem, preservando o

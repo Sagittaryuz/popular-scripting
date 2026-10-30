@@ -1,0 +1,35 @@
+{
+  "version": "0.2.41",
+  "output": "validation/market-profile-0.2.41-preview.svg",
+  "pngOutput": "validation/market-profile-0.2.41-preview.png",
+  "icons": {
+    "IBOV": "local index trend pictogram",
+    "DOW_JONES": "local market bars pictogram",
+    "USD_BRL": "circular US flag",
+    "BRENT": "local oil barrel pictogram"
+  },
+  "order": [
+    "IBOV",
+    "DOW_JONES",
+    "USD/BRL",
+    "BRENT"
+  ],
+  "identity": {
+    "font": 5.5,
+    "weight": "semibold",
+    "lineLimit": 1,
+    "ellipsis": true,
+    "statusDot": false
+  },
+  "data": {
+    "live": false,
+    "values": "synthetic placeholders",
+    "curves": "synthetic geometry only",
+    "window": "7D layout contract"
+  },
+  "dow": {
+    "quote": "unavailable",
+    "reason": "FRED DJIA is third-party copyrighted; reproduction requires S&P permission, so no quote request is made"
+  },
+  "nativeIPhone": false
+}

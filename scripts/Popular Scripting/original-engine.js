@@ -9,7 +9,7 @@ const args={queryParameters:{popular_refresh:options.force?'1':'0'}};
 const Color=class {constructor(hex,alpha=1){this.hex=hex;this.alpha=alpha;}};
 // Scriptable — Popular small/medium/large. O conjunto normal mantém oito
 // indicadores; o entry publicado pode selecionar o perfil de teste reversível.
-const VERSION = '2026.10.30.90'
+const VERSION = '2026.10.30.91'
 const SETTINGS = { refreshMinutes: 5, rotationMinutes: 5, selection: 'indicadores' };
 // Bloco 146 × 146 pt; quatro colunas e ícones circulares 26 pt centralizados nas linhas 36 pt.
 const LAYOUT = { columns: [28, 40, 46, 26], columnGap: 2, valueGap: 2, nameWidth: 40, priceWidth: 26, graphWidth: 46, rowHeight: 36, gap: 2/3, iconSize: 26, chartHeight: 20 };
@@ -87,7 +87,7 @@ const LOCAL_TEST_ASSETS = Object.freeze([
 const PUBLISHED_PROFILE = 'ibov-dow-usd-brent-7d';
 const PROFILE_ASSETS = Object.freeze([
   {code:'IBOV',type:'indices',name:'Ibovespa',source:'PrivateMarket',currency:'PTS',unit:'points',unitLabel:'pontos',instrument:'IBOV',instrumentConfirmed:true},
-  {code:'DOW_JONES',type:'indices',name:'Dow Jones',source:'DowJones',currency:'PTS',unit:'points',unitLabel:'pontos',instrument:'^DJI',instrumentConfirmed:false},
+  {code:'DOW_JONES',type:'indices',name:'Dow Jones',source:'FRED/S&P DJI',sourceURL:'https://fred.stlouisfed.org/series/DJIA',currency:'PTS',unit:'points',unitLabel:'pontos',instrument:'DJIA',instrumentConfirmed:false,sourceRights:'third-party-copyright-permission-required'},
   {code:'USD/BRL',type:'cambio',name:'Dólar',source:'AwesomeAPI',currency:'BRL',unit:'BRL/USD',unitLabel:'BRL/USD',instrument:'USD/BRL',instrumentConfirmed:true,quoteBasis:'bid'},
   {code:'BRENT',type:'commodities',name:'Petróleo',source:'EIA/FRED',currency:'USD',unit:'USD/bbl',unitLabel:'USD/bbl',instrument:'DCOILBRENTEU',instrumentConfirmed:true,frequency:'daily',valueKind:'level',sourceTag:'EIA'}
 ]);
@@ -1536,7 +1536,7 @@ function profileSevenDayEOD(row) {
 
 function dowJonesUnavailable() {
   const definition=PROFILE_ASSETS.find(asset=>asset.code==='DOW_JONES');
-  return {asset:{...definition,price:null,percent:null,delta:null},stamp:null,chart:null,chartStatus:'Dow-Jones-source-unavailable',quoteVerified:false,localTest:true,sourceError:'dow-jones-authorized-feed-required'};
+  return {asset:{...definition,price:null,percent:null,delta:null},stamp:null,chart:null,chartStatus:'Dow-Jones-source-unavailable',quoteVerified:false,localTest:true,sourceError:'dow-jones-reproduction-permission-required'};
 }
 
 async function collectPublishedProfileRows() {

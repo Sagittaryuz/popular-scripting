@@ -1,5 +1,16 @@
 # Melhorias Scripting Pro — 23/10/2026
 
+## 0.2.41 — pictogramas locais sem fonte licenciada indevida
+
+- [x] Trocar as iniciais do perfil ativo por pictogramas vetoriais locais:
+  índice, mercado, bandeira circular dos EUA e barril/gota de petróleo.
+- [x] Verificar FRED/DJIA: a série tem proveniência S&P DJI, mas a própria
+  página exige permissão prévia para reprodução; manter Dow indisponível sem
+  ETF, proxy, conta, token ou custo.
+- [x] Preservar fontes, datas efetivas, layout 2×2/4×2, gráficos e perfil
+  anterior recuperável; gerar preview PNG/SVG/JSON e validar pixels. iPhone
+  nativo não testado.
+
 ## 0.2.40 — perfil IBOV/Dow/USD/Brent
 
 - [x] Substituir o perfil ativo por `IBOV`, `DOW_JONES`, `USD/BRL` e `BRENT`,

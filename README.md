@@ -1,3 +1,22 @@
+## Atualização 0.2.41 - pictogramas locais reconhecíveis
+
+- Mantém o perfil `Ibovespa`, `Dow Jones`, `Dólar` (`USD/BRL`) e `Petróleo`
+  (`Brent`) nessa ordem, com o perfil B3/BTC anterior recuperável.
+- Substitui as iniciais do perfil ativo por pictogramas vetoriais locais: linha
+  de índice para Ibovespa, barras de mercado para Dow, bandeira circular dos
+  EUA para USD/BRL e barril/gota para Brent. Não depende de SVG remoto e não
+  apresenta iniciais como se fossem fotos ou logos.
+- A pesquisa do DJIA no FRED confirmou a proveniência S&P Dow Jones Indices,
+  mas também marcou a série como protegida e proibiu reprodução sem permissão
+  prévia. O slot continua honestamente sem cotação; não há ETF, proxy, valor
+  fixo, conta, token ou custo novo.
+- USD/BRL continua validando `timestamp`/`create_date` do AwesomeAPI; Brent
+  continua usando observações EOD diárias da EIA/FRED, sem preencher fins de
+  semana. A prévia nova é fixture-only: não contém dados ao vivo.
+- A prévia [market-profile-0.2.41-preview.png](validation/market-profile-0.2.41-preview.png)
+  e seus arquivos SVG/JSON mostram os quatro pictogramas nos tamanhos 2×2 e
+  4×2. Não houve teste nativo no iPhone.
+
 ## Atualização 0.2.40 - novo perfil de ativos e ícones sempre visíveis
 
 - O perfil ativo passa a exibir, nesta ordem, `Ibovespa`, `Dow Jones`,
@@ -341,7 +360,7 @@ Testes locais de fontes, observações antigas/futuras, alertas, cache, transpor
 
 # Popular Scripting
 
-**Atual: 0.2.40 - Scripting Pro.** Perfil publicado de quatro ativos
+**Atual: 0.2.41 - Scripting Pro.** Perfil publicado de quatro ativos
 (`IBOV`, `DOW_JONES`, `USD/BRL`, `BRENT`) em janela móvel de 7 dias, com detalhes,
 CSV, alertas, assistente, Central de Controle e painel Início. [Ativação,
 testes e limites](PRO.md).
@@ -356,7 +375,7 @@ Na tela **Importar Scripts Remotos** do Scripting, cole:
 https://github.com/Sagittaryuz/popular-scripting/tree/main/scripts/Popular%20Scripting
 ```
 
-Importe **Popular Scripting**, confirme a versão **0.2.40**, abra o projeto e toque em **Atualizar**. Leia a linha **Fonte privada:** para distinguir token, Worker, código da fonte, parsing e cache. Em **Detalhes dos indicadores**, toque em **Configurar fonte privada**, cole o token no campo seguro e salve. Adicione o widget do Scripting à Tela de Início e selecione esse projeto.
+Importe **Popular Scripting**, confirme a versão **0.2.41**, abra o projeto e toque em **Atualizar**. Leia a linha **Fonte privada:** para distinguir token, Worker, código da fonte, parsing e cache. Em **Detalhes dos indicadores**, toque em **Configurar fonte privada**, cole o token no campo seguro e salve. Adicione o widget do Scripting à Tela de Início e selecione esse projeto.
 
 Para receber melhorias de código, use a atualização do script remoto no Scripting. Essa importação vincula o projeto à pasta `main/scripts/Popular Scripting`; não use um endereço de commit ou tag para acompanhar as próximas versões. O botão **Atualizar** dentro da tela do Popular consulta somente os indicadores e solicita recarregar o widget.
 

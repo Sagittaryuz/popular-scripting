@@ -67,11 +67,43 @@ function drawUSFlagBadge() {
   return ctx.getImage();
 }
 
+function drawIndexBadge(code) {
+  const ctx=new DrawContext();ctx.size=new Size(26,26);ctx.opaque=false;ctx.respectScreenScale=true;
+  const disk=new Path();disk.addEllipse(new Rect(0,0,26,26));ctx.addPath(disk);
+  ctx.setFillColor(new Color(code==='IBOV'?'245E8A':'2D486E'));ctx.fillPath();
+  const grid=new Path();
+  for(const y of [8,13,18]){grid.move(new Point(6,y));grid.addLine(new Point(20,y));}
+  ctx.addPath(grid);ctx.setStrokeColor(new Color('8FC7E8'));ctx.setLineWidth(.45);ctx.strokePath();
+  if(code==='DOW_JONES'){
+    const bars=new Path();bars.addRect(new Rect(6.5,15,2.2,5));bars.addRect(new Rect(10.1,12,2.2,8));bars.addRect(new Rect(13.7,9,2.2,11));bars.addRect(new Rect(17.3,11,2.2,9));
+    ctx.addPath(bars);ctx.setFillColor(new Color('FFFFFF'));ctx.fillPath();
+    const trend=new Path();trend.move(new Point(6,17));trend.addLine(new Point(9,15));trend.addLine(new Point(12,16));trend.addLine(new Point(15,11));trend.addLine(new Point(20,8));
+    ctx.addPath(trend);ctx.setStrokeColor(new Color('C9F1FF'));ctx.setLineWidth(1.05);ctx.strokePath();
+  }else{
+    const trend=new Path();trend.move(new Point(6,18));trend.addLine(new Point(9,15));trend.addLine(new Point(12,16));trend.addLine(new Point(15,11));trend.addLine(new Point(18,12));trend.addLine(new Point(20,8));
+    ctx.addPath(trend);ctx.setStrokeColor(new Color('FFFFFF'));ctx.setLineWidth(1.35);ctx.strokePath();
+    const endpoint=new Path();endpoint.addEllipse(new Rect(18.7,6.7,2.6,2.6));ctx.addPath(endpoint);ctx.setFillColor(new Color('B9F2FF'));ctx.fillPath();
+  }
+  return ctx.getImage();
+}
+
+function drawOilBadge() {
+  const ctx=new DrawContext();ctx.size=new Size(26,26);ctx.opaque=false;ctx.respectScreenScale=true;
+  const disk=new Path();disk.addEllipse(new Rect(0,0,26,26));ctx.addPath(disk);ctx.setFillColor(new Color('7A4E20'));ctx.fillPath();
+  const barrel=new Path();barrel.addRect(new Rect(7,7,12,13));barrel.addEllipse(new Rect(7,5.3,12,4));barrel.addEllipse(new Rect(7,17.7,12,4));
+  ctx.addPath(barrel);ctx.setFillColor(new Color('F4C36A'));ctx.fillPath();
+  const bands=new Path();bands.move(new Point(7,10));bands.addLine(new Point(19,10));bands.move(new Point(7,17));bands.addLine(new Point(19,17));
+  ctx.addPath(bands);ctx.setStrokeColor(new Color('8E5A22'));ctx.setLineWidth(.8);ctx.strokePath();
+  const drop=new Path();drop.move(new Point(13,8));drop.addLine(new Point(11.2,11));drop.addLine(new Point(13,13));drop.addLine(new Point(14.8,11));drop.closeSubpath();
+  ctx.addPath(drop);ctx.setFillColor(new Color('FFFFFF'));ctx.fillPath();
+  return ctx.getImage();
+}
+
 // The published profile can receive remote metadata for some instruments, but
 // every requested slot must remain visible if that metadata is absent or fails.
 // These local circular badges are deterministic fallbacks; they identify the
 // instrument without pretending to be an unverified exchange or ETF logo.
-const INITIAL_BADGES=Object.freeze({BBAS3:'BB',BBDC4:'BD',IBOV:'IB','BTC/USD':'BTC',DOW_JONES:'DJ',BRENT:'BR'});
+const INITIAL_BADGES=Object.freeze({BBAS3:'BB',BBDC4:'BD','BTC/USD':'BTC'});
 const INITIAL_GLYPHS=Object.freeze({
   B:['11110','10001','10001','11110','10001','10001','11110'],
   D:['11110','10001','10001','10001','10001','10001','11110'],
@@ -105,5 +137,5 @@ function drawEconomicBadge(code) {
   ctx.addPath(glyph);ctx.setStrokeColor(Color.white());ctx.setLineWidth(1.2);ctx.strokePath();return ctx.getImage();
 }
 
-if(code==='SOJA_JATAI_GO')drawSoybeanBadge();else if(code==='USD/BRL')drawUSFlagBadge();else if(INITIAL_BADGES[code])drawInitialsBadge(code);else drawEconomicBadge(code);
+if(code==='SOJA_JATAI_GO')drawSoybeanBadge();else if(code==='USD/BRL')drawUSFlagBadge();else if(code==='IBOV'||code==='DOW_JONES')drawIndexBadge(code);else if(code==='BRENT')drawOilBadge();else if(INITIAL_BADGES[code])drawInitialsBadge(code);else drawEconomicBadge(code);
 }

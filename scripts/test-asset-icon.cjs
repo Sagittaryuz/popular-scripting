@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),{buildSync}=require('esbuild');
 const root=path.resolve(__dirname,'Popular Scripting'),view=fs.readFileSync(path.join(root,'view.tsx'),'utf8'),engine=fs.readFileSync(path.join(root,'original-engine.js'),'utf8'),badges=fs.readFileSync(path.join(root,'badges.js'),'utf8');
 const previewDir=path.join(root,'..','..','validation'),previewJSON=JSON.parse(fs.readFileSync(path.join(previewDir,'icon-name-0.2.39-preview.json'),'utf8')),previewSVG=fs.readFileSync(path.join(previewDir,'icon-name-0.2.39-preview.svg'),'utf8'),previewPNG=path.join(previewDir,'icon-name-0.2.39-preview.png');
-assert.equal(previewJSON.version,'0.2.39','the icon/name preview is tied to the active package');
+assert.equal(previewJSON.version,'0.2.39','the icon/name regression preview remains tied to its historical package');
 assert.equal(previewJSON.identity.statusDot,false,'the preview records that no status dot is drawn');
 assert.equal(previewJSON.data.live,false,'the preview does not claim live data');
 assert(fs.statSync(previewPNG).size>100,'the raster preview was materialized for pixel inspection');
@@ -22,8 +22,12 @@ assert.match(engine,/contentType=String\(r\.response\?\.contentType\|\|''\)/,'th
 assert.match(engine,/iconSVGCode:code/,'the active private profile fetches and stores validated SVG code');
 assert.match(engine,/Promise\.all\(parsed\.map\(attachApiIcon\)\)/,'the active profile attaches API logos instead of leaving URL-only metadata');
 assert.doesNotMatch(badges,/\$|dollar/i,'the badge renderer contains no currency glyph overlay');
-assert.match(badges,/INITIAL_BADGES=.*BBAS3:'BB'.*BBDC4:'BD'.*IBOV:'IB'.*'BTC\/USD':'BTC'/,'the four published test assets have explicit neutral initial fallbacks');
-assert.match(badges,/DOW_JONES:'DJ'.*BRENT:'BR'/,'the new profile has deterministic local fallbacks for both additional slots');
+assert.match(badges,/INITIAL_BADGES=.*BBAS3:'BB'.*BBDC4:'BD'.*'BTC\/USD':'BTC'/,'legacy profile initials remain available only for the recoverable B3/BTC profile');
+assert.doesNotMatch(badges,/INITIAL_BADGES=.*IBOV:/,'Ibovespa no longer uses initials as its published icon');
+assert.doesNotMatch(badges,/INITIAL_BADGES=.*DOW_JONES:/,'Dow Jones no longer uses initials as its published icon');
+assert.doesNotMatch(badges,/INITIAL_BADGES=.*BRENT:/,'Brent no longer uses initials as its published icon');
+assert.match(badges,/function drawIndexBadge\(code\)/,'index and Dow use local vector pictograms');
+assert.match(badges,/function drawOilBadge\(\)/,'Brent uses a local oil-barrel pictogram');
 assert.match(view,/const NAME_FONT=5\.5/,'all names use one fixed native font size');
 assert.match(view,/minScaleFactor=\{1\}/,'native text uses ellipsis without per-name font shrinking');
 assert.doesNotMatch(view,/market-status-dot/,'the status dot is removed from the compact identity column');
@@ -65,10 +69,17 @@ assert.equal(fills.filter(call=>call.path.some(op=>op[0]==='rect')).length,14,'U
 assert.equal(fills.filter(call=>call.path.some(op=>op[0]==='ellipse')).length,50,'USD flag draws 50 stars as part of the flag');
 assert.equal(state.calls.at(-1).op,'restore','USD flag closes its clipping scope');
 
-for(const code of ['BBAS3','BBDC4','IBOV','BTC/USD','DOW_JONES','BRENT']){
+for(const code of ['BBAS3','BBDC4','BTC/USD']){
   const rendered=nativeContext();badgeModule.exports.drawBadge(rendered.native,code);
   const fillsForCode=rendered.state.calls.filter(call=>call.op==='fill');
   assert.equal(fillsForCode.filter(call=>call.style==='#34343A').length,1,`${code} uses one neutral circular fallback disk`);
   assert(fillsForCode.some(call=>call.style==='#FFFFFF'&&call.path.some(op=>op[0]==='rect')),`${code} renders readable vector initials, not the generic document glyph`);
 }
-console.log(JSON.stringify({version:'0.2.39',icons:['BBAS3','BBDC4','IBOV','BTC/USD'],shape:'26pt circular API SVG code beside deterministic initials fallback',glyphOverlay:false,identity:'full column, shared 5.5pt semibold, native ellipsis, no status dot',smallAndMediumPath:'validated SVG.code with sibling fallback',nativeIPhone:false}));
+for(const [code,diskColor] of [['IBOV','#245E8A'],['DOW_JONES','#2D486E'],['BRENT','#7A4E20']]){
+  const rendered=nativeContext();badgeModule.exports.drawBadge(rendered.native,code);
+  const fillsForCode=rendered.state.calls.filter(call=>call.op==='fill'),strokesForCode=rendered.state.calls.filter(call=>call.op==='stroke');
+  assert.equal(fillsForCode.filter(call=>call.style===diskColor).length,1,`${code} has one local pictogram disk`);
+  assert(strokesForCode.length>0||fillsForCode.some(call=>call.path.some(op=>op[0]==='rect')),`${code} has recognizable vector icon geometry`);
+  assert.equal(fillsForCode.filter(call=>call.style==='#34343A').length,0,`${code} does not use the neutral initials disk`);
+}
+console.log(JSON.stringify({version:'0.2.41',icons:['IBOV index trend','DOW_JONES market bars','USD/BRL circular US flag','BRENT oil barrel'],shape:'26pt circular local vector pictograms with no remote logo dependency',glyphOverlay:false,identity:'full column, shared 5.5pt semibold, native ellipsis, no status dot',smallAndMediumPath:'validated SVG.code with sibling fallback',nativeIPhone:false}));

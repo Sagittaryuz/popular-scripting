@@ -45,7 +45,10 @@ class MockRequest {
   assert.equal(rows[0].asset.source,'PrivateMarket','IBOV reuses the existing private Worker bundle');
   assert.equal(rows[0].asset.price,170800,'IBOV comes from the private response, not an ETF');
   assert.equal(rows[1].asset.price,null,'Dow Jones is never filled with a proxy or invented quote');
-  assert.equal(rows[1].sourceError,'dow-jones-authorized-feed-required');
+  assert.equal(rows[1].asset.source,'FRED/S&P DJI','Dow source provenance is explicit even while the copyrighted series is not requested');
+  assert.equal(rows[1].asset.instrument,'DJIA');
+  assert.equal(rows[1].asset.sourceRights,'third-party-copyright-permission-required');
+  assert.equal(rows[1].sourceError,'dow-jones-reproduction-permission-required');
   assert.equal(rows[1].chart,null);
   assert.equal(rows[2].asset.source,'AwesomeAPI');
   assert.equal(rows[2].asset.price,5.25,'USD/BRL uses the existing AwesomeAPI adapter');
