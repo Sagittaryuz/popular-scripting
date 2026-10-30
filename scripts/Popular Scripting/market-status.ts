@@ -107,7 +107,7 @@ const NOT_APPLICABLE:Record<string,string>=Object.freeze({
   DIESEL_S10:'O Diesel S10 exibido é uma pesquisa semanal da ANP, sem sessão intradiária de bolsa aplicável.',
   SOJA_JATAI_GO:'A Soja GO exibida é uma cotação diária local da Agrolink, sem sessão de bolsa confirmada para este dado.',
   'USD/BRL':'O USD/BRL exibido vem da cotação bid da AwesomeAPI; a fonte não identifica um calendário de sessão verificável para este indicador.',
-  BRENT:'O Brent exibido é uma série spot diária da EIA/FRED, não uma cotação intradiária de contrato futuro.'
+  BRENT:'O slot Petróleo representa o contrato futuro Brent Crude Futures da ICE, BRN Jan-2027; sem feed intradiário autorizado, a sessão e a cotação ficam desconhecidas.'
 })
 
 // The row's source status, cached flag, quote timestamp and HTTP result are

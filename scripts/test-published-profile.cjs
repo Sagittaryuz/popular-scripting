@@ -7,8 +7,8 @@ const view=fs.readFileSync(path.join(root,'scripts/Popular Scripting/view.tsx'),
 const engine=fs.readFileSync(path.join(root,'scripts/Popular Scripting/original-engine.js'),'utf8');
 const index=fs.readFileSync(path.join(root,'scripts/Popular Scripting/index.tsx'),'utf8');
 
-assert.equal(manifest.version,'0.2.41','published script manifest is bumped with the active requested profile');
-assert.match(model,/export const VERSION='0\.2\.41'/);
+assert.equal(manifest.version,'0.2.42','published script manifest is bumped with the active requested profile');
+assert.match(model,/export const VERSION='0\.2\.42'/);
 assert.match(model,/export const PUBLISHED_TEST_ASSETS=true/);
 assert.match(model,/PUBLISHED_TEST_PROFILE='ibov-dow-usd-brent-7d'/);
 assert.match(model,/localTestAssets:PUBLISHED_TEST_ASSETS/);
@@ -19,7 +19,7 @@ assert.match(model,/const orderedRows=PUBLISHED_TEST_ASSETS\?rows:fixedIndicator
 assert.match(model,/const combined=PUBLISHED_TEST_ASSETS\?\[\.\.\.orderedRows,\.\.\.additions\]:/,'the active order is preserved through the persisted result');
 assert.match(model,/FIXED_INDICATOR_CODES=\['SELIC','IPCA','IBOV','USD\/BRL','SOJA_JATAI_GO','CUB_GO','DIESEL_S10','BRENT'\]/,'the former list remains recoverable');
 assert.match(engine,/const KRAKEN_WINDOW_HOURS = 7 \* 24/);
-assert.match(engine,/const VERSION = '2026\.10\.30\.91'/,'the published engine bundle is identified separately from the package version');
+assert.match(engine,/const VERSION = '2026\.10\.30\.92'/,'the published engine bundle is identified separately from the package version');
 assert.match(engine,/window:'7D'/);
 assert.match(view,/DOW_JONES/,'the published UI accepts the Dow Jones slot');
 assert.match(view,/USD\/BRL/,'the published UI accepts the USD/BRL slot');
@@ -28,6 +28,9 @@ assert.match(engine,/const PUBLISHED_PROFILE = 'ibov-dow-usd-brent-7d'/);
 assert.match(engine,/const PROFILE_ASSETS = Object\.freeze\(\[/);
 assert.match(engine,/async function collectPublishedProfileRows\(\)/);
 assert.match(engine,/function profileSevenDayEOD\(row\)/);
+assert.match(engine,/function profileIntradaySevenDay\(row,queryTime=now\.getTime\(\)/);
+assert.match(engine,/brent-jan-2027-intraday-feed-required/);
+assert.match(engine,/contractMonth:'2027-01'/);
 assert.match(view,/curve\.status==='unavailable-7d'/);
 assert.match(engine,/get privateMarketStatus\(\)/,'the engine exposes only a safe private-source status snapshot');
 assert.match(model,/privateMarketStatusText/,'the foreground model has safe status labels');
@@ -35,4 +38,4 @@ assert.match(model,/Worker respondeu HTTP/,'the foreground model labels other sa
 assert.match(model,/código upstream/,'the foreground model can display the allow-listed upstream code');
 assert.match(index,/privateMarketStatusText/,'the diagnostic is visible in the foreground app, not in the widget layout');
 
-console.log('PASS published profile: version 0.2.41 activates IBOV/DOW/USD/Brent in the requested order, identifies the engine bundle, bypasses legacy cache/additions, preserves the old fixed list, and keeps the 7D UI contract plus safe source diagnostics.');
+console.log('PASS published profile: version 0.2.42 activates IBOV/DOW/USD/ICE Jan-2027 Brent in the requested order, identifies the engine bundle, bypasses legacy cache/additions, preserves the old fixed list, and keeps the 7D UI contract plus safe source diagnostics.');

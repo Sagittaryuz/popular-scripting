@@ -1,5 +1,18 @@
 # Melhorias Scripting Pro — 23/10/2026
 
+## 0.2.42 — Brent futuro e cobertura intradiária
+
+- [x] Identificar o contrato de referência como ICE Brent Crude Futures, `BRN`,
+  símbolo `B`, Jan-2027; não misturar com EIA/FRED spot.
+- [x] Recusar curvas que não provem intraday real em várias sessões da janela
+  de sete dias; manter cotação/variação diária separadas e sem preencher
+  observações.
+- [x] Verificar limites documentados de brapi Free e AwesomeAPI; não criar
+  credenciais, plano, proxy ou custo. Atualizar teste, manifest e preview.
+- [ ] Obter, sob autorização/licença apropriada, um feed que forneça intraday
+  real de 7 dias para BRN Jan-2027, IBOV, Dow e USD/BRL antes de desenhar as
+  curvas no perfil. iPhone nativo continua não testado.
+
 ## 0.2.41 — pictogramas locais sem fonte licenciada indevida
 
 - [x] Trocar as iniciais do perfil ativo por pictogramas vetoriais locais:

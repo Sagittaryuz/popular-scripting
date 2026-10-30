@@ -1,3 +1,28 @@
+## Atualização 0.2.42 - contrato Brent correto e janela intradiária honesta
+
+- O slot `Petróleo` agora identifica o instrumento mostrado nas referências:
+  **Brent Crude Futures**, ICE Futures Europe, código lógico `BRN`, símbolo de
+  contrato `B`, vencimento `Jan-2027`. A fonte oficial é
+  <https://www.ice.com/products/219/Brent-Crude-Futures>. A série Europe Brent
+  spot da EIA/FRED continua preservada somente no painel econômico recuperável;
+  ela não é mais exibida como se fosse o futuro Jan-2027.
+- A janela solicitada é uma semana de observações intradiárias reais. O motor
+  não estica fechamentos diários, não transforma timestamps de fechamento em
+  pontos intraday e não preenche lacunas. Sem fonte autorizada com essa
+  cobertura, a curva mostra `7d indisponível`; cotação e variação diária, quando
+  válidas separadamente, continuam independentes do gráfico.
+- A investigação verificou que o plano gratuito da brapi aceita histórico
+  `1d`, não o intraday/futuro necessário; a própria tabela coloca futuros e
+  intervalos intraday em planos superiores: <https://brapi.dev/pricing>. A
+  AwesomeAPI pública limita `/USD-BRL/100` a 100 amostras sequenciais de um
+  minuto, não sete dias: <https://docs.awesomeapi.com.br/api-de-moedas>. Não
+  foram criados plano, chave, custo, proxy ou permissão novos.
+- O perfil, ordem, ícones, fontes, layout 2×2/4×2 e o perfil anterior
+  recuperável permanecem. A prévia [market-profile-0.2.42-preview.png](validation/market-profile-0.2.42-preview.png)
+  é somente evidência de layout, com os quatro slots visíveis e curvas
+  deliberadamente indisponíveis; não contém cotações de referência nem teste
+  nativo no iPhone.
+
 ## Atualização 0.2.41 - pictogramas locais reconhecíveis
 
 - Mantém o perfil `Ibovespa`, `Dow Jones`, `Dólar` (`USD/BRL`) e `Petróleo`
@@ -10,9 +35,9 @@
   mas também marcou a série como protegida e proibiu reprodução sem permissão
   prévia. O slot continua honestamente sem cotação; não há ETF, proxy, valor
   fixo, conta, token ou custo novo.
-- USD/BRL continua validando `timestamp`/`create_date` do AwesomeAPI; Brent
-  continua usando observações EOD diárias da EIA/FRED, sem preencher fins de
-  semana. A prévia nova é fixture-only: não contém dados ao vivo.
+- USD/BRL continua validando `timestamp`/`create_date` do AwesomeAPI; o uso da
+  antiga série EOD da EIA/FRED para o perfil ativo foi substituído na 0.2.42
+  porque ela não representa o futuro Jan-2027. A prévia é fixture-only.
 - A prévia [market-profile-0.2.41-preview.png](validation/market-profile-0.2.41-preview.png)
   e seus arquivos SVG/JSON mostram os quatro pictogramas nos tamanhos 2×2 e
   4×2. Não houve teste nativo no iPhone.
@@ -360,7 +385,7 @@ Testes locais de fontes, observações antigas/futuras, alertas, cache, transpor
 
 # Popular Scripting
 
-**Atual: 0.2.41 - Scripting Pro.** Perfil publicado de quatro ativos
+**Atual: 0.2.42 - Scripting Pro.** Perfil publicado de quatro ativos
 (`IBOV`, `DOW_JONES`, `USD/BRL`, `BRENT`) em janela móvel de 7 dias, com detalhes,
 CSV, alertas, assistente, Central de Controle e painel Início. [Ativação,
 testes e limites](PRO.md).
@@ -375,20 +400,31 @@ Na tela **Importar Scripts Remotos** do Scripting, cole:
 https://github.com/Sagittaryuz/popular-scripting/tree/main/scripts/Popular%20Scripting
 ```
 
-Importe **Popular Scripting**, confirme a versão **0.2.41**, abra o projeto e toque em **Atualizar**. Leia a linha **Fonte privada:** para distinguir token, Worker, código da fonte, parsing e cache. Em **Detalhes dos indicadores**, toque em **Configurar fonte privada**, cole o token no campo seguro e salve. Adicione o widget do Scripting à Tela de Início e selecione esse projeto.
+Importe **Popular Scripting**, confirme a versão **0.2.42**, abra o projeto e toque em **Atualizar**. Leia a linha **Fonte privada:** para distinguir token, Worker, código da fonte, parsing e cache. Em **Detalhes dos indicadores**, toque em **Configurar fonte privada**, cole o token no campo seguro e salve. Adicione o widget do Scripting à Tela de Início e selecione esse projeto.
 
 Para receber melhorias de código, use a atualização do script remoto no Scripting. Essa importação vincula o projeto à pasta `main/scripts/Popular Scripting`; não use um endereço de commit ou tag para acompanhar as próximas versões. O botão **Atualizar** dentro da tela do Popular consulta somente os indicadores e solicita recarregar o widget.
 
 ## Tamanhos e dados
 
 - Pequeno, médio e grande: o perfil publicado mostra `Ibovespa`, `Dow Jones`, `Dólar` e `Petróleo` na mesma ordem; o médio/grande não repete linhas na segunda coluna.
-- O IBOV usa o endpoint privado autenticado; USD/BRL usa AwesomeAPI; Brent usa EIA/FRED diário. Sem resposta válida, os slots preservam ausência/cache honesto. Dow Jones permanece sem cotação até feed autorizado.
-- O domínio de gráfico ativo é 7D: IBOV usa timestamps reais do Worker, USD/BRL usa a série retornada pela AwesomeAPI e Brent usa observações EOD reais da EIA/FRED; Dow aparece `7d indisponível`. Não há interpolação, weekend fill ou valor fictício.
+- O IBOV usa o endpoint privado autenticado; USD/BRL usa AwesomeAPI; Petróleo
+  identifica `BRN Jan-27` na ICE. Sem resposta válida ou feed intradiário
+  autorizado, os slots preservam ausência/cache honesto. Dow Jones permanece
+  sem cotação até feed autorizado.
+- O domínio de gráfico ativo exige 7D intradiário real em todas as séries. As
+  observações diárias do Worker, a resposta curta `/USD-BRL/100` e o Brent
+  spot EIA/FRED são rejeitados como gráfico semanal, sem interpolação ou
+  weekend fill; a variação diária continua sendo exibida somente quando sua
+  fonte a comprova.
 - Cada série válida preenche horizontalmente apenas entre seu primeiro/último
   timestamp visível; a posição relativa dos pontos continua temporal e a
   cobertura/densidade de cada mercado permanece honesta.
 - A lista anterior de oito, fontes e ícones continua preservada no histórico/código para recuperação; não é a configuração ativa desta versão.
-- Fontes incluem o endpoint privado do proprietário, AwesomeAPI e EIA/FRED para o perfil ativo; BCB, AgroLink, Investidor10, brapi/B3 e Kraken continuam no caminho recuperável/histórico. Respostas reais não são empacotadas nem redistribuídas.
+- Fontes incluem o endpoint privado do proprietário e AwesomeAPI para os
+  dados ainda disponíveis do perfil; a identidade do contrato Brent vem da
+  ICE, sem feed de preço incorporado. EIA/FRED, BCB, AgroLink, Investidor10,
+  brapi/B3 e Kraken continuam no caminho recuperável/histórico. Respostas reais
+  não são empacotadas nem redistribuídas.
 - Dados econômicos de referência são consultados diretamente deste Git, sem autenticação. Rede indisponível ou resposta inválida preserva o cache validado ou a reserva versionada, com suas datas originais.
 - O workflow `economic-data.yml` é programado a cada hora útil, 11h17–23h17 UTC, sujeito a atrasos do GitHub. Falha de uma fonte mantém a série anterior e é registrada no workflow; dados antigos não recebem data de observação nova.
 - Política de atualização do widget: a partir de um minuto, configurável em 1/5/15, sujeita ao iOS.

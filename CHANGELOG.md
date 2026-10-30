@@ -1,3 +1,18 @@
+## 0.2.42 - contrato Brent Jan-2027 e curvas intraday sem substituição
+
+- Corrige a identidade do slot Petróleo para o contrato Brent Crude Futures da
+  ICE Futures Europe (`BRN`, símbolo `B`, vencimento `Jan-2027`), sem exibir a
+  série diária Europe Brent spot da EIA/FRED como se fosse esse futuro.
+- Exige observações intradiárias reais e cobertura de várias sessões para a
+  curva de 7 dias. Fechamentos diários, amostras curtas e dados sem fonte
+  autorizada mostram `7d indisponível`; nenhum ponto, valor ou variação é
+  fabricado. Variação diária e gráfico continuam campos distintos.
+- Registra que o plano gratuito atual da brapi é diário e que a rota pública
+  `/USD-BRL/100` da AwesomeAPI não cobre sete dias. Não foram alterados plano,
+  credenciais, Worker, layout, ícones ou permissões.
+- Atualiza testes, manifest e preview fixture-only `market-profile-0.2.42`;
+  iPhone nativo não testado.
+
 ## 0.2.41 - pictogramas locais e DJIA sem reprodução indevida
 
 - Substitui as iniciais do perfil ativo por pictogramas vetoriais locais para

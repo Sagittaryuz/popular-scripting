@@ -1,17 +1,18 @@
 const fs=require('node:fs'),path=require('node:path'),{execFileSync}=require('node:child_process');
 
-// Fixture-only visual evidence for the active 0.2.41 profile. Values and
-// curves are deliberately placeholders; the preview proves the four-row
-// order, equal identity typography, no status dot, and a visible pictogram in
-// every slot. It never embeds live quotes or downloaded logos.
-const root=path.resolve(__dirname,'..'),version='0.2.41';
+// Fixture-only visual evidence for the active 0.2.42 profile. The chart
+// areas intentionally say unavailable: no authorized source currently proves
+// real intraday coverage for the requested seven-day window. The preview
+// proves the four-row order, equal identity typography, no status dot, and a
+// visible pictogram in every slot. It never embeds live quotes or logos.
+const root=path.resolve(__dirname,'..'),version='0.2.42';
 const svgOutput=path.join(root,`validation/market-profile-${version}-preview.svg`),pngOutput=path.join(root,`validation/market-profile-${version}-preview.png`),jsonOutput=path.join(root,`validation/market-profile-${version}-preview.json`);
 const ROW=36,ROW_STEP=ROW+2/3,COLUMN=146,COLUMN_GAP=12,COL_GAP=2,COL1=28,COL2=40,COL3=46,COL4=26,COL2_X=COL1+COL_GAP,COL3_X=COL2_X+COL2+COL_GAP,COL4_X=COL3_X+COL3+COL_GAP,ICON=26,ICON_LEFT=(COL1-ICON)/2,NAME_TOP=9,META_TOP=19,GRAPH_TOP=8,GRAPH_HEIGHT=20,NAME_FONT=5.5;
 const rows=[
-  {code:'IBOV',name:'Ibovespa',meta:'IBOV | 30/10',badge:'INDEX',color:'#FF1744',curve:true},
+  {code:'IBOV',name:'Ibovespa',meta:'IBOV | fonte',badge:'INDEX',color:'#FF1744',curve:false},
   {code:'DOW_JONES',name:'Dow Jones',meta:'DOW | fonte',badge:'MARKET',color:'#96969C',curve:false},
-  {code:'USD/BRL',name:'Dólar',meta:'USD/BRL | 30/10',badge:'USD',color:'#00E676',curve:true},
-  {code:'BRENT',name:'Petróleo',meta:'BRENT | 30/10',badge:'OIL',color:'#FF1744',curve:true}
+  {code:'USD/BRL',name:'Dólar',meta:'USD/BRL | fonte',badge:'USD',color:'#00E676',curve:false},
+  {code:'BRENT',name:'Petróleo',meta:'BRN Jan-27 | ICE',badge:'OIL',color:'#FF1744',curve:false}
 ];
 const esc=value=>String(value).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 const text=(x,y,value,size=5,fill='#96969C',anchor='start',weight='400')=>`<text x="${x}" y="${y}" fill="${fill}" font-family="-apple-system,Arial,sans-serif" font-size="${size}" text-anchor="${anchor}" font-weight="${weight}">${esc(value)}</text>`;
@@ -40,8 +41,8 @@ function widget(x,y,width,height,label,columns){
   rows.forEach((row,i)=>{const column=columns===2?Math.floor(i/4):0,index=i%4,offset=contentX+column*(COLUMN+COLUMN_GAP),rowTop=top+index*ROW_STEP;parts.push(rowMarkup(row,rowTop,offset));if(index<3)parts.push(`<line x1="${x+8}" y1="${rowTop+ROW+.33}" x2="${x+width-8}" y2="${rowTop+ROW+.33}" stroke="#FFFFFF" stroke-opacity=".13"/>`);});
   return parts.join('');
 }
-const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="540" height="245" viewBox="0 0 540 245"><title>Popular Scripting ${version} market profile preview</title><desc>Fixture-only preview for Ibovespa, Dow Jones, Dólar USD/BRL, and Petróleo Brent in the requested order. All four slots use visible local pictograms; USD is the circular United States flag. Names share one 5.5 point semibold line with ellipsis-capable native layout, and no status dot is drawn. Values and curves are synthetic layout fixtures only; Dow Jones remains unavailable because FRED marks DJIA as copyrighted and reproduction requires S&amp;P permission.</desc><rect width="540" height="245" rx="18" fill="#0F0F12"/>${widget(12,34,158,158,'small · 2×2 · 158×158',1)}${widget(190,34,338,170,'medium/large · 4×2 · 338×170',2)}${text(12,214,'Fixture visual · IBOV · DOW · USD/BRL · BRENT · pictogramas locais · sem ponto de status',7,'#96969C')}${text(12,228,'Valores/curvas sintéticos apenas; não substitui render nativo nem teste físico no iPhone.',7,'#96969C')}</svg>\n`;
-const evidence={version,output:path.relative(root,svgOutput),pngOutput:path.relative(root,pngOutput),icons:{IBOV:'local index trend pictogram',DOW_JONES:'local market bars pictogram',USD_BRL:'circular US flag',BRENT:'local oil barrel pictogram'},order:rows.map(row=>row.code),identity:{font:NAME_FONT,weight:'semibold',lineLimit:1,ellipsis:true,statusDot:false},data:{live:false,values:'synthetic placeholders',curves:'synthetic geometry only',window:'7D layout contract'},dow:{quote:'unavailable',reason:'FRED DJIA is third-party copyrighted; reproduction requires S&P permission, so no quote request is made'},nativeIPhone:false};
+const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="540" height="245" viewBox="0 0 540 245"><title>Popular Scripting ${version} market profile preview</title><desc>Layout-only preview for Ibovespa, Dow Jones, Dólar USD/BRL, and the ICE Brent Crude Futures Jan-2027 contract in the requested order. All four slots use visible local pictograms; USD is the circular United States flag. Names share one 5.5 point semibold line with ellipsis-capable native layout, and no status dot is drawn. Chart paths are intentionally absent because no authorized source currently proves real intraday coverage for seven days; this is not a quote preview.</desc><rect width="540" height="245" rx="18" fill="#0F0F12"/>${widget(12,34,158,158,'small · 2×2 · 158×158',1)}${widget(190,34,338,170,'medium/large · 4×2 · 338×170',2)}${text(12,214,'Layout fixture · IBOV · DOW · USD/BRL · BRN Jan-27 · pictogramas locais · sem ponto de status',7,'#96969C')}${text(12,228,'Cotações e curvas não são exibidas sem fonte autorizada; não substitui render nativo nem teste físico no iPhone.',7,'#96969C')}</svg>\n`;
+const evidence={version,output:path.relative(root,svgOutput),pngOutput:path.relative(root,pngOutput),icons:{IBOV:'local index trend pictogram',DOW_JONES:'local market bars pictogram',USD_BRL:'circular US flag',BRENT:'local oil barrel pictogram'},order:rows.map(row=>row.code),identity:{font:NAME_FONT,weight:'semibold',lineLimit:1,ellipsis:true,statusDot:false},data:{live:false,values:'not displayed without authorized live source',curves:'unavailable until real intraday 7D source',window:'7D intraday requirement'},brent:{instrument:'ICE Futures Europe Brent Crude Futures',logicalCode:'BRN',contractSymbol:'B',contractMonth:'2027-01',quote:'unavailable without authorized intraday feed',spotNotSubstituted:true},dow:{quote:'unavailable',reason:'FRED DJIA is third-party copyrighted; reproduction requires S&P permission, so no quote request is made'},nativeIPhone:false};
 fs.writeFileSync(svgOutput,svg);fs.writeFileSync(jsonOutput,JSON.stringify(evidence,null,2)+'\n');
 try{execFileSync('inkscape',[svgOutput,'--export-type=png','--export-filename='+pngOutput],{stdio:'ignore'});}catch(error){throw Error('PNG preview conversion failed: '+error.message);}
 console.log(JSON.stringify(evidence));

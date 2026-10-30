@@ -1,4 +1,22 @@
-# Popular Scripting - Pro 0.2.41
+# Popular Scripting - Pro 0.2.42
+
+## 0.2.42 - contrato Brent Jan-2027 e validação intradiária
+
+- O perfil mantém `IBOV`, `DOW_JONES`, `USD/BRL`, `BRENT` e os pictogramas
+  locais, mas `BRENT` agora descreve o Brent Crude Futures da ICE Futures
+  Europe: lógico `BRN`, símbolo `B`, vencimento `2027-01`. A série EIA/FRED
+  `DCOILBRENTEU` é spot diária e não é usada para preencher esse slot.
+- A curva do perfil só é aceita quando contém timestamps reais intraday em
+  várias sessões ao longo da janela de sete dias. Fechamentos diários, uma
+  amostra por dia ou uma janela curta de câmbio resultam em `7d indisponível`;
+  não há pontos inventados. Cotação e variação diária são preservadas como
+  campos independentes.
+- A investigação oficial confirmou que o plano Free da brapi é diário (`1d`)
+  e não inclui futuros/intraday; a rota pública AwesomeAPI usada pelo projeto
+  limita a série sem chave a 100 amostras de um minuto. Não houve alteração de
+  plano, custo, chave, Worker, layout, ícones ou permissões.
+- Testes e preview fixture-only foram atualizados para 0.2.42. iPhone nativo
+  não testado.
 
 ## 0.2.41 - pictogramas locais e decisão de fonte do Dow
 
