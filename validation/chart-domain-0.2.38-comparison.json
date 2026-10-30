@@ -1,0 +1,43 @@
+{
+  "version": "0.2.38",
+  "output": "validation/chart-domain-0.2.38-comparison.svg",
+  "sizes": {
+    "small": "158x158",
+    "medium": "338x170"
+  },
+  "domainBefore": "global 7D window",
+  "domainAfter": "each visible series first/last timestamp",
+  "edgeX": [
+    0.75,
+    45.25
+  ],
+  "rows": [
+    {
+      "code": "BBAS3",
+      "points": 3,
+      "first": "2026-10-27T12:00:00Z",
+      "last": "2026-10-29T20:00:00Z"
+    },
+    {
+      "code": "BBDC4",
+      "points": 3,
+      "first": "2026-10-27T12:00:00Z",
+      "last": "2026-10-29T20:00:00Z"
+    },
+    {
+      "code": "IBOV",
+      "points": 3,
+      "first": "2026-10-27T12:00:00Z",
+      "last": "2026-10-29T20:00:00Z"
+    },
+    {
+      "code": "BTC/USD",
+      "points": 4,
+      "first": "2026-10-23T12:00:00Z",
+      "last": "2026-10-29T20:00:00Z"
+    }
+  ],
+  "values": "synthetic fixture only",
+  "liveData": false,
+  "nativeIPhone": false
+}

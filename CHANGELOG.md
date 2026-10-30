@@ -1,3 +1,15 @@
+## 0.2.38 - domínio horizontal por série nas curvas
+
+- Normaliza cada curva visível entre o primeiro e o último timestamp real da
+  própria série, fazendo os extremos ocuparem as mesmas bordas úteis em todas
+  as linhas e tamanhos do widget.
+- Mantém a proporção temporal dos pontos intermediários, a ordem cronológica,
+  os valores, o filtro móvel de 7 dias e a ausência honesta de curva para
+  séries de um ponto ou com observação nula; não cria pontos nem preenche fins
+  de semana.
+- Inclui comparação visual fixture-only em small `158×158` e medium `338×170`.
+  Testes locais passaram; iPhone nativo não foi testado.
+
 ## 0.2.37 - fallback nativo para logos SVG da API
 
 - Corrige o caminho visual do perfil B3/BTC: uma URL SVG da API não suprime

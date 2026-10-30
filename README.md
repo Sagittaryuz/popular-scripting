@@ -1,3 +1,16 @@
+## Atualização 0.2.38 - extremos comuns das curvas por série
+
+- Cada curva visível usa como domínio horizontal o primeiro e o último
+  timestamp real daquela série. Isso alinha os extremos entre B3, BTC e demais
+  linhas, sem alongar valores fora do domínio ou acrescentar observações.
+- O espaçamento temporal entre pontos intermediários continua proporcional; por
+  isso a densidade visual pode diferir entre mercados com séries diárias e
+  horárias. O filtro continua sendo a janela móvel real de 7 dias, sem preencher
+  fins de semana, nulos ou séries de um ponto.
+- A comparação [chart-domain-0.2.38-comparison.png](validation/chart-domain-0.2.38-comparison.png)
+  mostra antes/depois em `158×158` e `338×170`, com timestamps e valores
+  sintéticos. É fixture-only; iPhone nativo não foi testado.
+
 ## Atualização 0.2.37 - fallback seguro para logos SVG
 
 - O widget mantém o logo retornado pela API somente quando a URL HTTPS pertence
@@ -282,7 +295,7 @@ Testes locais de fontes, observações antigas/futuras, alertas, cache, transpor
 
 # Popular Scripting
 
-**Atual: 0.2.37 - Scripting Pro.** Perfil publicado de quatro ativos
+**Atual: 0.2.38 - Scripting Pro.** Perfil publicado de quatro ativos
 (`BBAS3`, `BBDC4`, `IBOV`, `BTC/USD`) em janela móvel de 7 dias, com detalhes,
 CSV, alertas, assistente, Central de Controle e painel Início. [Ativação,
 testes e limites](PRO.md).
@@ -297,7 +310,7 @@ Na tela **Importar Scripts Remotos** do Scripting, cole:
 https://github.com/Sagittaryuz/popular-scripting/tree/main/scripts/Popular%20Scripting
 ```
 
-Importe **Popular Scripting**, confirme a versão **0.2.37**, abra o projeto e toque em **Atualizar**. Leia a linha **Fonte privada:** para distinguir token, Worker, código da fonte, parsing e cache. Em **Detalhes dos indicadores**, toque em **Configurar fonte privada**, cole o token no campo seguro e salve. Adicione o widget do Scripting à Tela de Início e selecione esse projeto.
+Importe **Popular Scripting**, confirme a versão **0.2.38**, abra o projeto e toque em **Atualizar**. Leia a linha **Fonte privada:** para distinguir token, Worker, código da fonte, parsing e cache. Em **Detalhes dos indicadores**, toque em **Configurar fonte privada**, cole o token no campo seguro e salve. Adicione o widget do Scripting à Tela de Início e selecione esse projeto.
 
 Para receber melhorias de código, use a atualização do script remoto no Scripting. Essa importação vincula o projeto à pasta `main/scripts/Popular Scripting`; não use um endereço de commit ou tag para acompanhar as próximas versões. O botão **Atualizar** dentro da tela do Popular consulta somente os indicadores e solicita recarregar o widget.
 
@@ -306,6 +319,9 @@ Para receber melhorias de código, use a atualização do script remoto no Scrip
 - Pequeno, médio e grande: o perfil publicado mostra os quatro ativos de teste na mesma ordem; o médio/grande não repete linhas na segunda coluna.
 - BBAS3, BBDC4 e IBOV usam o endpoint privado autenticado; sem token, resposta válida ou cache privado recente, o slot vazio é preservado. O BTC/USD usa somente o adaptador público Kraken quando a resposta for válida.
 - O domínio de gráfico ativo é 7D: o perfil privado usa timestamps reais e o BTC usa observações do Kraken; sem amostras válidas aparece `7d indisponível`, sem interpolação, weekend fill ou valor fictício.
+- Cada série válida preenche horizontalmente apenas entre seu primeiro/último
+  timestamp visível; a posição relativa dos pontos continua temporal e a
+  cobertura/densidade de cada mercado permanece honesta.
 - A lista anterior de oito, fontes e ícones continua preservada no histórico/código para recuperação; não é a configuração ativa desta versão.
 - Fontes incluem o endpoint privado do proprietário, BCB, AgroLink, Investidor10, AwesomeAPI, FRED e Kraken; respostas reais não são empacotadas nem redistribuídas.
 - Dados econômicos de referência são consultados diretamente deste Git, sem autenticação. Rede indisponível ou resposta inválida preserva o cache validado ou a reserva versionada, com suas datas originais.

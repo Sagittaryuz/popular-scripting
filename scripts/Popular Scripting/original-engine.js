@@ -1698,7 +1698,12 @@ function lineCoordinates(chart,width=LAYOUT.graphWidth,height=LAYOUT.chartHeight
   chart=displayChart(chart);
   if(!chart||!Array.isArray(chart.points)||chart.points.length<2||chart.points.some((p,i)=>!finite(p.value)||(p.value<=0&&chart.valueKind!=='monthly-change-percent')||!finite(p.stamp?.time)||(i&&p.stamp.time<=chart.points[i-1].stamp.time)))return [];
   const points=chart.points,values=points.map(p=>p.value),min=Math.min(...values),max=Math.max(...values);
-  const first=chart.displayDomain?.startTime||chart.displayWindow?.startTime||points[0].stamp.time,last=chart.displayDomain?.endTime||chart.displayWindow?.endTime||points[points.length-1].stamp.time,duration=last-first;
+  // Normalize each visible series to its own real first/last observation.
+  // This fills the same useful canvas width for daily, hourly and sparse
+  // markets while preserving the elapsed-time ratio between intermediate
+  // observations. The seven-day filter has already happened in displayChart;
+  // no point is added and the source values/timestamps remain untouched.
+  const first=points[0].stamp.time,last=points[points.length-1].stamp.time,duration=last-first;
   if(!finite(duration)||duration<=0)return [];
   const x=time=>.75+(time-first)/duration*(width-1.5);
   return points.map(p=>({x:monthlyCategoryX(chart,p,width)??x(p.stamp.time),y:.75+(max===min?.5:1-(p.value-min)/(max-min))*(height-1.5)}));

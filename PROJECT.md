@@ -1,4 +1,19 @@
-# Popular Scripting - Pro 0.2.37
+# Popular Scripting - Pro 0.2.38
+
+## 0.2.38 - extremos horizontais comuns sem fabricar observações
+
+- A captura nativa revelou que curvas B3 com poucos fechamentos ocupavam só o
+  trecho correspondente à janela global de 7 dias, enquanto o BTC ocupava uma
+  faixa maior. A causa estava em `lineCoordinates`: o eixo X temporal usava
+  sempre os limites da janela global.
+- O motor agora usa o primeiro e o último timestamp real já filtrado da série
+  como domínio visual. Assim os extremos de cada curva chegam às mesmas
+  bordas úteis; os pontos intermediários mantêm sua proporção temporal. Valores,
+  timestamps, ordem, fins de semana e lacunas não são preenchidos.
+- Séries com um ponto ou observação nula não ganham curva artificial. A
+  comparação `validation/chart-domain-0.2.38-comparison.png`/`.svg` é uma
+  fixture sintética nos tamanhos reais `158×158` e `338×170`, não um render
+  nativo nem dados ao vivo. iPhone nativo permanece não testado.
 
 ## 0.2.37 - fallback nativo para logos SVG da API
 

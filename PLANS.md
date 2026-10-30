@@ -1,5 +1,16 @@
 # Melhorias Scripting Pro — 23/10/2026
 
+## 0.2.38 — domínio horizontal comum das curvas
+
+- [x] Normalizar o eixo X pelo primeiro/último timestamp real elegível de cada
+  série, mantendo os intervalos relativos entre observações e sem alterar
+  valores, pontos ou o filtro 7D.
+- [x] Cobrir séries diárias/esparsas, EOD com fins de semana, pontos nulos e
+  séries de um ponto; gerar comparação fixture-only nos tamanhos reais
+  `158×158` e `338×170`.
+- [x] Preservar densidade/cobertura distinta por mercado, registrar que o
+  preview não substitui Scripting nativo e manter iPhone não testado.
+
 ## 0.2.37 — logos SVG com fallback de carregamento
 
 - [x] Restringir URLs SVG ao host de logos retornado/allowlisted pela API.
