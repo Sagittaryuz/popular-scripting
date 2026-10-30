@@ -1,4 +1,20 @@
-# Popular Scripting - Pro 0.2.43
+# Popular Scripting - Pro 0.2.44
+
+## 0.2.44 - migração do cache legado do USD/BRL
+
+- A versão 0.2.42 podia deixar um snapshot fresco `usd-brl-awesome-v13` com a
+  série curta intraday. Como ele era retornado antes da rede, o perfil diário
+  rejeitava a curva e mostrava `7d indisponível`, apesar da fonte diária já
+  estar no código.
+- O cliente usa agora `usd-brl-awesome-v14-daily`: consulta sempre o contrato
+  `/json/daily/USD-BRL/90` quando o cache diário ainda não existe; o v13 só
+  preserva preço de fallback e nunca fornece pontos ao gráfico.
+- O parser aceita a forma real da resposta, em que `code`/`codein` aparecem no
+  primeiro item e os itens seguintes trazem apenas `bid`/`timestamp`. Pregões
+  esparsos e fins de semana ausentes continuam sem preenchimento. IBOV, ordem,
+  ícones e gráficos não foram alterados. A coluna 4 agora mostra somente a
+  cotação ampliada e a variação, sem unidade abaixo; `169,2K`, `5,38` e `—`
+  permanecem limitados à própria coluna. iPhone nativo não testado.
 
 ## 0.2.43 - recorte diário de sete dias a partir das fontes de 90 dias
 

@@ -31,6 +31,8 @@ assert.match(badges,/function drawOilBadge\(\)/,'Brent uses a local oil-barrel p
 assert.match(view,/const NAME_FONT=5\.5/,'all names use one fixed native font size');
 assert.match(view,/minScaleFactor=\{1\}/,'native text uses ellipsis without per-name font shrinking');
 assert.doesNotMatch(view,/market-status-dot/,'the status dot is removed from the compact identity column');
+assert.doesNotMatch(view,/cellLabel\('unit'/,'the unit is no longer rendered below the quote');
+assert.match(view,/const PRICE_FONT=14/,'the quote source font is enlarged before native fitting');
 
 const bundled=buildSync({entryPoints:[path.join(root,'badges.js')],bundle:true,write:false,format:'cjs',platform:'node'}).outputFiles[0].text;
 const badgeModule={exports:{}};
@@ -82,4 +84,4 @@ for(const [code,diskColor] of [['IBOV','#245E8A'],['DOW_JONES','#2D486E'],['BREN
   assert(strokesForCode.length>0||fillsForCode.some(call=>call.path.some(op=>op[0]==='rect')),`${code} has recognizable vector icon geometry`);
   assert.equal(fillsForCode.filter(call=>call.style==='#34343A').length,0,`${code} does not use the neutral initials disk`);
 }
-console.log(JSON.stringify({version:'0.2.43',icons:['IBOV index trend','DOW_JONES market bars','USD/BRL circular US flag','BRENT oil barrel'],shape:'26pt circular local vector pictograms with no remote logo dependency',glyphOverlay:false,identity:'full column, shared 5.5pt semibold, native ellipsis, no status dot',smallAndMediumPath:'validated SVG.code with sibling fallback',nativeIPhone:false}));
+console.log(JSON.stringify({version:'0.2.44',icons:['IBOV index trend','DOW_JONES market bars','USD/BRL circular US flag','BRENT oil barrel'],shape:'26pt circular local vector pictograms with no remote logo dependency',glyphOverlay:false,identity:'full column, shared 5.5pt semibold, native ellipsis, no status dot',smallAndMediumPath:'validated SVG.code with sibling fallback',nativeIPhone:false}));

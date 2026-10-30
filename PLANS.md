@@ -1,5 +1,16 @@
 # Melhorias Scripting Pro — 23/10/2026
 
+## 0.2.44 — migração do cache diário USD/BRL
+
+- [x] Impedir que o snapshot v13 da série curta intraday faça bypass da fonte
+  diária restaurada.
+- [x] Usar chave v14 diária, preservar fallback de preço sem reutilizar curva
+  incompatível e cobrir schema real/itens sem `code`/`codein` após o primeiro.
+- [x] Validar pregões esparsos, fim de semana sem preenchimento, versão,
+  manifest e publicação. iPhone nativo continua não testado.
+- [x] Remover a unidade visual sob a cotação, ampliar a fonte com fitting nativo
+  e testar `169,2K`, `5,38`, textos longos e `—` em pequeno/médio.
+
 ## 0.2.43 — fontes diárias e recorte semanal
 
 - [x] Restaurar a fonte histórica diária de 90 dias do USD/BRL e recortar

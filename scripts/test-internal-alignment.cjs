@@ -15,8 +15,8 @@ assert.equal(G.iconLeft+G.icon/2,G.col1/2,'icon is centered in its column')
 assert.equal(G.graphX,G.col1+G.colGap+G.col2+G.colGap,'graph starts after icon and identity columns')
 assert(G.graphHeight>5.5,'the chart receives the requested height')
 assert.equal((G.line1Top+(G.line2Top+G.middle))/2,G.blockCenter,'value/variation block is centered on the row')
-assert(G.line3Top>G.line1Top+G.top,'compact unit is below the value')
-assert(G.line3Top+G.bottom<G.line2Top,'compact unit stays above the variation')
+assert(G.line1Top>=G.nameTop,'quote never starts above the asset name')
+assert(G.line1Top+G.top<G.line2Top,'variation remains below the quote with a gap')
 assert.equal(G.nameX,G.dateX,'name and code/date share the same identity column')
 assert.equal(G.name,G.date,'name and code/date use the same width')
 const sdk={AppIntentManager:{register:definition=>()=>({name:definition.name})},AppIntentProtocol:{AppIntent:0},ControlWidget:{reloadButtons:()=>{}},Safari:{openURL:async()=>true},Script:{createRunURLScheme:()=> 'scripting://run/Meu%20Painel?section=market'},Button:'Button',Canvas:'Canvas',Circle:'Circle',Image:'Image',Rectangle:'Rectangle',Text:'Text',ZStack:'ZStack'}
@@ -32,8 +32,9 @@ for(const [family,width,height,expected] of [['small',158,170,4],['medium',338,1
   const plan=draw.layout(family,width,height)
   for(let i=0;i<expected;i++){
     const content=buttons[i].children.find(node=>node.type==='ZStack'),desc=walk(content)
-    const nameText=desc.find(node=>node.type==='Text'&&node.props?.key==='name-text'),meta=desc.find(node=>node.type==='Text'&&node.props?.key==='asset-meta'),icon=desc.find(node=>node.props?.key==='asset-icon'||node.props?.key==='asset-image'||node.props?.key==='asset-fallback'),price=desc.find(node=>node.type==='Text'&&node.props?.key==='price'),percent=desc.find(node=>node.type==='Text'&&node.props?.key==='percent'),unit=desc.find(node=>node.type==='Text'&&node.props?.key==='unit'),graph=desc.find(node=>node.type==='Canvas'&&node.props?.key==='asset-chart')
-    assert(nameText&&meta&&icon&&price&&percent&&unit&&graph,family+' row '+i+' contains measured column elements')
+    const nameText=desc.find(node=>node.type==='Text'&&node.props?.key==='name-text'),meta=desc.find(node=>node.type==='Text'&&node.props?.key==='asset-meta'),icon=desc.find(node=>node.props?.key==='asset-icon'||node.props?.key==='asset-image'||node.props?.key==='asset-fallback'),price=desc.find(node=>node.type==='Text'&&node.props?.key==='price'),percent=desc.find(node=>node.type==='Text'&&node.props?.key==='percent'),graph=desc.find(node=>node.type==='Canvas'&&node.props?.key==='asset-chart')
+    assert(nameText&&meta&&icon&&price&&percent&&graph,family+' row '+i+' contains measured column elements')
+    assert(!desc.some(node=>node.type==='Text'&&node.props?.key==='unit'),family+' row '+i+' does not render a unit below the quote')
     assert(!desc.some(node=>node.type==='Circle'&&node.props?.key==='market-status-dot'),family+' row '+i+' has no status dot')
     if(i===0){
       assert.equal(nameText.props.font,5.5*plan.scale,family+' long name keeps the shared font size')
@@ -47,11 +48,13 @@ for(const [family,width,height,expected] of [['small',158,170,4],['medium',338,1
     assert(Math.abs(graph.props.position.y-(G.graphTop+G.graphHeight/2)*plan.scaleY)<1e-8,family+' graph has the usable height')
     assert(Math.abs(graph.props.position.y-icon.props.position.y)<1e-8,family+' graph center stays aligned with the icon')
     assert(Math.abs(((top(price)+bottom(percent))/2)-G.blockCenter*plan.scaleY)<1e-8,family+' value/variation block is centered')
-    assert(top(unit)>=bottom(price)-1e-8&&bottom(unit)<=top(percent)+1e-8,family+' compact unit sits between value and variation')
+    assert(top(price)>=top(nameText)-1e-8,family+' quote does not rise above the name')
+    assert(bottom(price)<top(percent),family+' variation remains below the quote')
+    assert.equal(price.props.font,14*plan.scale,family+' quote uses the enlarged maximum-fit source size')
     assert(Math.abs(top(price)-G.line1Top*plan.scaleY)<1e-8,family+' quote stays at the top')
     assert(nameText.props.position.x+nameText.props.frame.width/2<=graph.props.position.x-graph.props.frame.width/2-1e-8,family+' name cell does not collide with graph')
     assert(meta.props.frame.width===G.date*plan.scale,family+' code/date has the identity width')
     assert(tree.props.accessibilityLabel.includes('Selic com nome suficientemente long'))
   }
 }
-console.log('PASS 0.2.39 geometry: full identity-width names, one shared font with ellipsis, no status dot, grouped centered blocks, 26 pt icons, graph/quote separation and long/missing fixtures covered. Native iPhone render pending.')
+console.log('PASS 0.2.44 geometry: full identity-width names, one shared font with ellipsis, no status dot, grouped centered blocks, 26 pt icons, enlarged quote, no unit line, graph/quote separation and long/missing fixtures covered. Native iPhone render pending.')

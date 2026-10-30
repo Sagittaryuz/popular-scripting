@@ -1,17 +1,17 @@
 const fs=require('node:fs'),path=require('node:path'),{execFileSync}=require('node:child_process');
 
-// Fixture-only visual evidence for the active 0.2.43 profile. Curves marked
+// Fixture-only visual evidence for the active 0.2.44 profile. Curves marked
 // EOD use synthetic geometry to demonstrate the restored daily crop; they are
 // not live quotes. The preview proves order, shared identity typography, no
 // status dot, visible pictograms, and honest unavailable slots.
-const root=path.resolve(__dirname,'..'),version='0.2.43';
+const root=path.resolve(__dirname,'..'),version='0.2.44';
 const svgOutput=path.join(root,`validation/market-profile-${version}-preview.svg`),pngOutput=path.join(root,`validation/market-profile-${version}-preview.png`),jsonOutput=path.join(root,`validation/market-profile-${version}-preview.json`);
 const ROW=36,ROW_STEP=ROW+2/3,COLUMN=146,COLUMN_GAP=12,COL_GAP=2,COL1=28,COL2=40,COL3=46,COL4=26,COL2_X=COL1+COL_GAP,COL3_X=COL2_X+COL2+COL_GAP,COL4_X=COL3_X+COL3+COL_GAP,ICON=26,ICON_LEFT=(COL1-ICON)/2,NAME_TOP=9,META_TOP=19,GRAPH_TOP=8,GRAPH_HEIGHT=20,NAME_FONT=5.5;
 const rows=[
-  {code:'IBOV',name:'Ibovespa',meta:'IBOV | EOD',badge:'INDEX',color:'#FF1744',curve:true},
-  {code:'DOW_JONES',name:'Dow Jones',meta:'DOW | fonte',badge:'MARKET',color:'#96969C',curve:false},
-  {code:'USD/BRL',name:'Dólar',meta:'USD/BRL | EOD',badge:'USD',color:'#00E676',curve:true},
-  {code:'BRENT',name:'Petróleo',meta:'BRN Jan-27 | ICE',badge:'OIL',color:'#FF1744',curve:false}
+  {code:'IBOV',name:'Ibovespa',meta:'IBOV | EOD',price:'169,2K',percent:'−1,06%',badge:'INDEX',color:'#FF1744',curve:true},
+  {code:'DOW_JONES',name:'Dow Jones',meta:'DOW | fonte',price:'—',percent:'—',badge:'MARKET',color:'#96969C',curve:false},
+  {code:'USD/BRL',name:'Dólar',meta:'USD/BRL | EOD',price:'5,38',percent:'+0,72%',badge:'USD',color:'#00E676',curve:true},
+  {code:'BRENT',name:'Petróleo',meta:'BRN Jan-27 | ICE',price:'—',percent:'—',badge:'OIL',color:'#FF1744',curve:false}
 ];
 const esc=value=>String(value).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 const text=(x,y,value,size=5,fill='#96969C',anchor='start',weight='400')=>`<text x="${x}" y="${y}" fill="${fill}" font-family="-apple-system,Arial,sans-serif" font-size="${size}" text-anchor="${anchor}" font-weight="${weight}">${esc(value)}</text>`;
@@ -33,7 +33,7 @@ function curve(row,rowTop,offset){
 }
 function rowMarkup(row,rowTop,offset){
   const cx=offset+ICON_LEFT+ICON/2,cy=rowTop+18,right=offset+COL4_X+COL4;
-  return `<g aria-label="${esc(row.code)} fixture">${badge(row,cx,cy)}${text(offset+COL2_X,rowTop+NAME_TOP+6.2,row.name,NAME_FONT,'#FFFFFF','start','600')}${text(offset+COL2_X,rowTop+META_TOP+6,row.meta,5.3)}<path d="M${offset+COL3_X} ${rowTop+GRAPH_TOP}V${rowTop+GRAPH_TOP+GRAPH_HEIGHT}M${offset+COL3_X+COL3} ${rowTop+GRAPH_TOP}V${rowTop+GRAPH_TOP+GRAPH_HEIGHT}" stroke="#FFFFFF" stroke-opacity=".20" stroke-dasharray="1 1"/>${curve(row,rowTop,offset)}${text(right,rowTop+15,'—',6.8,'#FFFFFF','end','600')}${text(right,rowTop+23,'—',5,row.color,'end','600')}</g>`;
+  return `<g aria-label="${esc(row.code)} fixture">${badge(row,cx,cy)}${text(offset+COL2_X,rowTop+NAME_TOP+6.2,row.name,NAME_FONT,'#FFFFFF','start','600')}${text(offset+COL2_X,rowTop+META_TOP+6,row.meta,5.3)}<path d="M${offset+COL3_X} ${rowTop+GRAPH_TOP}V${rowTop+GRAPH_TOP+GRAPH_HEIGHT}M${offset+COL3_X+COL3} ${rowTop+GRAPH_TOP}V${rowTop+GRAPH_TOP+GRAPH_HEIGHT}" stroke="#FFFFFF" stroke-opacity=".20" stroke-dasharray="1 1"/>${curve(row,rowTop,offset)}${text(right,rowTop+15,row.price,8.5,'#FFFFFF','end','600')}${text(right,rowTop+23,row.percent,5.2,row.color,'end','600')}</g>`;
 }
 function widget(x,y,width,height,label,columns){
   const contentWidth=columns===2?304:COLUMN,contentX=x+(width-contentWidth)/2,top=y+10,parts=[`<rect x="${x}" y="${y}" width="${width}" height="${height}" rx="10" fill="#1E1E1E" stroke="#34343A"/>`,text(x+8,y-5,label,8,'#D1D1D6','start','600')];
@@ -41,7 +41,7 @@ function widget(x,y,width,height,label,columns){
   return parts.join('');
 }
 const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="540" height="245" viewBox="0 0 540 245"><title>Popular Scripting ${version} market profile preview</title><desc>Fixture-only preview for Ibovespa, Dow Jones, Dólar USD/BRL, and the ICE Brent Crude Futures Jan-2027 contract in the requested order. All four slots use visible local pictograms; USD is the circular United States flag. Names share one 5.5 point semibold line with ellipsis-capable native layout, and no status dot is drawn. IBOV and USD/BRL show daily EOD curve geometry cropped to seven days; those paths are illustrative fixture geometry, not live quotes.</desc><rect width="540" height="245" rx="18" fill="#0F0F12"/>${widget(12,34,158,158,'small · 2×2 · 158×158',1)}${widget(190,34,338,170,'medium/large · 4×2 · 338×170',2)}${text(12,214,'Layout fixture · IBOV · DOW · USD/BRL · BRN Jan-27 · EOD 7D · pictogramas locais · sem ponto de status',7,'#96969C')}${text(12,228,'Curvas EOD são geometria fixture; não substitui dados ao vivo, render nativo nem teste físico no iPhone.',7,'#96969C')}</svg>\n`;
-const evidence={version,output:path.relative(root,svgOutput),pngOutput:path.relative(root,pngOutput),icons:{IBOV:'local index trend pictogram',DOW_JONES:'local market bars pictogram',USD_BRL:'circular US flag',BRENT:'local oil barrel pictogram'},order:rows.map(row=>row.code),identity:{font:NAME_FONT,weight:'semibold',lineLimit:1,ellipsis:true,statusDot:false},data:{live:false,values:'not displayed; curves are synthetic geometry only',curves:'IBOV and USD/BRL daily EOD fixture geometry cropped to 7D; Dow and Brent unavailable',window:'7D daily EOD crop'},brent:{instrument:'ICE Futures Europe Brent Crude Futures',logicalCode:'BRN',contractSymbol:'B',contractMonth:'2027-01',quote:'unavailable without authorized feed',spotNotSubstituted:true},dow:{quote:'unavailable',reason:'FRED DJIA is third-party copyrighted; reproduction requires S&P permission, so no quote request is made'},nativeIPhone:false};
+const evidence={version,output:path.relative(root,svgOutput),pngOutput:path.relative(root,pngOutput),icons:{IBOV:'local index trend pictogram',DOW_JONES:'local market bars pictogram',USD_BRL:'circular US flag',BRENT:'local oil barrel pictogram'},order:rows.map(row=>row.code),identity:{font:NAME_FONT,weight:'semibold',lineLimit:1,ellipsis:true,statusDot:false},quoteLayout:{font:14,minScaleFactor:5.2/14,unitLine:false,topAlignedWithName:true,fixtureValues:{IBOV:'169,2K',USD_BRL:'5,38',unavailable:'—'}},data:{live:false,values:'fixture-only 169,2K / 5,38 / —; curves are synthetic geometry only',curves:'IBOV and USD/BRL daily EOD fixture geometry cropped to 7D; Dow and Brent unavailable',window:'7D daily EOD crop'},brent:{instrument:'ICE Futures Europe Brent Crude Futures',logicalCode:'BRN',contractSymbol:'B',contractMonth:'2027-01',quote:'unavailable without authorized feed',spotNotSubstituted:true},dow:{quote:'unavailable',reason:'FRED DJIA is third-party copyrighted; reproduction requires S&P permission, so no quote request is made'},nativeIPhone:false};
 fs.writeFileSync(svgOutput,svg);fs.writeFileSync(jsonOutput,JSON.stringify(evidence,null,2)+'\n');
 try{execFileSync('inkscape',[svgOutput,'--export-type=png','--export-filename='+pngOutput],{stdio:'ignore'});}catch(error){throw Error('PNG preview conversion failed: '+error.message);}
 console.log(JSON.stringify(evidence));

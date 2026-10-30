@@ -9,7 +9,7 @@ const args={queryParameters:{popular_refresh:options.force?'1':'0'}};
 const Color=class {constructor(hex,alpha=1){this.hex=hex;this.alpha=alpha;}};
 // Scriptable — Popular small/medium/large. O conjunto normal mantém oito
 // indicadores; o entry publicado pode selecionar o perfil de teste reversível.
-const VERSION = '2026.10.30.93'
+const VERSION = '2026.10.30.94'
 const SETTINGS = { refreshMinutes: 5, rotationMinutes: 5, selection: 'indicadores' };
 // Bloco 146 × 146 pt; quatro colunas e ícones circulares 26 pt centralizados nas linhas 36 pt.
 const LAYOUT = { columns: [28, 40, 46, 26], columnGap: 2, valueGap: 2, nameWidth: 40, priceWidth: 26, graphWidth: 46, rowHeight: 36, gap: 2/3, iconSize: 26, chartHeight: 20 };
@@ -1221,14 +1221,21 @@ function fxHistory(json,row,time=Date.now(),frequency='intraday') {
   const chart=chooseChart(ordered,row.asset,daily?null:row.stamp,daily?'90D':'7D');
   return daily&&chart?{...chart,source:'AwesomeAPI',instrument:'USD/BRL',frequency:'daily',timeBasis:'eod-civil-day',closedOnly:true}:chart;
 }
+function validDailyFXSnapshot(row) {
+  const chart=row?.chart,points=chart?.points;
+  return row?.asset?.code==='USD/BRL'&&row.asset.source==='AwesomeAPI'&&chart?.source==='AwesomeAPI'&&chart.instrument==='USD/BRL'&&chart.frequency==='daily'&&chart.timeBasis==='eod-civil-day'&&chart.closedOnly===true&&Array.isArray(points)&&points.length>=2&&points.every((point,index)=>point?.stamp?.hasTime===false&&typeof point.stamp.day==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(point.stamp.day)&&finite(point.stamp.time)&&finite(point.value)&&point.value>.1&&point.value<100&&(!index||point.stamp.time>points[index-1].stamp.time));
+}
 async function loadFX(queryTime=Date.now()) {
-  const key='usd-brl-awesome-v13',cached=snapshotCache(key,FX)||priorInvestingSnapshot(FX),time=queryTime;
-  if(cacheFresh(cached))return cached;
+  const key='usd-brl-awesome-v14-daily',cached=snapshotCache(key,FX),legacy=snapshotCache('usd-brl-awesome-v13',FX),prior=priorInvestingSnapshot(FX),fallback=cached||legacy||prior,time=queryTime;
+  // .42 could leave a fresh v13 snapshot with the short one-minute series.
+  // It remains a price fallback, but must never short-circuit the daily fetch
+  // or be presented as the new seven-day EOD curve.
+  if(cacheFresh(cached)&&validDailyFXSnapshot(cached))return cached;
   try {const row=parseFX(await request('https://economia.awesomeapi.com.br/last/USD-BRL',true),time);
     try {row.chart=fxHistory(await request('https://economia.awesomeapi.com.br/json/daily/USD-BRL/90',true),row,time,'daily');}catch(e){console.log('Histórico diário USD/BRL AwesomeAPI: '+e);}
-    if(!row.chart&&cached?.asset.source==='AwesomeAPI'&&cached?.chart)row.chart=chooseChart(cached.chart.points,row.asset,row.stamp,cached.chart.window);
+    if(!row.chart&&validDailyFXSnapshot(cached)){const safe=chooseChart(cached.chart.points,row.asset,null,'90D');if(safe)row.chart={...cached.chart,...safe};}
     row.chartStatus=row.chart?'valid-90D-history':'history-unavailable-or-invalid';cacheWrite(key,row);return row;}
-  catch(e){console.log('USD/BRL AwesomeAPI: '+e);return cached&&time-cached.stamp?.time<=4*86400000?{...cached,cached:true}:{asset:{...FX},stamp:null,chart:null};}
+  catch(e){console.log('USD/BRL AwesomeAPI: '+e);if(fallback){const daily=validDailyFXSnapshot(fallback);return {...fallback,chart:daily?fallback.chart:null,chartStatus:daily?(fallback.chartStatus||'cached-daily-history'):'history-unavailable-or-invalid',cached:true};}return {asset:{...FX},stamp:null,chart:null};}
 }
 async function loadBTCUSD(queryTime=Date.now()) {
   const key='btc-usd-kraken-v1',cached=localTestMode?null:cacheRead(key);

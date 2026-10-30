@@ -1,3 +1,14 @@
+## Atualização 0.2.44 - migração do cache diário USD/BRL
+
+- Corrige o `7d indisponível` causado por um cache v13 recente: ele continha a
+  série curta intraday e impedia a consulta da história diária.
+- A chave v14 consulta `/json/daily/USD-BRL/90`; o cache antigo pode preservar
+  o preço, mas nunca é usado como curva. O parser aceita `code`/`codein` só no
+  primeiro item, conforme o contrato documentado, e não preenche fins de semana.
+- IBOV, ordem, ícones e gráficos permanecem iguais. A cotação ocupa a maior
+  fonte que cabe na coluna 4, a variação fica abaixo e a unidade monetária não
+  é mais desenhada. Prévia fixture-only e iPhone nativo não testado.
+
 ## Atualização 0.2.43 - fontes diárias restauradas e recorte 7D
 
 - A janela visual voltou a usar as mesmas observações diárias que alimentavam
@@ -399,7 +410,7 @@ Testes locais de fontes, observações antigas/futuras, alertas, cache, transpor
 
 # Popular Scripting
 
-**Atual: 0.2.43 - Scripting Pro.** Perfil publicado de quatro ativos
+**Atual: 0.2.44 - Scripting Pro.** Perfil publicado de quatro ativos
 (`IBOV`, `DOW_JONES`, `USD/BRL`, `BRENT`) em janela móvel de 7 dias, com detalhes,
 CSV, alertas, assistente, Central de Controle e painel Início. [Ativação,
 testes e limites](PRO.md).
@@ -414,7 +425,7 @@ Na tela **Importar Scripts Remotos** do Scripting, cole:
 https://github.com/Sagittaryuz/popular-scripting/tree/main/scripts/Popular%20Scripting
 ```
 
-Importe **Popular Scripting**, confirme a versão **0.2.43**, abra o projeto e toque em **Atualizar**. Leia a linha **Fonte privada:** para distinguir token, Worker, código da fonte, parsing e cache. Em **Detalhes dos indicadores**, toque em **Configurar fonte privada**, cole o token no campo seguro e salve. Adicione o widget do Scripting à Tela de Início e selecione esse projeto.
+Importe **Popular Scripting**, confirme a versão **0.2.44**, abra o projeto e toque em **Atualizar**. Leia a linha **Fonte privada:** para distinguir token, Worker, código da fonte, parsing e cache. Em **Detalhes dos indicadores**, toque em **Configurar fonte privada**, cole o token no campo seguro e salve. Adicione o widget do Scripting à Tela de Início e selecione esse projeto.
 
 Para receber melhorias de código, use a atualização do script remoto no Scripting. Essa importação vincula o projeto à pasta `main/scripts/Popular Scripting`; não use um endereço de commit ou tag para acompanhar as próximas versões. O botão **Atualizar** dentro da tela do Popular consulta somente os indicadores e solicita recarregar o widget.
 

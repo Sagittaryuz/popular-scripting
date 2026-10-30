@@ -12,7 +12,7 @@ const COL1_X=0,COL2_X=COL1+COL_GAP,COL3_X=COL2_X+COL2+COL_GAP,COL4_X=COL3_X+COL3
 const NAME_TEXT_MAX=COL2;
 const ICON=26,ICON_TOP=(ROW-ICON)/2,ICON_LEFT=(COL1-ICON)/2;
 const BLOCK_TOP=0,BLOCK_HEIGHT=ROW,BLOCK_CENTER=BLOCK_TOP+BLOCK_HEIGHT/2;
-const NAME_TOP=9,NAME_HEIGHT=8,META_TOP=19,META_HEIGHT=8,GRAPH_TOP=8,MONTH_TOP=25.5,LINE1_TOP=8,LINE2_TOP=20,LINE3_TOP=16.5;
+const NAME_TOP=9,NAME_HEIGHT=8,META_TOP=19,META_HEIGHT=8,GRAPH_TOP=8,MONTH_TOP=25.5,LINE1_TOP=9,LINE2_TOP=19,LINE3_TOP=16.5;
 export const GEOMETRY=Object.freeze({column:COLUMN,columnGap:COLUMN_GAP,row:ROW,gap:2/3,icon:ICON,iconTop:ICON_TOP,iconLeft:ICON_LEFT,iconColumn:COL1,col1:COL1,col1X:COL1_X,col2:COL2,col2X:COL2_X,col3:COL3,col3X:COL3_X,col4:COL4,col4X:COL4_X,colGap:COL_GAP,detail:COL3_X,blockWidth:COL3,blockTop:BLOCK_TOP,blockHeight:BLOCK_HEIGHT,blockCenter:BLOCK_CENTER,name:COL2,nameX:COL2_X,nameTop:NAME_TOP,nameHeight:NAME_HEIGHT,nameTextMax:NAME_TEXT_MAX,code:COL2,codeX:COL2_X,codeTop:META_TOP,codeHeight:META_HEIGHT,date:COL2,dateX:COL2_X,dateTop:META_TOP,dateHeight:META_HEIGHT,price:COL4,priceX:COL4_X,unit:COL4,unitX:COL4_X,timeX:COL2_X,time:COL2,graph:COL3,graphX:COL3_X,graphHeight:GRAPH_HEIGHT,percent:COL4,percentX:COL4_X,top:TOP,middle:MIDDLE,bottom:BOTTOM,line1Top:LINE1_TOP,line2Top:LINE2_TOP,graphTop:GRAPH_TOP,monthTop:MONTH_TOP,line3Top:LINE3_TOP});
 export function layout(family,width,height){
   if(!Number.isFinite(width)||!Number.isFinite(height)||width<=12||height<=8)throw Error('Dimensão inválida');

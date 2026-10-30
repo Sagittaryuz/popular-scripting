@@ -8,6 +8,9 @@ import { assetMarketStatus } from './market-status'
 const images:Record<string,UIImage|null|undefined>={}
 const CUB_VARIATION_MIN_SIZE=4.2
 const NAME_FONT=5.5
+const PRICE_FONT=14
+const PRICE_MIN=5.2
+const PERCENT_FONT=8.5
 const SHORT_CODES:Record<string,string>=Object.freeze({SELIC:'SELIC',IPCA:'IPCA',IBOV:'IBOV',DOW_JONES:'DOW',BBAS3:'BBAS3',BBDC4:'BBDC4','BTC/USD':'BTC/USD','USD/BRL':'USD/BRL',SOJA_JATAI_GO:'SOJAGO',CUB_GO:'CUB-GO',DIESEL_S10:'DIESEL',BRENT:'BRENT'})
 const COMPACT_UNITS:Record<string,string>=Object.freeze({
   SELIC:'% a.a.',IPCA:'M/M · pp',IBOV:'pontos',DOW_JONES:'pontos',BBAS3:'BRL/ação',BBDC4:'BRL/ação','BTC/USD':'USD/BTC','USD/BRL':'BRL/USD',
@@ -108,9 +111,8 @@ export function PopularView({model,width,height}:{model:any;width:number;height:
               position={{x:(month.x+7)*plan.scale,y:2.5*plan.scale}}>{month.text}</Text>)}
           </ZStack>
         </ZStack>:null}
-        {cellLabel('price',row.price,G.priceX,G.line1Top,G.price,G.top,12.5,5.2,true,'white',true)}
-        {cellLabel('percent',row.percent,G.percentX,G.line2Top,G.percent,G.middle,8.5,percentMinimum,true,color,true)}
-        {cellLabel('unit',compactUnit(row),G.unitX,G.line3Top,G.unit,G.bottom,4.4,3.2,false,'#96969C',true)}
+        {cellLabel('price',row.price,G.priceX,G.line1Top,G.price,G.top,PRICE_FONT,PRICE_MIN,true,'white',true)}
+        {cellLabel('percent',row.percent,G.percentX,G.line2Top,G.percent,G.middle,PERCENT_FONT,percentMinimum,true,color,true)}
         {rowIndex<3?<Rectangle key="divider" fill="rgba(255,255,255,0.13)" {...place(rowPlan,0,G.row,G.column,G.gap)}/>:null}
         </ZStack>
       </Button>

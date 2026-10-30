@@ -15,7 +15,7 @@ const privatePayload={schema:1,source:'brapi',fetchedAt:queryTime-15*60000,deliv
   return {asset:{code,symbol,source:'brapi',price:base+step*4,delta:step,percent:(step/(base+step*3))*100,quoteBasis:'regular-market',percentBasis:'provider'},stamp:dayStamp('2026-10-30'),chart:{source:'brapi',symbol,window:'7D',windowDays:7,timeBasis:'trade-timestamp',closedOnly:true,sourceStartDay:'2026-10-24',sourceEndDay:'2026-10-30',points:privateDays.map((day,i)=>({value:base+step*i,stamp:dayStamp(day)}))}};
 })};
 const fxPayload={USDBRL:{code:'USD',codein:'BRL',bid:'5.25',ask:'5.26',pctChange:'0.4',timestamp:String(Math.floor((queryTime-30*60000)/1000))}};
-const fxHistory=['2026-10-24','2026-10-25','2026-10-26','2026-10-27','2026-10-28','2026-10-29','2026-10-30'].map((day,i)=>({code:'USD',codein:'BRL',bid:String(5.2+i*.02),timestamp:String(Math.floor(Date.parse(`${day}T17:00:00Z`)/1000))}));
+const fxHistory=['2026-10-23','2026-10-26','2026-10-27','2026-10-28','2026-10-29','2026-10-30'].map((day,i)=>({...(!i?{code:'USD',codein:'BRL'}:{}),bid:String(5.2+i*.02),timestamp:String(Math.floor(Date.parse(`${day}T17:00:00Z`)/1000))}));
 const files=new Map();
 const fm={documentsDirectory:()=>'/documents',joinPath:(...parts)=>parts.join('/'),fileExists:file=>files.has(file),createDirectory:()=>{},readString:file=>files.get(file),writeString:(file,value)=>files.set(file,value)};
 const requests=[];
@@ -57,7 +57,8 @@ class MockRequest {
   assert.equal(rows[2].asset.percent,0.4,'the daily FX variation remains available separately');
   assert.equal(rows[2].chartStatus,'valid-7D-daily','the historical daily endpoint is cropped to seven days');
   assert.equal(rows[2].chart.timeBasis,'daily-eod');
-  assert.equal(rows[2].chart.points.length,7);
+  assert.equal(rows[2].chart.points.length,5,'the seven-day crop preserves five real weekdays and no weekend fill');
+  assert(!rows[2].chart.points.some(point=>point.stamp.day==='2026-10-25'),'weekend observations are not fabricated');
   assert.equal(rows[3].asset.source,'ICE Futures Europe');
   assert.equal(rows[3].asset.name,'Petróleo');
   assert.equal(rows[3].asset.instrument,'BRN');
@@ -86,5 +87,14 @@ class MockRequest {
   assert.equal(accepted.chart.points.length,3);
   const shortIntraday={asset:{code:'short',price:100},chart:{source:'fixture',points:[0,1,2].map(i=>({value:100+i,stamp:dayStamp('2026-10-30',10+i)}))}};
   assert.equal(api.profileSevenDayDaily(shortIntraday,queryTime).chartStatus,'7d-daily-history-unavailable','short intraday samples are not relabeled as a seven-day daily curve');
+  // A fresh cache written by .42 can contain the old short intraday chart.
+  // It must not prevent the new daily endpoint from being requested.
+  const legacyFiles=new Map(),legacyFM={documentsDirectory:()=>'/documents',joinPath:(...parts)=>parts.join('/'),fileExists:file=>legacyFiles.has(file),createDirectory:()=>{},readString:file=>legacyFiles.get(file),writeString:(file,value)=>legacyFiles.set(file,value)};
+  const legacyNow=Date.now(),legacyDay=new Date(legacyNow).toISOString().slice(0,10),legacyPoint=(offset,value)=>({value,stamp:{time:legacyNow-offset*3600000,day:legacyDay,hasTime:true,label:'cache'}});
+  legacyFiles.set('/documents/popular-widget-cache-v6/usd-brl-awesome-v13.json',JSON.stringify({asset:{code:'USD/BRL',name:'Dólar',type:'cambio',source:'AwesomeAPI',currency:'BRL',unit:'BRL/USD',quoteBasis:'bid',price:5.38,percent:.72},stamp:legacyPoint(0.1,5.38).stamp,chart:{source:'AwesomeAPI',window:'7D',points:[legacyPoint(3,5.36),legacyPoint(2,5.37),legacyPoint(1,5.38)]},quoteVerified:true,fetchedAt:legacyNow-60000}));
+  const beforeLegacyRequests=requests.length,legacyApi=bundled.exports.createEngine({FileManager:{local:()=>legacyFM},Request:MockRequest,Data:{},Timer:undefined,privateMarket:{endpoint:privateURL,readToken:()=> 'fixture-private-token'}},{family:'medium',now:queryTime,localTestAssets:true,localTestProfile:'ibov-dow-usd-brent-7d'});
+  const legacyRows=await legacyApi.collectRows(),legacyUSD=legacyRows.find(row=>row.asset.code==='USD/BRL');
+  assert.equal(legacyUSD.chartStatus,'valid-7D-daily','a fresh legacy intraday cache cannot hide the restored daily history');
+  assert(requests.slice(beforeLegacyRequests).some(url=>url==='https://economia.awesomeapi.com.br/json/daily/USD-BRL/90'),'legacy cache migration requests the daily endpoint');
   console.log('PASS published market profile: requested IBOV/Dow/USD/ICE Jan-2027 order, daily variation kept separate, restored daily histories cropped to 7D, no EIA spot substitution or fabricated points, recoverable prior profile, and no unverified requests.');
 })().catch(error=>{console.error(error);process.exitCode=1;});

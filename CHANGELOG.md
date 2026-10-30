@@ -1,3 +1,16 @@
+## 0.2.44 - migra cache legado do USD/BRL para a série diária
+
+- Corrige o caso em que um snapshot fresco `usd-brl-awesome-v13` da versão
+  anterior retornava antes da consulta diária e fazia o widget exibir `7d
+  indisponível` para o Dólar.
+- A chave `usd-brl-awesome-v14-daily` força o contrato `/json/daily/USD-BRL/90`;
+  o cache antigo permanece somente como fallback de preço, nunca como curva.
+- Testa o schema documentado (identidade apenas no primeiro item), pregões
+  esparsos com fim de semana ausente, IBOV intacto e layout sem alteração.
+- Remove a unidade monetária da linha sob a cotação e aumenta a fonte da
+  cotação com ajuste nativo ao limite da coluna; valor e variação permanecem
+  alinhados e indisponíveis continuam cabendo como `—`.
+
 ## 0.2.43 - restaura fontes diárias e recorta a janela semanal
 
 - Remove a exigência indevida de densidade intraday da janela de 7 dias. O
