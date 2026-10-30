@@ -1,8 +1,8 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
 const root=path.resolve(__dirname,'..'),previewDir=path.join(root,'validation');
-const evidence=JSON.parse(fs.readFileSync(path.join(previewDir,'market-profile-0.2.44-preview.json'),'utf8'));
-const svg=fs.readFileSync(path.join(previewDir,'market-profile-0.2.44-preview.svg'),'utf8');
-const png=path.join(previewDir,'market-profile-0.2.44-preview.png');
+const evidence=JSON.parse(fs.readFileSync(path.join(previewDir,'market-profile-0.2.45-preview.json'),'utf8'));
+const svg=fs.readFileSync(path.join(previewDir,'market-profile-0.2.45-preview.svg'),'utf8');
+const png=path.join(previewDir,'market-profile-0.2.45-preview.png');
 assert.equal(JSON.stringify(evidence.order),JSON.stringify(['IBOV','DOW_JONES','USD/BRL','BRENT']));
 assert.equal(evidence.identity.font,5.5);
 assert.equal(evidence.identity.statusDot,false);

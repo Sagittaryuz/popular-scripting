@@ -1,3 +1,11 @@
+## Atualização 0.2.45 - contrato EOD do gráfico USD/BRL
+
+- Corrige a curva diária do Dólar: pontos sem horário usam `eod-civil-day`, o
+  contrato que o renderer filtra para a janela de 7 dias.
+- O IBOV continua usando timestamps reais; nenhuma observação, fim de semana,
+  valor, ativo, layout ou fonte de Dow/Brent foi alterado. A prévia é
+  fixture-only e o iPhone nativo não foi testado.
+
 ## Atualização 0.2.44 - migração do cache diário USD/BRL
 
 - Corrige o `7d indisponível` causado por um cache v13 recente: ele continha a
@@ -410,7 +418,7 @@ Testes locais de fontes, observações antigas/futuras, alertas, cache, transpor
 
 # Popular Scripting
 
-**Atual: 0.2.44 - Scripting Pro.** Perfil publicado de quatro ativos
+**Atual: 0.2.45 - Scripting Pro.** Perfil publicado de quatro ativos
 (`IBOV`, `DOW_JONES`, `USD/BRL`, `BRENT`) em janela móvel de 7 dias, com detalhes,
 CSV, alertas, assistente, Central de Controle e painel Início. [Ativação,
 testes e limites](PRO.md).
@@ -425,7 +433,7 @@ Na tela **Importar Scripts Remotos** do Scripting, cole:
 https://github.com/Sagittaryuz/popular-scripting/tree/main/scripts/Popular%20Scripting
 ```
 
-Importe **Popular Scripting**, confirme a versão **0.2.44**, abra o projeto e toque em **Atualizar**. Leia a linha **Fonte privada:** para distinguir token, Worker, código da fonte, parsing e cache. Em **Detalhes dos indicadores**, toque em **Configurar fonte privada**, cole o token no campo seguro e salve. Adicione o widget do Scripting à Tela de Início e selecione esse projeto.
+Importe **Popular Scripting**, confirme a versão **0.2.45**, abra o projeto e toque em **Atualizar**. Leia a linha **Fonte privada:** para distinguir token, Worker, código da fonte, parsing e cache. Em **Detalhes dos indicadores**, toque em **Configurar fonte privada**, cole o token no campo seguro e salve. Adicione o widget do Scripting à Tela de Início e selecione esse projeto.
 
 Para receber melhorias de código, use a atualização do script remoto no Scripting. Essa importação vincula o projeto à pasta `main/scripts/Popular Scripting`; não use um endereço de commit ou tag para acompanhar as próximas versões. O botão **Atualizar** dentro da tela do Popular consulta somente os indicadores e solicita recarregar o widget.
 

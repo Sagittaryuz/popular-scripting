@@ -1,3 +1,14 @@
+## 0.2.45 - alinha o contrato EOD do gráfico USD/BRL
+
+- Corrige o caminho `fxHistory → profileSevenDayDaily → displayChart` para
+  que a história diária date-only do USD use o contrato canônico
+  `eod-civil-day`; os cinco pregões reais da janela continuam desenhados.
+- Mantém séries com timestamp, como o IBOV, em `trade-timestamp`; não cria
+  pontos, não preenche fins de semana e não altera Dow, Brent, valores, ordem
+  ou layout.
+- Acrescenta teste ponta a ponta de filtragem, coordenadas e fixture visual
+  `market-profile-0.2.45-preview`; iPhone nativo não testado.
+
 ## 0.2.44 - migra cache legado do USD/BRL para a série diária
 
 - Corrige o caso em que um snapshot fresco `usd-brl-awesome-v13` da versão

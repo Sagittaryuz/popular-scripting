@@ -1,10 +1,10 @@
 const fs=require('node:fs'),path=require('node:path'),{execFileSync}=require('node:child_process');
 
-// Fixture-only visual evidence for the active 0.2.44 profile. Curves marked
+// Fixture-only visual evidence for the active 0.2.45 profile. Curves marked
 // EOD use synthetic geometry to demonstrate the restored daily crop; they are
 // not live quotes. The preview proves order, shared identity typography, no
 // status dot, visible pictograms, and honest unavailable slots.
-const root=path.resolve(__dirname,'..'),version='0.2.44';
+const root=path.resolve(__dirname,'..'),version='0.2.45';
 const svgOutput=path.join(root,`validation/market-profile-${version}-preview.svg`),pngOutput=path.join(root,`validation/market-profile-${version}-preview.png`),jsonOutput=path.join(root,`validation/market-profile-${version}-preview.json`);
 const ROW=36,ROW_STEP=ROW+2/3,COLUMN=146,COLUMN_GAP=12,COL_GAP=2,COL1=28,COL2=40,COL3=46,COL4=26,COL2_X=COL1+COL_GAP,COL3_X=COL2_X+COL2+COL_GAP,COL4_X=COL3_X+COL3+COL_GAP,ICON=26,ICON_LEFT=(COL1-ICON)/2,NAME_TOP=9,META_TOP=19,GRAPH_TOP=8,GRAPH_HEIGHT=20,NAME_FONT=5.5;
 const rows=[

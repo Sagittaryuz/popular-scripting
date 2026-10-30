@@ -1,5 +1,14 @@
 # Melhorias Scripting Pro — 23/10/2026
 
+## 0.2.45 — contrato EOD do gráfico USD/BRL
+
+- [x] Emitir `eod-civil-day` somente para séries diárias com pontos date-only;
+  preservar `trade-timestamp` em séries timestampadas como IBOV.
+- [x] Validar a cadeia completa de histórico USD, perfil de 7 dias, filtro do
+  renderer e coordenadas da linha sem preencher fins de semana.
+- [x] Publicar a correção residual e gerar preview fixture-only; iPhone nativo
+  continua não testado.
+
 ## 0.2.44 — migração do cache diário USD/BRL
 
 - [x] Impedir que o snapshot v13 da série curta intraday faça bypass da fonte

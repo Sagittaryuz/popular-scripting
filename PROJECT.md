@@ -1,4 +1,13 @@
-# Popular Scripting - Pro 0.2.44
+# Popular Scripting - Pro 0.2.45
+
+## 0.2.45 - contrato EOD do gráfico USD/BRL
+
+- A história diária do USD/BRL chega ao renderer como `eod-civil-day`, que é o
+  contrato aceito para pontos date-only. A janela mostra somente observações
+  reais, sem preencher fins de semana.
+- O IBOV mantém seus timestamps reais em `trade-timestamp`; Dow, Brent, dados,
+  ordem e layout não foram alterados. Testes ponta a ponta passaram; iPhone
+  nativo não testado.
 
 ## 0.2.44 - migração do cache legado do USD/BRL
 

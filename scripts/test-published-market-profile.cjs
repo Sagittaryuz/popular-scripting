@@ -44,7 +44,10 @@ class MockRequest {
   assert.equal(rows[0].asset.price,170800,'IBOV comes from the private response, not an ETF');
   assert.equal(rows[0].asset.percentBasis,'provider','daily variation remains a quote field, separate from the weekly chart');
   assert.equal(rows[0].chartStatus,'valid-7D-daily','daily private observations are cropped to a seven-day chart');
-  assert.equal(rows[0].chart.timeBasis,'daily-eod');
+  assert.equal(rows[0].chart.timeBasis,'trade-timestamp','IBOV keeps its timestamped display contract');
+  const ibovDisplayed=api.displayChart(rows[0].chart,queryTime);
+  assert.equal(ibovDisplayed.displayStatus,'available-7d','IBOV remains drawable after the daily contract fix');
+  assert.equal(api.lineCoordinates(ibovDisplayed,46,20).length,5,'IBOV keeps its real timestamped points');
   assert.equal(rows[0].chart.points.length,5,'the Worker points remain real and sparse');
   assert.equal(rows[1].asset.price,null,'Dow Jones is never filled with a proxy or invented quote');
   assert.equal(rows[1].asset.source,'FRED/S&P DJI','Dow source provenance is explicit even while the copyrighted series is not requested');
@@ -56,9 +59,13 @@ class MockRequest {
   assert.equal(rows[2].asset.price,5.25,'USD/BRL uses the existing AwesomeAPI adapter');
   assert.equal(rows[2].asset.percent,0.4,'the daily FX variation remains available separately');
   assert.equal(rows[2].chartStatus,'valid-7D-daily','the historical daily endpoint is cropped to seven days');
-  assert.equal(rows[2].chart.timeBasis,'daily-eod');
+  assert.equal(rows[2].chart.timeBasis,'eod-civil-day','USD date-only history uses the renderer EOD contract');
   assert.equal(rows[2].chart.points.length,5,'the seven-day crop preserves five real weekdays and no weekend fill');
   assert(!rows[2].chart.points.some(point=>point.stamp.day==='2026-10-25'),'weekend observations are not fabricated');
+  const fxDisplayed=api.displayChart(rows[2].chart,queryTime);
+  assert.equal(fxDisplayed.displayStatus,'available-7d-eod','USD date-only points survive display filtering');
+  assert.equal(fxDisplayed.points.length,5);
+  assert.equal(api.lineCoordinates(fxDisplayed,46,20).length,5,'USD line coordinates use the real daily points');
   assert.equal(rows[3].asset.source,'ICE Futures Europe');
   assert.equal(rows[3].asset.name,'Petróleo');
   assert.equal(rows[3].asset.instrument,'BRN');
@@ -83,7 +90,7 @@ class MockRequest {
   const dailyFixture={asset:{code:'fixture',price:103,percent:1,percentBasis:'provider'},chart:{source:'fixture',closedOnly:true,timeBasis:'trade-timestamp',points:['2026-10-24','2026-10-27','2026-10-30'].map((day,index)=>({value:100+index,stamp:dayStamp(day)}))}};
   const accepted=api.profileSevenDayDaily(dailyFixture,queryTime);
   assert.equal(accepted.chartStatus,'valid-7D-daily','closed daily sessions remain drawable without intraday density');
-  assert.equal(accepted.chart.timeBasis,'daily-eod');
+  assert.equal(accepted.chart.timeBasis,'trade-timestamp','timestamped daily histories retain their timestamp contract');
   assert.equal(accepted.chart.points.length,3);
   const shortIntraday={asset:{code:'short',price:100},chart:{source:'fixture',points:[0,1,2].map(i=>({value:100+i,stamp:dayStamp('2026-10-30',10+i)}))}};
   assert.equal(api.profileSevenDayDaily(shortIntraday,queryTime).chartStatus,'7d-daily-history-unavailable','short intraday samples are not relabeled as a seven-day daily curve');

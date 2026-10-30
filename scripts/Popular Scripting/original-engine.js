@@ -9,7 +9,7 @@ const args={queryParameters:{popular_refresh:options.force?'1':'0'}};
 const Color=class {constructor(hex,alpha=1){this.hex=hex;this.alpha=alpha;}};
 // Scriptable — Popular small/medium/large. O conjunto normal mantém oito
 // indicadores; o entry publicado pode selecionar o perfil de teste reversível.
-const VERSION = '2026.10.30.94'
+const VERSION = '2026.10.30.95'
 const SETTINGS = { refreshMinutes: 5, rotationMinutes: 5, selection: 'indicadores' };
 // Bloco 146 × 146 pt; quatro colunas e ícones circulares 26 pt centralizados nas linhas 36 pt.
 const LAYOUT = { columns: [28, 40, 46, 26], columnGap: 2, valueGap: 2, nameWidth: 40, priceWidth: 26, graphWidth: 46, rowHeight: 36, gap: 2/3, iconSize: 26, chartHeight: 20 };
@@ -1551,7 +1551,11 @@ function profileSevenDayDaily(row,queryTime=now.getTime()) {
   const queryDay=chartDisplayDay(queryTime)||points.at(-1).stamp.day,eligible=points.filter(point=>point.stamp.day<=queryDay),endDay=eligible.at(-1)?.stamp?.day;
   if(!endDay)return {...row,chart:null,chartStatus:'7d-daily-history-unavailable',chartRequirement:'real-daily-7d',chartCoverage:coverage};
   const startDay=isoDayAdd(endDay,-6),windowPoints=eligible.filter(point=>point.stamp.day>=startDay&&point.stamp.day<=endDay),windowDays=new Set(windowPoints.map(point=>point.stamp.day));
-  const chart=windowPoints.length>=2?{...sourceChart,window:'7D',windowDays:7,timeBasis:'daily-eod',sourceTimeBasis:sourceChart.timeBasis||null,closedOnly:true,sourceStartDay:startDay,sourceEndDay:endDay,points:windowPoints}:null;
+  // Date-only histories use the renderer's canonical civil-EOD contract. Keep
+  // timestamped provider histories timestamped so IBOV and similar rows do
+  // not change their existing display path.
+  const displayTimeBasis=dateOnly?'eod-civil-day':sourceChart.timeBasis==='trade-timestamp'?'trade-timestamp':'eod-civil-day';
+  const chart=windowPoints.length>=2?{...sourceChart,window:'7D',windowDays:7,timeBasis:displayTimeBasis,sourceTimeBasis:sourceChart.timeBasis||null,closedOnly:true,sourceStartDay:startDay,sourceEndDay:endDay,points:windowPoints}:null;
   return {...row,chart,chartStatus:chart?'valid-7D-daily':'price-only-7D',chartRequirement:'real-daily-7d',chartCoverage:{...coverage,sampleCount:windowPoints.length,sessionDays:windowDays.size,sourceStartDay:startDay,sourceEndDay:endDay}};
 }
 
