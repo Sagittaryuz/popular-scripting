@@ -1,3 +1,13 @@
+## Atualização 0.2.34 - entrada segura nativa do Scripting
+
+- A tela de configuração usa `Dialog.prompt` com `obscureText: true`, API do
+  próprio Scripting; não depende de APIs de alerta do Scriptable.
+- A consulta só é recarregada depois de `Keychain.set` retornar sucesso. Se o
+  armazenamento falhar, o token não é tratado como configurado.
+- Perfil B3/BTC, BTC/USD, janela de 7 dias, layout, ordem e fallback honesto
+  permanecem iguais. Não houve teste nativo no iPhone nem chamada autenticada
+  ao Worker neste executor.
+
 ## Atualização 0.2.33 - fonte privada autenticada para o perfil B3/BTC
 
 - O pacote e o modelo usam `0.2.33`; o bundle do motor é `2026.10.30.85`.
@@ -236,7 +246,7 @@ Testes locais de fontes, observações antigas/futuras, alertas, cache, transpor
 
 # Popular Scripting
 
-**Atual: 0.2.33 - Scripting Pro.** Perfil publicado de quatro ativos
+**Atual: 0.2.34 - Scripting Pro.** Perfil publicado de quatro ativos
 (`BBAS3`, `BBDC4`, `IBOV`, `BTC/USD`) em janela móvel de 7 dias, com detalhes,
 CSV, alertas, assistente, Central de Controle e painel Início. [Ativação,
 testes e limites](PRO.md).
@@ -251,7 +261,7 @@ Na tela **Importar Scripts Remotos** do Scripting, cole:
 https://github.com/Sagittaryuz/popular-scripting/tree/main/scripts/Popular%20Scripting
 ```
 
-Importe **Popular Scripting**, confirme a versão **0.2.33**, abra o projeto e toque em **Atualizar**. Em **Detalhes dos indicadores**, toque em **Configurar fonte privada**, cole o token no campo seguro e salve. Adicione o widget do Scripting à Tela de Início e selecione esse projeto.
+Importe **Popular Scripting**, confirme a versão **0.2.34**, abra o projeto e toque em **Atualizar**. Em **Detalhes dos indicadores**, toque em **Configurar fonte privada**, cole o token no campo seguro e salve. Adicione o widget do Scripting à Tela de Início e selecione esse projeto.
 
 Para receber melhorias de código, use a atualização do script remoto no Scripting. Essa importação vincula o projeto à pasta `main/scripts/Popular Scripting`; não use um endereço de commit ou tag para acompanhar as próximas versões. O botão **Atualizar** dentro da tela do Popular consulta somente os indicadores e solicita recarregar o widget.
 

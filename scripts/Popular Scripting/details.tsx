@@ -11,9 +11,9 @@ export function PopularDetails({model}:{model:any}){
   const row=model?.rows.find((r:any)=>r.asset.code===selected)
   const history=row?.chart?{...row.chart,points:row.chart.points.filter((p:any)=>!historyDays||p.stamp.time>=Date.now()-historyDays*86400000)}:null
   async function configurePrivateMarket(){
-    const prompt=new Alert();prompt.title='Fonte privada';prompt.message='Cole o token do widget. Ele será guardado somente no Keychain deste iPhone; nunca no Storage, GitHub, logs ou widget.';prompt.addSecureTextField('Token do widget');prompt.addAction('Salvar');prompt.addCancelAction('Cancelar')
-    const choice=await prompt.presentAlert();if(choice!==0)return
-    savePrivateMarketToken(prompt.textFieldValue(0));await reloadWidgets();setMessage('Token salvo somente no Keychain. Atualize para consultar BBAS3, BBDC4 e Ibovespa.')
+    const value=await Dialog.prompt({title:'Fonte privada',message:'Cole o token do widget. Ele será guardado somente no Keychain deste iPhone; nunca no Storage, GitHub, logs ou widget.',placeholder:'Token do widget',obscureText:true,confirmLabel:'Salvar',cancelLabel:'Cancelar'})
+    if(value==null)return
+    savePrivateMarketToken(value);await reloadWidgets();setMessage('Token salvo somente no Keychain. Atualize para consultar BBAS3, BBDC4 e Ibovespa.')
   }
   async function removePrivateMarket(){
     const choice=await Dialog.actionSheet({title:'Fonte privada',message:'Remover o token deste iPhone?',actions:[{label:'Remover'},{label:'Cancelar'}]});if(choice!==0)return

@@ -1,3 +1,13 @@
+## 0.2.34 - entrada segura nativa do Scripting
+
+- Substitui a API de alerta específica do Scriptable por `Dialog.prompt` do
+  Scripting com entrada obscurecida.
+- A recarga só ocorre quando a gravação do token no Keychain retorna sucesso;
+  falha de armazenamento permanece explícita e não envia credencial.
+- Preserva o perfil B3/BTC, BTC/USD, layout, ordem, janela de 7 dias e fallback
+  sem dados. Testes locais passaram; iPhone nativo e Worker ao vivo continuam
+  pendentes.
+
 ## 0.2.33 - cliente privado B3/BTC
 
 - Publica o perfil `BBAS3`, `BBDC4`, `IBOV` e `BTC/USD` com janela de 7 dias,

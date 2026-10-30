@@ -3,8 +3,8 @@ const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('n
 const root=path.join(__dirname,'Popular Scripting'),privateSource=fs.readFileSync(path.join(root,'private-market.ts'),'utf8'),hostSource=fs.readFileSync(path.join(root,'host.ts'),'utf8');
 const privateCode=buildSync({entryPoints:[path.join(root,'private-market.ts')],bundle:true,write:false,format:'cjs',platform:'node'}).outputFiles[0].text;
 const hostCode=buildSync({entryPoints:[path.join(root,'host.ts')],bundle:true,write:false,format:'cjs',platform:'node'}).outputFiles[0].text;
-const keychain=new Map(),storage=new Map(),requests=[];
-const Keychain={contains:key=>keychain.has(key),get:key=>keychain.get(key),set:(key,value)=>{keychain.set(key,value)},remove:key=>{keychain.delete(key)}};
+const keychain=new Map(),storage=new Map(),requests=[];let allowKeychainWrite=true;
+const Keychain={contains:key=>keychain.has(key),get:key=>keychain.get(key),set:(key,value)=>{if(!allowKeychainWrite)return false;keychain.set(key,value);return true},remove:key=>{keychain.delete(key);return true}};
 const Storage={get:key=>storage.get(key),contains:key=>storage.has(key),set:(key,value)=>{storage.set(key,value);return true}};
 const context={module:{exports:{}},exports:{},Keychain,Storage,Date,URL,Map,Set,JSON,Uint8Array,ArrayBuffer,console:{log(){}},setTimeout,clearTimeout,Data:{},fetch:async(url,options)=>{requests.push({url:String(url),options});return {status:200,ok:true,text:async()=>'{"ok":true}'}}};
 vm.runInNewContext(privateCode,context);
@@ -15,6 +15,7 @@ const token='fixture-private-token-'.padEnd(64,'x');
 privateApi.savePrivateMarketToken('  '+token+'  ');
 assert.equal(privateApi.readPrivateMarketToken(),token,'foreground setup trims only outer whitespace before Keychain storage');
 assert.equal(keychain.size,1);
+allowKeychainWrite=false;assert.throws(()=>privateApi.savePrivateMarketToken(token),/salvar o token/,'a failed native Keychain write is not reported as saved');allowKeychainWrite=true;
 privateApi.removePrivateMarketToken();assert.equal(privateApi.readPrivateMarketToken(),null,'removal affects only the private token key');
 keychain.set(privateApi.PRIVATE_MARKET_TOKEN_KEY,token);
 
@@ -33,7 +34,9 @@ assert.equal(hostApi.createHost().privateMarket.endpoint,privateURL);
 assert.equal(typeof hostApi.createHost().privateMarket.readToken,'function');
 
 const details=fs.readFileSync(path.join(root,'details.tsx'),'utf8');
-assert.match(details,/addSecureTextField/,'token setup uses a secure foreground field');
+assert.match(details,/Dialog\.prompt/,'token setup uses the Scripting dialog API');
+assert.match(details,/obscureText:true/,'the Scripting prompt obscures the token');
+assert.doesNotMatch(details,/new Alert|addSecureTextField|presentAlert|textFieldValue/,'the client does not use Scriptable-only alert APIs');
 assert.match(details,/savePrivateMarketToken/);
 assert.match(details,/removePrivateMarketToken/);
 assert.match(hostSource,/PRIVATE_MARKET_ENDPOINT/);

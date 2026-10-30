@@ -1,4 +1,14 @@
-# Popular Scripting - Pro 0.2.33
+# Popular Scripting - Pro 0.2.34
+
+## 0.2.34 - entrada segura compatível com Scripting
+
+- A configuração do token usa `Dialog.prompt` do Scripting com entrada
+  obscurecida; não usa o construtor `Alert`/`addSecureTextField` do Scriptable.
+- O valor só é aceito depois de uma gravação bem-sucedida no Keychain. Falha
+  do armazenamento é informada e não dispara recarga nem consulta autenticada.
+- O perfil B3/BTC, janela de 7 dias, BTC/USD, layout, ordem e fallback sem
+  dados permanecem inalterados. O render nativo no iPhone e a consulta ao
+  Worker continuam sem validação ao vivo neste executor.
 
 ## 0.2.33 - cliente de cotações com fonte privada autenticada
 

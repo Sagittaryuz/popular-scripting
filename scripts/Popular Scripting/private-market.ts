@@ -23,7 +23,7 @@ export function savePrivateMarketToken(value:unknown):void{
   if(!token)throw Error('Token privado inválido. Cole o token completo.')
   if(typeof Keychain==='undefined'||typeof Keychain.set!=='function')throw Error('Keychain indisponível neste ambiente.')
   // Never write the token to Storage, files, logs, diagnostics or shared state.
-  Keychain.set(PRIVATE_MARKET_TOKEN_KEY,token)
+  if(Keychain.set(PRIVATE_MARKET_TOKEN_KEY,token)===false)throw Error('Não foi possível salvar o token no Keychain.')
 }
 
 export function removePrivateMarketToken():void{

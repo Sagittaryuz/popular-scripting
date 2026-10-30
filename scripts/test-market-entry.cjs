@@ -7,7 +7,7 @@ const model=fs.readFileSync(path.join(root,'model.ts'),'utf8');
 const engine=fs.readFileSync(path.join(root,'original-engine.js'),'utf8');
 const script=JSON.parse(fs.readFileSync(path.join(root,'script.json'),'utf8'));
 
-assert.equal(script.version,'0.2.33');
+assert.equal(script.version,'0.2.34');
 assert.match(view,/import \{ Button, Canvas, Circle, HStack, Image, Rectangle, SVG, Text, ZStack, Script \} from 'scripting'/);
 assert.match(view,/iconData/,'API-provided icon data has a render path');
 assert.match(view,/<SVG key="asset-remote-svg" url=\{remoteSvg\}/,'API-provided SVG logos use the native Scripting SVG renderer');

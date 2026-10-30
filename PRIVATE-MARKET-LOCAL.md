@@ -1,6 +1,6 @@
 # Integração da fonte privada
 
-A integração foi publicada no remoto em `0.2.33`; o cliente não contém o valor
+A integração foi publicada no remoto em `0.2.34`; o cliente não contém o valor
 do token e não depende de teste nativo para ser importado. A validação ponta a
 ponta continua pendente neste executor porque a tentativa de alcançar o
 endpoint foi interrompida pelo túnel com `403` antes do Worker. Isso não é
@@ -45,6 +45,6 @@ como `WIDGET_TOKEN`. Neste checkout nenhum token foi configurado ou preservado.
 - O endpoint real não pôde ser autenticado neste executor: a tentativa sem
   token foi bloqueada pelo túnel com `403` antes de alcançar o Worker. Não há
   afirmação de sucesso, cache, payload ou dados ao vivo.
-- A entrega publicada é `0.2.33`; o SHA remoto deve ser conferido no GitHub
+- A entrega publicada é `0.2.34`; o SHA remoto deve ser conferido no GitHub
   antes de atualizar uma instalação existente. Não houve teste nativo em
   iPhone nem validação ponta a ponta neste executor.
