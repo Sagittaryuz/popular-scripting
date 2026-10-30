@@ -7,7 +7,7 @@ const model=fs.readFileSync(path.join(root,'model.ts'),'utf8');
 const engine=fs.readFileSync(path.join(root,'original-engine.js'),'utf8');
 const script=JSON.parse(fs.readFileSync(path.join(root,'script.json'),'utf8'));
 
-assert.equal(script.version,'0.2.39');
+assert.equal(script.version,'0.2.40');
 assert.match(view,/import \{ Button, Canvas, Circle, Image, Rectangle, SVG, Text, ZStack, Script \} from 'scripting'/);
 assert.match(view,/iconData/,'API-provided icon data has a render path');
 assert.match(view,/<SVG key="asset-inline-svg" code=\{remoteSvg\}/,'API-provided SVG logos use the native Scripting SVG.code renderer');
@@ -43,6 +43,8 @@ const refreshStart=intents.indexOf('const refresh=refreshPopularData(()=>active.
 const navigation=intents.indexOf('await Safari.openURL(MARKET_URL)',refreshStart);
 assert(refreshStart>=0&&navigation>refreshStart,'Tap starts refresh before requesting navigation');
 assert.match(control,/RefreshPopular/);
+assert.match(view,/DOW_JONES/,'the new active profile has a visible Dow fallback badge path');
+assert.match(view,/BRENT/,'the new active profile has a visible Brent fallback badge path');
 assert.match(model,/FIXED_INDICATOR_CODES=\['SELIC','IPCA','IBOV','USD\/BRL','SOJA_JATAI_GO','CUB_GO','DIESEL_S10','BRENT'\]/);
 assert.match(model,/TAP_REFRESH_CACHE_KEY='popular-tap-refresh-v1'/);
 assert.match(model,/MODES=\['fixed'\]/);
@@ -56,4 +58,4 @@ assert.doesNotMatch(view,/popular-small-codes/,'Widget render must not read lega
 // widget does not detect/install Meu Painel and therefore cannot loop/fallback.
 const expected='scripting://run/Meu%20Painel?section=market';
 assert.equal(`scripting://run/${encodeURIComponent('Meu Painel')}?section=${encodeURIComponent('market')}`,expected);
-console.log(JSON.stringify({version:script.version,rowTap:'RefreshAssetsOnTap',widgetURL:expected,section:'market',fixedOrder:['SELIC','IPCA','IBOV','USD/BRL','SOJA_JATAI_GO','CUB_GO','DIESEL_S10','BRENT'],fallback:'none',loop:false,nativeIPhone:false}));
+console.log(JSON.stringify({version:script.version,rowTap:'RefreshAssetsOnTap',widgetURL:expected,section:'market',activeProfile:['IBOV','DOW_JONES','USD/BRL','BRENT'],recoverableFixedOrder:['SELIC','IPCA','IBOV','USD/BRL','SOJA_JATAI_GO','CUB_GO','DIESEL_S10','BRENT'],fallback:'none',loop:false,nativeIPhone:false}));

@@ -9,7 +9,7 @@ assert.match(previewSVG,/API SVG body: BBAS3\/BBDC4/,'the preview identifies its
 
 assert.match(view,/function apiSVG\(row:any\)/,'API SVG metadata has a native rendering path');
 assert.match(view,/iconSVGCode/,'the view consumes validated inline SVG returned by the engine');
-assert.match(view,/const FALLBACK_BADGE_CODES=Object\.freeze\(\['BBAS3','BBDC4','IBOV','BTC\/USD'/,'published assets have explicit fallback badges even when a remote SVG URL is present');
+assert.match(view,/const FALLBACK_BADGE_CODES=Object\.freeze\(\['BBAS3','BBDC4','IBOV','DOW_JONES','BTC\/USD'/,'published assets have explicit fallback badges even when a remote SVG URL is present');
 assert.match(view,/function fallbackIcon\(row:any,plan:any,rowPlan:any,positioned=true\)/,'the fallback is a reusable native view rather than a preview-only substitute');
 assert.match(view,/<SVG key="asset-inline-svg" code=\{remoteSvg\}/,'SVG logos are rendered from validated inline API code without a proxy');
 const remoteBranch=view.indexOf('{remoteSvg?<ZStack');
@@ -23,6 +23,7 @@ assert.match(engine,/iconSVGCode:code/,'the active private profile fetches and s
 assert.match(engine,/Promise\.all\(parsed\.map\(attachApiIcon\)\)/,'the active profile attaches API logos instead of leaving URL-only metadata');
 assert.doesNotMatch(badges,/\$|dollar/i,'the badge renderer contains no currency glyph overlay');
 assert.match(badges,/INITIAL_BADGES=.*BBAS3:'BB'.*BBDC4:'BD'.*IBOV:'IB'.*'BTC\/USD':'BTC'/,'the four published test assets have explicit neutral initial fallbacks');
+assert.match(badges,/DOW_JONES:'DJ'.*BRENT:'BR'/,'the new profile has deterministic local fallbacks for both additional slots');
 assert.match(view,/const NAME_FONT=5\.5/,'all names use one fixed native font size');
 assert.match(view,/minScaleFactor=\{1\}/,'native text uses ellipsis without per-name font shrinking');
 assert.doesNotMatch(view,/market-status-dot/,'the status dot is removed from the compact identity column');
@@ -64,7 +65,7 @@ assert.equal(fills.filter(call=>call.path.some(op=>op[0]==='rect')).length,14,'U
 assert.equal(fills.filter(call=>call.path.some(op=>op[0]==='ellipse')).length,50,'USD flag draws 50 stars as part of the flag');
 assert.equal(state.calls.at(-1).op,'restore','USD flag closes its clipping scope');
 
-for(const code of ['BBAS3','BBDC4','IBOV','BTC/USD']){
+for(const code of ['BBAS3','BBDC4','IBOV','BTC/USD','DOW_JONES','BRENT']){
   const rendered=nativeContext();badgeModule.exports.drawBadge(rendered.native,code);
   const fillsForCode=rendered.state.calls.filter(call=>call.op==='fill');
   assert.equal(fillsForCode.filter(call=>call.style==='#34343A').length,1,`${code} uses one neutral circular fallback disk`);

@@ -8,9 +8,9 @@ import { assetMarketStatus } from './market-status'
 const images:Record<string,UIImage|null|undefined>={}
 const CUB_VARIATION_MIN_SIZE=4.2
 const NAME_FONT=5.5
-const SHORT_CODES:Record<string,string>=Object.freeze({SELIC:'SELIC',IPCA:'IPCA',IBOV:'IBOV',BBAS3:'BBAS3',BBDC4:'BBDC4','BTC/USD':'BTC/USD','USD/BRL':'USD/BRL',SOJA_JATAI_GO:'SOJAGO',CUB_GO:'CUB-GO',DIESEL_S10:'DIESEL',BRENT:'BRENT'})
+const SHORT_CODES:Record<string,string>=Object.freeze({SELIC:'SELIC',IPCA:'IPCA',IBOV:'IBOV',DOW_JONES:'DOW',BBAS3:'BBAS3',BBDC4:'BBDC4','BTC/USD':'BTC/USD','USD/BRL':'USD/BRL',SOJA_JATAI_GO:'SOJAGO',CUB_GO:'CUB-GO',DIESEL_S10:'DIESEL',BRENT:'BRENT'})
 const COMPACT_UNITS:Record<string,string>=Object.freeze({
-  SELIC:'% a.a.',IPCA:'M/M · pp',IBOV:'pontos',BBAS3:'BRL/ação',BBDC4:'BRL/ação','BTC/USD':'USD/BTC','USD/BRL':'BRL/USD',
+  SELIC:'% a.a.',IPCA:'M/M · pp',IBOV:'pontos',DOW_JONES:'pontos',BBAS3:'BRL/ação',BBDC4:'BRL/ação','BTC/USD':'USD/BTC','USD/BRL':'BRL/USD',
   SOJA_JATAI_GO:'R$/sc60',CUB_GO:'R$/m²',DIESEL_S10:'R$/L',BRENT:'USD/bbl'
 })
 function shortCode(row:any){
@@ -58,7 +58,7 @@ function apiSVG(row:any){
   if(/<!DOCTYPE|<!ENTITY|<script\b|<foreignObject\b|\son[a-z]+\s*=|\b(?:href|xlink:href|src)\s*=\s*["']\s*(?:https?:|\/\/|data:|javascript:)|\burl\(\s*(?:https?:|\/\/|data:)/i.test(code))return null
   return code
 }
-const FALLBACK_BADGE_CODES=Object.freeze(['BBAS3','BBDC4','IBOV','BTC/USD','SOJA_JATAI_GO','CUB_GO','IPCA','DIESEL_S10','USD/BRL'])
+const FALLBACK_BADGE_CODES=Object.freeze(['BBAS3','BBDC4','IBOV','DOW_JONES','BTC/USD','SOJA_JATAI_GO','CUB_GO','IPCA','DIESEL_S10','USD/BRL','BRENT'])
 function fallbackIcon(row:any,plan:any,rowPlan:any,positioned=true){
   const code=row?.asset?.code,placement=positioned?place(rowPlan,G.iconLeft,G.iconTop,G.icon,G.icon):{frame:{width:G.icon*plan.scale,height:G.icon*plan.scale}}
   if(FALLBACK_BADGE_CODES.includes(code))return <Canvas key="asset-icon" opaque={false} {...placement} draw={(ctx,size)=>{ctx.scale(size.width/26,size.height/26);drawBadge(ctx,code)}}/>

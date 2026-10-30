@@ -1,6 +1,6 @@
 # Integração da fonte privada
 
-A revisão do cliente é `0.2.39`; ela não contém o valor do token e não depende
+A revisão do cliente é `0.2.40`; ela não contém o valor do token e não depende
 de teste nativo para ser importada. A validação ponta a ponta continua
 pendente neste executor porque a tentativa de alcançar o
 endpoint foi interrompida pelo túnel com `403` antes do Worker. Isso não é
@@ -17,10 +17,10 @@ tratado como resposta do Worker nem como confirmação de dados reais.
   somente da URL HTTPS `icons.brapi.dev` devolvida no metadado, valida o MIME e
   o SVG antes de usar `SVG.code`, e mantém iniciais visíveis se falhar; não há
   URL montada, ETF ou proxy.
-- O perfil novo não chama DadosB3 nem Brapi para cotações ou lista de logos.
-  Sem token, sem resposta válida ou com cache privado disponível, os
-  três slots B3 ficam sem cotação ou mostram somente o último cache privado;
-  nenhum valor é fabricado. BTC/USD continua no adaptador público Kraken.
+- O perfil ativo usa somente a linha `IBOV` desse bundle privado; não chama
+  DadosB3 nem Brapi para cotações ou lista de logos. Sem token, resposta válida
+  ou cache privado, o slot IBOV fica sem cotação; nenhum valor é fabricado.
+  O perfil anterior `BBAS3/BBDC4/IBOV/BTC/USD` continua recuperável no motor.
 
 ## Configuração no iPhone
 
@@ -55,7 +55,7 @@ integrações novas, mantendo a v1 ativa. O executor responsável pelo Worker de
 confirmar a rota/plano e devolver somente uma categoria/código numérico seguro;
 não deve devolver corpo upstream ou credenciais.
 
-Na versão `0.2.39`, abra o projeto no Scripting, toque em **Atualizar** e leia
+Na versão `0.2.40`, abra o projeto no Scripting, toque em **Atualizar** e leia
 a linha **Fonte privada:** na tela do app. Ela diferencia `token ausente no
 Keychain`, `Worker rejeitou a autorização (401)`, `Worker/fonte indisponível`
 `Worker respondeu HTTP 4xx` e `resposta ... não passou na validação`, além de
@@ -64,7 +64,8 @@ Worker, a mesma linha poderá acrescentar `origem upstream HTTP <código>` e o
 ativo entre `BBAS3`, `BBDC4` e `IBOV`, além do `upstreamCode` allow-listed; o
 cliente ignora qualquer outro campo. A
 linha não mostra token, URL autenticada, corpo HTTP ou preço inventado. O widget
-continua exibindo ausência honesta até o Worker entregar um bundle válido.
+continua exibindo ausência honesta no IBOV até o Worker entregar um bundle válido;
+Dow Jones permanece sem cotação por falta de fonte autorizada.
 
 ## Verificações desta preparação
 
@@ -75,7 +76,7 @@ continua exibindo ausência honesta até o Worker entregar um bundle válido.
 - O endpoint real não pôde ser autenticado neste executor: a tentativa sem
   token foi bloqueada pelo túnel com `403` antes de alcançar o Worker. Não há
   afirmação de sucesso, cache, payload ou dados ao vivo.
-- O artefato desta revisão é `0.2.39`; a prévia `validation/icon-name-0.2.39-preview.png`
+- O artefato desta revisão é `0.2.40`; a prévia `validation/market-profile-0.2.40-preview.png`
   é fixture-only. O download vivo dos logos retornou `403` no túnel deste
   executor, portanto o aparelho ainda precisa validar os corpos reais.
   O SHA remoto deve ser conferido no

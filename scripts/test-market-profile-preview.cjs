@@ -1,0 +1,16 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
+const root=path.resolve(__dirname,'..'),previewDir=path.join(root,'validation');
+const evidence=JSON.parse(fs.readFileSync(path.join(previewDir,'market-profile-0.2.40-preview.json'),'utf8'));
+const svg=fs.readFileSync(path.join(previewDir,'market-profile-0.2.40-preview.svg'),'utf8');
+const png=path.join(previewDir,'market-profile-0.2.40-preview.png');
+assert.equal(JSON.stringify(evidence.order),JSON.stringify(['IBOV','DOW_JONES','USD/BRL','BRENT']));
+assert.equal(evidence.identity.font,5.5);
+assert.equal(evidence.identity.statusDot,false);
+assert.equal(evidence.data.live,false);
+assert.equal(evidence.nativeIPhone,false);
+assert(fs.statSync(png).size>1000,'the final visual evidence has a raster file');
+for(const label of ['IB','DJ','Dólar','Petróleo'])assert(svg.includes(label),label+' is visible in the fixture');
+assert.match(svg,/circular United States flag/);
+assert.match(svg,/7d indisponível/);
+assert.match(svg,/no status dot is drawn/);
+console.log('PASS market profile preview: requested order, four visible icons including the circular US flag, shared 5.5pt identity, no status dot, 7D fixture label, and raster evidence.');

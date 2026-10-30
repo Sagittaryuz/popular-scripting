@@ -1,5 +1,18 @@
 # Melhorias Scripting Pro — 23/10/2026
 
+## 0.2.40 — perfil IBOV/Dow/USD/Brent
+
+- [x] Substituir o perfil ativo por `IBOV`, `DOW_JONES`, `USD/BRL` e `BRENT`,
+  mantendo o perfil B3/BTC recuperável e sem compartilhar cache.
+- [x] Reutilizar o Worker privado para IBOV, AwesomeAPI para USD/BRL e a série
+  diária EIA/FRED para Brent; filtrar Brent para observações reais em 7 dias.
+- [x] Dar a cada slot um ícone circular visível: `IB`, `DJ`, bandeira dos EUA e
+  `BR`; preservar nome uniforme, reticências, gráficos e ausência de ponto.
+- [x] Registrar Dow sem cotação até fonte autorizada/documentada; não usar ETF,
+  WTI, valor fixo, nova credencial, custo ou proxy.
+- [x] Executar testes, gerar prévia PNG/SVG/JSON e publicar no main. iPhone
+  nativo permanece não testado.
+
 ## 0.2.39 — logos API visíveis e identidade uniforme
 
 - [x] Materializar SVGs de BBAS3/BBDC4 a partir das URLs retornadas pelo

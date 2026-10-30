@@ -67,17 +67,19 @@ function drawUSFlagBadge() {
   return ctx.getImage();
 }
 
-// These four instruments do not have approved image assets in the published
-// test profile. Use a neutral circular badge with readable initials instead of
-// the old generic document glyph; the initials identify the fallback without
-// pretending to be a bank, exchange, or Bitcoin brand mark.
-const INITIAL_BADGES=Object.freeze({BBAS3:'BB',BBDC4:'BD',IBOV:'IB','BTC/USD':'BTC'});
+// The published profile can receive remote metadata for some instruments, but
+// every requested slot must remain visible if that metadata is absent or fails.
+// These local circular badges are deterministic fallbacks; they identify the
+// instrument without pretending to be an unverified exchange or ETF logo.
+const INITIAL_BADGES=Object.freeze({BBAS3:'BB',BBDC4:'BD',IBOV:'IB','BTC/USD':'BTC',DOW_JONES:'DJ',BRENT:'BR'});
 const INITIAL_GLYPHS=Object.freeze({
   B:['11110','10001','10001','11110','10001','10001','11110'],
   D:['11110','10001','10001','10001','10001','10001','11110'],
   I:['11111','00100','00100','00100','00100','00100','11111'],
   T:['11111','00100','00100','00100','00100','00100','00100'],
-  C:['01111','10000','10000','10000','10000','10000','01111']
+  C:['01111','10000','10000','10000','10000','10000','01111'],
+  J:['00111','00010','00010','00010','00010','10010','01100'],
+  R:['11110','10001','10001','11110','10100','10010','10001']
 });
 function drawInitialsBadge(code) {
   const ctx=new DrawContext();ctx.size=new Size(26,26);ctx.opaque=false;ctx.respectScreenScale=true;

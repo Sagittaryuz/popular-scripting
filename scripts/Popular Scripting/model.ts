@@ -2,13 +2,13 @@ import { createEngine } from './original-engine'
 import { createHost } from './host'
 import { dashboardStatus, refreshMinutes } from './pro-common'
 import { sourceStatusForRow } from './market-status'
-export const VERSION='0.2.39'
+export const VERSION='0.2.40'
 export const TAP_REFRESH_CACHE_KEY='popular-tap-refresh-v1'
 export const TAP_REFRESH_CACHE_MS=5000
 // Published, reversible test profile: keep the former eight-indicator list
 // below so one config change can restore it without losing its definition.
 export const PUBLISHED_TEST_ASSETS=true
-export const PUBLISHED_TEST_PROFILE='b3-btc-7d' as const
+export const PUBLISHED_TEST_PROFILE='ibov-dow-usd-brent-7d' as const
 const PRIVATE_MARKET_STATUS_LABELS:Record<string,string>={
   'not-run':'não consultada',
   'token-missing':'token ausente no Keychain',
@@ -52,7 +52,7 @@ function fixedIndicatorRows(rows:any[]){
 }
 export function engine(family='medium',force=false){
   const queryDue=Date.now()-(Storage.get<number>('popular-last-query')??0)>=refreshMinutes()*60000
-  return createEngine(createHost(force),{family,force:force||queryDue,localTestAssets:PUBLISHED_TEST_ASSETS})
+  return createEngine(createHost(force),{family,force:force||queryDue,localTestAssets:PUBLISHED_TEST_ASSETS,localTestProfile:PUBLISHED_TEST_PROFILE})
 }
 export function setOrdering(mode:string){if(!MODES.includes(mode as any))throw Error('Ordenação inválida');engine().writeOrderingMode(mode)}
 export function markPersistedSourceStatus(state:'cached'|'failed',at=Date.now()){

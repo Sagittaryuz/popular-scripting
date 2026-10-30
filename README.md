@@ -1,3 +1,27 @@
+## Atualização 0.2.40 - novo perfil de ativos e ícones sempre visíveis
+
+- O perfil ativo passa a exibir, nesta ordem, `Ibovespa`, `Dow Jones`,
+  `Dólar` (`USD/BRL`) e `Petróleo` (`Brent`). O perfil anterior
+  `BBAS3/BBDC4/IBOV/BTC/USD` continua definido no motor como caminho
+  recuperável, sem compartilhar a seleção ou o cache do perfil novo.
+- O IBOV continua usando o Worker privado existente e o símbolo `^BVSP`; o
+  USD/BRL usa a rota pública existente da AwesomeAPI e o Brent usa a série
+  diária Europe Brent da EIA/FRED, recortada para sete dias civis de
+  observações reais. A fonte AwesomeAPI documenta `USD-BRL` e informa que
+  solicitações sem chave podem ter cache de um minuto: <https://docs.awesomeapi.com.br/api-de-moedas>.
+  A EIA publica a série diária de Brent Europe: <https://www.eia.gov/dnav/pet/hist/rbrted.htm>.
+- O Dow Jones mantém o slot, ícone local `DJ` e `7d indisponível` sem valor
+  inventado. A API oficial da S&P DJI exige conta Data Services, autenticação
+  OAuth e token; não foram criadas credenciais, custos ou proxy para preencher
+  esse slot: <https://www.spglobal.com/spdji/en/landing/topic/api-data-solutions/>.
+- Todos os quatro slots têm fallback circular local não branco; o Dólar mantém
+  somente a bandeira circular dos EUA. Nomes continuam em uma linha, mesma
+  fonte/peso de 5.5pt, reticências nativas, sem bolinha de status; gráficos,
+  domínio por série e layout 2×2/4×2 permanecem.
+- A prévia [market-profile-0.2.40-preview.png](validation/market-profile-0.2.40-preview.png)
+  e seus arquivos SVG/JSON mostram os quatro ícones e a ordem com fixtures
+  sintéticas; não são cotações ao vivo e o iPhone nativo não foi testado.
+
 ## Atualização 0.2.39 - logos API renderizados inline e identidade sem bolinha
 
 - A causa dos três ícones B3 vazios era dupla: o perfil ativo preservava apenas
@@ -317,8 +341,8 @@ Testes locais de fontes, observações antigas/futuras, alertas, cache, transpor
 
 # Popular Scripting
 
-**Atual: 0.2.39 - Scripting Pro.** Perfil publicado de quatro ativos
-(`BBAS3`, `BBDC4`, `IBOV`, `BTC/USD`) em janela móvel de 7 dias, com detalhes,
+**Atual: 0.2.40 - Scripting Pro.** Perfil publicado de quatro ativos
+(`IBOV`, `DOW_JONES`, `USD/BRL`, `BRENT`) em janela móvel de 7 dias, com detalhes,
 CSV, alertas, assistente, Central de Controle e painel Início. [Ativação,
 testes e limites](PRO.md).
 
@@ -332,20 +356,20 @@ Na tela **Importar Scripts Remotos** do Scripting, cole:
 https://github.com/Sagittaryuz/popular-scripting/tree/main/scripts/Popular%20Scripting
 ```
 
-Importe **Popular Scripting**, confirme a versão **0.2.39**, abra o projeto e toque em **Atualizar**. Leia a linha **Fonte privada:** para distinguir token, Worker, código da fonte, parsing e cache. Em **Detalhes dos indicadores**, toque em **Configurar fonte privada**, cole o token no campo seguro e salve. Adicione o widget do Scripting à Tela de Início e selecione esse projeto.
+Importe **Popular Scripting**, confirme a versão **0.2.40**, abra o projeto e toque em **Atualizar**. Leia a linha **Fonte privada:** para distinguir token, Worker, código da fonte, parsing e cache. Em **Detalhes dos indicadores**, toque em **Configurar fonte privada**, cole o token no campo seguro e salve. Adicione o widget do Scripting à Tela de Início e selecione esse projeto.
 
 Para receber melhorias de código, use a atualização do script remoto no Scripting. Essa importação vincula o projeto à pasta `main/scripts/Popular Scripting`; não use um endereço de commit ou tag para acompanhar as próximas versões. O botão **Atualizar** dentro da tela do Popular consulta somente os indicadores e solicita recarregar o widget.
 
 ## Tamanhos e dados
 
-- Pequeno, médio e grande: o perfil publicado mostra os quatro ativos de teste na mesma ordem; o médio/grande não repete linhas na segunda coluna.
-- BBAS3, BBDC4 e IBOV usam o endpoint privado autenticado; sem token, resposta válida ou cache privado recente, o slot vazio é preservado. O BTC/USD usa somente o adaptador público Kraken quando a resposta for válida.
-- O domínio de gráfico ativo é 7D: o perfil privado usa timestamps reais e o BTC usa observações do Kraken; sem amostras válidas aparece `7d indisponível`, sem interpolação, weekend fill ou valor fictício.
+- Pequeno, médio e grande: o perfil publicado mostra `Ibovespa`, `Dow Jones`, `Dólar` e `Petróleo` na mesma ordem; o médio/grande não repete linhas na segunda coluna.
+- O IBOV usa o endpoint privado autenticado; USD/BRL usa AwesomeAPI; Brent usa EIA/FRED diário. Sem resposta válida, os slots preservam ausência/cache honesto. Dow Jones permanece sem cotação até feed autorizado.
+- O domínio de gráfico ativo é 7D: IBOV usa timestamps reais do Worker, USD/BRL usa a série retornada pela AwesomeAPI e Brent usa observações EOD reais da EIA/FRED; Dow aparece `7d indisponível`. Não há interpolação, weekend fill ou valor fictício.
 - Cada série válida preenche horizontalmente apenas entre seu primeiro/último
   timestamp visível; a posição relativa dos pontos continua temporal e a
   cobertura/densidade de cada mercado permanece honesta.
 - A lista anterior de oito, fontes e ícones continua preservada no histórico/código para recuperação; não é a configuração ativa desta versão.
-- Fontes incluem o endpoint privado do proprietário, BCB, AgroLink, Investidor10, AwesomeAPI, FRED e Kraken; respostas reais não são empacotadas nem redistribuídas.
+- Fontes incluem o endpoint privado do proprietário, AwesomeAPI e EIA/FRED para o perfil ativo; BCB, AgroLink, Investidor10, brapi/B3 e Kraken continuam no caminho recuperável/histórico. Respostas reais não são empacotadas nem redistribuídas.
 - Dados econômicos de referência são consultados diretamente deste Git, sem autenticação. Rede indisponível ou resposta inválida preserva o cache validado ou a reserva versionada, com suas datas originais.
 - O workflow `economic-data.yml` é programado a cada hora útil, 11h17–23h17 UTC, sujeito a atrasos do GitHub. Falha de uma fonte mantém a série anterior e é registrada no workflow; dados antigos não recebem data de observação nova.
 - Política de atualização do widget: a partir de um minuto, configurável em 1/5/15, sujeita ao iOS.

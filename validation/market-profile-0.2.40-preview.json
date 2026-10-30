@@ -1,0 +1,35 @@
+{
+  "version": "0.2.40",
+  "output": "validation/market-profile-0.2.40-preview.svg",
+  "pngOutput": "validation/market-profile-0.2.40-preview.png",
+  "icons": {
+    "IBOV": "local initials fallback IB",
+    "DOW_JONES": "local initials fallback DJ",
+    "USD_BRL": "circular US flag",
+    "BRENT": "local initials fallback BR"
+  },
+  "order": [
+    "IBOV",
+    "DOW_JONES",
+    "USD/BRL",
+    "BRENT"
+  ],
+  "identity": {
+    "font": 5.5,
+    "weight": "semibold",
+    "lineLimit": 1,
+    "ellipsis": true,
+    "statusDot": false
+  },
+  "data": {
+    "live": false,
+    "values": "synthetic placeholders",
+    "curves": "synthetic geometry only",
+    "window": "7D layout contract"
+  },
+  "dow": {
+    "quote": "unavailable",
+    "reason": "no authorized/documented feed without new credentials"
+  },
+  "nativeIPhone": false
+}

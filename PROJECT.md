@@ -1,4 +1,17 @@
-# Popular Scripting - Pro 0.2.39
+# Popular Scripting - Pro 0.2.40
+
+## 0.2.40 - novo perfil de quatro ativos
+
+- Perfil publicado: `IBOV`, `DOW_JONES`, `USD/BRL`, `BRENT`, nessa ordem.
+- IBOV reaproveita o endpoint privado já configurado e valida `^BVSP`; USD/BRL
+  usa AwesomeAPI; Brent usa EIA/FRED diário e o recorte EOD de sete dias reais.
+- Dow Jones não recebe proxy, ETF ou valor inventado: o slot exibe fallback `DJ`
+  e permanece sem cotação até um feed autorizado. A S&P DJI informa que suas
+  APIs exigem conta Data Services e token; nenhuma credencial nova foi criada.
+- O perfil anterior `b3-btc-7d` continua como padrão explícito do motor quando
+  `localTestProfile` não é informado, mantendo recuperação sem misturar cache.
+- `validation/market-profile-0.2.40-preview.{png,svg,json}` é uma evidência
+  fixture-only com quatro ícones visíveis. Não houve teste nativo no iPhone.
 
 ## 0.2.39 - logos inline e coluna de identidade sem status visual
 

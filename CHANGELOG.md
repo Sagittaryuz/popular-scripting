@@ -1,3 +1,19 @@
+## 0.2.40 - perfil IBOV/Dow/USD/Brent e fallback visual completo
+
+- Ativa `IBOV`, `DOW_JONES`, `USD/BRL` e `BRENT` nessa ordem, preservando o
+  perfil anterior B3/BTC em configuração recuperável.
+- Reutiliza o Worker privado para o IBOV, o adaptador AwesomeAPI para USD/BRL
+  e a série diária EIA/FRED `DCOILBRENTEU` para Brent. O gráfico Brent é
+  convertido para EOD real de 7 dias, sem interpolar fins de semana ou criar
+  pontos.
+- Mantém Dow Jones explicitamente indisponível até haver fonte pública,
+  documentada e autorizada sem nova credencial; não usa ETF, WTI ou valor
+  fixo.
+- Adiciona badges locais `IB`, `DJ`, bandeira dos EUA e `BR`, garantindo que
+  todos os ícones tenham renderização visível mesmo sem metadado remoto.
+- Testes de contrato, regressão, prévia SVG/PNG e suíte completa passaram;
+  iPhone nativo não testado.
+
 ## 0.2.39 - logos API inline e nomes uniformes
 
 - Corrige o caminho dos logos API do perfil privado: materializa os SVGs
