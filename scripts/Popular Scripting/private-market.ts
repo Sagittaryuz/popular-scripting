@@ -5,17 +5,25 @@ export const PRIVATE_MARKET_TOKEN_KEY='popular-private-market-widget-token-v1'
 export const PRIVATE_MARKET_TOKEN_MIN_LENGTH=32
 export const PRIVATE_MARKET_TOKEN_MAX_LENGTH=512
 
+export type PrivateMarketTokenState={value:string|null;status:'configured'|'missing'|'invalid'|'unavailable'}
+
 export function normalizePrivateMarketToken(value:unknown):string|null{
   if(typeof value!=='string')return null
   const token=value.trim()
   return token.length>=PRIVATE_MARKET_TOKEN_MIN_LENGTH&&token.length<=PRIVATE_MARKET_TOKEN_MAX_LENGTH?token:null
 }
 
-export function readPrivateMarketToken():string|null{
+export function readPrivateMarketTokenState():PrivateMarketTokenState{
+  if(typeof Keychain==='undefined'||typeof Keychain.contains!=='function'||typeof Keychain.get!=='function')return {value:null,status:'unavailable'}
   try{
-    if(typeof Keychain==='undefined'||typeof Keychain.contains!=='function'||!Keychain.contains(PRIVATE_MARKET_TOKEN_KEY))return null
-    return normalizePrivateMarketToken(Keychain.get(PRIVATE_MARKET_TOKEN_KEY))
-  }catch{return null}
+    if(!Keychain.contains(PRIVATE_MARKET_TOKEN_KEY))return {value:null,status:'missing'}
+    const value=normalizePrivateMarketToken(Keychain.get(PRIVATE_MARKET_TOKEN_KEY))
+    return value?{value,status:'configured'}:{value:null,status:'invalid'}
+  }catch{return {value:null,status:'unavailable'}}
+}
+
+export function readPrivateMarketToken():string|null{
+  return readPrivateMarketTokenState().value
 }
 
 export function savePrivateMarketToken(value:unknown):void{

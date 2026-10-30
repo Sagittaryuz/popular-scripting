@@ -53,4 +53,4 @@ for(const [family,width,height,expected] of [['small',158,170,4],['medium',338,1
     assert(tree.props.accessibilityLabel.includes('Selic com nome suficientemente long'))
   }
 }
-console.log('PASS 0.2.34 geometry: widened identity column, explicit name/dot reservation, grouped centered text blocks, 26 pt icons, graph/quote separation and long/missing fixtures covered. Native iPhone render pending.')
+console.log('PASS 0.2.35 geometry: widened identity column, explicit name/dot reservation, grouped centered text blocks, 26 pt icons, graph/quote separation and long/missing fixtures covered. Native iPhone render pending.')

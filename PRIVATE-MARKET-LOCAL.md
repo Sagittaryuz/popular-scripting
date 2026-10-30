@@ -1,8 +1,8 @@
 # Integração da fonte privada
 
-A integração foi publicada no remoto em `0.2.34`; o cliente não contém o valor
-do token e não depende de teste nativo para ser importado. A validação ponta a
-ponta continua pendente neste executor porque a tentativa de alcançar o
+A revisão do cliente é `0.2.35`; ela não contém o valor do token e não depende
+de teste nativo para ser importada. A validação ponta a ponta continua
+pendente neste executor porque a tentativa de alcançar o
 endpoint foi interrompida pelo túnel com `403` antes do Worker. Isso não é
 tratado como resposta do Worker nem como confirmação de dados reais.
 
@@ -36,6 +36,34 @@ tratado como resposta do Worker nem como confirmação de dados reais.
 O botão não deve ser usado antes de o mesmo valor estar configurado no Worker
 como `WIDGET_TOKEN`. Neste checkout nenhum token foi configurado ou preservado.
 
+## Diagnóstico da falha observada
+
+O cliente envia `Authorization: Bearer <token>` somente para o endpoint privado
+exato. O transporte local foi coberto por teste de contrato e a documentação
+oficial do Scripting confirma que `fetch` aceita um objeto de headers e que o
+Keychain é isolado por script; a configuração e o widget usam o mesmo projeto,
+mas o acesso nativo ao iPhone não foi reproduzido aqui.
+
+O log operacional do Worker informou que as requisições autenticadas chegaram à
+brapi e que as 14 subrequisições recentes retornaram 4xx. Isso afasta, nessa
+execução, um simples bloqueio de rede do iPhone ou ausência de `WIDGET_TOKEN`,
+mas não identifica se o upstream respondeu 401, 403, 404 ou 429. O Worker
+preparado ainda chama `/api/quote/{ticker}?range=7d&interval=1d`; a OpenAPI atual
+da brapi recomenda `/api/v2/stocks/quote` e `/api/v2/stocks/historical` para
+integrações novas, mantendo a v1 ativa. O executor responsável pelo Worker deve
+confirmar a rota/plano e devolver somente uma categoria/código numérico seguro;
+não deve devolver corpo upstream ou credenciais.
+
+Na versão `0.2.35`, abra o projeto no Scripting, toque em **Atualizar** e leia
+a linha **Fonte privada:** na tela do app. Ela diferencia `token ausente no
+Keychain`, `Worker rejeitou a autorização (401)`, `Worker/fonte indisponível`
+`Worker respondeu HTTP 4xx` e `resposta ... não passou na validação`, além de
+indicar cache preservado. Quando o novo contrato seguro estiver ativo no
+Worker, a mesma linha poderá acrescentar `origem upstream HTTP <código>` e o
+ativo entre `BBAS3`, `BBDC4` e `IBOV`; o cliente ignora qualquer outro campo. A
+linha não mostra token, URL autenticada, corpo HTTP ou preço inventado. O widget
+continua exibindo ausência honesta até o Worker entregar um bundle válido.
+
 ## Verificações desta preparação
 
 - `npm run check`: passou.
@@ -45,6 +73,6 @@ como `WIDGET_TOKEN`. Neste checkout nenhum token foi configurado ou preservado.
 - O endpoint real não pôde ser autenticado neste executor: a tentativa sem
   token foi bloqueada pelo túnel com `403` antes de alcançar o Worker. Não há
   afirmação de sucesso, cache, payload ou dados ao vivo.
-- A entrega publicada é `0.2.34`; o SHA remoto deve ser conferido no GitHub
-  antes de atualizar uma instalação existente. Não houve teste nativo em
+- O artefato desta revisão é `0.2.35`; o SHA remoto deve ser conferido no
+  GitHub antes de atualizar uma instalação existente. Não houve teste nativo em
   iPhone nem validação ponta a ponta neste executor.

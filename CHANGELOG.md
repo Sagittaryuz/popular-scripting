@@ -1,3 +1,24 @@
+## 0.2.35 - diagnóstico seguro da fonte privada
+
+- O app em primeiro plano mostra uma categoria segura para a fonte privada:
+  token ausente/inválido, Keychain indisponível, resposta válida, cache,
+  401/403/429, outros HTTP 4xx, indisponibilidade do Worker, erro de rede ou
+  bundle inválido. Quando o Worker fornecer o diagnóstico novo, a tela também
+  pode mostrar somente o status upstream e o ativo permitido, sem corpo HTTP.
+  Nenhum token, corpo de resposta ou dado sensível é exibido ou persistido.
+- O widget mantém exatamente o mesmo layout, perfil BBAS3/BBDC4/IBOV/BTC/USD,
+  janela de 7 dias, ordem e fallback sem cotação. O diagnóstico é somente na
+  tela do app para permitir distinguir configuração, transporte, fonte e cache.
+- A investigação do Worker encontrou requisições autenticadas chegando à
+  brapi, mas todas as subconsultas observadas retornando 4xx. O código exato
+  não foi exposto; o Worker preparado ainda usa `/api/quote/{ticker}`. A
+  documentação atual recomenda `/api/v2/stocks/*` para integrações novas,
+  mas mantém a rota v1 ativa. A correção do upstream permanece no executor do
+  Worker; esta versão não altera o Worker nem inventa valores.
+- Testes locais cobrem token ausente, 401, 503, resposta inválida, resposta
+  válida e cache após falha. iPhone nativo e consulta ponta a ponta continuam
+  sem validação neste executor.
+
 ## 0.2.34 - entrada segura nativa do Scripting
 
 - Substitui a API de alerta específica do Scriptable por `Dialog.prompt` do

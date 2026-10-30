@@ -2,13 +2,39 @@ import { createEngine } from './original-engine'
 import { createHost } from './host'
 import { dashboardStatus, refreshMinutes } from './pro-common'
 import { sourceStatusForRow } from './market-status'
-export const VERSION='0.2.34'
+export const VERSION='0.2.35'
 export const TAP_REFRESH_CACHE_KEY='popular-tap-refresh-v1'
 export const TAP_REFRESH_CACHE_MS=5000
 // Published, reversible test profile: keep the former eight-indicator list
 // below so one config change can restore it without losing its definition.
 export const PUBLISHED_TEST_ASSETS=true
 export const PUBLISHED_TEST_PROFILE='b3-btc-7d' as const
+const PRIVATE_MARKET_STATUS_LABELS:Record<string,string>={
+  'not-run':'não consultada',
+  'token-missing':'token ausente no Keychain',
+  'token-invalid':'token inválido no Keychain',
+  'keychain-unavailable':'Keychain indisponível',
+  fresh:'resposta válida do Worker',
+  cache:'resposta válida em cache privado',
+  'stale-cache':'resposta antiga em cache privado',
+  'worker-unauthorized':'Worker rejeitou a autorização (401)',
+  'worker-forbidden':'Worker recusou a consulta (403)',
+  'worker-rate-limited':'Worker limitou a consulta (429)',
+  'worker-unavailable':'Worker/fonte indisponível (5xx)',
+  'invalid-response':'resposta do Worker não passou na validação',
+  'endpoint-missing':'endpoint privado ausente',
+  'network-error':'falha de rede ou timeout'
+}
+export function privateMarketStatusText(status:any):string{
+  const code=String(status?.code||'not-run'),cached=status?.cached===true
+  const http=code.match(/^worker-http-(\d{3})$/)
+  const label=PRIVATE_MARKET_STATUS_LABELS[code]||(http?'Worker respondeu HTTP '+http[1]:'estado não reconhecido')
+  const upstreamStatus=Number.isInteger(status?.upstreamStatus)&&status.upstreamStatus>=400&&status.upstreamStatus<=599?status.upstreamStatus:null
+  const upstreamAsset=['BBAS3','BBDC4','IBOV'].includes(status?.upstreamAsset)?status.upstreamAsset:null
+  const upstream=upstreamStatus==null?'':` · origem upstream HTTP ${upstreamStatus}${upstreamAsset?' · '+upstreamAsset:''}`
+  if(code.startsWith('cache-fallback-'))return 'Fonte privada: cache privado preservado; nova consulta indisponível'+upstream
+  return 'Fonte privada: '+label+upstream+(cached?' · cache privado':'')
+}
 export type TapRefreshState='queried'|'failed-cache-preserved'|'timeout-cache-preserved'
 export function preparedTapState(now=Date.now()):TapRefreshState|null{
   const marker=Storage.get<{at:number;state:TapRefreshState}>(TAP_REFRESH_CACHE_KEY),rows=Storage.get<any[]>('popular-pro-rows')
@@ -55,7 +81,7 @@ export async function loadModel(family='medium',force=false,cacheOnly=false,pers
   const combined=PUBLISHED_TEST_ASSETS?[...orderedRows,...additions]:fixedIndicatorRows([...orderedRows,...additions])
   const status=api.orderingFeedback(orderedRows)
   const queriedAt=Date.now()
-  const result={queriedAt,version:VERSION,sourceVersion:api.version,family,mode:'fixed',status,
+  const result={queriedAt,version:VERSION,sourceVersion:api.version,family,mode:'fixed',status,privateMarketStatus:api.privateMarketStatus,
     rows:combined.map((row:any)=>({...row,sourceStatus:sourceStatusForRow(row,queriedAt),name:api.displayName(row.asset),price:api.displayPrice(row.asset.price,row.asset),
       percent:api.displayPercent(api.presentationPercent(row),row.asset),movement:api.presentationPercent(row),
       time:api.timeText(row),unit:api.unitText(row)})),api}
@@ -66,6 +92,6 @@ export async function loadModel(family='medium',force=false,cacheOnly=false,pers
   try{Storage.set('sagittaryuz-dashboard-v1:Popular',{schema:1,source:'Popular',at:result.queriedAt,version:VERSION,rows:result.rows.slice(0,16).map((row:any)=>({name:row.name,price:row.price,percent:row.percent,movement:row.movement,time:row.time,points:(row.chart?.points??[]).slice(-24).map((p:any)=>p.value).filter(Number.isFinite)}))},{shared:true})}catch{}
   dashboardStatus('Popular',{at:Date.now(),label:result.rows.length+' indicadores · '+result.status.label})
   Storage.set('last-run',{version:VERSION,sourceVersion:api.version,at:Date.now(),elapsedMS:Date.now()-started,
-    mode:result.mode,rows:combined.map(api.quoteAudit),networkFailures:api.failures})
+    mode:result.mode,rows:combined.map(api.quoteAudit),networkFailures:api.failures,privateMarketStatus:api.privateMarketStatus})
   return result
 }

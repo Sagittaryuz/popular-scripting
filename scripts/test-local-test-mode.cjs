@@ -75,6 +75,7 @@ class MockRequest {
   assert.equal(btc.chart.points.length,167);
   assert.equal(btc.chart.currentCandleExcluded,true);
   assert.equal(btc.cached,undefined,'old cache does not leak into local test mode');
+  assert.equal(api.privateMarketStatus.code,'fresh','a valid private bundle is reported without exposing token or response data');assert.equal(api.privateMarketStatus.cached,false);assert.equal(api.privateMarketStatus.at,now);
   assert.equal(JSON.stringify(requests),JSON.stringify([privateURL,pairURL,tickerURL,ohlcURL]),'collectRows calls only the authenticated private bundle for B3 and Kraken for BTC; it does not call DadosB3 or public Brapi quote/logo routes');
   assert.equal(JSON.stringify(api.fixedIndicatorCodes),JSON.stringify(['SELIC','IPCA','IBOV','USD/BRL','SOJA_JATAI_GO','CUB_GO','DIESEL_S10','BRENT']),'production order remains separate');
   assert.deepEqual(Array.from(await api.collectAdditionalRows()),[],'local mode disables catalog additions');
@@ -85,7 +86,7 @@ class MockRequest {
 
   class FailingRequest {
     constructor(url){this.url=url;this.response={statusCode:503};}
-    async loadJSON(){throw Error('offline local fixture');}
+    async loadJSON(){throw Error('HTTP 503');}
   }
   const offlineFiles=new Map(),offlineFM={documentsDirectory:()=>'/documents',joinPath:(...parts)=>parts.join('/'),fileExists:file=>offlineFiles.has(file),createDirectory:()=>{},readString:file=>offlineFiles.get(file),writeString:(file,value)=>offlineFiles.set(file,value)};
   const offline=bundled.exports.createEngine({FileManager:{local:()=>offlineFM},Request:FailingRequest,Data:{},Timer:undefined,privateMarket},{family:'medium',now,localTestAssets:true});
@@ -96,6 +97,38 @@ class MockRequest {
   assert.equal(offlineRows[3].chart,null);
   assert.equal(offlineRows[3].quoteVerified,false);
   assert.equal(offlineRows.some(row=>row.cached===true),false);
+  assert.equal(offline.privateMarketStatus.code,'worker-unavailable','a Worker 5xx is distinguished from a parsing or token failure');assert.equal(offline.privateMarketStatus.cached,false);assert.equal(offline.privateMarketStatus.at,now);
 
-  console.log('PASS local test mode: authenticated private BBAS3/BBDC4/IBOV values and logos, seven-day real observations, quote/chart separation, BTCUSD order, no DadosB3/public-Brapi calls, private-cache isolation, no wide duplicates, and offline fallback.');
+  const emptyFM=()=>{const emptyFiles=new Map();return {documentsDirectory:()=>'/documents',joinPath:(...parts)=>parts.join('/'),fileExists:file=>emptyFiles.has(file),createDirectory:()=>{},readString:file=>emptyFiles.get(file),writeString:(file,value)=>emptyFiles.set(file,value)}};
+  const noToken=bundled.exports.createEngine({FileManager:{local:emptyFM},Request:MockRequest,Data:{},Timer:undefined,privateMarket:{endpoint:privateURL,readToken:()=>null}},{family:'medium',now,localTestAssets:true});
+  const noTokenRows=await noToken.collectRows();
+  assert(noTokenRows.slice(0,3).every(row=>row.sourceError==='private-market-token-missing'&&row.asset.price===null));
+  assert.equal(noToken.privateMarketStatus.code,'token-missing','missing Keychain token is reported before any authenticated request');assert.equal(noToken.privateMarketStatus.cached,false);assert.equal(noToken.privateMarketStatus.at,now);
+
+  class UnauthorizedRequest extends MockRequest { async loadJSON(){if(this.url===privateURL){this.response={statusCode:401};throw Error('HTTP 401')}return super.loadJSON()} }
+  const unauthorized=bundled.exports.createEngine({FileManager:{local:emptyFM},Request:UnauthorizedRequest,Data:{},Timer:undefined,privateMarket},{family:'medium',now,localTestAssets:true});
+  await unauthorized.collectRows();
+  assert.equal(unauthorized.privateMarketStatus.code,'worker-unauthorized','a private endpoint 401 is not mislabeled as an absent token');assert.equal(unauthorized.privateMarketStatus.cached,false);assert.equal(unauthorized.privateMarketStatus.at,now);
+
+  class UpstreamDiagnosticRequest extends MockRequest { async loadJSON(){if(this.url===privateURL){const error=Error('HTTP 503');error.privateMarketDiagnostic={upstreamStatus:403,upstreamAsset:'IBOV',token:'never-expose'};throw error}return super.loadJSON()} }
+  const upstreamDiagnostic=bundled.exports.createEngine({FileManager:{local:emptyFM},Request:UpstreamDiagnosticRequest,Data:{},Timer:undefined,privateMarket},{family:'medium',now,localTestAssets:true});
+  await upstreamDiagnostic.collectRows();
+  assert.equal(upstreamDiagnostic.privateMarketStatus.code,'worker-unavailable');
+  assert.equal(upstreamDiagnostic.privateMarketStatus.upstreamStatus,403,'a safe upstream status is retained for foreground diagnosis');
+  assert.equal(upstreamDiagnostic.privateMarketStatus.upstreamAsset,'IBOV');
+  assert.equal(upstreamDiagnostic.privateMarketStatus.token,undefined,'credentials never enter the status snapshot');
+
+  class InvalidResponseRequest extends MockRequest { async loadJSON(){if(this.url===privateURL)return {schema:1};return super.loadJSON()} }
+  const invalid=bundled.exports.createEngine({FileManager:{local:emptyFM},Request:InvalidResponseRequest,Data:{},Timer:undefined,privateMarket},{family:'medium',now,localTestAssets:true});
+  const invalidRows=await invalid.collectRows();
+  assert(invalidRows.slice(0,3).every(row=>row.sourceError==='private-market-invalid-response'));
+  assert.equal(invalid.privateMarketStatus.code,'invalid-response','a response that fails the schema is distinguished from transport failure');assert.equal(invalid.privateMarketStatus.cached,false);assert.equal(invalid.privateMarketStatus.at,now);
+
+  class CachedFailureRequest extends MockRequest { async loadJSON(){if(this.url===privateURL){this.response={statusCode:503};throw Error('HTTP 503')}return super.loadJSON()} }
+  const cachedFailure=bundled.exports.createEngine({FileManager:{local:()=>fm},Request:CachedFailureRequest,Data:{},Timer:undefined,privateMarket},{family:'medium',now,localTestAssets:true});
+  const cachedRows=await cachedFailure.collectRows();
+  assert(cachedRows.slice(0,3).every(row=>row.cached===true&&Number.isFinite(row.asset.price)),'a validated private cache remains usable after a Worker failure');
+  assert.equal(cachedFailure.privateMarketStatus.code,'cache-fallback-worker-unavailable','cache fallback preserves the safe reason category');assert.equal(cachedFailure.privateMarketStatus.cached,true);assert.equal(cachedFailure.privateMarketStatus.at,now);
+
+  console.log('PASS local test mode: authenticated private BBAS3/BBDC4/IBOV values and logos, seven-day real observations, quote/chart separation, BTCUSD order, no DadosB3/public-Brapi calls, private-cache isolation, no wide duplicates, offline fallback, and safe token/401/503/schema/cache diagnostics.');
 })().catch(error=>{console.error(error);process.exitCode=1;});

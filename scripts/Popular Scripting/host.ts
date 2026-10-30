@@ -1,5 +1,5 @@
 import { readPriceSprites, inflateZlib } from './png'
-import { isPrivateMarketEndpoint, PRIVATE_MARKET_ENDPOINT, readPrivateMarketToken } from './private-market'
+import { isPrivateMarketEndpoint, PRIVATE_MARKET_ENDPOINT, readPrivateMarketToken, readPrivateMarketTokenState } from './private-market'
 
 // Remove only the legacy credential owned by this script, never global app settings.
 export function removeLegacyAccess(){try{Keychain.remove('popular-github-read-token')}catch{}}
@@ -29,6 +29,14 @@ export async function within<T>(task:Promise<T>,ms:number):Promise<T>{
   let timer:ReturnType<typeof setTimeout>|undefined
   try{return await Promise.race([task,new Promise<never>((_,reject)=>{timer=setTimeout(()=>reject(Error('Tempo de consulta excedido')),ms)})])}
   finally{if(timer!==undefined)clearTimeout(timer)}
+}
+
+const PRIVATE_MARKET_DIAGNOSTIC_ASSETS=['BBAS3','BBDC4','IBOV']
+function safePrivateMarketDiagnostic(payload:unknown):Record<string,number|string>|null{
+  const value=payload as any,diagnostic:Record<string,number|string>={}
+  if(Number.isInteger(value?.upstreamStatus)&&value.upstreamStatus>=400&&value.upstreamStatus<=599)diagnostic.upstreamStatus=value.upstreamStatus
+  if(typeof value?.upstreamAsset==='string'&&PRIVATE_MARKET_DIAGNOSTIC_ASSETS.includes(value.upstreamAsset))diagnostic.upstreamAsset=value.upstreamAsset
+  return Object.keys(diagnostic).length?diagnostic:null
 }
 
 export function createHost(foreground=false){
@@ -61,7 +69,18 @@ export function createHost(foreground=false){
         const res=await fetch(this.url,{method:this.method,headers:this.headers,body:this.body,timeout,
           handleRedirect:async request=>{const next=allowedURL(request.url);return next.origin===url.origin?request:null}})
         this.response={statusCode:res.status}
-        if(!res.ok)throw Error('HTTP '+res.status)
+        if(!res.ok){
+          let diagnostic:Record<string,number|string>|null=null
+          // Read only the two allow-listed diagnostic fields from a private
+          // Worker error. Never retain or forward its body, headers, or token.
+          if(isPrivateMarketEndpoint(url.href)&&typeof res.text==='function')try{
+            const text=await res.text()
+            if(text.length<=65536)diagnostic=safePrivateMarketDiagnostic(JSON.parse(text))
+          }catch{}
+          const error:any=Error('HTTP '+res.status)
+          if(diagnostic)error.privateMarketDiagnostic=diagnostic
+          throw error
+        }
         if(binary){const data=Data.fromArrayBuffer(await res.arrayBuffer());if(!data||data.size>2000000)throw Error('Resposta inválida');return data}
         const text=await res.text();if(text.length>2000000)throw Error('Resposta excessiva');return text
       })(),Math.ceil(timeout*1000))
@@ -80,6 +99,6 @@ export function createHost(foreground=false){
     return inflateZlib(bytes,expected)
   }
   return {FileManager:{local:files},Request:EngineRequest,Data,Timer:undefined,
-    privateMarket:{endpoint:PRIVATE_MARKET_ENDPOINT,readToken:readPrivateMarketToken},
+    privateMarket:{endpoint:PRIVATE_MARKET_ENDPOINT,readToken:readPrivateMarketToken,readTokenState:readPrivateMarketTokenState},
     readSprites:(quotes:any,sprites:any,decode:any,glyphs:any)=>readPriceSprites(quotes,sprites,decode,glyphs,inflate)}
 }

@@ -1,5 +1,5 @@
 import { Navigation, NavigationStack, VStack, Text, Button, Script, Widget, useEffect, useRef, useState, ScrollView } from 'scripting'
-import { engine, loadModel, setOrdering, VERSION, MODES } from './model'
+import { engine, loadModel, setOrdering, VERSION, MODES, privateMarketStatusText } from './model'
 import { removeLegacyAccess } from './host'
 import { PopularView } from './view'
 import { PopularDetails } from './details'
@@ -22,6 +22,7 @@ function Screen(){
     <Button title={busy?'Consultando…':'Atualizar'} action={refresh}/>
     {model?<PopularView model={model} width={332} height={158}/>:null}
     <PopularDetails model={model}/>
+    {model?<Text foregroundStyle="secondary">{privateMarketStatusText(model.privateMarketStatus??model.api.privateMarketStatus)}</Text>:null}
     {message?<Text>{message}</Text>:null}
     {model?.api.failures.map((failure:any,i:number)=><Text key={'failure-'+i}>{new URL(failure.url).hostname}: {failure.reason}</Text>)}
     <Text>Ordenação dos ativos</Text>

@@ -1,4 +1,24 @@
-# Popular Scripting - Pro 0.2.34
+# Popular Scripting - Pro 0.2.35
+
+## 0.2.35 - diagnóstico seguro da fonte privada
+
+- O motor distingue, sem expor credenciais ou corpos HTTP, token ausente ou
+  inválido, Keychain indisponível, resposta válida, cache, 401/403/429,
+  outros HTTP 4xx, indisponibilidade 5xx, erro de rede e bundle que falha na
+  validação. Se o Worker enviar o diagnóstico opcional, a tela aceita somente
+  `upstreamStatus` numérico e `upstreamAsset` allow-listed.
+- A tela principal do app mostra esse estado; o widget não muda sua geometria,
+  dados, ordem, perfil BBAS3/BBDC4/IBOV/BTC/USD ou janela de 7 dias.
+- O Worker não foi alterado neste checkout. A evidência operacional disponível
+  mostra autenticação chegando à brapi e 4xx em todas as subconsultas. O código
+  exato não foi preservado nos logs; a fonte preparada ainda usa a rota v1
+  `/api/quote/{ticker}`. A documentação oficial recomenda `/api/v2/stocks/*`
+  para integrações novas, embora mantenha a rota v1 ativa. A próxima correção
+  deve ser aplicada no executor do Worker, com categoria numérica segura, sem
+  devolver corpo upstream, token ou payload real ao cliente.
+- Testes locais cobrem sucesso contratual fixture, token ausente, 401, 503,
+  parsing inválido e cache preservado. O endpoint real e o iPhone nativo não
+  foram validados neste executor.
 
 ## 0.2.34 - entrada segura compatível com Scripting
 
