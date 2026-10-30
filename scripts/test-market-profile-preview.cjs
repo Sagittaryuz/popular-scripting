@@ -1,13 +1,13 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
 const root=path.resolve(__dirname,'..'),previewDir=path.join(root,'validation');
-const evidence=JSON.parse(fs.readFileSync(path.join(previewDir,'market-profile-0.2.42-preview.json'),'utf8'));
-const svg=fs.readFileSync(path.join(previewDir,'market-profile-0.2.42-preview.svg'),'utf8');
-const png=path.join(previewDir,'market-profile-0.2.42-preview.png');
+const evidence=JSON.parse(fs.readFileSync(path.join(previewDir,'market-profile-0.2.43-preview.json'),'utf8'));
+const svg=fs.readFileSync(path.join(previewDir,'market-profile-0.2.43-preview.svg'),'utf8');
+const png=path.join(previewDir,'market-profile-0.2.43-preview.png');
 assert.equal(JSON.stringify(evidence.order),JSON.stringify(['IBOV','DOW_JONES','USD/BRL','BRENT']));
 assert.equal(evidence.identity.font,5.5);
 assert.equal(evidence.identity.statusDot,false);
 assert.equal(evidence.data.live,false);
-assert.match(evidence.data.curves,/real intraday 7D source/);
+assert.match(evidence.data.curves,/daily EOD fixture geometry/);
 assert.equal(evidence.brent.instrument,'ICE Futures Europe Brent Crude Futures');
 assert.equal(evidence.brent.contractMonth,'2027-01');
 assert.equal(evidence.brent.spotNotSubstituted,true);
@@ -19,7 +19,8 @@ assert.doesNotMatch(svg,/>IB</,'the published preview does not use an initials b
 assert.doesNotMatch(svg,/>DJ</,'the published preview does not use an initials badge for Dow Jones');
 assert.doesNotMatch(svg,/>BR</,'the published preview does not use an initials badge for Brent');
 assert.match(svg,/circular United States flag/);
-assert.match(svg,/no authorized source currently proves real intraday coverage/);
+assert.match(svg,/daily EOD curve geometry cropped to seven days/);
 assert.match(svg,/7d indisponível/);
+assert.match(svg,/EOD 7D/);
 assert.match(svg,/no status dot is drawn/);
 console.log('PASS market profile preview: requested order, four visible local pictograms including the circular US flag, shared 5.5pt identity, no status dot, 7D fixture label, and raster evidence.');

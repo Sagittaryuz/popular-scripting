@@ -1,4 +1,21 @@
-# Popular Scripting - Pro 0.2.42
+# Popular Scripting - Pro 0.2.43
+
+## 0.2.43 - recorte diário de sete dias a partir das fontes de 90 dias
+
+- A exigência intradiária introduzida na 0.2.42 foi removida: o perfil volta a
+  aceitar observações EOD reais e recorta somente os últimos sete dias civis,
+  sem interpolar, preencher fins de semana ou esticar pontos.
+- O IBOV conserva o Worker privado `^BVSP` e sua série EOD fechada; USD/BRL
+  volta a consultar `AwesomeAPI /json/daily/USD-BRL/90` e recorta a resposta para
+  `7D`. Cotação e variação diária continuam campos independentes da curva.
+- A rota sequencial `/USD-BRL/100` não é usada para o perfil: ela é uma série de
+  minutos e não substitui o histórico diário. O contrato documentado da
+  AwesomeAPI informa máximo 360 no endpoint diário.
+- O Brent continua identificado como futuro ICE `BRN`, vencimento `2027-01`;
+  a série EIA/FRED `DCOILBRENTEU` é spot diária e não preenche esse slot. Dow
+  Jones segue sem fonte histórica autorizada no perfil, sem ETF/proxy.
+- Testes, preview fixture-only e manifest foram atualizados para 0.2.43.
+  iPhone nativo não testado.
 
 ## 0.2.42 - contrato Brent Jan-2027 e validação intradiária
 
@@ -6,7 +23,7 @@
   locais, mas `BRENT` agora descreve o Brent Crude Futures da ICE Futures
   Europe: lógico `BRN`, símbolo `B`, vencimento `2027-01`. A série EIA/FRED
   `DCOILBRENTEU` é spot diária e não é usada para preencher esse slot.
-- A curva do perfil só é aceita quando contém timestamps reais intraday em
+- A curva do perfil desta versão só era aceita quando continha timestamps reais intraday em
   várias sessões ao longo da janela de sete dias. Fechamentos diários, uma
   amostra por dia ou uma janela curta de câmbio resultam em `7d indisponível`;
   não há pontos inventados. Cotação e variação diária são preservadas como

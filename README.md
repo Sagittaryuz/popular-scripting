@@ -1,3 +1,17 @@
+## Atualização 0.2.43 - fontes diárias restauradas e recorte 7D
+
+- A janela visual voltou a usar as mesmas observações diárias que alimentavam
+  o histórico de 90 dias. O motor recorta sete dias civis no fim da série real;
+  não cria pontos, não preenche fins de semana e não exige densidade intraday.
+- Ibovespa usa o Worker privado `^BVSP` já configurado. Dólar usa
+  `https://economia.awesomeapi.com.br/json/daily/USD-BRL/90`, documentado como
+  fechamento dos últimos dias, e o perfil recorta as observações reais para
+  `7D`. A variação continua baseada na cotação do fornecedor.
+- Petróleo continua sendo o futuro Brent ICE `BRN Jan-27`; o antigo
+  `DCOILBRENTEU` EIA/FRED é Brent spot e não é substituído silenciosamente.
+  Dow Jones continua sem cotação/fonte histórica autorizada. A prévia
+  `market-profile-0.2.43-preview.png` é fixture-only; iPhone nativo não testado.
+
 ## Atualização 0.2.42 - contrato Brent correto e janela intradiária honesta
 
 - O slot `Petróleo` agora identifica o instrumento mostrado nas referências:
@@ -385,7 +399,7 @@ Testes locais de fontes, observações antigas/futuras, alertas, cache, transpor
 
 # Popular Scripting
 
-**Atual: 0.2.42 - Scripting Pro.** Perfil publicado de quatro ativos
+**Atual: 0.2.43 - Scripting Pro.** Perfil publicado de quatro ativos
 (`IBOV`, `DOW_JONES`, `USD/BRL`, `BRENT`) em janela móvel de 7 dias, com detalhes,
 CSV, alertas, assistente, Central de Controle e painel Início. [Ativação,
 testes e limites](PRO.md).
@@ -400,22 +414,21 @@ Na tela **Importar Scripts Remotos** do Scripting, cole:
 https://github.com/Sagittaryuz/popular-scripting/tree/main/scripts/Popular%20Scripting
 ```
 
-Importe **Popular Scripting**, confirme a versão **0.2.42**, abra o projeto e toque em **Atualizar**. Leia a linha **Fonte privada:** para distinguir token, Worker, código da fonte, parsing e cache. Em **Detalhes dos indicadores**, toque em **Configurar fonte privada**, cole o token no campo seguro e salve. Adicione o widget do Scripting à Tela de Início e selecione esse projeto.
+Importe **Popular Scripting**, confirme a versão **0.2.43**, abra o projeto e toque em **Atualizar**. Leia a linha **Fonte privada:** para distinguir token, Worker, código da fonte, parsing e cache. Em **Detalhes dos indicadores**, toque em **Configurar fonte privada**, cole o token no campo seguro e salve. Adicione o widget do Scripting à Tela de Início e selecione esse projeto.
 
 Para receber melhorias de código, use a atualização do script remoto no Scripting. Essa importação vincula o projeto à pasta `main/scripts/Popular Scripting`; não use um endereço de commit ou tag para acompanhar as próximas versões. O botão **Atualizar** dentro da tela do Popular consulta somente os indicadores e solicita recarregar o widget.
 
 ## Tamanhos e dados
 
 - Pequeno, médio e grande: o perfil publicado mostra `Ibovespa`, `Dow Jones`, `Dólar` e `Petróleo` na mesma ordem; o médio/grande não repete linhas na segunda coluna.
-- O IBOV usa o endpoint privado autenticado; USD/BRL usa AwesomeAPI; Petróleo
-  identifica `BRN Jan-27` na ICE. Sem resposta válida ou feed intradiário
-  autorizado, os slots preservam ausência/cache honesto. Dow Jones permanece
-  sem cotação até feed autorizado.
-- O domínio de gráfico ativo exige 7D intradiário real em todas as séries. As
-  observações diárias do Worker, a resposta curta `/USD-BRL/100` e o Brent
-  spot EIA/FRED são rejeitados como gráfico semanal, sem interpolação ou
-  weekend fill; a variação diária continua sendo exibida somente quando sua
-  fonte a comprova.
+- O IBOV usa o endpoint privado autenticado; USD/BRL usa a história diária
+  AwesomeAPI `/json/daily/USD-BRL/90`; Petróleo identifica `BRN Jan-27` na ICE.
+  Sem resposta válida ou fonte histórica do instrumento, os slots preservam
+  ausência/cache honesto. Dow Jones permanece sem cotação até feed autorizado.
+- O domínio de gráfico ativo recorta observações EOD reais para 7D. A rota
+  curta `/USD-BRL/100` não é usada para o perfil; não há interpolação, weekend
+  fill ou substituição do Brent futuro por spot. A variação diária continua
+  sendo exibida somente quando sua fonte a comprova.
 - Cada série válida preenche horizontalmente apenas entre seu primeiro/último
   timestamp visível; a posição relativa dos pontos continua temporal e a
   cobertura/densidade de cada mercado permanece honesta.

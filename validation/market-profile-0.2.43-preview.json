@@ -1,0 +1,43 @@
+{
+  "version": "0.2.43",
+  "output": "validation/market-profile-0.2.43-preview.svg",
+  "pngOutput": "validation/market-profile-0.2.43-preview.png",
+  "icons": {
+    "IBOV": "local index trend pictogram",
+    "DOW_JONES": "local market bars pictogram",
+    "USD_BRL": "circular US flag",
+    "BRENT": "local oil barrel pictogram"
+  },
+  "order": [
+    "IBOV",
+    "DOW_JONES",
+    "USD/BRL",
+    "BRENT"
+  ],
+  "identity": {
+    "font": 5.5,
+    "weight": "semibold",
+    "lineLimit": 1,
+    "ellipsis": true,
+    "statusDot": false
+  },
+  "data": {
+    "live": false,
+    "values": "not displayed; curves are synthetic geometry only",
+    "curves": "IBOV and USD/BRL daily EOD fixture geometry cropped to 7D; Dow and Brent unavailable",
+    "window": "7D daily EOD crop"
+  },
+  "brent": {
+    "instrument": "ICE Futures Europe Brent Crude Futures",
+    "logicalCode": "BRN",
+    "contractSymbol": "B",
+    "contractMonth": "2027-01",
+    "quote": "unavailable without authorized feed",
+    "spotNotSubstituted": true
+  },
+  "dow": {
+    "quote": "unavailable",
+    "reason": "FRED DJIA is third-party copyrighted; reproduction requires S&P permission, so no quote request is made"
+  },
+  "nativeIPhone": false
+}

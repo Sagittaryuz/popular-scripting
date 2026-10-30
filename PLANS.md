@@ -1,5 +1,15 @@
 # Melhorias Scripting Pro — 23/10/2026
 
+## 0.2.43 — fontes diárias e recorte semanal
+
+- [x] Restaurar a fonte histórica diária de 90 dias do USD/BRL e recortar
+  observações reais para 7D.
+- [x] Aceitar a série EOD fechada do Worker do IBOV sem impor densidade
+  intraday, preservando lacunas e pontos reais.
+- [x] Manter Brent Jan-2027 separado do spot EIA/FRED e Dow sem proxy; atualizar
+  testes, preview, documentação, versão e publicar no main. iPhone nativo não
+  testado.
+
 ## 0.2.42 — Brent futuro e cobertura intradiária
 
 - [x] Identificar o contrato de referência como ICE Brent Crude Futures, `BRN`,

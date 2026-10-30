@@ -1,3 +1,14 @@
+## 0.2.43 - restaura fontes diárias e recorta a janela semanal
+
+- Remove a exigência indevida de densidade intraday da janela de 7 dias. O
+  Worker EOD do IBOV e a história diária de 90 dias da AwesomeAPI são aceitos
+  e recortados para sete dias de observações reais.
+- Restaura `json/daily/USD-BRL/90` e deixa de usar `/USD-BRL/100` no perfil.
+  Nenhum ponto, fim de semana ou cotação é fabricado.
+- Mantém `IBOV`, `DOW_JONES`, `USD/BRL`, `BRENT` na ordem publicada; não troca
+  o futuro Brent Jan-2027 pelo spot EIA/FRED. Dow permanece indisponível sem
+  fonte autorizada. Preview fixture-only e iPhone nativo não testado.
+
 ## 0.2.42 - contrato Brent Jan-2027 e curvas intraday sem substituição
 
 - Corrige a identidade do slot Petróleo para o contrato Brent Crude Futures da

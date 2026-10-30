@@ -32,5 +32,5 @@ assert.equal(api.monthLayout(sparse,64).labels.length,0,'seven-day rendering has
 const source=fs.readFileSync(entry,'utf8');
 assert.match(source,/const CHART_DISPLAY_HOURS = 7\*24/);
 assert.match(source,/chartHeight: 20/);
-assert.match(source,/economia\.awesomeapi\.com\.br\/USD-BRL\/100/);
+assert.match(source,/economia\.awesomeapi\.com\.br\/json\/daily\/USD-BRL\/90/);
 console.log('PASS 7D window: seven calendar days, real timestamps only, boundary included, older point excluded, monthly fallback explicit, no interpolation/zero fill.');
