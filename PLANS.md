@@ -1,5 +1,14 @@
 # Melhorias Scripting Pro — 23/10/2026
 
+## 0.2.37 — logos SVG com fallback de carregamento
+
+- [x] Restringir URLs SVG ao host de logos retornado/allowlisted pela API.
+- [x] Manter o badge circular neutro sob a tentativa nativa de `SVG.url`, para
+  que falhas de download/renderização não deixem BBAS3, BBDC4 ou IBOV em branco.
+- [x] Validar a ordem dos nós, o círculo de 26 pt e os quatro códigos; preservar
+  dados, gráficos, `range=1mo`, janela 7D e registrar que o iPhone nativo não
+  foi testado.
+
 ## 0.2.29 — folga medida do nome/status
 
 - [x] Reservar explicitamente 27/8/3/2 pt para nome, espaçamento, bolinha e

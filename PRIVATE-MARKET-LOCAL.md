@@ -1,6 +1,6 @@
 # Integração da fonte privada
 
-A revisão do cliente é `0.2.36`; ela não contém o valor do token e não depende
+A revisão do cliente é `0.2.37`; ela não contém o valor do token e não depende
 de teste nativo para ser importada. A validação ponta a ponta continua
 pendente neste executor porque a tentativa de alcançar o
 endpoint foi interrompida pelo túnel com `403` antes do Worker. Isso não é
@@ -54,7 +54,7 @@ integrações novas, mantendo a v1 ativa. O executor responsável pelo Worker de
 confirmar a rota/plano e devolver somente uma categoria/código numérico seguro;
 não deve devolver corpo upstream ou credenciais.
 
-Na versão `0.2.36`, abra o projeto no Scripting, toque em **Atualizar** e leia
+Na versão `0.2.37`, abra o projeto no Scripting, toque em **Atualizar** e leia
 a linha **Fonte privada:** na tela do app. Ela diferencia `token ausente no
 Keychain`, `Worker rejeitou a autorização (401)`, `Worker/fonte indisponível`
 `Worker respondeu HTTP 4xx` e `resposta ... não passou na validação`, além de
@@ -74,6 +74,6 @@ continua exibindo ausência honesta até o Worker entregar um bundle válido.
 - O endpoint real não pôde ser autenticado neste executor: a tentativa sem
   token foi bloqueada pelo túnel com `403` antes de alcançar o Worker. Não há
   afirmação de sucesso, cache, payload ou dados ao vivo.
-- O artefato desta revisão é `0.2.36`; o SHA remoto deve ser conferido no
+- O artefato desta revisão é `0.2.37`; o SHA remoto deve ser conferido no
   GitHub antes de atualizar uma instalação existente. Não houve teste nativo em
   iPhone nem validação ponta a ponta neste executor.

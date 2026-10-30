@@ -7,10 +7,12 @@ const model=fs.readFileSync(path.join(root,'model.ts'),'utf8');
 const engine=fs.readFileSync(path.join(root,'original-engine.js'),'utf8');
 const script=JSON.parse(fs.readFileSync(path.join(root,'script.json'),'utf8'));
 
-assert.equal(script.version,'0.2.36');
+assert.equal(script.version,'0.2.37');
 assert.match(view,/import \{ Button, Canvas, Circle, HStack, Image, Rectangle, SVG, Text, ZStack, Script \} from 'scripting'/);
 assert.match(view,/iconData/,'API-provided icon data has a render path');
 assert.match(view,/<SVG key="asset-remote-svg" url=\{remoteSvg\}/,'API-provided SVG logos use the native Scripting SVG renderer');
+assert.match(view,/url\.hostname\.toLowerCase\(\)==='icons\.brapi\.dev'/,'API SVG URLs use the same allowlisted logo host as the Scripting transport');
+assert.match(view,/fallbackIcon\(row,plan,rowPlan,false\)/,'remote SVG loading has an on-canvas fallback when native rendering fails');
 assert.match(view,/mask=\{<Circle/,'remote icons remain circular in the existing 26pt slot');
 assert.match(engine,/BRAPI_LOGO_LIST/,'the logo source is explicit and separate from quote collection');
 assert.match(view,/widgetURL=\{Script\.createRunURLScheme\("Meu Painel", \{ section: "market" \}\)\}/);

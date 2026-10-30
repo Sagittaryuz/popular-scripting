@@ -1,9 +1,16 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),{buildSync}=require('esbuild');
 const root=path.resolve(__dirname,'Popular Scripting'),view=fs.readFileSync(path.join(root,'view.tsx'),'utf8'),badges=fs.readFileSync(path.join(root,'badges.js'),'utf8');
 
-assert.match(view,/custom=!remoteSvg&&!remoteIcon&&\[[^\n]*'USD\/BRL'\]/,'USD/BRL uses the custom badge path unless an API image decoded successfully');
 assert.match(view,/function apiSVG\(row:any\)/,'API SVG metadata has a native rendering path');
+assert.match(view,/url\.hostname\.toLowerCase\(\)==='icons\.brapi\.dev'/,'SVG metadata is restricted to the effective API logo host');
+assert.match(view,/const FALLBACK_BADGE_CODES=Object\.freeze\(\['BBAS3','BBDC4','IBOV','BTC\/USD'/,'published assets have explicit fallback badges even when a remote SVG URL is present');
+assert.match(view,/function fallbackIcon\(row:any,plan:any,rowPlan:any,positioned=true\)/,'the fallback is a reusable native view rather than a preview-only substitute');
 assert.match(view,/<SVG key="asset-remote-svg" url=\{remoteSvg\}/,'SVG logos are rendered from the API URL without a proxy');
+const remoteBranch=view.indexOf('{remoteSvg?<ZStack');
+const fallbackBeforeSVG=view.indexOf('{fallbackIcon(row,plan,rowPlan,false)}',remoteBranch);
+const remoteRenderer=view.indexOf('<SVG key="asset-remote-svg"',remoteBranch);
+assert(remoteBranch>=0&&fallbackBeforeSVG>=0&&remoteRenderer>fallbackBeforeSVG,'a failed network SVG leaves the neutral badge visible beneath the attempted logo');
+assert.doesNotMatch(view,/custom=!remoteSvg&&!remoteIcon/,'a failed remote SVG no longer suppresses the fallback branch');
 assert.doesNotMatch(badges,/\$|dollar/i,'the badge renderer contains no currency glyph overlay');
 assert.match(badges,/INITIAL_BADGES=.*BBAS3:'BB'.*BBDC4:'BD'.*IBOV:'IB'.*'BTC\/USD':'BTC'/,'the four published test assets have explicit neutral initial fallbacks');
 assert.match(view,/const NAME_FONT_MIN=3\.6/,'compact names can shrink below the old truncating floor');
@@ -52,4 +59,4 @@ for(const code of ['BBAS3','BBDC4','IBOV','BTC/USD']){
   assert.equal(fillsForCode.filter(call=>call.style==='#34343A').length,1,`${code} uses one neutral circular fallback disk`);
   assert(fillsForCode.some(call=>call.style==='#FFFFFF'&&call.path.some(op=>op[0]==='rect')),`${code} renders readable vector initials, not the generic document glyph`);
 }
-console.log(JSON.stringify({version:'0.2.36',icons:['BBAS3','BBDC4','IBOV','BTC/USD'],shape:'26pt circular neutral initials fallback',glyphOverlay:false,smallAndMediumPath:'custom Canvas badge',nativeIPhone:false}));
+console.log(JSON.stringify({version:'0.2.37',icons:['BBAS3','BBDC4','IBOV','BTC/USD'],shape:'26pt circular neutral initials fallback beneath API SVG',glyphOverlay:false,smallAndMediumPath:'native SVG with deterministic fallback',nativeIPhone:false}));

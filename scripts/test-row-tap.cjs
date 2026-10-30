@@ -2,12 +2,12 @@ const assert=require('node:assert/strict'),path=require('node:path'),vm=require(
 const root=path.resolve(__dirname,'Popular Scripting')
 function bundle(file){return buildSync({entryPoints:[path.join(root,file)],bundle:true,write:false,format:'cjs',platform:'node',external:['scripting'],jsxFactory:'createElement'}).outputFiles[0].text}
 function walk(node){return node&&typeof node==='object'?[node,...(node.children||[]).flatMap(walk)]:[]}
-const definitions={},sdk={AppIntentManager:{register:definition=>{definitions[definition.name]=definition;return params=>({name:definition.name,params})}},AppIntentProtocol:{AppIntent:0},ControlWidget:{reloadButtons:()=>{}},Safari:{openURL:async()=>true},Script:{createRunURLScheme:()=> 'scripting://run/Meu%20Painel?section=market'},Button:'Button',Canvas:'Canvas',Circle:'Circle',HStack:'HStack',Image:'Image',Rectangle:'Rectangle',Text:'Text',ZStack:'ZStack'}
+const definitions={},sdk={AppIntentManager:{register:definition=>{definitions[definition.name]=definition;return params=>({name:definition.name,params})}},AppIntentProtocol:{AppIntent:0},ControlWidget:{reloadButtons:()=>{}},Safari:{openURL:async()=>true},Script:{createRunURLScheme:()=> 'scripting://run/Meu%20Painel?section=market'},Button:'Button',Canvas:'Canvas',Circle:'Circle',HStack:'HStack',Image:'Image',Rectangle:'Rectangle',SVG:'SVG',Text:'Text',ZStack:'ZStack'}
 const viewModule={exports:{}},createElement=(type,props,...children)=>typeof type==='function'?type({...props,children:children.flat(Infinity).filter(Boolean)}):({type,props:props||{},children:children.flat(Infinity).filter(Boolean)})
-vm.runInNewContext(bundle('view.tsx'),{module:viewModule,exports:viewModule.exports,require:()=>sdk,createElement,Date,Storage:{get:()=>null,set:()=>true},UIImage:{fromBase64String:()=>null}})
+vm.runInNewContext(bundle('view.tsx'),{module:viewModule,exports:viewModule.exports,require:()=>sdk,createElement,Date,URL,Storage:{get:()=>null,set:()=>true},UIImage:{fromBase64String:()=>null}})
 const drawModule={exports:{}};vm.runInNewContext(bundle('draw.js'),{module:drawModule,exports:drawModule.exports,Math,Number,Date,Intl,JSON})
 const {GEOMETRY:G,layout}=drawModule.exports,codes=['SELIC','IPCA','IBOV','USD/BRL','SOJA_JATAI_GO','CUB_GO','DIESEL_S10','BRENT']
-const rows=codes.map((code,index)=>({asset:{code},name:'Nome '+code,price:'1,00',percent:index%2?'-0,14%':'+0,82%',movement:index%2?-1:1,unit:'BRL',time:'27/10',chart:null}))
+const rows=codes.map((code,index)=>({asset:{code,...(code==='IBOV'?{iconURL:'https://icons.brapi.dev/icons/IBOV.svg'}:{})},name:'Nome '+code,price:'1,00',percent:index%2?'-0,14%':'+0,82%',movement:index%2?-1:1,unit:'BRL',time:'27/10',chart:null}))
 const api={displayChart:chart=>chart,lineCoordinates:()=>[],monthLayout:()=>({labels:[],lines:[]}),gradientStrips:()=>[]}
 const expectedURL='scripting://run/Meu%20Painel?section=market'
 function box(node){const {frame,position}=node.props;return {left:position.x-frame.width/2,right:position.x+frame.width/2,top:position.y-frame.height/2,bottom:position.y+frame.height/2}}
@@ -23,6 +23,13 @@ for(const [family,width,height,expected] of [['small',158,158,4],['medium',338,1
     const nameText=desc.find(node=>node.type==='Text'&&node.props?.key==='name-text')
     const meta=desc.find(node=>node.type==='Text'&&node.props?.key==='asset-meta')
     const icon=desc.find(node=>node.props?.key==='asset-icon'||node.props?.key==='asset-image'||node.props?.key==='asset-fallback')
+    const remoteMask=desc.find(node=>node.type==='ZStack'&&node.props?.key==='asset-remote-svg-mask'),iconBox=remoteMask||icon
+    if(rows[i].asset.code==='IBOV'){
+      const remoteChildren=remoteMask?.children||[]
+      const fallback=remoteChildren.find(node=>node.type==='Canvas'&&node.props?.key==='asset-icon'),remoteSVG=remoteChildren.find(node=>node.type==='SVG'&&node.props?.key==='asset-remote-svg')
+      assert(remoteMask&&fallback&&remoteSVG,'a URL-present SVG failure fixture keeps the IBOV fallback under the remote renderer')
+      assert(remoteChildren.indexOf(fallback)<remoteChildren.indexOf(remoteSVG),'the fallback is composed before SVG so a blank/failed URL cannot erase it')
+    }
     const graph=desc.find(node=>node.type==='Canvas'&&node.props?.key==='asset-chart')
     const price=desc.find(node=>node.type==='Text'&&node.props?.key==='price')
     const percent=desc.find(node=>node.type==='Text'&&node.props?.key==='percent')
@@ -36,10 +43,10 @@ for(const [family,width,height,expected] of [['small',158,158,4],['medium',338,1
     assert.equal(dot.props.frame.width,G.statusDot*plan.scale)
     assert.equal(meta.props.frame.width,G.date*plan.scale)
     assert.equal(meta.props.position.x-nameLine.props.position.x,(G.dateX+G.date/2-(G.nameX+G.name/2))*plan.scale)
-    assert.equal(icon.props.frame.width,G.icon*plan.scale)
-    assert.equal(icon.props.frame.height,G.icon*plan.scaleY)
-    assert.equal(icon.props.position.x,(G.iconLeft+G.icon/2)*plan.scale)
-    assert.equal(icon.props.position.y,G.blockCenter*plan.scaleY)
+    assert.equal(iconBox.props.frame.width,G.icon*plan.scale)
+    assert.equal(iconBox.props.frame.height,G.icon*plan.scaleY)
+    assert.equal(iconBox.props.position.x,(G.iconLeft+G.icon/2)*plan.scale)
+    assert.equal(iconBox.props.position.y,G.blockCenter*plan.scaleY)
     assert.equal(graph.props.frame.width,G.graph*plan.scale)
     assert.equal(graph.props.frame.height,G.graphHeight*plan.scaleY)
     assert.equal(graph.props.position.x,(G.graphX+G.graph/2)*plan.scale)

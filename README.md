@@ -1,3 +1,15 @@
+## Atualização 0.2.37 - fallback seguro para logos SVG
+
+- O widget mantém o logo retornado pela API somente quando a URL HTTPS pertence
+  ao host allowlisted `icons.brapi.dev` e termina em `.svg`.
+- Como o `SVG` nativo do Scripting não expõe callback/placeholder de falha, o
+  badge circular neutro (`BB`, `BD`, `IB` ou `BTC`) fica sob a tentativa de
+  carregamento. Assim uma URL presente que não baixe ou não renderize não deixa
+  o ativo em branco; nenhum logo é inventado ou substituído por outro ativo.
+- Dados, gráficos, token, ordem, janela de 7 dias, layout 2×2/4×2 e a correção
+  upstream `range=1mo` permanecem inalterados. Testes locais passaram; iPhone
+  nativo não foi testado.
+
 ## Atualização 0.2.36 - código seguro da falha upstream
 
 - A linha **Fonte privada:** pode mostrar o código upstream allow-listed
@@ -270,7 +282,7 @@ Testes locais de fontes, observações antigas/futuras, alertas, cache, transpor
 
 # Popular Scripting
 
-**Atual: 0.2.36 - Scripting Pro.** Perfil publicado de quatro ativos
+**Atual: 0.2.37 - Scripting Pro.** Perfil publicado de quatro ativos
 (`BBAS3`, `BBDC4`, `IBOV`, `BTC/USD`) em janela móvel de 7 dias, com detalhes,
 CSV, alertas, assistente, Central de Controle e painel Início. [Ativação,
 testes e limites](PRO.md).
@@ -285,7 +297,7 @@ Na tela **Importar Scripts Remotos** do Scripting, cole:
 https://github.com/Sagittaryuz/popular-scripting/tree/main/scripts/Popular%20Scripting
 ```
 
-Importe **Popular Scripting**, confirme a versão **0.2.36**, abra o projeto e toque em **Atualizar**. Leia a linha **Fonte privada:** para distinguir token, Worker, código da fonte, parsing e cache. Em **Detalhes dos indicadores**, toque em **Configurar fonte privada**, cole o token no campo seguro e salve. Adicione o widget do Scripting à Tela de Início e selecione esse projeto.
+Importe **Popular Scripting**, confirme a versão **0.2.37**, abra o projeto e toque em **Atualizar**. Leia a linha **Fonte privada:** para distinguir token, Worker, código da fonte, parsing e cache. Em **Detalhes dos indicadores**, toque em **Configurar fonte privada**, cole o token no campo seguro e salve. Adicione o widget do Scripting à Tela de Início e selecione esse projeto.
 
 Para receber melhorias de código, use a atualização do script remoto no Scripting. Essa importação vincula o projeto à pasta `main/scripts/Popular Scripting`; não use um endereço de commit ou tag para acompanhar as próximas versões. O botão **Atualizar** dentro da tela do Popular consulta somente os indicadores e solicita recarregar o widget.
 

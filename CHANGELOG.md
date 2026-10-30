@@ -1,3 +1,14 @@
+## 0.2.37 - fallback nativo para logos SVG da API
+
+- Corrige o caminho visual do perfil B3/BTC: uma URL SVG da API não suprime
+  mais o badge de iniciais quando o `SVG.url` não baixa ou não renderiza no
+  snapshot do Scripting.
+- Restringe a renderização remota ao host HTTPS efetivamente permitido
+  `icons.brapi.dev`; o logo retornado continua sendo tentado sem proxy e o
+  fallback é neutro e do próprio código, sem imagem inventada ou ativo errado.
+- Preserva valores, gráficos, token, `range=1mo`, janela 7D, ordem, layout e
+  tamanhos. Testes locais passaram; iPhone nativo não foi testado.
+
 ## 0.2.36 - código seguro da falha upstream
 
 - A linha **Fonte privada:** passa a mostrar, quando o Worker fornecer, apenas

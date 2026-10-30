@@ -1,4 +1,19 @@
-# Popular Scripting - Pro 0.2.36
+# Popular Scripting - Pro 0.2.37
+
+## 0.2.37 - fallback nativo para logos SVG da API
+
+- A captura nativa confirmou cotações e gráficos B3 funcionando após a solução
+  upstream `range=1mo`; a falha restante era visual: `iconURL` SVG presente
+  selecionava somente `<SVG url>` e suprimia o badge quando o carregamento
+  remoto falhava.
+- A view agora aceita somente URLs HTTPS de `icons.brapi.dev` com caminho SVG e
+  compõe o badge neutro do próprio código sob a tentativa de renderização
+  nativa. O logo da API permanece visível quando carrega; em erro de rede,
+  decodificação ou snapshot, o fallback `BB`/`BD`/`IB`/`BTC` permanece visível.
+- Preserva dados, gráficos, token, ordem, janela móvel de 7 dias, layout,
+  tamanhos e `range=1mo`. Não altera o Worker nem inventa logos. Testes de
+  sintaxe, contrato visual e perfil publicado passaram; iPhone nativo não foi
+  testado neste checkout.
 
 ## 0.2.36 - código seguro da falha upstream
 
