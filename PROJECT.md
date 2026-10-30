@@ -1,4 +1,21 @@
-# Popular Scripting - Pro 0.2.38
+# Popular Scripting - Pro 0.2.39
+
+## 0.2.39 - logos inline e coluna de identidade sem status visual
+
+- A captura nativa mostrou os logos B3 em branco apesar de `iconURL`. A causa
+  foi o perfil ativo não materializar o corpo SVG e a composição colocar o
+  fallback dentro da máscara remota; o motor agora baixa apenas o host de logo
+  retornado, valida MIME/conteúdo seguro, guarda cache pessoal e entrega
+  `iconSVGCode` para `SVG.code`. O fallback de iniciais fica fora da máscara,
+  sempre visível quando o logo falha. IBOV não recebe logo de ETF ou URL criada.
+- Remove a bolinha de status, aplica `5.5pt semibold` uniforme a todos os
+  nomes, usa a coluna de identidade inteira (`40pt`) e deixa o `Text` nativo
+  fazer reticências em uma linha, sem reduzir nomes individualmente.
+- Preserva quatro colunas, ícones 26pt, gráficos e domínio X corrigido em 0.2.38,
+  janela real de 7 dias, dados/valores, ordem, Worker e credenciais.
+- `validation/icon-name-0.2.39-preview.png`/`.svg`/`.json` são fixtures de
+  layout; o iPhone nativo e o download vivo de logos não foram testados neste
+  executor.
 
 ## 0.2.38 - extremos horizontais comuns sem fabricar observações
 

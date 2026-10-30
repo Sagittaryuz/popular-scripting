@@ -1,4 +1,4 @@
-import { Button, Canvas, Circle, HStack, Image, Rectangle, SVG, Text, ZStack, Script } from 'scripting'
+import { Button, Canvas, Circle, Image, Rectangle, SVG, Text, ZStack, Script } from 'scripting'
 import { pageRows } from './pagination'
 import { assets } from './assets'
 import { drawBadge } from './badges'
@@ -7,8 +7,7 @@ import { RefreshAssetsOnTap } from './app_intents'
 import { assetMarketStatus } from './market-status'
 const images:Record<string,UIImage|null|undefined>={}
 const CUB_VARIATION_MIN_SIZE=4.2
-const NAME_FONT_MIN=3.6
-const NAME_WIDTH_SAFETY=1.12
+const NAME_FONT=5.5
 const SHORT_CODES:Record<string,string>=Object.freeze({SELIC:'SELIC',IPCA:'IPCA',IBOV:'IBOV',BBAS3:'BBAS3',BBDC4:'BBDC4','BTC/USD':'BTC/USD','USD/BRL':'USD/BRL',SOJA_JATAI_GO:'SOJAGO',CUB_GO:'CUB-GO',DIESEL_S10:'DIESEL',BRENT:'BRENT'})
 const COMPACT_UNITS:Record<string,string>=Object.freeze({
   SELIC:'% a.a.',IPCA:'M/M · pp',IBOV:'pontos',BBAS3:'BRL/ação',BBDC4:'BRL/ação','BTC/USD':'USD/BTC','USD/BRL':'BRL/USD',
@@ -30,15 +29,6 @@ function compactUnit(row:any){
   const code=row?.asset?.code
   return COMPACT_UNITS[code]||String(row?.unit||'—').replace(/\s+/g,' ').slice(0,12)
 }
-function nameLayout(value:any){
-  const text=String(value??'—')
-  const raw=[...text].reduce((sum,char)=>sum+(/[MW@#]/.test(char)?6.2:/[ilI1.,' ]/.test(char)?2.8:4.8),0)
-  // Keep the status dot in its reserved slot. The native font metrics are
-  // wider than the compact estimate for names such as Banco do Brasil, so a
-  // conservative width factor plus a lower floor prevents native truncation.
-  const maximum=Math.max(5,G.nameTextMax),font=Math.max(NAME_FONT_MIN,Math.min(9,9*maximum/Math.max(raw*NAME_WIDTH_SAFETY,1))),width=Math.min(maximum,Math.max(5,raw*font/9))
-  return {font,width}
-}
 function Label({labelKey,value,plan,x,y,width,height,size,min,bold=false,color='white',right=false,alignment,placeFn=place}:any){
   const positioned=placeFn(plan,x,y,width,height,alignment||(right?'trailing':'leading'))
   return <Text key={labelKey} font={size*plan.scale} fontWeight={bold?'semibold':'regular'} foregroundStyle={color}
@@ -58,14 +48,15 @@ function apiImage(row:any){
   return images[key]||null
 }
 function apiSVG(row:any){
-  const value=row?.asset?.iconURL
-  if(typeof value!=='string'||!/^https:\/\//.test(value))return null
-  try{
-    const url=new URL(value)
-    // The backend and the Scripting host allow only the API's returned logo
-    // host. Do not turn arbitrary HTTPS metadata into a network view.
-    return url.protocol==='https:'&&url.hostname.toLowerCase()==='icons.brapi.dev'&&url.pathname.toLowerCase().endsWith('.svg')?url.toString():null
-  }catch{return null}
+  const value=row?.asset?.iconSVGCode
+  if(typeof value!=='string')return null
+  const code=value.trim()
+  // The engine validates the API host, MIME and SVG contents before this
+  // reaches the view. Keep a renderer-side guard so cached/fixture rows cannot
+  // turn arbitrary markup into a native image.
+  if(code.length<20||code.length>200000||!/^<svg(?:\s|>)[\s\S]*<\/svg>\s*$/i.test(code))return null
+  if(/<!DOCTYPE|<!ENTITY|<script\b|<foreignObject\b|\son[a-z]+\s*=|\b(?:href|xlink:href|src)\s*=\s*["']\s*(?:https?:|\/\/|data:|javascript:)|\burl\(\s*(?:https?:|\/\/|data:)/i.test(code))return null
+  return code
 }
 const FALLBACK_BADGE_CODES=Object.freeze(['BBAS3','BBDC4','IBOV','BTC/USD','SOJA_JATAI_GO','CUB_GO','IPCA','DIESEL_S10','USD/BRL'])
 function fallbackIcon(row:any,plan:any,rowPlan:any,positioned=true){
@@ -90,7 +81,7 @@ export function PopularView({model,width,height}:{model:any;width:number;height:
     {visibleRows.map((row:any,i:number)=>{
       const column=Math.floor(i/4),rowIndex=i%4,x=column*(G.column+G.columnGap),y=rowIndex*(G.row+G.gap),color=movementColor(row),curve=curvePlan(model.api,row),status=statusFor(row)
       const band=monthBand(curve),remoteSvg=apiSVG(row),remoteIcon=remoteSvg?null:apiImage(row)
-      const percentMinimum=variationMinimumSize(row,row.percent),meta=`${shortCode(row)} | ${observationDate(row.time)}`,nameMetrics=nameLayout(row.name)
+      const percentMinimum=variationMinimumSize(row,row.percent),meta=`${shortCode(row)} | ${observationDate(row.time)}`
       const chartAccessibility=curve.status==='unavailable-7d'?' Gráfico de 7 dias indisponível':''
       const rowPlan={...plan,x:0,y:0},hitHeight=rowIndex<3?G.row+G.gap:G.row,rowFrame={width:G.column*plan.scale,height:hitHeight*plan.scaleY},rowPosition={x:plan.x+(x+G.column/2)*plan.scale,y:plan.y+(y+hitHeight/2)*plan.scaleY}
       const cellLabel=(key:string,value:string,cx:number,cy:number,w:number,h:number,size:number,min:number,bold=false,cellColor='white',right=false,alignment?:string)=><Label labelKey={key} value={value} plan={rowPlan} x={cx} y={cy} width={w} height={h} size={size} min={min} bold={bold} color={cellColor} right={right} alignment={alignment} placeFn={placeInBlock}/>
@@ -98,18 +89,14 @@ export function PopularView({model,width,height}:{model:any;width:number;height:
         accessibilityLabel={`Atualizar indicadores. ${row.name}. ${shortCode(row)}. ${row.price}. ${row.percent}. ${row.unit}. ${row.time}. ${status.accessibility}.${chartAccessibility}`}
         frame={rowFrame} position={rowPosition}>
         <ZStack alignment="topLeading" frame={rowFrame}>
+        {fallbackIcon(row,plan,rowPlan,true)}
         {remoteSvg?<ZStack key="asset-remote-svg-mask" alignment="topLeading" {...place(rowPlan,G.iconLeft,G.iconTop,G.icon,G.icon)} mask={<Circle fill="white" frame={{width:G.icon*plan.scale,height:G.icon*plan.scale}}/>}>
-          {fallbackIcon(row,plan,rowPlan,false)}
-          <SVG key="asset-remote-svg" url={remoteSvg} resizable renderingMode="original" frame={{width:G.icon*plan.scale,height:G.icon*plan.scale}}/>
+          <SVG key="asset-inline-svg" code={remoteSvg} resizable renderingMode="original" frame={{width:G.icon*plan.scale,height:G.icon*plan.scale}}/>
         </ZStack> :remoteIcon?<ZStack key="asset-remote-mask" alignment="topLeading" {...place(rowPlan,G.iconLeft,G.iconTop,G.icon,G.icon)} mask={<Circle fill="white" frame={{width:G.icon*plan.scale,height:G.icon*plan.scale}}/>}>
           <Image key="asset-remote" image={remoteIcon} resizable renderingMode="original" frame={{width:G.icon*plan.scale,height:G.icon*plan.scale}}/>
-        </ZStack> :fallbackIcon(row,plan,rowPlan,true)}
-        <HStack key="name-status-line" alignment="center" spacing={G.statusSpacing} clipped {...place(rowPlan,G.nameX,G.nameTop,G.name,G.nameHeight,'leading')}>
-          <Text key="name-text" font={nameMetrics.font*plan.scale} fontWeight="semibold" foregroundStyle="white"
-            lineLimit={1} minScaleFactor={0.72} frame={{width:nameMetrics.width*plan.scale,height:G.nameHeight*plan.scaleY,alignment:'leading'}}>{row.name}</Text>
-          <Circle key="market-status-dot" fill={status.color} frame={{width:G.statusDot*plan.scale,height:G.statusDot*plan.scale}}
-            accessibilityLabel={status.accessibility}/>
-        </HStack>
+        </ZStack> :null}
+        <Text key="name-text" font={NAME_FONT*plan.scale} fontWeight="semibold" foregroundStyle="white"
+          lineLimit={1} minScaleFactor={1} {...place(rowPlan,G.nameX,G.nameTop,G.name,G.nameHeight,'leading')}>{row.name}</Text>
         {cellLabel('asset-meta',meta,G.dateX,G.dateTop,G.date,G.dateHeight,5.3,3.4,false,'#96969C',false,'leading')}
         <Canvas key="asset-chart" opaque={false} {...placeInBlock(rowPlan,G.graphX,G.graphTop,G.graph,G.graphHeight)} draw={(ctx,size)=>drawCurve(ctx,size,curve,color)}/>
         {!curve.points.length?cellLabel('missing','7d indisponível',G.graphX,G.graphTop,G.graph,G.graphHeight,4.2,3.2,false,'#96969C'):null}

@@ -45,7 +45,7 @@ export function createHost(foreground=false){
   const deadline=Date.now()+(foreground?20000:8000)
   const pending=new Map<string,Promise<{value:any;response:any}>>()
   class EngineRequest {
-    method='GET';headers:Record<string,string>={};body?:string;timeoutInterval=3;response?:{statusCode:number}
+    method='GET';headers:Record<string,string>={};body?:string;timeoutInterval=3;response?:{statusCode:number;contentType?:string}
     constructor(public url:string){}
     async run(binary=false){
       const key=JSON.stringify([this.url,this.method,this.headers,this.body,binary])
@@ -70,7 +70,8 @@ export function createHost(foreground=false){
       const result=await within((async()=>{
         const res=await fetch(this.url,{method:this.method,headers:this.headers,body:this.body,timeout,
           handleRedirect:async request=>{const next=allowedURL(request.url);return next.origin===url.origin?request:null}})
-        this.response={statusCode:res.status}
+        const contentType=typeof res.headers?.get==='function'?res.headers.get('content-type')||undefined:undefined
+        this.response={statusCode:res.status,...(contentType?{contentType}: {})}
         if(!res.ok){
           let diagnostic:Record<string,number|string>|null=null
           // Read only the two allow-listed diagnostic fields from a private

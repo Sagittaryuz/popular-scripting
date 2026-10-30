@@ -9,7 +9,7 @@ const args={queryParameters:{popular_refresh:options.force?'1':'0'}};
 const Color=class {constructor(hex,alpha=1){this.hex=hex;this.alpha=alpha;}};
 // Scriptable — Popular small/medium/large. O conjunto normal mantém oito
 // indicadores; o entry publicado pode selecionar o perfil de teste reversível.
-const VERSION = '2026.10.30.88'
+const VERSION = '2026.10.30.89'
 const SETTINGS = { refreshMinutes: 5, rotationMinutes: 5, selection: 'indicadores' };
 // Bloco 146 × 146 pt; quatro colunas e ícones circulares 26 pt centralizados nas linhas 36 pt.
 const LAYOUT = { columns: [28, 40, 46, 26], columnGap: 2, valueGap: 2, nameWidth: 40, priceWidth: 26, graphWidth: 46, rowHeight: 36, gap: 2/3, iconSize: 26, chartHeight: 20 };
@@ -451,7 +451,7 @@ async function loadPrivateMarketRows() {
   try {
     if(typeof privateMarket.endpoint!=='string')throw Error('private-market-endpoint-missing');
     const payload=await request(privateMarket.endpoint,true,{Accept:'application/json',Authorization:'Bearer '+token});
-    const rows=parsePrivateMarketBundle(payload,now.getTime());
+    const parsed=parsePrivateMarketBundle(payload,now.getTime()),rows=await Promise.all(parsed.map(attachApiIcon));
     cacheWrite(key,{source:'private-market-cache',fetchedAt:payload.fetchedAt,rows});
     const delivery=payload.delivery||'upstream';
     setPrivateMarketStatus(delivery==='cache'?'cache':delivery==='stale-cache'?'stale-cache':'fresh',delivery==='cache'||delivery==='stale-cache');
@@ -465,13 +465,50 @@ async function loadPrivateMarketRows() {
 function validApiIconCache(value,url) {
   return !!value&&value.source==='api-logo'&&value.url===url&&typeof value.base64==='string'&&value.base64.length>=50&&value.base64.length<=2800000&&/^[A-Za-z0-9+/=]+$/.test(value.base64)&&finite(value.fetchedAt)&&value.fetchedAt<=Date.now()&&Date.now()-value.fetchedAt<30*86400000;
 }
+function safeSVGCode(value) {
+  if(typeof value!=='string')return null;
+  const code=value.trim().replace(/^<\?xml[\s\S]*?\?>\s*/i,'');
+  if(code.length<20||code.length>200000||!/^<svg(?:\s|>)[\s\S]*<\/svg>\s*$/i.test(code))return null;
+  if(/<!DOCTYPE|<!ENTITY|<script\b|<foreignObject\b|\son[a-z]+\s*=/i.test(code))return null;
+  if(/\b(?:href|xlink:href|src)\s*=\s*["']\s*(?:https?:|\/\/|data:|javascript:)/i.test(code))return null;
+  if(/\burl\(\s*(?:https?:|\/\/|data:)/i.test(code))return null;
+  return code;
+}
+function validApiSVGCache(value,url) {
+  return !!value&&value.source==='api-svg'&&value.url===url&&!!safeSVGCode(value.code)&&finite(value.fetchedAt)&&value.fetchedAt<=Date.now()&&Date.now()-value.fetchedAt<30*86400000;
+}
 function isSVGIconURL(url) {
-  try{return new URL(url).pathname.toLowerCase().endsWith('.svg')}catch(_){return false}
+  try{const parsed=new URL(url);return parsed.protocol==='https:'&&parsed.hostname.toLowerCase()==='icons.brapi.dev'&&parsed.pathname.toLowerCase().endsWith('.svg')}catch(_){return false}
+}
+async function requestSVGCode(url) {
+  const remaining=collectionDeadline-Date.now();
+  if(remaining<=0)throw Error('Orçamento de consulta encerrado');
+  const milliseconds=Math.min(options.force?6000:3000,remaining),r=new Request(url);r.timeoutInterval=milliseconds/1000;
+  if(forceRefresh)r.headers={'Cache-Control':'no-cache','Pragma':'no-cache'};
+  let code;try{code=await bounded(r.loadString(),milliseconds);}catch(error){networkFailures.push({url,reason:String(error.message||error)});throw error;}
+  const status=r.response?.statusCode;
+  if(status!=null&&(status<200||status>=300)){networkFailures.push({url,reason:'HTTP '+status});throw Error('HTTP '+status);}
+  const contentType=String(r.response?.contentType||'').split(';',1)[0].trim().toLowerCase();
+  if(!['image/svg+xml','application/svg+xml','application/xml','text/xml'].includes(contentType))throw Error('MIME SVG API inválido');
+  const safe=safeSVGCode(code);
+  if(!safe)throw Error('Código SVG API inválido');
+  return safe;
 }
 async function attachApiIcon(row) {
   const url=row?.asset?.iconURL;
   if(typeof url!=='string'||!/^https:\/\//.test(url))return row;
-  if(isSVGIconURL(url))return {...row,asset:{...row.asset,iconFormat:'svg',iconSource:row.asset.iconSource||'api-metadata',iconCached:false}};
+  if(isSVGIconURL(url)){
+    const key='api-svg-v1-'+row.asset.code.replace(/\W/g,'_'),saved=cacheRead(key);
+    if(validApiSVGCache(saved,url))return {...row,asset:{...row.asset,iconSVGCode:saved.code,iconFormat:'svg-code',iconSource:row.asset.iconSource||'api-metadata',iconCached:true}};
+    try {
+      const code=await requestSVGCode(url);
+      cacheWrite(key,{source:'api-svg',url,code,fetchedAt:Date.now()});
+      return {...row,asset:{...row.asset,iconSVGCode:code,iconFormat:'svg-code',iconSource:row.asset.iconSource||'api-metadata',iconCached:false}};
+    } catch(error) {
+      console.log('SVG API '+row.asset.code+': '+error);
+      return {...row,asset:{...row.asset,iconFormat:'svg',iconSource:row.asset.iconSource||'api-metadata',iconCached:false}};
+    }
+  }
   const key='api-icon-v1-'+row.asset.code.replace(/\W/g,'_'),saved=cacheRead(key);
   if(validApiIconCache(saved,url))return {...row,asset:{...row.asset,iconData:saved.base64,iconSource:row.asset.iconSource||'api-metadata',iconCached:true}};
   try {

@@ -2,12 +2,13 @@ const assert=require('node:assert/strict'),path=require('node:path'),vm=require(
 const root=path.resolve(__dirname,'Popular Scripting')
 function bundle(file){return buildSync({entryPoints:[path.join(root,file)],bundle:true,write:false,format:'cjs',platform:'node',external:['scripting'],jsxFactory:'createElement'}).outputFiles[0].text}
 function walk(node){return node&&typeof node==='object'?[node,...(node.children||[]).flatMap(walk)]:[]}
-const definitions={},sdk={AppIntentManager:{register:definition=>{definitions[definition.name]=definition;return params=>({name:definition.name,params})}},AppIntentProtocol:{AppIntent:0},ControlWidget:{reloadButtons:()=>{}},Safari:{openURL:async()=>true},Script:{createRunURLScheme:()=> 'scripting://run/Meu%20Painel?section=market'},Button:'Button',Canvas:'Canvas',Circle:'Circle',HStack:'HStack',Image:'Image',Rectangle:'Rectangle',SVG:'SVG',Text:'Text',ZStack:'ZStack'}
+const definitions={},sdk={AppIntentManager:{register:definition=>{definitions[definition.name]=definition;return params=>({name:definition.name,params})}},AppIntentProtocol:{AppIntent:0},ControlWidget:{reloadButtons:()=>{}},Safari:{openURL:async()=>true},Script:{createRunURLScheme:()=> 'scripting://run/Meu%20Painel?section=market'},Button:'Button',Canvas:'Canvas',Circle:'Circle',Image:'Image',Rectangle:'Rectangle',SVG:'SVG',Text:'Text',ZStack:'ZStack'}
 const viewModule={exports:{}},createElement=(type,props,...children)=>typeof type==='function'?type({...props,children:children.flat(Infinity).filter(Boolean)}):({type,props:props||{},children:children.flat(Infinity).filter(Boolean)})
 vm.runInNewContext(bundle('view.tsx'),{module:viewModule,exports:viewModule.exports,require:()=>sdk,createElement,Date,URL,Storage:{get:()=>null,set:()=>true},UIImage:{fromBase64String:()=>null}})
 const drawModule={exports:{}};vm.runInNewContext(bundle('draw.js'),{module:drawModule,exports:drawModule.exports,Math,Number,Date,Intl,JSON})
 const {GEOMETRY:G,layout}=drawModule.exports,codes=['SELIC','IPCA','IBOV','USD/BRL','SOJA_JATAI_GO','CUB_GO','DIESEL_S10','BRENT']
-const rows=codes.map((code,index)=>({asset:{code,...(code==='IBOV'?{iconURL:'https://icons.brapi.dev/icons/IBOV.svg'}:{})},name:'Nome '+code,price:'1,00',percent:index%2?'-0,14%':'+0,82%',movement:index%2?-1:1,unit:'BRL',time:'27/10',chart:null}))
+const inlineSVG='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26"><circle cx="13" cy="13" r="13" fill="#345"/></svg>'
+const rows=codes.map((code,index)=>({asset:{code,...(code==='IBOV'?{iconSVGCode:inlineSVG}:{})},name:'Nome '+code,price:'1,00',percent:index%2?'-0,14%':'+0,82%',movement:index%2?-1:1,unit:'BRL',time:'27/10',chart:null}))
 const api={displayChart:chart=>chart,lineCoordinates:()=>[],monthLayout:()=>({labels:[],lines:[]}),gradientStrips:()=>[]}
 const expectedURL='scripting://run/Meu%20Painel?section=market'
 function box(node){const {frame,position}=node.props;return {left:position.x-frame.width/2,right:position.x+frame.width/2,top:position.y-frame.height/2,bottom:position.y+frame.height/2}}
@@ -19,30 +20,29 @@ for(const [family,width,height,expected] of [['small',158,158,4],['medium',338,1
   assert(buttons.every(button=>button.props.intent.name==='RefreshAssetsOnTap'))
   for(let i=0;i<expected;i++){
     const button=buttons[i],rowIndex=i%4,content=button.children.find(node=>node.type==='ZStack'),desc=walk(content)
-    const nameLine=desc.find(node=>node.type==='HStack'&&node.props?.key==='name-status-line')
     const nameText=desc.find(node=>node.type==='Text'&&node.props?.key==='name-text')
     const meta=desc.find(node=>node.type==='Text'&&node.props?.key==='asset-meta')
     const icon=desc.find(node=>node.props?.key==='asset-icon'||node.props?.key==='asset-image'||node.props?.key==='asset-fallback')
     const remoteMask=desc.find(node=>node.type==='ZStack'&&node.props?.key==='asset-remote-svg-mask'),iconBox=remoteMask||icon
     if(rows[i].asset.code==='IBOV'){
       const remoteChildren=remoteMask?.children||[]
-      const fallback=remoteChildren.find(node=>node.type==='Canvas'&&node.props?.key==='asset-icon'),remoteSVG=remoteChildren.find(node=>node.type==='SVG'&&node.props?.key==='asset-remote-svg')
-      assert(remoteMask&&fallback&&remoteSVG,'a URL-present SVG failure fixture keeps the IBOV fallback under the remote renderer')
-      assert(remoteChildren.indexOf(fallback)<remoteChildren.indexOf(remoteSVG),'the fallback is composed before SVG so a blank/failed URL cannot erase it')
+      const fallback=content.children.find(node=>node.type==='Canvas'&&node.props?.key==='asset-icon'),remoteSVG=remoteChildren.find(node=>node.type==='SVG'&&node.props?.key==='asset-inline-svg')
+      assert(remoteMask&&fallback&&remoteSVG,'an API SVG fixture keeps the IBOV fallback beside the inline renderer')
+      assert(!remoteChildren.some(node=>node.type==='Canvas'&&node.props?.key==='asset-icon'),'the fallback is outside the SVG mask so a blank renderer cannot hide it')
+      assert.equal(remoteSVG.props.code,inlineSVG)
     }
     const graph=desc.find(node=>node.type==='Canvas'&&node.props?.key==='asset-chart')
     const price=desc.find(node=>node.type==='Text'&&node.props?.key==='price')
     const percent=desc.find(node=>node.type==='Text'&&node.props?.key==='percent')
     const unit=desc.find(node=>node.type==='Text'&&node.props?.key==='unit')
-    const dot=desc.find(node=>node.type==='Circle'&&node.props?.key==='market-status-dot')
-    assert(nameLine&&nameText&&meta&&icon&&graph&&price&&percent&&unit&&dot,family+' row '+i+' contains all four columns')
+    assert(nameText&&meta&&icon&&graph&&price&&percent&&unit,family+' row '+i+' contains all four columns')
+    assert(!desc.some(node=>node.type==='Circle'&&node.props?.key==='market-status-dot'),family+' row '+i+' has no status dot consuming identity width')
     if(rows[i].asset.code==='USD/BRL')assert.equal(icon.type,'Canvas')
-    assert.equal(nameLine.props.frame.width,G.name*plan.scale)
-    assert(nameText.props.frame.width<=G.nameTextMax*plan.scale+1e-8)
-    assert.equal(nameLine.props.spacing,G.statusSpacing)
-    assert.equal(dot.props.frame.width,G.statusDot*plan.scale)
+    assert.equal(nameText.props.frame.width,G.name*plan.scale)
+    assert.equal(nameText.props.frame.alignment,'leading')
+    assert.equal(nameText.props.minScaleFactor,1)
     assert.equal(meta.props.frame.width,G.date*plan.scale)
-    assert.equal(meta.props.position.x-nameLine.props.position.x,(G.dateX+G.date/2-(G.nameX+G.name/2))*plan.scale)
+    assert.equal(meta.props.position.x-nameText.props.position.x,(G.dateX+G.date/2-(G.nameX+G.name/2))*plan.scale)
     assert.equal(iconBox.props.frame.width,G.icon*plan.scale)
     assert.equal(iconBox.props.frame.height,G.icon*plan.scaleY)
     assert.equal(iconBox.props.position.x,(G.iconLeft+G.icon/2)*plan.scale)
@@ -55,14 +55,13 @@ for(const [family,width,height,expected] of [['small',158,158,4],['medium',338,1
     assert.equal(unit.props.frame.width,G.unit*plan.scale)
     assert.equal(price.props.frame.alignment,'trailing')
     assert.equal(percent.props.frame.alignment,'trailing')
-    assert(nameLine.props.position.x+nameLine.props.frame.width/2<=graph.props.position.x-graph.props.frame.width/2-1e-8,family+' identity column does not enter graph')
-    assert(meta.props.position.x-meta.props.frame.width/2>=nameLine.props.position.x-nameLine.props.frame.width/2-1e-8)
+    assert(nameText.props.position.x+nameText.props.frame.width/2<=graph.props.position.x-graph.props.frame.width/2-1e-8,family+' identity column does not enter graph')
+    assert(meta.props.position.x-meta.props.frame.width/2>=nameText.props.position.x-nameText.props.frame.width/2-1e-8)
     assert.equal(button.props.frame.width,G.column*plan.scale)
     assert.equal(button.props.frame.height,(rowIndex<3?G.row+G.gap:G.row)*plan.scaleY)
     assert(button.props.accessibilityLabel.startsWith('Atualizar indicadores. '))
     assert.equal(content.props.frame.width,button.props.frame.width)
     assert.equal(content.props.frame.height,button.props.frame.height)
-    assert.equal(nameLine.children.filter(node=>node?.type==='Circle'&&node.props?.key==='market-status-dot').length,1)
   }
   for(let i=0;i<buttons.length;i++)for(let j=i+1;j<buttons.length;j++)assert.equal(overlap(box(buttons[i]),box(buttons[j])),false,family+' row hitboxes '+i+'/'+j+' do not overlap')
 }

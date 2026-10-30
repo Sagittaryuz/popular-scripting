@@ -1,3 +1,25 @@
+## Atualização 0.2.39 - logos API renderizados inline e identidade sem bolinha
+
+- A causa dos três ícones B3 vazios era dupla: o perfil ativo preservava apenas
+  `iconURL`, sem baixar o corpo SVG, e o fallback ficava dentro da mesma máscara
+  do `<SVG url>`. O motor agora busca somente URLs HTTPS retornadas pelo backend
+  em `icons.brapi.dev`, exige MIME SVG e rejeita `DOCTYPE`, scripts,
+  `foreignObject`, eventos e referências externas antes de guardar o SVG no
+  cache privado. A view usa `SVG.code`; o fallback de iniciais permanece como
+  irmão fora da máscara quando o logo falha.
+- A bolinha de status foi removida. O nome é um único `Text` sem redução por
+  ativo, com fonte nativa semibold de `5.5pt`, uma linha, reticências e toda a
+  coluna de identidade de `40pt`. Código/data, ícone de `26pt`, gráfico, preço,
+  variação, ordem e janela móvel de 7 dias permanecem.
+- BBAS3/BBDC4 usam o corpo SVG retornado pela API quando válido; IBOV não recebe
+  ETF ou URL inventada e sempre mantém fallback visível de iniciais quando não
+  há logo. O Worker, token, credenciais, dados e domínio temporal não foram
+  alterados.
+- A prévia [icon-name-0.2.39-preview.png](validation/icon-name-0.2.39-preview.png)
+  e o SVG/JSON adjacentes são fixtures sintéticas para small `158×158` e
+  medium `338×170`; não são logos/dados ao vivo e o iPhone nativo não foi
+  testado.
+
 ## Atualização 0.2.38 - extremos comuns das curvas por série
 
 - Cada curva visível usa como domínio horizontal o primeiro e o último
@@ -295,7 +317,7 @@ Testes locais de fontes, observações antigas/futuras, alertas, cache, transpor
 
 # Popular Scripting
 
-**Atual: 0.2.38 - Scripting Pro.** Perfil publicado de quatro ativos
+**Atual: 0.2.39 - Scripting Pro.** Perfil publicado de quatro ativos
 (`BBAS3`, `BBDC4`, `IBOV`, `BTC/USD`) em janela móvel de 7 dias, com detalhes,
 CSV, alertas, assistente, Central de Controle e painel Início. [Ativação,
 testes e limites](PRO.md).
@@ -310,7 +332,7 @@ Na tela **Importar Scripts Remotos** do Scripting, cole:
 https://github.com/Sagittaryuz/popular-scripting/tree/main/scripts/Popular%20Scripting
 ```
 
-Importe **Popular Scripting**, confirme a versão **0.2.38**, abra o projeto e toque em **Atualizar**. Leia a linha **Fonte privada:** para distinguir token, Worker, código da fonte, parsing e cache. Em **Detalhes dos indicadores**, toque em **Configurar fonte privada**, cole o token no campo seguro e salve. Adicione o widget do Scripting à Tela de Início e selecione esse projeto.
+Importe **Popular Scripting**, confirme a versão **0.2.39**, abra o projeto e toque em **Atualizar**. Leia a linha **Fonte privada:** para distinguir token, Worker, código da fonte, parsing e cache. Em **Detalhes dos indicadores**, toque em **Configurar fonte privada**, cole o token no campo seguro e salve. Adicione o widget do Scripting à Tela de Início e selecione esse projeto.
 
 Para receber melhorias de código, use a atualização do script remoto no Scripting. Essa importação vincula o projeto à pasta `main/scripts/Popular Scripting`; não use um endereço de commit ou tag para acompanhar as próximas versões. O botão **Atualizar** dentro da tela do Popular consulta somente os indicadores e solicita recarregar o widget.
 

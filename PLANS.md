@@ -1,5 +1,16 @@
 # Melhorias Scripting Pro — 23/10/2026
 
+## 0.2.39 — logos API visíveis e identidade uniforme
+
+- [x] Materializar SVGs de BBAS3/BBDC4 a partir das URLs retornadas pelo
+  backend, validar MIME/conteúdo seguro, renderizar com `SVG.code` e manter
+  fallback de iniciais fora da máscara; manter IBOV sem logo inventado.
+- [x] Remover a bolinha de status, usar fonte semibold uniforme de 5.5pt e
+  deixar o nome ocupar a coluna de 40pt com reticências nativas, sem reduzir
+  por ativo.
+- [x] Validar árvore small/medium/large, MIME/markup inválido, ordem, dados,
+  gráficos 7D e prévia fixture-only. Logo vivo no iPhone ainda pendente.
+
 ## 0.2.38 — domínio horizontal comum das curvas
 
 - [x] Normalizar o eixo X pelo primeiro/último timestamp real elegível de cada

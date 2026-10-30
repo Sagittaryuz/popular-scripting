@@ -10,6 +10,8 @@ const now=Date.parse('2026-10-29T20:12:31Z'),hourEnd=Date.parse('2026-10-29T20:0
 const b3Dates=['2026-10-22','2026-10-23','2026-10-26','2026-10-27','2026-10-28'];
 const privateURL='https://popular-private-market-prep.mrpires72.workers.dev/v1/market';
 const bbasLogoURL='https://icons.brapi.dev/icons/BBAS3.svg',bbdcLogoURL='https://icons.brapi.dev/icons/BBDC4.svg',syntheticIcon='iVBORw0KGgo'+'A'.repeat(80);
+const bbasSVG='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26"><circle cx="13" cy="13" r="13" fill="#007f4e"/><path fill="#fff" d="M6 7h14v3H6zm0 5h14v3H6zm0 5h10v3H6z"/></svg>';
+const bbdcSVG='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26"><circle cx="13" cy="13" r="13" fill="#c91429"/><path fill="#fff" d="M6 7h14v3H6zm0 5h10v3H6zm0 5h14v3H6z"/></svg>';
 const pairURL='https://api.kraken.com/0/public/AssetPairs?pair=XBTUSD';
 const tickerURL='https://api.kraken.com/0/public/Ticker?pair=XBTUSD';
 const ohlcURL='https://api.kraken.com/0/public/OHLC?pair=XBTUSD&interval=60';
@@ -39,6 +41,11 @@ const requests=[];
 class MockRequest {
   constructor(url){this.url=url;this.response={statusCode:200};requests.push(url);}
   async loadJSON(){if(!responses[this.url])throw Error('unexpected URL '+this.url);return responses[this.url];}
+  async loadString(){
+    if(this.url===bbasLogoURL){this.response={statusCode:200,contentType:'image/svg+xml'};return bbasSVG;}
+    if(this.url===bbdcLogoURL){this.response={statusCode:200,contentType:'image/svg+xml'};return bbdcSVG;}
+    throw Error('unexpected SVG fixture');
+  }
   async load(){if(![bbasLogoURL,bbdcLogoURL].includes(this.url))throw Error('unexpected binary fixture');return {toBase64String:()=>syntheticIcon};}
 }
 
@@ -57,6 +64,10 @@ class MockRequest {
   assert(rows.slice(0,3).every(row=>row.localTest===true&&row.asset.source==='PrivateMarket'&&Number.isFinite(row.asset.price)&&row.chart?.window==='7D'&&row.chart?.timeBasis==='trade-timestamp'&&row.chart.points.length===4&&row.chart.sourceStartDay==='2026-10-23'&&row.chart.sourceEndDay==='2026-10-29'&&row.stamp.day==='2026-10-28'&&row.quoteVerified===true&&row.chartStatus==='valid-7D-daily'),'B3 rows use the authenticated private bundle');
   assert.equal(rows[0].asset.iconURL,bbasLogoURL,'BBAS3 uses the URL returned by Brapi metadata');
   assert.equal(rows[1].asset.iconURL,bbdcLogoURL,'BBDC4 uses the URL returned by Brapi metadata');
+  assert.equal(rows[0].asset.iconSVGCode,bbasSVG,'BBAS3 uses the validated SVG body returned by its API URL');
+  assert.equal(rows[1].asset.iconSVGCode,bbdcSVG,'BBDC4 uses the validated SVG body returned by its API URL');
+  assert.equal(rows[0].asset.iconFormat,'svg-code');
+  assert.equal(rows[1].asset.iconFormat,'svg-code');
   assert.equal(rows[0].asset.iconSource,'brapi-metadata');
   assert.equal(rows[1].asset.iconSource,'brapi-metadata');
   assert.equal(rows[2].asset.iconURL,undefined,'IBOV keeps the initials fallback because Brapi list has no IBOV logo');
@@ -76,9 +87,24 @@ class MockRequest {
   assert.equal(btc.chart.currentCandleExcluded,true);
   assert.equal(btc.cached,undefined,'old cache does not leak into local test mode');
   assert.equal(api.privateMarketStatus.code,'fresh','a valid private bundle is reported without exposing token or response data');assert.equal(api.privateMarketStatus.cached,false);assert.equal(api.privateMarketStatus.at,now);
-  assert.equal(JSON.stringify(requests),JSON.stringify([privateURL,pairURL,tickerURL,ohlcURL]),'collectRows calls only the authenticated private bundle for B3 and Kraken for BTC; it does not call DadosB3 or public Brapi quote/logo routes');
+  assert.equal(JSON.stringify(requests),JSON.stringify([privateURL,bbasLogoURL,bbdcLogoURL,pairURL,tickerURL,ohlcURL]),'collectRows calls only the authenticated private bundle, returned Brapi logo URLs and Kraken for BTC; it does not call DadosB3 or public Brapi quote routes');
   assert.equal(JSON.stringify(api.fixedIndicatorCodes),JSON.stringify(['SELIC','IPCA','IBOV','USD/BRL','SOJA_JATAI_GO','CUB_GO','DIESEL_S10','BRENT']),'production order remains separate');
   assert.deepEqual(Array.from(await api.collectAdditionalRows()),[],'local mode disables catalog additions');
+
+  const invalidFiles=new Map(),invalidFM={documentsDirectory:()=>'/documents',joinPath:(...parts)=>parts.join('/'),fileExists:file=>invalidFiles.has(file),createDirectory:()=>{},readString:file=>invalidFiles.get(file),writeString:(file,value)=>invalidFiles.set(file,value)};
+  class InvalidSVGRequest extends MockRequest {
+    async loadString(){
+      if(this.url===bbasLogoURL){this.response={statusCode:200,contentType:'image/png'};return bbasSVG;}
+      if(this.url===bbdcLogoURL){this.response={statusCode:200,contentType:'image/svg+xml'};return '<svg xmlns="http://www.w3.org/2000/svg"><script>alert(1)</script></svg>';}
+      return super.loadString();
+    }
+  }
+  const invalidSVG=bundled.exports.createEngine({FileManager:{local:()=>invalidFM},Request:InvalidSVGRequest,Data:{},Timer:undefined,privateMarket},{family:'medium',now,localTestAssets:true});
+  const invalidIconRows=await invalidSVG.collectRows();
+  assert.equal(invalidIconRows[0].asset.iconSVGCode,undefined,'an SVG MIME mismatch keeps the initials fallback path');
+  assert.equal(invalidIconRows[1].asset.iconSVGCode,undefined,'unsafe SVG markup is rejected before native rendering');
+  assert.equal(invalidIconRows[0].asset.iconFormat,'svg');
+  assert.equal(invalidIconRows[1].asset.iconFormat,'svg');
 
   const placements=rows.map((row,index)=>({code:row.asset.code,column:Math.floor(index/4),line:index%4}));
   assert(placements.every(item=>item.column===0),'wide local layout keeps the four requested rows in one column');

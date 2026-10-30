@@ -1,3 +1,15 @@
+## 0.2.39 - logos API inline e nomes uniformes
+
+- Corrige o caminho dos logos API do perfil privado: materializa os SVGs
+  retornados pelos metadados com validação de MIME e conteúdo seguro, renderiza
+  via `SVG.code` e mantém o fallback de iniciais fora da máscara. O IBOV fica
+  com iniciais quando não há logo fornecido, sem ETF ou URL inventada.
+- Remove a bolinha visual de status e dá à identidade um único texto semibold
+  de 5.5pt, uma linha, reticências e toda a coluna de 40pt; não há redução
+  individual de nomes.
+- Mantém dados, credenciais, Worker, ordem, gráficos, domínio por série e
+  janela móvel de 7 dias. Prévia é fixture-only; iPhone nativo não testado.
+
 ## 0.2.38 - domínio horizontal por série nas curvas
 
 - Normaliza cada curva visível entre o primeiro e o último timestamp real da

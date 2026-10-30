@@ -1,20 +1,31 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),{buildSync}=require('esbuild');
-const root=path.resolve(__dirname,'Popular Scripting'),view=fs.readFileSync(path.join(root,'view.tsx'),'utf8'),badges=fs.readFileSync(path.join(root,'badges.js'),'utf8');
+const root=path.resolve(__dirname,'Popular Scripting'),view=fs.readFileSync(path.join(root,'view.tsx'),'utf8'),engine=fs.readFileSync(path.join(root,'original-engine.js'),'utf8'),badges=fs.readFileSync(path.join(root,'badges.js'),'utf8');
+const previewDir=path.join(root,'..','..','validation'),previewJSON=JSON.parse(fs.readFileSync(path.join(previewDir,'icon-name-0.2.39-preview.json'),'utf8')),previewSVG=fs.readFileSync(path.join(previewDir,'icon-name-0.2.39-preview.svg'),'utf8'),previewPNG=path.join(previewDir,'icon-name-0.2.39-preview.png');
+assert.equal(previewJSON.version,'0.2.39','the icon/name preview is tied to the active package');
+assert.equal(previewJSON.identity.statusDot,false,'the preview records that no status dot is drawn');
+assert.equal(previewJSON.data.live,false,'the preview does not claim live data');
+assert(fs.statSync(previewPNG).size>100,'the raster preview was materialized for pixel inspection');
+assert.match(previewSVG,/API SVG body: BBAS3\/BBDC4/,'the preview identifies its SVG fixtures');
 
 assert.match(view,/function apiSVG\(row:any\)/,'API SVG metadata has a native rendering path');
-assert.match(view,/url\.hostname\.toLowerCase\(\)==='icons\.brapi\.dev'/,'SVG metadata is restricted to the effective API logo host');
+assert.match(view,/iconSVGCode/,'the view consumes validated inline SVG returned by the engine');
 assert.match(view,/const FALLBACK_BADGE_CODES=Object\.freeze\(\['BBAS3','BBDC4','IBOV','BTC\/USD'/,'published assets have explicit fallback badges even when a remote SVG URL is present');
 assert.match(view,/function fallbackIcon\(row:any,plan:any,rowPlan:any,positioned=true\)/,'the fallback is a reusable native view rather than a preview-only substitute');
-assert.match(view,/<SVG key="asset-remote-svg" url=\{remoteSvg\}/,'SVG logos are rendered from the API URL without a proxy');
+assert.match(view,/<SVG key="asset-inline-svg" code=\{remoteSvg\}/,'SVG logos are rendered from validated inline API code without a proxy');
 const remoteBranch=view.indexOf('{remoteSvg?<ZStack');
-const fallbackBeforeSVG=view.indexOf('{fallbackIcon(row,plan,rowPlan,false)}',remoteBranch);
-const remoteRenderer=view.indexOf('<SVG key="asset-remote-svg"',remoteBranch);
-assert(remoteBranch>=0&&fallbackBeforeSVG>=0&&remoteRenderer>fallbackBeforeSVG,'a failed network SVG leaves the neutral badge visible beneath the attempted logo');
-assert.doesNotMatch(view,/custom=!remoteSvg&&!remoteIcon/,'a failed remote SVG no longer suppresses the fallback branch');
+const fallbackBeforeSVG=view.indexOf('{fallbackIcon(row,plan,rowPlan,true)}');
+const remoteRenderer=view.indexOf('<SVG key="asset-inline-svg"',remoteBranch);
+assert(remoteBranch>=0&&fallbackBeforeSVG>=0&&remoteRenderer>fallbackBeforeSVG,'a failed inline SVG leaves the neutral badge visible as a sibling outside the mask');
+assert.doesNotMatch(view,/fallbackIcon\(row,plan,rowPlan,false\)/,'the fallback is never placed inside the SVG mask');
+assert.match(engine,/function safeSVGCode\(value\)/,'SVG code is validated before entering the native view');
+assert.match(engine,/contentType=String\(r\.response\?\.contentType\|\|''\)/,'the SVG response MIME is checked');
+assert.match(engine,/iconSVGCode:code/,'the active private profile fetches and stores validated SVG code');
+assert.match(engine,/Promise\.all\(parsed\.map\(attachApiIcon\)\)/,'the active profile attaches API logos instead of leaving URL-only metadata');
 assert.doesNotMatch(badges,/\$|dollar/i,'the badge renderer contains no currency glyph overlay');
 assert.match(badges,/INITIAL_BADGES=.*BBAS3:'BB'.*BBDC4:'BD'.*IBOV:'IB'.*'BTC\/USD':'BTC'/,'the four published test assets have explicit neutral initial fallbacks');
-assert.match(view,/const NAME_FONT_MIN=3\.6/,'compact names can shrink below the old truncating floor');
-assert.match(view,/minScaleFactor=\{0\.72\}/,'native text has a bounded fallback scale instead of ellipsis');
+assert.match(view,/const NAME_FONT=5\.5/,'all names use one fixed native font size');
+assert.match(view,/minScaleFactor=\{1\}/,'native text uses ellipsis without per-name font shrinking');
+assert.doesNotMatch(view,/market-status-dot/,'the status dot is removed from the compact identity column');
 
 const bundled=buildSync({entryPoints:[path.join(root,'badges.js')],bundle:true,write:false,format:'cjs',platform:'node'}).outputFiles[0].text;
 const badgeModule={exports:{}};
@@ -59,4 +70,4 @@ for(const code of ['BBAS3','BBDC4','IBOV','BTC/USD']){
   assert.equal(fillsForCode.filter(call=>call.style==='#34343A').length,1,`${code} uses one neutral circular fallback disk`);
   assert(fillsForCode.some(call=>call.style==='#FFFFFF'&&call.path.some(op=>op[0]==='rect')),`${code} renders readable vector initials, not the generic document glyph`);
 }
-console.log(JSON.stringify({version:'0.2.38',icons:['BBAS3','BBDC4','IBOV','BTC/USD'],shape:'26pt circular neutral initials fallback beneath API SVG',glyphOverlay:false,smallAndMediumPath:'native SVG with deterministic fallback',nativeIPhone:false}));
+console.log(JSON.stringify({version:'0.2.39',icons:['BBAS3','BBDC4','IBOV','BTC/USD'],shape:'26pt circular API SVG code beside deterministic initials fallback',glyphOverlay:false,identity:'full column, shared 5.5pt semibold, native ellipsis, no status dot',smallAndMediumPath:'validated SVG.code with sibling fallback',nativeIPhone:false}));
