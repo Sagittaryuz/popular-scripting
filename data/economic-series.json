@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "verifiedAt": "2026-10-28T21:38:28.119905Z",
+  "verifiedAt": "2026-11-03T18:25:12.435832Z",
   "series": {
     "CUB_GO": {
       "instrument": "CUB-GO-R1-N-CUB2006",
@@ -105,18 +105,6 @@
       "municipality": "JATAI",
       "state": "GO",
       "observations": [
-        {
-          "period": "2026-08-01",
-          "periodStart": "2026-07-26",
-          "value": 6.71,
-          "sourceURL": "https://www.gov.br/anp/pt-br/assuntos/precos-e-defesa-da-concorrencia/precos/precos-revenda-e-de-distribuicao-combustiveis/shlp/semanal/semanal-estados-desde-2013.xlsx",
-          "stations": 124,
-          "min": 6.19,
-          "max": 7.99,
-          "geography": "GO",
-          "noMunicipalResult": true,
-          "municipalitySourceURL": "https://www.gov.br/anp/pt-br/assuntos/precos-e-defesa-da-concorrencia/precos/precos-revenda-e-de-distribuicao-combustiveis/shlp/semanal/semanal-municipios-2026.xlsx"
-        },
         {
           "period": "2026-08-08",
           "periodStart": "2026-08-02",
@@ -260,11 +248,23 @@
           "geography": "GO",
           "noMunicipalResult": true,
           "municipalitySourceURL": "https://www.gov.br/anp/pt-br/assuntos/precos-e-defesa-da-concorrencia/precos/precos-revenda-e-de-distribuicao-combustiveis/shlp/semanal/semanal-municipios-2026.xlsx"
+        },
+        {
+          "period": "2026-10-31",
+          "periodStart": "2026-10-25",
+          "value": 7.25,
+          "sourceURL": "https://www.gov.br/anp/pt-br/assuntos/precos-e-defesa-da-concorrencia/precos/precos-revenda-e-de-distribuicao-combustiveis/shlp/semanal/semanal-estados-desde-2013.xlsx",
+          "stations": 147,
+          "min": 6.39,
+          "max": 7.99,
+          "geography": "GO",
+          "noMunicipalResult": true,
+          "municipalitySourceURL": "https://www.gov.br/anp/pt-br/assuntos/precos-e-defesa-da-concorrencia/precos/precos-revenda-e-de-distribuicao-combustiveis/shlp/semanal/semanal-municipios-2026.xlsx"
         }
       ],
       "product": "OLEO DIESEL S10",
       "priceKind": "retail-mean",
-      "verifiedAt": "2026-10-26T22:38:29.853956Z"
+      "verifiedAt": "2026-11-03T18:25:12.435832Z"
     },
     "IPCA": {
       "instrument": "BCB-SGS-433",
