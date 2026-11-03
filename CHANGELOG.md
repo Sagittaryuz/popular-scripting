@@ -1,3 +1,16 @@
+## 0.2.46 - publica contrato explícito de curvas das últimas 24 horas
+
+- O perfil ativo `IBOV`, `DOW_JONES`, `USD/BRL`, `BRENT` agora aceita uma curva
+  somente quando a fonte entrega observações reais com timestamp dentro das
+  últimas 24 horas; não cria pontos, interpola fins de semana ou converte EOD
+  em intraday.
+- As fontes atuais de IBOV e USD/BRL continuam fornecendo cotação e variação,
+  mas a história diária aparece honestamente como `24h indisponível`. Dow Jones
+  e Brent Jan-2027 permanecem sem fonte autorizada e sem valor/curva inventados.
+- O renderer mantém o perfil recuperável de 7 dias para os demais fluxos e
+  corrige o teste de janela `168 != 24`; o preview `market-profile-0.2.46` é
+  fixture-only. iPhone nativo não testado.
+
 ## 0.2.45 - alinha o contrato EOD do gráfico USD/BRL
 
 - Corrige o caminho `fxHistory → profileSevenDayDaily → displayChart` para

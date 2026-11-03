@@ -33,9 +33,9 @@ class MockRequest {
 }
 
 (async()=>{
-  const api=bundled.exports.createEngine({FileManager:{local:()=>fm},Request:MockRequest,Data:{},Timer:undefined,privateMarket:{endpoint:privateURL,readToken:()=> 'fixture-private-token'}},{family:'medium',force:true,now:queryTime,localTestAssets:true,localTestProfile:'ibov-dow-usd-brent-7d'});
+  const api=bundled.exports.createEngine({FileManager:{local:()=>fm},Request:MockRequest,Data:{},Timer:undefined,privateMarket:{endpoint:privateURL,readToken:()=> 'fixture-private-token'}},{family:'medium',force:true,now:queryTime,localTestAssets:true,localTestProfile:'ibov-dow-usd-brent-24h'});
   assert.equal(api.localTestMode,true);
-  assert.equal(api.localTestProfile,'ibov-dow-usd-brent-7d');
+  assert.equal(api.localTestProfile,'ibov-dow-usd-brent-24h');
   assert.equal(JSON.stringify(api.localTestAssets.map(asset=>asset.code)),JSON.stringify(['IBOV','DOW_JONES','USD/BRL','BRENT']));
   const rows=await api.collectRows();
   assert.equal(JSON.stringify(rows.map(row=>row.asset.code)),JSON.stringify(['IBOV','DOW_JONES','USD/BRL','BRENT']),'the active profile preserves the requested order');
@@ -43,12 +43,10 @@ class MockRequest {
   assert.equal(rows[0].asset.source,'PrivateMarket','IBOV reuses the existing private Worker bundle');
   assert.equal(rows[0].asset.price,170800,'IBOV comes from the private response, not an ETF');
   assert.equal(rows[0].asset.percentBasis,'provider','daily variation remains a quote field, separate from the weekly chart');
-  assert.equal(rows[0].chartStatus,'valid-7D-daily','daily private observations are cropped to a seven-day chart');
-  assert.equal(rows[0].chart.timeBasis,'trade-timestamp','IBOV keeps its timestamped display contract');
-  const ibovDisplayed=api.displayChart(rows[0].chart,queryTime);
-  assert.equal(ibovDisplayed.displayStatus,'available-7d','IBOV remains drawable after the daily contract fix');
-  assert.equal(api.lineCoordinates(ibovDisplayed,46,20).length,5,'IBOV keeps its real timestamped points');
-  assert.equal(rows[0].chart.points.length,5,'the Worker points remain real and sparse');
+  assert.equal(rows[0].chartStatus,'24h-history-unavailable','the current daily private history is not relabeled as a 24-hour curve');
+  assert.equal(rows[0].chart,null);
+  assert.equal(rows[0].chartCoverage.sampleCount,5,'source coverage remains observable without drawing an invalid curve');
+  assert.equal(api.displayChart(rows[0].chart,queryTime),null);
   assert.equal(rows[1].asset.price,null,'Dow Jones is never filled with a proxy or invented quote');
   assert.equal(rows[1].asset.source,'FRED/S&P DJI','Dow source provenance is explicit even while the copyrighted series is not requested');
   assert.equal(rows[1].asset.instrument,'DJIA');
@@ -58,14 +56,9 @@ class MockRequest {
   assert.equal(rows[2].asset.source,'AwesomeAPI');
   assert.equal(rows[2].asset.price,5.25,'USD/BRL uses the existing AwesomeAPI adapter');
   assert.equal(rows[2].asset.percent,0.4,'the daily FX variation remains available separately');
-  assert.equal(rows[2].chartStatus,'valid-7D-daily','the historical daily endpoint is cropped to seven days');
-  assert.equal(rows[2].chart.timeBasis,'eod-civil-day','USD date-only history uses the renderer EOD contract');
-  assert.equal(rows[2].chart.points.length,5,'the seven-day crop preserves five real weekdays and no weekend fill');
-  assert(!rows[2].chart.points.some(point=>point.stamp.day==='2026-10-25'),'weekend observations are not fabricated');
-  const fxDisplayed=api.displayChart(rows[2].chart,queryTime);
-  assert.equal(fxDisplayed.displayStatus,'available-7d-eod','USD date-only points survive display filtering');
-  assert.equal(fxDisplayed.points.length,5);
-  assert.equal(api.lineCoordinates(fxDisplayed,46,20).length,5,'USD line coordinates use the real daily points');
+  assert.equal(rows[2].chartStatus,'24h-history-unavailable','daily FX history remains a quote source but cannot satisfy the 24-hour chart contract');
+  assert.equal(rows[2].chart,null);
+  assert.equal(rows[2].chartCoverage.sampleCount,0,'date-only daily FX observations are rejected for a timestamped 24-hour curve');
   assert.equal(rows[3].asset.source,'ICE Futures Europe');
   assert.equal(rows[3].asset.name,'Petróleo');
   assert.equal(rows[3].asset.instrument,'BRN');
@@ -87,6 +80,14 @@ class MockRequest {
   assert.equal(JSON.stringify(api.fixedIndicatorCodes),JSON.stringify(['SELIC','IPCA','IBOV','USD/BRL','SOJA_JATAI_GO','CUB_GO','DIESEL_S10','BRENT']),'the former fixed list remains recoverable');
   const old=bundled.exports.createEngine({FileManager:{local:()=>fm},Request:MockRequest,Data:{},Timer:undefined,privateMarket:{endpoint:privateURL,readToken:()=> 'fixture-private-token'}},{family:'medium',now:queryTime,localTestAssets:true});
   assert.equal(JSON.stringify(old.localTestAssets.map(asset=>asset.code)),JSON.stringify(['BBAS3','BBDC4','IBOV','BTC/USD']),'the previous profile remains available as an explicit engine default');
+  const timestampedFixture={asset:{code:'fixture',price:103,percent:1,percentBasis:'provider'},chart:{source:'fixture',window:'24H',windowHours:24,timeBasis:'trade-timestamp',closedOnly:false,points:[dayStamp('2026-10-30',5),dayStamp('2026-10-30',12),dayStamp('2026-10-30',17)].map((stamp,index)=>({value:100+index,stamp}))}};
+  const activeFixture=api.profileTwentyFourHour(timestampedFixture,queryTime);
+  assert.equal(activeFixture.chartStatus,'valid-24h','a real timestamped provider history is accepted by the active profile');
+  assert.equal(activeFixture.chart.points.length,3);
+  const activeDisplayed=api.displayChart(activeFixture.chart,queryTime);
+  assert.equal(activeDisplayed.displayStatus,'available-24h');
+  assert.equal(activeDisplayed.displayWindow.hours,24);
+  assert.equal(api.lineCoordinates(activeDisplayed,46,20).length,3,'the 24-hour curve keeps all real in-window points');
   const dailyFixture={asset:{code:'fixture',price:103,percent:1,percentBasis:'provider'},chart:{source:'fixture',closedOnly:true,timeBasis:'trade-timestamp',points:['2026-10-24','2026-10-27','2026-10-30'].map((day,index)=>({value:100+index,stamp:dayStamp(day)}))}};
   const accepted=api.profileSevenDayDaily(dailyFixture,queryTime);
   assert.equal(accepted.chartStatus,'valid-7D-daily','closed daily sessions remain drawable without intraday density');
@@ -99,9 +100,10 @@ class MockRequest {
   const legacyFiles=new Map(),legacyFM={documentsDirectory:()=>'/documents',joinPath:(...parts)=>parts.join('/'),fileExists:file=>legacyFiles.has(file),createDirectory:()=>{},readString:file=>legacyFiles.get(file),writeString:(file,value)=>legacyFiles.set(file,value)};
   const legacyNow=Date.now(),legacyDay=new Date(legacyNow).toISOString().slice(0,10),legacyPoint=(offset,value)=>({value,stamp:{time:legacyNow-offset*3600000,day:legacyDay,hasTime:true,label:'cache'}});
   legacyFiles.set('/documents/popular-widget-cache-v6/usd-brl-awesome-v13.json',JSON.stringify({asset:{code:'USD/BRL',name:'Dólar',type:'cambio',source:'AwesomeAPI',currency:'BRL',unit:'BRL/USD',quoteBasis:'bid',price:5.38,percent:.72},stamp:legacyPoint(0.1,5.38).stamp,chart:{source:'AwesomeAPI',window:'7D',points:[legacyPoint(3,5.36),legacyPoint(2,5.37),legacyPoint(1,5.38)]},quoteVerified:true,fetchedAt:legacyNow-60000}));
-  const beforeLegacyRequests=requests.length,legacyApi=bundled.exports.createEngine({FileManager:{local:()=>legacyFM},Request:MockRequest,Data:{},Timer:undefined,privateMarket:{endpoint:privateURL,readToken:()=> 'fixture-private-token'}},{family:'medium',now:queryTime,localTestAssets:true,localTestProfile:'ibov-dow-usd-brent-7d'});
+  const beforeLegacyRequests=requests.length,legacyApi=bundled.exports.createEngine({FileManager:{local:()=>legacyFM},Request:MockRequest,Data:{},Timer:undefined,privateMarket:{endpoint:privateURL,readToken:()=> 'fixture-private-token'}},{family:'medium',now:queryTime,localTestAssets:true,localTestProfile:'ibov-dow-usd-brent-24h'});
   const legacyRows=await legacyApi.collectRows(),legacyUSD=legacyRows.find(row=>row.asset.code==='USD/BRL');
-  assert.equal(legacyUSD.chartStatus,'valid-7D-daily','a fresh legacy intraday cache cannot hide the restored daily history');
+  assert.equal(legacyUSD.chartStatus,'24h-history-unavailable','a fresh legacy cache cannot hide the explicit 24-hour requirement');
+  assert.equal(legacyUSD.chart,null);
   assert(requests.slice(beforeLegacyRequests).some(url=>url==='https://economia.awesomeapi.com.br/json/daily/USD-BRL/90'),'legacy cache migration requests the daily endpoint');
-  console.log('PASS published market profile: requested IBOV/Dow/USD/ICE Jan-2027 order, daily variation kept separate, restored daily histories cropped to 7D, no EIA spot substitution or fabricated points, recoverable prior profile, and no unverified requests.');
+  console.log('PASS published market profile: requested IBOV/Dow/USD/ICE Jan-2027 order, current daily sources remain quote-only in the 24H profile, real timestamped fixtures draw end to end, no EIA spot substitution or fabricated points, recoverable prior profile, and no unverified requests.');
 })().catch(error=>{console.error(error);process.exitCode=1;});

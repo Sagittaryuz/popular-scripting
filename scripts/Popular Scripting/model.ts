@@ -2,13 +2,13 @@ import { createEngine } from './original-engine'
 import { createHost } from './host'
 import { dashboardStatus, refreshMinutes } from './pro-common'
 import { sourceStatusForRow } from './market-status'
-export const VERSION='0.2.45'
+export const VERSION='0.2.46'
 export const TAP_REFRESH_CACHE_KEY='popular-tap-refresh-v1'
 export const TAP_REFRESH_CACHE_MS=5000
 // Published, reversible test profile: keep the former eight-indicator list
 // below so one config change can restore it without losing its definition.
 export const PUBLISHED_TEST_ASSETS=true
-export const PUBLISHED_TEST_PROFILE='ibov-dow-usd-brent-7d' as const
+export const PUBLISHED_TEST_PROFILE='ibov-dow-usd-brent-24h' as const
 const PRIVATE_MARKET_STATUS_LABELS:Record<string,string>={
   'not-run':'não consultada',
   'token-missing':'token ausente no Keychain',

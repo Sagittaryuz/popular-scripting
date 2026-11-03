@@ -1,3 +1,13 @@
+## Atualização 0.2.46 - janela explícita das últimas 24 horas
+
+- O perfil ativo `IBOV`, `DOW_JONES`, `USD/BRL`, `BRENT` só desenha pontos de
+  uma fonte que entregue timestamps reais dentro das últimas 24 horas.
+- IBOV e USD/BRL ainda exibem cotação/variação das fontes diárias, mas mostram
+  `24h indisponível` para o gráfico; Dow e Brent Jan-27 permanecem sem fonte
+  autorizada. Não há interpolação, fim de semana preenchido ou substituição de
+  instrumento. A prévia `market-profile-0.2.46` é fixture-only; iPhone nativo
+  não testado.
+
 ## Atualização 0.2.45 - contrato EOD do gráfico USD/BRL
 
 - Corrige a curva diária do Dólar: pontos sem horário usam `eod-civil-day`, o
@@ -418,8 +428,8 @@ Testes locais de fontes, observações antigas/futuras, alertas, cache, transpor
 
 # Popular Scripting
 
-**Atual: 0.2.45 - Scripting Pro.** Perfil publicado de quatro ativos
-(`IBOV`, `DOW_JONES`, `USD/BRL`, `BRENT`) em janela móvel de 7 dias, com detalhes,
+**Atual: 0.2.46 - Scripting Pro.** Perfil publicado de quatro ativos
+(`IBOV`, `DOW_JONES`, `USD/BRL`, `BRENT`) em janela móvel de 24 horas, com detalhes,
 CSV, alertas, assistente, Central de Controle e painel Início. [Ativação,
 testes e limites](PRO.md).
 
@@ -433,7 +443,7 @@ Na tela **Importar Scripts Remotos** do Scripting, cole:
 https://github.com/Sagittaryuz/popular-scripting/tree/main/scripts/Popular%20Scripting
 ```
 
-Importe **Popular Scripting**, confirme a versão **0.2.45**, abra o projeto e toque em **Atualizar**. Leia a linha **Fonte privada:** para distinguir token, Worker, código da fonte, parsing e cache. Em **Detalhes dos indicadores**, toque em **Configurar fonte privada**, cole o token no campo seguro e salve. Adicione o widget do Scripting à Tela de Início e selecione esse projeto.
+Importe **Popular Scripting**, confirme a versão **0.2.46**, abra o projeto e toque em **Atualizar**. Leia a linha **Fonte privada:** para distinguir token, Worker, código da fonte, parsing e cache. Em **Detalhes dos indicadores**, toque em **Configurar fonte privada**, cole o token no campo seguro e salve. Adicione o widget do Scripting à Tela de Início e selecione esse projeto.
 
 Para receber melhorias de código, use a atualização do script remoto no Scripting. Essa importação vincula o projeto à pasta `main/scripts/Popular Scripting`; não use um endereço de commit ou tag para acompanhar as próximas versões. O botão **Atualizar** dentro da tela do Popular consulta somente os indicadores e solicita recarregar o widget.
 
@@ -444,10 +454,11 @@ Para receber melhorias de código, use a atualização do script remoto no Scrip
   AwesomeAPI `/json/daily/USD-BRL/90`; Petróleo identifica `BRN Jan-27` na ICE.
   Sem resposta válida ou fonte histórica do instrumento, os slots preservam
   ausência/cache honesto. Dow Jones permanece sem cotação até feed autorizado.
-- O domínio de gráfico ativo recorta observações EOD reais para 7D. A rota
-  curta `/USD-BRL/100` não é usada para o perfil; não há interpolação, weekend
-  fill ou substituição do Brent futuro por spot. A variação diária continua
-  sendo exibida somente quando sua fonte a comprova.
+- O domínio de gráfico ativo exige observações timestampadas reais nas últimas
+  24 horas. As fontes diárias atuais são mantidas para cotação/variação, mas
+  não são convertidas em curva 24H; não há interpolação, weekend fill ou
+  substituição do Brent futuro por spot. A variação diária continua sendo
+  exibida somente quando sua fonte a comprova.
 - Cada série válida preenche horizontalmente apenas entre seu primeiro/último
   timestamp visível; a posição relativa dos pontos continua temporal e a
   cobertura/densidade de cada mercado permanece honesta.

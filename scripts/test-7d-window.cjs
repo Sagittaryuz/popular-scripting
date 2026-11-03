@@ -30,7 +30,7 @@ assert.equal(unavailable.displayStatus,'unavailable-7d');
 assert.equal(api.lineCoordinates(sparse,64,20).length,0,'sparse data does not become a fabricated curve');
 assert.equal(api.monthLayout(sparse,64).labels.length,0,'seven-day rendering has no month-band labels');
 const source=fs.readFileSync(entry,'utf8');
-assert.match(source,/const CHART_DISPLAY_HOURS = 7\*24/);
+assert.match(source,/const LEGACY_CHART_DISPLAY_HOURS = 7\*24/);
 assert.match(source,/chartHeight: 20/);
 assert.match(source,/economia\.awesomeapi\.com\.br\/json\/daily\/USD-BRL\/90/);
 console.log('PASS 7D window: seven calendar days, real timestamps only, boundary included, older point excluded, monthly fallback explicit, no interpolation/zero fill.');

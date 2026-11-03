@@ -1,4 +1,13 @@
-# Popular Scripting - Pro 0.2.45
+# Popular Scripting - Pro 0.2.46
+
+## 0.2.46 - contrato explícito de curva 24H
+
+- O perfil publicado exige `window:24H`, `windowHours:24` e timestamps reais;
+  dados EOD não são promovidos a intraday.
+- IBOV/USD preservam cotação e variação, mas ficam `24h-history-unavailable`
+  para o gráfico com as fontes atuais; Dow/Brent continuam sem fonte
+  autorizada. O perfil legado de 7 dias permanece recuperável.
+- Testes de janela, perfil, preview e suíte completa; iPhone nativo não testado.
 
 ## 0.2.45 - contrato EOD do gráfico USD/BRL
 

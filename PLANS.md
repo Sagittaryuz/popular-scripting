@@ -1,5 +1,13 @@
 # Melhorias Scripting Pro — 23/10/2026
 
+## 0.2.46 — janela explícita de 24 horas
+
+- [x] Exigir timestamps reais e pontos dentro das últimas 24 horas no perfil
+  ativo, sem converter os históricos diários atuais em curva intraday.
+- [x] Preservar cotação/variação de IBOV e USD, ausência honesta de Dow/Brent,
+  perfil legado de 7 dias, testes e preview fixture-only.
+- [x] Publicar no `main`; iPhone nativo continua não testado.
+
 ## 0.2.45 — contrato EOD do gráfico USD/BRL
 
 - [x] Emitir `eod-civil-day` somente para séries diárias com pontos date-only;

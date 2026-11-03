@@ -3,7 +3,7 @@ const root=path.join(__dirname,'Popular Scripting'),entry=path.join(root,'origin
 vm.runInNewContext(code,{module:bundled,exports:bundled.exports,console,Date,URL,Intl,Math,JSON,Set,Map});
 const files=new Map(),fm={documentsDirectory:()=>'/documents',joinPath:(...parts)=>parts.join('/'),fileExists:file=>files.has(file),createDirectory:()=>{},readString:file=>files.get(file),writeString:(file,value)=>files.set(file,value)};
 const now=Date.parse('2026-10-29T12:00:00Z'),api=bundled.exports.createEngine({FileManager:{local:()=>fm},Request:class{},Data:{},Timer:undefined},{family:'medium',now});
-const timed={window:'90D',points:[
+const timed={window:'24H',windowHours:24,points:[
   {value:99,stamp:{day:'2026-10-28',label:'11:00',hasTime:true,time:now-25*60*60*1000}},
   {value:100,stamp:{day:'2026-10-28',label:'13:00',hasTime:true,time:now-23*60*60*1000}},
   {value:102,stamp:{day:'2026-10-29',label:'11:00',hasTime:true,time:now-60*60*1000}}
@@ -18,7 +18,7 @@ assert.equal(visible.displayStatus,'available-24h');
 const coords=api.lineCoordinates(timed,64,20);
 assert.equal(coords.length,2);
 assert(coords.every(point=>point.x>=.75&&point.x<=63.25&&point.y>=.75&&point.y<=19.25));
-const sparse={window:'monthly',points:[
+const sparse={window:'24H',windowHours:24,points:[
   {value:2793.02,stamp:{day:'2026-07-01',hasTime:false,time:Date.parse('2026-07-01T00:00:00Z')}},
   {value:2794.68,stamp:{day:'2026-08-01',hasTime:false,time:Date.parse('2026-08-01T00:00:00Z')}},
   {value:2795.37,stamp:{day:'2026-09-01',hasTime:false,time:Date.parse('2026-09-01T00:00:00Z')}}
@@ -33,5 +33,6 @@ assert(strips.length>0&&Math.max(...strips.map(strip=>strip.alpha))>.30,'expande
 const source=fs.readFileSync(entry,'utf8');
 assert.match(source,/const CHART_DISPLAY_HOURS = 24/);
 assert.match(source,/chartHeight: 20/);
-assert.match(source,/economia\.awesomeapi\.com\.br\/USD-BRL\/100/);
+assert.match(source,/economia\.awesomeapi\.com\.br\/json\/daily\/USD-BRL\/90/);
+assert.doesNotMatch(source,/economia\.awesomeapi\.com\.br\/USD-BRL\/100/);
 console.log('PASS 24h window: real timestamps only, 25h point excluded, monthly/CUB sparse fallback explicit, no interpolation/zero fill, stronger fill verified.');
