@@ -10,7 +10,7 @@ const args={queryParameters:{popular_refresh:options.force?'1':'0'}};
 const Color=class {constructor(hex,alpha=1){this.hex=hex;this.alpha=alpha;}};
 // Scriptable — Popular small/medium/large. O conjunto normal mantém oito
 // indicadores; o entry publicado pode selecionar o perfil de teste reversível.
-const VERSION = '2026.11.09.98'
+const VERSION = '2026.11.09.99'
 const SETTINGS = { refreshMinutes: 5, rotationMinutes: 5, selection: 'indicadores' };
 // Bloco 146 × 146 pt; quatro colunas e ícones circulares 26 pt centralizados nas linhas 36 pt.
 const LAYOUT = { columns: [28, 40, 46, 26], columnGap: 2, valueGap: 2, nameWidth: 40, priceWidth: 26, graphWidth: 46, rowHeight: 36, gap: 2/3, iconSize: 26, chartHeight: 20 };
@@ -186,13 +186,13 @@ function bounded(promise, milliseconds) {
     Promise.resolve(promise).then(value=>{timer.invalidate();resolve(value);},error=>{timer.invalidate();reject(error);});
   });
 }
-async function request(url,json=false,headers={},timeoutMs=null) {
+async function request(url,json=false,headers={},timeoutMs=null,onResponse=null) {
   const remaining=collectionDeadline-Date.now();
   if(remaining<=0)throw Error('Orçamento de consulta encerrado');
   const milliseconds=Math.min(timeoutMs||(options.force?6000:3000),remaining),r=new Request(url);r.timeoutInterval=milliseconds/1000;
   r.headers={...headers};
   if(forceRefresh)r.headers={...r.headers,'Cache-Control':'no-cache','Pragma':'no-cache'};
-  let result;try{result=await bounded(json?r.loadJSON():r.loadString(),milliseconds);}catch(error){networkFailures.push({url,reason:String(error.message||error)});throw error;}const status=r.response?.statusCode;
+  let result;try{result=await bounded(json?r.loadJSON():r.loadString(),milliseconds);}catch(error){if(onResponse)onResponse(r.response);networkFailures.push({url,reason:String(error.message||error)});throw error;}if(onResponse)onResponse(r.response);const status=r.response?.statusCode;
   if(status!=null&&(status<200||status>=300)){networkFailures.push({url,reason:'HTTP '+status});throw Error('HTTP '+status);}
   return result;
 }
@@ -1614,25 +1614,45 @@ function tradingWindow(chart,time=intradayNow()) {
   const gaps=points.filter(p=>p.breakBefore).length;
   return {...chart,points,xAxis:'observed-bars',displayDomain:null,displayWindow:{basis:'observed-trading-time',targetMs:TRADING_WINDOW_MS,coveredMs:covered,complete:covered>=TRADING_WINDOW_MS,intervalMs:interval,gaps,startTime:points[0]?.stamp.time||null,endTime:points.at(-1)?.stamp.time||null,timeZone:'America/Sao_Paulo'}};
 }
-function parseIntraday(payload,definition,time=intradayNow()) {
+function intradayFailure(code,message,diagnostic) {
+  diagnostic.stage='validation';diagnostic.code=code;
+  return Error(message);
+}
+function intradayTransportFailure(diagnostic,error) {
+  if(diagnostic.stage==='validation')return diagnostic;
+  const message=String(error?.message||error);
+  diagnostic.stage='transport';
+  diagnostic.code=diagnostic.httpStatus>=400?'http':/tempo|timeout|timed out|orçamento/i.test(message)?'timeout':error?.name==='SyntaxError'?'json':'network';
+  return diagnostic;
+}
+function parseIntraday(payload,definition,time=intradayNow(),diagnostic={}) {
   const result=payload?.chart?.result?.[0],meta=result?.meta,closes=result?.indicators?.quote?.[0]?.close,timestamps=result?.timestamp;
-  if(payload?.chart?.error||meta?.symbol!==definition.instrument||meta.currency!==definition.providerCurrency||meta.instrumentType!==definition.providerType||meta.dataGranularity!=='5m'||!Array.isArray(timestamps)||!Array.isArray(closes)||timestamps.length!==closes.length||timestamps.length>15000)throw Error(definition.code+': identidade ou intervalo inválido');
+  diagnostic.localReceiptTime=finite(diagnostic.localReceiptTime)?diagnostic.localReceiptTime:time;
+  const quoteTime=Number(meta?.regularMarketTime)*1000;
+  diagnostic.regularMarketTime=finite(quoteTime)?quoteTime:null;
+  diagnostic.quoteMinusReceiptMS=finite(quoteTime)?quoteTime-diagnostic.localReceiptTime:null;
+  diagnostic.providerSymbol=typeof meta?.symbol==='string'&&/^[A-Za-z0-9^=.-]{1,24}$/.test(meta.symbol)?meta.symbol:null;
+  for(const [target,key] of [['providerCurrency','currency'],['providerType','instrumentType'],['dataGranularity','dataGranularity']])diagnostic[target]=typeof meta?.[key]==='string'&&/^[A-Za-z0-9.-]{1,24}$/.test(meta[key])?meta[key]:null;
+  diagnostic.timestampCount=Array.isArray(timestamps)?timestamps.length:0;
+  diagnostic.sessionCount=Array.isArray(meta?.tradingPeriods)?meta.tradingPeriods.flat(Infinity).filter(s=>finite(s?.start)&&finite(s?.end)&&s.start<s.end).length:0;
+  if(payload?.chart?.error||!(meta?.symbol===definition.instrument||(definition.instrument==='BRL=X'&&meta?.symbol==='USDBRL=X'))||meta.currency!==definition.providerCurrency||meta.instrumentType!==definition.providerType||meta.dataGranularity!=='5m'||!Array.isArray(timestamps)||!Array.isArray(closes)||timestamps.length!==closes.length||timestamps.length>15000)throw intradayFailure('identity',definition.code+': identidade ou intervalo inválido',diagnostic);
   const price=Number(meta.regularMarketPrice),at=Number(meta.regularMarketTime)*1000,previous=Number(meta.regularMarketPreviousClose??meta.previousClose);
-  if(!finite(price)||price<=0||(definition.code==='USD/BRL'&&(price<.1||price>100))||!finite(at)||at<=0||at>time||time-at>10*86400000)throw Error(definition.code+': cotação inválida ou antiga');
+  if(!finite(price)||price<=0||(definition.code==='USD/BRL'&&(price<.1||price>100))||!finite(at)||at<=0||at>time||time-at>10*86400000)throw intradayFailure(!finite(price)||price<=0||(definition.code==='USD/BRL'&&(price<.1||price>100))?'price':!finite(at)||at<=0?'quote-time':at>time?'quote-future':'quote-old',definition.code+': cotação inválida ou antiga',diagnostic);
   const periods=(Array.isArray(meta.tradingPeriods)?meta.tradingPeriods.flat(Infinity):[]).filter(s=>finite(s?.start)&&finite(s?.end)&&s.start<s.end).map(s=>({start:s.start*1000,end:s.end*1000}));
-  if(!periods.length)throw Error(definition.code+': sessões ausentes');
+  if(!periods.length)throw intradayFailure('sessions',definition.code+': sessões ausentes',diagnostic);
   const unique=new Map();
   for(let i=0;i<timestamps.length;i++){
     const t=Number(timestamps[i])*1000,value=closes[i];
     if(!finite(t)||t<=0||t>at||t<time-10*86400000||!finite(value)||value<=0)continue;
     const session=periods.find(s=>t>=s.start&&t<=s.end);if(!session)continue;
-    if(unique.has(t)&&unique.get(t).value!==value)throw Error(definition.code+': timestamp conflitante');
+    if(unique.has(t)&&unique.get(t).value!==value)throw intradayFailure('series-conflict',definition.code+': timestamp conflitante',diagnostic);
     unique.set(t,{value,stamp:intradayStamp(t),session:session.start});
   }
   const points=[...unique.values()].sort((a,b)=>a.stamp.time-b.stamp.time);
-  if(points.length&&Math.abs(points.at(-1).value/price-1)>.05)throw Error(definition.code+': série incompatível com a cotação');
+  if(points.length&&Math.abs(points.at(-1).value/price-1)>.05)throw intradayFailure('series-mismatch',definition.code+': série incompatível com a cotação',diagnostic);
   const chart={points,window:'trading-24h',timeBasis:'observed-trading-time',intervalMs:INTRADAY_INTERVAL_MS},visible=tradingWindow(chart,time),percent=finite(previous)&&previous>0?(price/previous-1)*100:null;
-  return {intradaySchema:1,asset:{...definition,price,percent,delta:finite(previous)&&previous>0?price-previous:null,percentBasis:'supplier-previous-close'},previousClose:finite(previous)&&previous>0?previous:null,providerExchange:meta.exchangeName||null,providerTimeZone:meta.exchangeTimezoneName||null,localTest:true,stamp:intradayStamp(at),chart,chartStatus:visible.displayWindow.complete?'intraday-24h':'intraday-partial',quoteVerified:true,fetchedAt:time,sourceDelaySeconds:finite(meta.exchangeDataDelayedBy)?meta.exchangeDataDelayedBy*60:null,history:visible.displayWindow,chartCoverage:visible.displayWindow,chartRequirement:'observed-trading-time'};
+  diagnostic.stage='complete';diagnostic.code='ok';
+  return {intradayDiagnostic:{...diagnostic},intradaySchema:1,asset:{...definition,price,percent,delta:finite(previous)&&previous>0?price-previous:null,percentBasis:'supplier-previous-close'},previousClose:finite(previous)&&previous>0?previous:null,providerExchange:meta.exchangeName||null,providerTimeZone:meta.exchangeTimezoneName||null,localTest:true,stamp:intradayStamp(at),chart,chartStatus:visible.displayWindow.complete?'intraday-24h':'intraday-partial',quoteVerified:true,fetchedAt:time,sourceDelaySeconds:finite(meta.exchangeDataDelayedBy)?meta.exchangeDataDelayedBy*60:null,history:visible.displayWindow,chartCoverage:visible.displayWindow,chartRequirement:'observed-trading-time'};
 }
 function validIntradayCache(row,definition,time=intradayNow()) {
   return row?.intradaySchema===1&&row.asset?.code===definition.code&&row.asset.instrument===definition.instrument&&row.asset.source==='Yahoo Finance'&&row.asset.providerCurrency===definition.providerCurrency&&row.asset.providerType===definition.providerType&&finite(row.asset.price)&&row.asset.price>0&&finite(row.stamp?.time)&&row.stamp.time<=time&&time-row.stamp.time<=10*86400000&&finite(row.fetchedAt)&&row.fetchedAt>0&&row.fetchedAt<=time&&(row.asset.percent==null||finite(row.asset.percent))&&Array.isArray(row.chart?.points)&&row.chart.points.length<=15000&&row.chart.points.every((p,i,a)=>finite(p.value)&&p.value>0&&p.stamp?.hasTime===true&&finite(p.stamp.time)&&p.stamp.time<=row.stamp.time&&finite(p.session)&&p.session<=p.stamp.time&&(!i||p.stamp.time>a[i-1].stamp.time))&&!!tradingWindow(row.chart,time);
@@ -1650,17 +1670,30 @@ async function loadIntraday(definition) {
   let cached=validIntradayCache(saved,definition)?saved:null;
   if(cached){const history=tradingWindow(cached.chart,intradayNow()).displayWindow;cached={...cached,history,chartCoverage:history,chartStatus:history.complete?'intraday-24h':'intraday-partial'};}
   if(cacheFresh(cached))return cached;
+  let diagnostic={stage:'transport',code:'pending'};
+  const received=response=>{
+    if(!response)return;
+    diagnostic.localReceiptTime=options.now==null?(finite(response?.receivedAt)?response.receivedAt:Date.now()):intradayNow();
+    if(Number.isInteger(response?.statusCode)&&response.statusCode>=100&&response.statusCode<=599)diagnostic.httpStatus=response.statusCode;
+    if(finite(response?.serverTime))diagnostic.serverTime=response.serverTime;
+  };
+  const read=async url=>{
+    diagnostic={stage:'transport',code:'pending'};
+    const payload=await request(url,true,{},options.force?20000:7000,received);
+    return parseIntraday(payload,definition,intradayNow(),diagnostic);
+  };
   try {
     const endpoint='https://query1.finance.yahoo.com/v8/finance/chart/'+encodeURIComponent(definition.instrument);
-    let row=parseIntraday(await request(endpoint+'?range=5d&interval=5m',true,{},options.force?20000:7000),definition);
+    let row=await read(endpoint+'?range=5d&interval=5m');
     if(!row.history.complete&&collectionDeadline-Date.now()>1000){
-      try{const expanded=parseIntraday(await request(endpoint+'?range=1mo&interval=5m',true,{},options.force?20000:7000),definition);if(expanded.history.coveredMs>row.history.coveredMs)row=expanded;}catch(_){}
+      try{const expanded=await read(endpoint+'?range=1mo&interval=5m');if(expanded.history.coveredMs>row.history.coveredMs)row=expanded;}catch(error){row={...row,intradayDiagnostic:{...intradayTransportFailure(diagnostic,error),historyExpansion:true}};}
     }
     row=mergeIntradayHistory(row,cached);cacheWrite(key,row);return row;
   } catch(error) {
     console.log(definition.code+': '+error);
-    if(cached)return {...cached,cached:true};
-    return {asset:{...definition,price:null,percent:null,delta:null},stamp:null,chart:null,localTest:true,intradayUnavailable:true,chartStatus:'intraday-unavailable',quoteVerified:false,sourceError:String(error.message||error)};
+    const intradayDiagnostic={...intradayTransportFailure(diagnostic,error)};
+    if(cached)return {...cached,cached:true,intradayDiagnostic:{...intradayDiagnostic,cachePreserved:true}};
+    return {intradayDiagnostic,asset:{...definition,price:null,percent:null,delta:null},stamp:null,chart:null,localTest:true,intradayUnavailable:true,chartStatus:'intraday-unavailable',quoteVerified:false,sourceError:String(error.message||error)};
   }
 }
 async function collectPublishedProfileRows() {
@@ -1814,9 +1847,19 @@ function unitText(row) {
   if(asset.type==='criptomoedas')return asset.code+' '+(asset.currency||'—')+(!row.stamp?' S/D':asset.percentBasis==='24H'||asset.percentBasis==='rolling24h'?' 24H':asset.percentBasis==='daily-series'?' D/D':'');
   return asset.code==='BRENT'?(asset.contract||'BRENT · INV —'):asset.unitLabel||(asset.code.startsWith('—')?'—':asset.code);
 }
+function safeIntradayDiagnostic(value) {
+  const out={};
+  if(['transport','validation','complete'].includes(value?.stage))out.stage=value.stage;
+  if(['pending','ok','http','timeout','json','network','identity','price','quote-time','quote-future','quote-old','sessions','series-conflict','series-mismatch'].includes(value?.code))out.code=value.code;
+  for(const key of ['localReceiptTime','regularMarketTime','quoteMinusReceiptMS','serverTime','httpStatus','timestampCount','sessionCount'])if(finite(value?.[key]))out[key]=value[key];
+  if(typeof value?.providerSymbol==='string'&&/^[A-Za-z0-9^=.-]{1,24}$/.test(value.providerSymbol))out.providerSymbol=value.providerSymbol;
+  for(const key of ['providerCurrency','providerType','dataGranularity'])if(typeof value?.[key]==='string'&&/^[A-Za-z0-9.-]{1,24}$/.test(value[key]))out[key]=value[key];
+  for(const key of ['cachePreserved','historyExpansion'])if(value?.[key]===true)out[key]=true;
+  return out;
+}
 function quoteAudit(row) {
   const {asset,stamp}=row;
-  return {code:asset.code,source:asset.source,instrument:asset.instrument||null,chartCoverage:row.chartCoverage||row.history||null,chartStatus:row.chartStatus||null,previousClose:row.previousClose??null,providerExchange:row.providerExchange||null,providerTimeZone:row.providerTimeZone||null,sourceDelaySeconds:row.sourceDelaySeconds??null,currency:asset.currency||null,unit:asset.unit||null,
+  return {code:asset.code,source:asset.source,...(row.intradayDiagnostic?{intradayDiagnostic:safeIntradayDiagnostic(row.intradayDiagnostic)}:{}),instrument:asset.instrument||null,chartCoverage:row.chartCoverage||row.history||null,chartStatus:row.chartStatus||null,previousClose:row.previousClose??null,providerExchange:row.providerExchange||null,providerTimeZone:row.providerTimeZone||null,sourceDelaySeconds:row.sourceDelaySeconds??null,currency:asset.currency||null,unit:asset.unit||null,
     price:finite(asset.price)?asset.price:null,percent:finite(asset.percent)?asset.percent:null,delta:finite(asset.delta)?asset.delta:null,observationDay:stamp?.day||null,observationTime:stamp?.hasTime?stamp.time:null,
     sourceUpdatedAt:row.updatedAt?.time||null,fetchedAt:row.fetchedAt||null,cached:!!(row.cached||asset.catalogCached),archive:!!row.archive,
     referencePeriod:row.referencePeriod||null,priceBasis:asset.quoteBasis||(row.archive?'repository-archive':row.quoteTimeBasis||(!stamp?'undated-supplier-price':'supplier-observation')),

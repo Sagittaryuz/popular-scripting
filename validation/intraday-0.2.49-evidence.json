@@ -1,0 +1,307 @@
+{
+  "version": "0.2.49",
+  "sourceVersion": "2026.11.09.99",
+  "captureMode": "One request per existing endpoint; four HTTP200; later offline replay",
+  "comparison": [
+    {
+      "requestedSymbol": "^BVSP",
+      "status": 200,
+      "startedAt": "2026-11-09T20:09:58.268Z",
+      "receivedAt": "2026-11-09T20:10:15.134Z",
+      "httpDate": "Mon, 09 Nov 2026 20:10:14 GMT",
+      "regularMarketTime": "2026-11-09T19:55:00.000Z",
+      "quoteMinusReceiptMs": -915134,
+      "serverDateMinusReceiptMs": -1134,
+      "metadata": {
+        "symbol": "^BVSP",
+        "currency": "BRL",
+        "instrumentType": "INDEX",
+        "shortName": "IBOVESPA",
+        "longName": "IBOVESPA",
+        "exchangeName": "SAO",
+        "fullExchangeName": "São Paulo",
+        "timezone": "BRT",
+        "exchangeTimezoneName": "America/Sao_Paulo",
+        "underlyingSymbol": null,
+        "dataGranularity": "5m"
+      },
+      "tradingPeriods": {
+        "type": "object",
+        "isArray": true,
+        "length": 5,
+        "nestedArrays": true,
+        "validSessions": true,
+        "sessions": [
+          [
+            {
+              "timezone": "BRT",
+              "end": 1793736000,
+              "start": 1793710800,
+              "gmtoffset": -10800
+            }
+          ],
+          [
+            {
+              "timezone": "BRT",
+              "end": 1793822400,
+              "start": 1793797200,
+              "gmtoffset": -10800
+            }
+          ],
+          [
+            {
+              "timezone": "BRT",
+              "end": 1793908800,
+              "start": 1793883600,
+              "gmtoffset": -10800
+            }
+          ],
+          [
+            {
+              "timezone": "BRT",
+              "end": 1793995200,
+              "start": 1793970000,
+              "gmtoffset": -10800
+            }
+          ],
+          [
+            {
+              "timezone": "BRT",
+              "end": 1794254400,
+              "start": 1794229200,
+              "gmtoffset": -10800
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "requestedSymbol": "^DJI",
+      "status": 200,
+      "startedAt": "2026-11-09T20:10:15.135Z",
+      "receivedAt": "2026-11-09T20:10:15.323Z",
+      "httpDate": "Mon, 09 Nov 2026 20:10:15 GMT",
+      "regularMarketTime": "2026-11-09T20:10:14.000Z",
+      "quoteMinusReceiptMs": -1323,
+      "serverDateMinusReceiptMs": -323,
+      "metadata": {
+        "symbol": "^DJI",
+        "currency": "USD",
+        "instrumentType": "INDEX",
+        "shortName": "Dow Jones Industrial Average",
+        "longName": "Dow Jones Industrial Average",
+        "exchangeName": "DJI",
+        "fullExchangeName": "DJI",
+        "timezone": "EST",
+        "exchangeTimezoneName": "America/New_York",
+        "underlyingSymbol": null,
+        "dataGranularity": "5m"
+      },
+      "tradingPeriods": {
+        "type": "object",
+        "isArray": true,
+        "length": 5,
+        "nestedArrays": true,
+        "validSessions": true,
+        "sessions": [
+          [
+            {
+              "timezone": "EST",
+              "start": 1793716200,
+              "end": 1793739600,
+              "gmtoffset": -18000
+            }
+          ],
+          [
+            {
+              "timezone": "EST",
+              "start": 1793802600,
+              "end": 1793826000,
+              "gmtoffset": -18000
+            }
+          ],
+          [
+            {
+              "timezone": "EST",
+              "start": 1793889000,
+              "end": 1793912400,
+              "gmtoffset": -18000
+            }
+          ],
+          [
+            {
+              "timezone": "EST",
+              "start": 1793975400,
+              "end": 1793998800,
+              "gmtoffset": -18000
+            }
+          ],
+          [
+            {
+              "timezone": "EST",
+              "start": 1794234600,
+              "end": 1794258000,
+              "gmtoffset": -18000
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "requestedSymbol": "BRL=X",
+      "status": 200,
+      "startedAt": "2026-11-09T20:10:15.324Z",
+      "receivedAt": "2026-11-09T20:10:15.505Z",
+      "httpDate": "Mon, 09 Nov 2026 20:10:15 GMT",
+      "regularMarketTime": "2026-11-09T20:10:14.000Z",
+      "quoteMinusReceiptMs": -1505,
+      "serverDateMinusReceiptMs": -505,
+      "metadata": {
+        "symbol": "USDBRL=X",
+        "currency": "BRL",
+        "instrumentType": "CURRENCY",
+        "shortName": "USD/BRL",
+        "longName": "USD/BRL",
+        "exchangeName": "CCY",
+        "fullExchangeName": "CCY",
+        "timezone": "GMT",
+        "exchangeTimezoneName": "Europe/London",
+        "underlyingSymbol": null,
+        "dataGranularity": "5m"
+      },
+      "tradingPeriods": {
+        "type": "object",
+        "isArray": true,
+        "length": 5,
+        "nestedArrays": true,
+        "validSessions": true,
+        "sessions": [
+          [
+            {
+              "timezone": "GMT",
+              "end": 1793750340,
+              "start": 1793664000,
+              "gmtoffset": 0
+            }
+          ],
+          [
+            {
+              "timezone": "GMT",
+              "end": 1793836740,
+              "start": 1793750400,
+              "gmtoffset": 0
+            }
+          ],
+          [
+            {
+              "timezone": "GMT",
+              "end": 1793923140,
+              "start": 1793836800,
+              "gmtoffset": 0
+            }
+          ],
+          [
+            {
+              "timezone": "GMT",
+              "end": 1794009540,
+              "start": 1793923200,
+              "gmtoffset": 0
+            }
+          ],
+          [
+            {
+              "timezone": "GMT",
+              "end": 1794268740,
+              "start": 1794182400,
+              "gmtoffset": 0
+            }
+          ]
+        ]
+      }
+    },
+    {
+      "requestedSymbol": "BZ=F",
+      "status": 200,
+      "startedAt": "2026-11-09T20:10:15.506Z",
+      "receivedAt": "2026-11-09T20:10:15.758Z",
+      "httpDate": "Mon, 09 Nov 2026 20:10:15 GMT",
+      "regularMarketTime": "2026-11-09T20:00:14.000Z",
+      "quoteMinusReceiptMs": -601758,
+      "serverDateMinusReceiptMs": -758,
+      "metadata": {
+        "symbol": "BZ=F",
+        "currency": "USD",
+        "instrumentType": "FUTURE",
+        "shortName": "Brent Crude Oil Last Day Financ",
+        "longName": "Brent Crude Oil Last Day Financial Futures",
+        "exchangeName": "NYM",
+        "fullExchangeName": "NY Mercantile",
+        "timezone": "EST",
+        "exchangeTimezoneName": "America/New_York",
+        "underlyingSymbol": null,
+        "dataGranularity": "5m"
+      },
+      "tradingPeriods": {
+        "type": "object",
+        "isArray": true,
+        "length": 5,
+        "nestedArrays": true,
+        "validSessions": true,
+        "sessions": [
+          [
+            {
+              "timezone": "EST",
+              "end": 1793854740,
+              "start": 1793768400,
+              "gmtoffset": -18000
+            }
+          ],
+          [
+            {
+              "timezone": "EST",
+              "end": 1793941140,
+              "start": 1793854800,
+              "gmtoffset": -18000
+            }
+          ],
+          [
+            {
+              "timezone": "EST",
+              "end": 1794027540,
+              "start": 1793941200,
+              "gmtoffset": -18000
+            }
+          ],
+          [
+            {
+              "timezone": "EST",
+              "end": 1794200340,
+              "start": 1794114000,
+              "gmtoffset": -18000
+            }
+          ],
+          [
+            {
+              "timezone": "EST",
+              "end": 1794286740,
+              "start": 1794200400,
+              "gmtoffset": -18000
+            }
+          ]
+        ]
+      }
+    }
+  ],
+  "dollarCause": "BRL=X response identifies itself as USDBRL=X; exact alias accepted, all currency/type/interval checks retained",
+  "dowNativeCause": null,
+  "deviceStatus": "User image confirms .48 still partial. .49 not yet tested on iPhone.",
+  "tests": [
+    "16 module import/build",
+    "full npm test",
+    "26 intraday cases with new real captures",
+    "model/host live-capture replay",
+    "strict alias/diagnostics/clock/cache regression",
+    "safe diagnostic UI",
+    "three-family simulated preview"
+  ]
+}

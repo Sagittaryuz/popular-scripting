@@ -1,9 +1,9 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),zlib=require('node:zlib');
 const {bundle}=require('./test-trading-host.cjs');
 const root=path.resolve(__dirname,'..'),previewDir=path.join(root,'validation');
-const evidence=JSON.parse(fs.readFileSync(path.join(previewDir,'market-profile-0.2.48-preview.json'),'utf8'));
+const evidence=JSON.parse(fs.readFileSync(path.join(previewDir,'market-profile-0.2.49-preview.json'),'utf8'));
 const order=['IBOV','DOW_JONES','USD/BRL','BRENT'],symbols=['^BVSP','^DJI','BRL=X','BZ=F'];
-assert.equal(evidence.version,'0.2.48');assert.equal(evidence.sourceVersion,'2026.11.09.98');
+assert.equal(evidence.version,'0.2.49');assert.equal(evidence.sourceVersion,'2026.11.09.99');
 assert.equal(evidence.nativeIPhone,false);assert.match(evidence.simulation,/actual scripting model \+ host \+ JSX\/Canvas/i);
 assert.equal(evidence.data.capturedResponses,true);assert.deepEqual(evidence.order,order);
 assert.equal(evidence.rows.length,4);
@@ -35,7 +35,7 @@ for(const family of ['small','medium','large']){
   assert(!result.texts.some(t=>t.key==='market-status-dot'||/indisponível|Jan-27/.test(t.text)));
   verifyPNG(path.join(root,result.output));
 }
-verifyPNG(path.join(previewDir,'market-profile-0.2.48-preview.png'));
+verifyPNG(path.join(previewDir,'market-profile-0.2.49-preview.png'));
 assert(symbols.every(symbol=>evidence.requests.some(r=>decodeURIComponent(new URL(r.url).pathname).endsWith('/'+symbol))));
 assert(evidence.requests.every(r=>!r.authenticated));
 // Exercise the shipped Canvas implementation, not just a textual source match.
@@ -46,4 +46,4 @@ const commands=[],ctx={beginPath:()=>commands.push('begin'),moveTo:(x,y)=>comman
 draw.drawCurve(ctx,{width:46,height:20},plan,'#00E676');
 const line=commands.slice(commands.lastIndexOf('begin')+1);assert.deepEqual(line,[['move',0,5],['line',1,6],['move',3,8],['line',4,7]],'stroke starts a new path at each gap');
 const empty=draw.curvePlan({displayChart:()=>({window:'trading-24h',displayWindow:{basis:'observed-trading-time',startTime:null,endTime:null},displayStatus:'unavailable-trading-24h'}),lineCoordinates:()=>[],monthLayout:()=>({lines:[],labels:[]}),gradientStrips:()=>[]},{chart:{}});assert.equal(empty.status,'unavailable-24h','empty trading history never becomes a 7d fallback');
-console.log('PASS .48 Skia evidence: four prices/curves, real instruments, complete fitted labels and effective dates in three families, decoded nonempty pixels, Canvas line/fill gaps, explicitly not native iPhone evidence.');
+console.log('PASS .49 Skia evidence: four prices/curves, real instruments, complete fitted labels and effective dates in three families, decoded nonempty pixels, Canvas line/fill gaps, explicitly not native iPhone evidence.');
