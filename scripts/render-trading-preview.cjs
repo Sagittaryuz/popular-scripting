@@ -3,6 +3,7 @@
 const fs=require('fs'),path=require('path'),vm=require('vm'),assert=require('node:assert/strict'),{buildSync}=require('esbuild');
 const {createCanvas,loadImage,GlobalFonts}=require('@napi-rs/canvas');
 GlobalFonts.registerFromPath('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf','DejaVu Sans');
+GlobalFonts.registerFromPath('/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf','DejaVu Sans');
 const root=path.resolve(__dirname,'..'),dir=path.join(root,'scripts/Popular Scripting'),version=JSON.parse(fs.readFileSync(path.join(dir,'script.json'),'utf8')).version;
 function bundle(file){return buildSync({entryPoints:[path.join(dir,file)],bundle:true,write:false,format:'cjs',platform:'node',external:['scripting'],jsxFactory:'createElement'}).outputFiles[0].text}
 function walk(n){return n&&typeof n==='object'?[n,...(n.children||[]).flatMap(walk)]:[]}
@@ -20,9 +21,9 @@ async function run(){
  const v={exports:{}};vm.runInNewContext(bundle('view.tsx'),{...globals,module:v,exports:v.exports,createElement,UIImage:{fromBase64String:s=>{if(!imageMap.has(s)){const item={};imageMap.set(s,item);imageJobs.push(loadImage(Buffer.from(s,'base64')).then(image=>item.image=image));}return imageMap.get(s)}}});
  assert.equal(v.exports.tradingRangeLabel({basis:'observed-trading-time',startTime:null,endTime:null,coveredMs:0}),'','empty history never creates an epoch date label');
  const rendered={};fs.mkdirSync(path.join(root,'validation'),{recursive:true});
- for(const [family,width,height] of [['small',158,158],['medium',338,170],['large',338,360]]){
-  const tree=v.exports.PopularView({model:{...model,family},width,height});await Promise.all(imageJobs);
-  const nodes=walk(tree),charts=nodes.filter(n=>n.type==='Canvas'&&n.props.key==='asset-chart'),labels=nodes.filter(n=>n.type==='Text'&&n.props.key==='trading-range');assert.equal(charts.length,4);assert.equal(labels.length,4);assert(!nodes.some(n=>n.props?.key==='missing'));assert(nodes.some(n=>n.children?.includes('Brent futuro')));
+ for(const [family,width,height] of [['small',158,158],['medium',338,170],['large',338,360],['preview',332,158]]){
+  const tree=v.exports.PopularView({model:{...model,family:family==='preview'?'medium':family},width,height});await Promise.all(imageJobs);
+  const nodes=walk(tree),charts=nodes.filter(n=>n.type==='Canvas'&&n.props.key==='asset-chart'),labels=nodes.filter(n=>n.type==='Text'&&n.props.key==='trading-range');assert.equal(charts.length,4);assert.equal(labels.length,4);assert(!nodes.some(n=>n.props?.key==='missing'));assert(nodes.some(n=>n.props?.key==='name-text'&&n.children?.includes('BRENT')));
   const scale=4,canvas=createCanvas(width*scale,height*scale),g=canvas.getContext('2d');g.scale(scale,scale);g.fillStyle='#1e1e1e';g.fillRect(0,0,width,height);const texts=[];
   function paint(n,ox=0,oy=0,pw=width,ph=height){
    if(!n||typeof n!=='object')return;const p=n.props||{},w=p.frame?.width??pw,h=p.frame?.height??ph,x=ox+(p.position?p.position.x-w/2:0),y=oy+(p.position?p.position.y-h/2:0);
@@ -31,17 +32,24 @@ async function run(){
    if(n.type==='Rectangle'){g.fillStyle=p.fill||'#fff';g.fillRect(x,y,w,h);}
    if(n.type==='Canvas'){g.translate(x,y);g.beginPath();g.rect(0,0,w,h);g.clip();p.draw(g,{width:w,height:h});}
    if(n.type==='Text'){
-    let text=n.children.join(''),font=typeof p.font==='number'?p.font:8;const min=font*(p.minScaleFactor??1),weight=p.fontWeight==='semibold'?'600':'400',set=()=>g.font=weight+' '+font+'px "DejaVu Sans"';set();font=Math.max(min,Math.min(font,font*w*.98/Math.max(.1,g.measureText(text).width),h*.85));set();
+    let text=n.children.join(''),font=typeof p.font==='number'?p.font:8;const requestedFont=font,min=font*(p.minScaleFactor??1),weight=p.fontWeight==='bold'?'700':p.fontWeight==='semibold'?'600':'400',set=()=>g.font=weight+' '+font+'px "DejaVu Sans"';set();font=Math.max(min,Math.min(font,font*w/Math.max(.1,g.measureText(text).width)));set();
+    // Skia hinting makes width non-linear at tiny sizes; finish fitting before truncating.
+    for(let fit=0;fit<20&&font>min&&g.measureText(text).width>w+.05;fit++){font=Math.max(min,font-.01);set();}
     if(g.measureText(text).width>w+.05){while(text.length&&g.measureText(text+'…').width>w)text=text.slice(0,-1);text+='…';}
-    g.beginPath();g.rect(x,y,w,h);g.clip();g.fillStyle=p.foregroundStyle||'#fff';g.textBaseline='middle';const tw=g.measureText(text).width,tx=p.frame?.alignment==='trailing'?x+w-tw:p.frame?.alignment==='leading'?x:x+(w-tw)/2;g.fillText(text,tx,y+h/2);texts.push({key:p.key,text,font,x,y,w,h});
+    const metrics=g.measureText(text),alignment=p.frame?.alignment||'center',tw=metrics.width,tx=/trailing/i.test(alignment)?x+w-tw:/leading/i.test(alignment)?x:x+(w-tw)/2;
+    // Emulate native line-box alignment with font ascent/descent, not ink snapping.
+    const ascent=metrics.fontBoundingBoxAscent,descent=metrics.fontBoundingBoxDescent,lineHeight=ascent+descent;
+    const baseline=/top/i.test(alignment)?y+ascent:/bottom/i.test(alignment)?y+h-descent:y+(h-lineHeight)/2+ascent;
+    const ink={left:tx-metrics.actualBoundingBoxLeft,right:tx+metrics.actualBoundingBoxRight,top:baseline-metrics.actualBoundingBoxAscent,bottom:baseline+metrics.actualBoundingBoxDescent};
+    g.fillStyle=p.foregroundStyle||'#fff';g.textBaseline='alphabetic';g.fillText(text,tx,baseline);texts.push({key:p.key,text,font,requestedFont,weight,alignment,x,y,w,h,ink,lineHeight,inkOutsideFrame:ink.top<y-.05||ink.bottom>y+h+.05||ink.left<x-.05||ink.right>x+w+.05});
    }
    if(!['Text','Canvas','Image','Rectangle'].includes(n.type))for(const child of n.children||[])paint(child,x,y,w,h);
    g.restore();
   }
-  paint(tree);const output=path.join(root,`validation/market-profile-${version}-${family}.png`);fs.writeFileSync(output,canvas.toBuffer('image/png'));rendered[family]={output:path.relative(root,output),rows:4,curves:charts.length,texts};
+  paint(tree);const output=path.join(root,`validation/market-profile-${version}-${family}.png`);fs.writeFileSync(output,canvas.toBuffer('image/png'));rendered[family]={output:path.relative(root,output),rows:4,curves:charts.length,width,height,texts,geometry:nodes.filter(n=>['asset-icon','asset-chart'].includes(n.props?.key)).map(n=>({key:n.props.key,frame:n.props.frame,position:n.props.position}))};
  }
- fs.copyFileSync(path.join(root,`validation/market-profile-${version}-medium.png`),path.join(root,`validation/market-profile-${version}-preview.png`));
- const report={version,sourceVersion:model.sourceVersion,nativeIPhone:false,simulation:'Actual Scripting model + host + JSX/Canvas, Linux Skia; native Text approximation',data:{live:false,capturedResponses:true,source:'Replay of real responses from the capture directory; not native iPhone evidence',capturedAt:fs.existsSync(path.join(captureDir,'transport.json'))?JSON.parse(fs.readFileSync(path.join(captureDir,'transport.json'))).map(r=>({symbol:r.symbol,status:r.status,receivedAt:r.receivedAt||r.checkedAt})):[],captureDirectory:path.basename(captureDir),renderedAt:new Date(now).toISOString(),window:'24 hours observed trading intervals, no gap interpolation'},order:model.rows.map(r=>r.asset.code),rows:model.rows.map(r=>({code:r.asset.code,name:r.name,price:r.price,rawPrice:r.asset.price,percent:r.percent,time:r.time,instrument:r.asset.instrument,source:r.asset.source,quoteTime:new Date(r.stamp.time).toISOString(),coverage:r.chartCoverage,points:r.chart.points.length})),families:rendered,requests:requests.map(r=>({url:r.url,timeout:r.timeout,authenticated:Object.keys(r.headers).some(k=>k.toLowerCase()==='authorization')}))};
+
+ const report={version,sourceVersion:model.sourceVersion,nativeIPhone:false,simulation:'Actual Scripting model + host + JSX/Canvas, Linux Skia; native Text line-box approximation with Linux font metrics; ink alignment is not UIKit evidence',data:{live:false,capturedResponses:true,source:'Replay of real responses from the capture directory; not native iPhone evidence',capturedAt:fs.existsSync(path.join(captureDir,'transport.json'))?JSON.parse(fs.readFileSync(path.join(captureDir,'transport.json'))).map(r=>({symbol:r.symbol,status:r.status,receivedAt:r.receivedAt||r.checkedAt})):[],captureDirectory:path.basename(captureDir),renderedAt:new Date(now).toISOString(),window:'24 hours observed trading intervals, no gap interpolation'},order:model.rows.map(r=>r.asset.code),rows:model.rows.map(r=>({code:r.asset.code,name:r.name,price:r.price,rawPrice:r.asset.price,percent:r.percent,time:r.time,instrument:r.asset.instrument,source:r.asset.source,quoteTime:new Date(r.stamp.time).toISOString(),coverage:r.chartCoverage,points:r.chart.points.length})),families:rendered,requests:requests.map(r=>({url:r.url,timeout:r.timeout,authenticated:Object.keys(r.headers).some(k=>k.toLowerCase()==='authorization')}))};
  fs.writeFileSync(path.join(root,`validation/market-profile-${version}-preview.json`),JSON.stringify(report,null,2)+'\n');
  console.log(JSON.stringify({version,rows:report.rows,nativeIPhone:false,families:Object.keys(rendered)},null,2));
 }

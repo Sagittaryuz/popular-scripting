@@ -1,3 +1,9 @@
+## 0.2.50 — textos maiores e alinhados aos ícones
+
+- Após a confirmação do usuário de que dados e gráficos funcionam, altera somente apresentação: nomes IBOVESPA, DOW JONES, DÓLAR e BRENT em caixa alta e negrito; cotações maiores; código/horário e variação na mesma fonte inferior.
+- Nomes e preços alinhados ao topo dos círculos, código e variação à base, com o mesmo intervalo entre as duas linhas. Gráficos ocupam a altura dos ícones. Coluna de preço maior evita reduzir excessivamente os números; ícones permanecem circulares em todos os tamanhos.
+- Motor `2026.11.09.99`, fontes, valores, cache, 24 horas cotadas e diagnóstico preservados. BRENT é apenas o rótulo curto; detalhes e acessibilidade continuam identificando Brent futuro.
+
 ## 0.2.49 — dólar e diagnóstico da falha restante
 
 - A resposta atual de `BRL=X` usa o nome canônico `USDBRL=X`. Aceita somente esse alias do mesmo par, preservando moeda/tipo/intervalo, fonte e cache.

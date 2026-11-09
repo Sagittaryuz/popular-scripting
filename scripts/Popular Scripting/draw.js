@@ -1,18 +1,18 @@
 // @ts-nocheck
 // Text belongs to native Text views, never to Canvas baselines or clipping boxes.
-const ROW=36,TOP=8,MIDDLE=8,BOTTOM=3,GRAPH_HEIGHT=20;
+const ROW=36,TOP=17,MIDDLE=7,BOTTOM=3,GRAPH_HEIGHT=26;
 // The row is a measured four-column grid. The 26 pt icon is centered in the
 // first column while the wider identity column has room for the name /
 // code-date pair. The graph and quote columns are independent, so no text can
 // enter the neighboring visual region.
-const COLUMN=146,COLUMN_GAP=12,COL_GAP=2,COL1=28,COL2=40,COL3=46,COL4=26;
+const COLUMN=146,COLUMN_GAP=12,COL_GAP=2,COL1=28,COL2=44,COL3=32,COL4=36;
 const COL1_X=0,COL2_X=COL1+COL_GAP,COL3_X=COL2_X+COL2+COL_GAP,COL4_X=COL3_X+COL3+COL_GAP;
 // The name is a single native Text view. Its full identity column is the
 // truncation box; no status indicator reserves space beside the name.
 const NAME_TEXT_MAX=COL2;
 const ICON=26,ICON_TOP=(ROW-ICON)/2,ICON_LEFT=(COL1-ICON)/2;
 const BLOCK_TOP=0,BLOCK_HEIGHT=ROW,BLOCK_CENTER=BLOCK_TOP+BLOCK_HEIGHT/2;
-const NAME_TOP=9,NAME_HEIGHT=8,META_TOP=19,META_HEIGHT=8,GRAPH_TOP=8,MONTH_TOP=25.5,LINE1_TOP=9,LINE2_TOP=19,LINE3_TOP=16.5;
+const NAME_TOP=5,NAME_HEIGHT=17,META_TOP=24,META_HEIGHT=7,GRAPH_TOP=5,MONTH_TOP=31,LINE1_TOP=5,LINE2_TOP=24,LINE3_TOP=16.5;
 export const GEOMETRY=Object.freeze({column:COLUMN,columnGap:COLUMN_GAP,row:ROW,gap:2/3,icon:ICON,iconTop:ICON_TOP,iconLeft:ICON_LEFT,iconColumn:COL1,col1:COL1,col1X:COL1_X,col2:COL2,col2X:COL2_X,col3:COL3,col3X:COL3_X,col4:COL4,col4X:COL4_X,colGap:COL_GAP,detail:COL3_X,blockWidth:COL3,blockTop:BLOCK_TOP,blockHeight:BLOCK_HEIGHT,blockCenter:BLOCK_CENTER,name:COL2,nameX:COL2_X,nameTop:NAME_TOP,nameHeight:NAME_HEIGHT,nameTextMax:NAME_TEXT_MAX,code:COL2,codeX:COL2_X,codeTop:META_TOP,codeHeight:META_HEIGHT,date:COL2,dateX:COL2_X,dateTop:META_TOP,dateHeight:META_HEIGHT,price:COL4,priceX:COL4_X,unit:COL4,unitX:COL4_X,timeX:COL2_X,time:COL2,graph:COL3,graphX:COL3_X,graphHeight:GRAPH_HEIGHT,percent:COL4,percentX:COL4_X,top:TOP,middle:MIDDLE,bottom:BOTTOM,line1Top:LINE1_TOP,line2Top:LINE2_TOP,graphTop:GRAPH_TOP,monthTop:MONTH_TOP,line3Top:LINE3_TOP});
 export function layout(family,width,height){
   if(!Number.isFinite(width)||!Number.isFinite(height)||width<=12||height<=8)throw Error('Dimensão inválida');
@@ -28,8 +28,7 @@ export function place(plan,x,y,width,height,alignment='center'){
   return {frame:{width:width*s,height:height*plan.scaleY,alignment},position:{x:plan.x+(x+width/2)*s,y:plan.y+(y+height/2)*plan.scaleY}};
 }
 export function placeInBlock(plan,x,y,width,height,alignment='center'){
-  const s=plan.scale;
-  return {frame:{width:width*s,height:height*plan.scaleY,alignment},position:{x:(x+width/2)*s,y:(y+height/2)*plan.scaleY}};
+  return place(plan,x,y,width,height,alignment);
 }
 export function movementColor(row){return row.movement>0?'#00E676':row.movement<0?'#FF1744':'#96969C';}
 export function curvePlan(api,row,width=GEOMETRY.graph){

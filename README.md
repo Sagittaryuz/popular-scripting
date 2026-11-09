@@ -1,3 +1,9 @@
+## 0.2.50 — textos maiores e alinhados aos ícones
+
+- Após a confirmação do usuário de que dados e gráficos funcionam, altera somente apresentação: nomes IBOVESPA, DOW JONES, DÓLAR e BRENT em caixa alta e negrito; cotações maiores; código/horário e variação na mesma fonte inferior.
+- Nomes e preços alinhados ao topo dos círculos, código e variação à base, com o mesmo intervalo entre as duas linhas. Gráficos ocupam a altura dos ícones. Coluna de preço maior evita reduzir excessivamente os números; ícones permanecem circulares em todos os tamanhos.
+- Motor `2026.11.09.99`, fontes, valores, cache, 24 horas cotadas e diagnóstico preservados. BRENT é apenas o rótulo curto; detalhes e acessibilidade continuam identificando Brent futuro.
+
 ## 0.2.49 — dólar e diagnóstico da falha restante
 
 - A resposta atual de `BRL=X` usa o nome canônico `USDBRL=X`. Aceita somente esse alias do mesmo par, preservando moeda/tipo/intervalo, fonte e cache.
@@ -463,7 +469,7 @@ Na tela **Importar Scripts Remotos** do Scripting, cole:
 https://github.com/Sagittaryuz/popular-scripting/tree/main/scripts/Popular%20Scripting
 ```
 
-Importe ou atualize **Popular Scripting** pelo vínculo remoto existente, confirme **0.2.49** e motor **2026.11.09.99**, abra o projeto e toque em **Atualizar** para consultar os indicadores. Não configure outro token: o perfil atual usa Yahoo público. O botão Atualizar dentro do Popular atualiza dados, não instala uma versão nova do código. Na Tela de Início, mantenha o widget Scripting com esse projeto.
+Importe ou atualize **Popular Scripting** pelo vínculo remoto existente, confirme **0.2.50** e motor **2026.11.09.99**, abra o projeto e toque em **Atualizar** para consultar os indicadores. Não configure outro token: o perfil atual usa Yahoo público. O botão Atualizar dentro do Popular atualiza dados, não instala uma versão nova do código. Na Tela de Início, mantenha o widget Scripting com esse projeto.
 
 Para receber melhorias de código, use a atualização do script remoto no Scripting. Essa importação vincula o projeto à pasta `main/scripts/Popular Scripting`; não use um endereço de commit ou tag para acompanhar as próximas versões. O botão **Atualizar** dentro da tela do Popular consulta somente os indicadores e solicita recarregar o widget.
 

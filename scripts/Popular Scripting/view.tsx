@@ -6,11 +6,12 @@ import { GEOMETRY as G, layout, place, placeInBlock, movementColor, curvePlan, m
 import { RefreshAssetsOnTap } from './app_intents'
 import { assetMarketStatus } from './market-status'
 const images:Record<string,UIImage|null|undefined>={}
-const CUB_VARIATION_MIN_SIZE=4.2
-const NAME_FONT=5.5
+const NAME_FONT=6.6
 const PRICE_FONT=14
-const PRICE_MIN=5.2
-const PERCENT_FONT=8.5
+const PRICE_MIN=6.5
+const META_FONT=5.3
+const DISPLAY_NAMES:Record<string,string>=Object.freeze({IBOV:'IBOVESPA',DOW_JONES:'DOW JONES','USD/BRL':'DÓLAR',BRENT:'BRENT'})
+function displayName(row:any){return DISPLAY_NAMES[row.asset?.code]||String(row.name||'—').toLocaleUpperCase('pt-BR')}
 const SHORT_CODES:Record<string,string>=Object.freeze({SELIC:'SELIC',IPCA:'IPCA',IBOV:'IBOV',DOW_JONES:'DOW',BBAS3:'BBAS3',BBDC4:'BBDC4','BTC/USD':'BTC/USD','USD/BRL':'USD/BRL',SOJA_JATAI_GO:'SOJAGO',CUB_GO:'CUB-GO',DIESEL_S10:'DIESEL',BRENT:'BRENT'})
 const COMPACT_UNITS:Record<string,string>=Object.freeze({
   SELIC:'% a.a.',IPCA:'M/M · pp',IBOV:'pontos',DOW_JONES:'pontos',BBAS3:'BRL/ação',BBDC4:'BRL/ação','BTC/USD':'USD/BTC','USD/BRL':'BRL/USD',
@@ -39,14 +40,9 @@ function compactUnit(row:any){
 }
 function Label({labelKey,value,plan,x,y,width,height,size,min,bold=false,color='white',right=false,alignment,placeFn=place}:any){
   const positioned=placeFn(plan,x,y,width,height,alignment||(right?'trailing':'leading'))
-  return <Text key={labelKey} font={size*plan.scale} fontWeight={bold?'semibold':'regular'} foregroundStyle={color}
+  return <Text key={labelKey} font={size*plan.scale} fontWeight={bold?'bold':'regular'} foregroundStyle={color}
     lineLimit={1} minScaleFactor={min/size} frame={positioned.frame}
     position={positioned.position}>{value}</Text>
-}
-function variationMinimumSize(row:any,value:string){
-  // The fixed quote column is intentionally narrow. A lower native floor keeps
-  // CUB-GO's published three-decimal M/M value visible without changing data.
-  return row.asset?.code==='CUB_GO'&&String(value).length>6?CUB_VARIATION_MIN_SIZE:4.2
 }
 function apiImage(row:any){
   const data=row?.asset?.iconData
@@ -89,11 +85,13 @@ export function PopularView({model,width,height}:{model:any;width:number;height:
     {visibleRows.map((row:any,i:number)=>{
       const column=Math.floor(i/4),rowIndex=i%4,x=column*(G.column+G.columnGap),y=rowIndex*(G.row+G.gap),color=movementColor(row),curve=curvePlan(model.api,row),status=statusFor(row)
       const band=monthBand(curve),remoteSvg=apiSVG(row),remoteIcon=remoteSvg?null:apiImage(row)
-      const percentMinimum=variationMinimumSize(row,row.percent),meta=`${shortCode(row)} | ${observationDate(row.time)}`
+      const meta=`${shortCode(row)} | ${observationDate(row.time)}`
       const tradingLabel=tradingRangeLabel(curve.coverage)
       const chartUnavailableLabel=curve.status==='unavailable-24h'?'24h indisponível':'7d indisponível'
       const chartAccessibility=tradingLabel?' Gráfico '+tradingLabel+' de intervalos cotados; lacunas preservadas':curve.status==='unavailable-24h'?' Gráfico de 24 horas indisponível':curve.status==='unavailable-7d'?' Gráfico de 7 dias indisponível':''
-      const rowPlan={...plan,x:0,y:0},hitHeight=rowIndex<3?G.row+G.gap:G.row,rowFrame={width:G.column*plan.scale,height:hitHeight*plan.scaleY},rowPosition={x:plan.x+(x+G.column/2)*plan.scale,y:plan.y+(y+hitHeight/2)*plan.scaleY}
+      // Keep row spacing responsive, but render each 26pt badge/content block
+      // isotropically. scaleY stretches row spacing, never circles or text blocks.
+      const rowPlan={...plan,x:0,y:G.blockCenter*(plan.scaleY-plan.scale),scaleY:plan.scale},hitHeight=rowIndex<3?G.row+G.gap:G.row,rowFrame={width:G.column*plan.scale,height:hitHeight*plan.scaleY},rowPosition={x:plan.x+(x+G.column/2)*plan.scale,y:plan.y+(y+hitHeight/2)*plan.scaleY}
       const cellLabel=(key:string,value:string,cx:number,cy:number,w:number,h:number,size:number,min:number,bold=false,cellColor='white',right=false,alignment?:string)=><Label labelKey={key} value={value} plan={rowPlan} x={cx} y={cy} width={w} height={h} size={size} min={min} bold={bold} color={cellColor} right={right} alignment={alignment} placeFn={placeInBlock}/>
       return <Button key={row.asset.code} intent={RefreshAssetsOnTap(undefined)} buttonStyle="plain"
         accessibilityLabel={`Atualizar indicadores. ${row.name}. ${shortCode(row)}. ${row.price}. ${row.percent}. ${row.unit}. ${row.time}. ${status.accessibility}.${chartAccessibility}`}
@@ -105,9 +103,9 @@ export function PopularView({model,width,height}:{model:any;width:number;height:
         </ZStack> :remoteIcon?<ZStack key="asset-remote-mask" alignment="topLeading" {...place(rowPlan,G.iconLeft,G.iconTop,G.icon,G.icon)} mask={<Circle fill="white" frame={{width:G.icon*plan.scale,height:G.icon*plan.scale}}/>}>
           <Image key="asset-remote" image={remoteIcon} resizable renderingMode="original" frame={{width:G.icon*plan.scale,height:G.icon*plan.scale}}/>
         </ZStack> :null}
-        <Text key="name-text" font={NAME_FONT*plan.scale} fontWeight="semibold" foregroundStyle="white"
-          lineLimit={1} minScaleFactor={1} {...place(rowPlan,G.nameX,G.nameTop,G.name,G.nameHeight,'leading')}>{row.name}</Text>
-        {cellLabel('asset-meta',meta,G.dateX,G.dateTop,G.date,G.dateHeight,5.3,3.4,false,'#96969C',false,'leading')}
+        <Text key="name-text" font={NAME_FONT*plan.scale} fontWeight="bold" foregroundStyle="white"
+          lineLimit={1} minScaleFactor={1} {...place(rowPlan,G.nameX,G.nameTop,G.name,G.nameHeight,'topLeading')}>{displayName(row)}</Text>
+        {cellLabel('asset-meta',meta,G.dateX,G.dateTop,G.date,G.dateHeight,META_FONT,3.4,false,'#96969C',false,'bottomLeading')}
         <Canvas key="asset-chart" opaque={false} {...placeInBlock(rowPlan,G.graphX,G.graphTop,G.graph,G.graphHeight)} draw={(ctx,size)=>drawCurve(ctx,size,curve,color)}/>
         {!curve.points.length?cellLabel('missing',chartUnavailableLabel,G.graphX,G.graphTop,G.graph,G.graphHeight,4.2,3.2,false,'#96969C'):null}
         {tradingLabel?cellLabel('trading-range',tradingLabel,G.graphX,G.monthTop,G.graph,5,3.7,3.2,false,'#96969C'):null}
@@ -119,9 +117,9 @@ export function PopularView({model,width,height}:{model:any;width:number;height:
               position={{x:(month.x+7)*plan.scale,y:2.5*plan.scale}}>{month.text}</Text>)}
           </ZStack>
         </ZStack>:null}
-        {cellLabel('price',row.price,G.priceX,G.line1Top,G.price,G.top,PRICE_FONT,PRICE_MIN,true,'white',true)}
-        {cellLabel('percent',row.percent,G.percentX,G.line2Top,G.percent,G.middle,PERCENT_FONT,percentMinimum,true,color,true)}
-        {rowIndex<3?<Rectangle key="divider" fill="rgba(255,255,255,0.13)" {...place(rowPlan,0,G.row,G.column,G.gap)}/>:null}
+        {cellLabel('price',row.price,G.priceX,G.line1Top,G.price,G.top,PRICE_FONT,PRICE_MIN,true,'white',true,'topTrailing')}
+        {cellLabel('percent',row.percent,G.percentX,G.line2Top,G.percent,G.middle,META_FONT,3.4,false,color,true,'bottomTrailing')}
+        {rowIndex<3?<Rectangle key="divider" fill="rgba(255,255,255,0.13)" {...place({...plan,x:0,y:0},0,G.row,G.column,G.gap)}/>:null}
         </ZStack>
       </Button>
     })}
