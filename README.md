@@ -1,3 +1,9 @@
+## 0.2.48 — horário da resposta para Dow e dólar
+
+- Reproduz e corrige o descarte de cotações de Dow/dólar atualizadas durante a consulta. A validação intradiária passa a usar a hora do recebimento, não o início da execução. Dados realmente futuros continuam rejeitados; o cache por instrumento e a janela de horas cotadas permanecem.
+- A foto real da 0.2.47 confirmou apenas Ibovespa e Brent no aparelho. Os testes anteriores usavam respostas já capturadas e não reproduziam o avanço do relógio durante a rede. Essa regressão passa a ser testada no modelo/host de produção.
+- Motor `2026.11.09.98`. Sem novas fontes, credenciais, permissões ou alteração visual. Validação nativa desta correção ainda pendente. Detalhes em [VALIDACAO-0.2.48.md](VALIDACAO-0.2.48.md).
+
 ## 0.2.47 — quatro curvas de aproximadamente 24 horas cotadas
 
 - Corrige a distribuição **Scripting** efetivamente usada no aparelho, motor `2026.11.09.97`, sem substituir sua interface pelo widget Scriptable.
@@ -451,7 +457,7 @@ Na tela **Importar Scripts Remotos** do Scripting, cole:
 https://github.com/Sagittaryuz/popular-scripting/tree/main/scripts/Popular%20Scripting
 ```
 
-Importe ou atualize **Popular Scripting** pelo vínculo remoto existente, confirme **0.2.47** e motor **2026.11.09.97**, abra o projeto e toque em **Atualizar** para consultar os indicadores. Não configure outro token: o perfil atual usa Yahoo público. O botão Atualizar dentro do Popular atualiza dados, não instala uma versão nova do código. Na Tela de Início, mantenha o widget Scripting com esse projeto.
+Importe ou atualize **Popular Scripting** pelo vínculo remoto existente, confirme **0.2.48** e motor **2026.11.09.98**, abra o projeto e toque em **Atualizar** para consultar os indicadores. Não configure outro token: o perfil atual usa Yahoo público. O botão Atualizar dentro do Popular atualiza dados, não instala uma versão nova do código. Na Tela de Início, mantenha o widget Scripting com esse projeto.
 
 Para receber melhorias de código, use a atualização do script remoto no Scripting. Essa importação vincula o projeto à pasta `main/scripts/Popular Scripting`; não use um endereço de commit ou tag para acompanhar as próximas versões. O botão **Atualizar** dentro da tela do Popular consulta somente os indicadores e solicita recarregar o widget.
 

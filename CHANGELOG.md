@@ -1,3 +1,9 @@
+## 0.2.48 — horário da resposta para Dow e dólar
+
+- Reproduz e corrige o descarte de cotações de Dow/dólar atualizadas durante a consulta. A validação intradiária passa a usar a hora do recebimento, não o início da execução. Dados realmente futuros continuam rejeitados; o cache por instrumento e a janela de horas cotadas permanecem.
+- A foto real da 0.2.47 confirmou apenas Ibovespa e Brent no aparelho. Os testes anteriores usavam respostas já capturadas e não reproduziam o avanço do relógio durante a rede. Essa regressão passa a ser testada no modelo/host de produção.
+- Motor `2026.11.09.98`. Sem novas fontes, credenciais, permissões ou alteração visual. Validação nativa desta correção ainda pendente. Detalhes em [VALIDACAO-0.2.48.md](VALIDACAO-0.2.48.md).
+
 ## 0.2.47 — quatro curvas de aproximadamente 24 horas cotadas
 
 - Corrige a distribuição **Scripting** efetivamente usada no aparelho, motor `2026.11.09.97`, sem substituir sua interface pelo widget Scriptable.
