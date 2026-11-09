@@ -10,7 +10,7 @@ const args={queryParameters:{popular_refresh:options.force?'1':'0'}};
 const Color=class {constructor(hex,alpha=1){this.hex=hex;this.alpha=alpha;}};
 // Scriptable — Popular small/medium/large. O conjunto normal mantém oito
 // indicadores; o entry publicado pode selecionar o perfil de teste reversível.
-const VERSION = '2026.11.09.97'
+const VERSION = '2026.11.09.98'
 const SETTINGS = { refreshMinutes: 5, rotationMinutes: 5, selection: 'indicadores' };
 // Bloco 146 × 146 pt; quatro colunas e ícones circulares 26 pt centralizados nas linhas 36 pt.
 const LAYOUT = { columns: [28, 40, 46, 26], columnGap: 2, valueGap: 2, nameWidth: 40, priceWidth: 26, graphWidth: 46, rowHeight: 36, gap: 2/3, iconSize: 26, chartHeight: 20 };
@@ -1591,10 +1591,13 @@ function dowJonesUnavailable() {
 }
 
 const INTRADAY_INTERVAL_MS = 5*60000, TRADING_WINDOW_MS = 24*3600000;
+// Live responses may contain quotes newer than engine startup. Validate at
+// receipt/render time; explicit test clocks remain deterministic.
+function intradayNow() { return options.now == null ? Date.now() : now.getTime(); }
 function intradayStamp(time) {
   return {time,day:new Date(time).toLocaleDateString('sv-SE',{timeZone:'America/Sao_Paulo'}),hasTime:true};
 }
-function tradingWindow(chart,time=now.getTime()) {
+function tradingWindow(chart,time=intradayNow()) {
   const interval=chart?.intervalMs;
   if(chart?.window!=='trading-24h'||interval!==INTRADAY_INTERVAL_MS||!Array.isArray(chart.points))return null;
   const all=chart.points.filter(p=>finite(p?.value)&&p.value>0&&p.stamp?.hasTime===true&&finite(p.stamp.time)&&p.stamp.time>0&&p.stamp.time>=time-10*86400000&&p.stamp.time<=time);
@@ -1611,7 +1614,7 @@ function tradingWindow(chart,time=now.getTime()) {
   const gaps=points.filter(p=>p.breakBefore).length;
   return {...chart,points,xAxis:'observed-bars',displayDomain:null,displayWindow:{basis:'observed-trading-time',targetMs:TRADING_WINDOW_MS,coveredMs:covered,complete:covered>=TRADING_WINDOW_MS,intervalMs:interval,gaps,startTime:points[0]?.stamp.time||null,endTime:points.at(-1)?.stamp.time||null,timeZone:'America/Sao_Paulo'}};
 }
-function parseIntraday(payload,definition,time=now.getTime()) {
+function parseIntraday(payload,definition,time=intradayNow()) {
   const result=payload?.chart?.result?.[0],meta=result?.meta,closes=result?.indicators?.quote?.[0]?.close,timestamps=result?.timestamp;
   if(payload?.chart?.error||meta?.symbol!==definition.instrument||meta.currency!==definition.providerCurrency||meta.instrumentType!==definition.providerType||meta.dataGranularity!=='5m'||!Array.isArray(timestamps)||!Array.isArray(closes)||timestamps.length!==closes.length||timestamps.length>15000)throw Error(definition.code+': identidade ou intervalo inválido');
   const price=Number(meta.regularMarketPrice),at=Number(meta.regularMarketTime)*1000,previous=Number(meta.regularMarketPreviousClose??meta.previousClose);
@@ -1631,10 +1634,10 @@ function parseIntraday(payload,definition,time=now.getTime()) {
   const chart={points,window:'trading-24h',timeBasis:'observed-trading-time',intervalMs:INTRADAY_INTERVAL_MS},visible=tradingWindow(chart,time),percent=finite(previous)&&previous>0?(price/previous-1)*100:null;
   return {intradaySchema:1,asset:{...definition,price,percent,delta:finite(previous)&&previous>0?price-previous:null,percentBasis:'supplier-previous-close'},previousClose:finite(previous)&&previous>0?previous:null,providerExchange:meta.exchangeName||null,providerTimeZone:meta.exchangeTimezoneName||null,localTest:true,stamp:intradayStamp(at),chart,chartStatus:visible.displayWindow.complete?'intraday-24h':'intraday-partial',quoteVerified:true,fetchedAt:time,sourceDelaySeconds:finite(meta.exchangeDataDelayedBy)?meta.exchangeDataDelayedBy*60:null,history:visible.displayWindow,chartCoverage:visible.displayWindow,chartRequirement:'observed-trading-time'};
 }
-function validIntradayCache(row,definition,time=now.getTime()) {
+function validIntradayCache(row,definition,time=intradayNow()) {
   return row?.intradaySchema===1&&row.asset?.code===definition.code&&row.asset.instrument===definition.instrument&&row.asset.source==='Yahoo Finance'&&row.asset.providerCurrency===definition.providerCurrency&&row.asset.providerType===definition.providerType&&finite(row.asset.price)&&row.asset.price>0&&finite(row.stamp?.time)&&row.stamp.time<=time&&time-row.stamp.time<=10*86400000&&finite(row.fetchedAt)&&row.fetchedAt>0&&row.fetchedAt<=time&&(row.asset.percent==null||finite(row.asset.percent))&&Array.isArray(row.chart?.points)&&row.chart.points.length<=15000&&row.chart.points.every((p,i,a)=>finite(p.value)&&p.value>0&&p.stamp?.hasTime===true&&finite(p.stamp.time)&&p.stamp.time<=row.stamp.time&&finite(p.session)&&p.session<=p.stamp.time&&(!i||p.stamp.time>a[i-1].stamp.time))&&!!tradingWindow(row.chart,time);
 }
-function mergeIntradayHistory(row,cached,time=now.getTime()) {
+function mergeIntradayHistory(row,cached,time=intradayNow()) {
   if(!cached||cached.asset.instrument!==row.asset.instrument)return row;
   const earliest=time-10*86400000,points=new Map();
   for(const p of [...cached.chart.points,...row.chart.points])if(p.stamp.time>=earliest&&p.stamp.time<=row.stamp.time)points.set(p.stamp.time,p);
@@ -1645,7 +1648,7 @@ function mergeIntradayHistory(row,cached,time=now.getTime()) {
 async function loadIntraday(definition) {
   const key='intraday-yahoo-5m-v1-'+encodeURIComponent(definition.instrument),saved=cacheRead(key);
   let cached=validIntradayCache(saved,definition)?saved:null;
-  if(cached){const history=tradingWindow(cached.chart,now.getTime()).displayWindow;cached={...cached,history,chartCoverage:history,chartStatus:history.complete?'intraday-24h':'intraday-partial'};}
+  if(cached){const history=tradingWindow(cached.chart,intradayNow()).displayWindow;cached={...cached,history,chartCoverage:history,chartStatus:history.complete?'intraday-24h':'intraday-partial'};}
   if(cacheFresh(cached))return cached;
   try {
     const endpoint='https://query1.finance.yahoo.com/v8/finance/chart/'+encodeURIComponent(definition.instrument);
@@ -1856,7 +1859,7 @@ function monthlyPublicationDisplayWindow(chart,time=now.getTime()) {
   const startDay=first.stamp.day.slice(0,10);
   return {startDay,endDay,days:(Date.parse(endDay+'T12:00:00Z')-Date.parse(startDay+'T12:00:00Z'))/86400000+1,timeZone:'America/Sao_Paulo',publishedMonths:published.length,firstPublishedPeriod:firstPeriod,lastPublishedPeriod:period};
 }
-function displayChart(chart,time=now.getTime()) {
+function displayChart(chart,time=chart?.window==='trading-24h'?intradayNow():now.getTime()) {
   if(!chart||!Array.isArray(chart.points))return null;
   if(chart.window==='trading-24h'&&chart.timeBasis==='observed-trading-time') {
     const visible=tradingWindow(chart,time);
