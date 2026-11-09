@@ -2,7 +2,7 @@ import { createEngine } from './original-engine'
 import { createHost } from './host'
 import { dashboardStatus, refreshMinutes } from './pro-common'
 import { sourceStatusForRow } from './market-status'
-export const VERSION='0.2.48'
+export const VERSION='0.2.49'
 export const TAP_REFRESH_CACHE_KEY='popular-tap-refresh-v1'
 export const TAP_REFRESH_CACHE_MS=5000
 // Published, reversible test profile: keep the former eight-indicator list
@@ -37,6 +37,42 @@ export function privateMarketStatusText(status:any):string{
   const upstream=upstreamParts.length?' · '+upstreamParts.join(' · '):''
   if(code.startsWith('cache-fallback-'))return 'Fonte privada: cache privado preservado; nova consulta indisponível'+upstream
   return 'Fonte privada: '+label+upstream+(cached?' · cache privado':'')
+}
+const INTRADAY_DIAGNOSTIC_LABELS:Record<string,string>={
+  http:'a fonte respondeu HTTP',timeout:'a consulta excedeu o tempo disponível',
+  json:'a resposta não contém JSON válido',network:'falha de rede',
+  identity:'identidade ou intervalo da resposta incompatível',price:'preço inválido',
+  'quote-time':'horário da cotação inválido','quote-future':'cotação posterior ao relógio do aparelho',
+  'quote-old':'cotação antiga demais',sessions:'sessões de negociação ausentes',
+  'series-conflict':'histórico tem valores conflitantes no mesmo horário',
+  'series-mismatch':'histórico incompatível com a cotação'
+}
+export function intradayDiagnosticText(row:any):string{
+  const d=row?.intradayDiagnostic,code=typeof d?.code==='string'?d.code:''
+  if(!Object.prototype.hasOwnProperty.call(INTRADAY_DIAGNOSTIC_LABELS,code))return ''
+  const labels:Record<string,string>={IBOV:'Ibovespa',DOW_JONES:'Dow Jones','USD/BRL':'Dólar',BRENT:'Brent futuro'}
+  const name=labels[row?.asset?.code];if(!name)return ''
+  let message=name+': '+INTRADAY_DIAGNOSTIC_LABELS[code]
+  if(code==='http'&&Number.isInteger(d.httpStatus)&&d.httpStatus>=100&&d.httpStatus<=599)message+=' '+d.httpStatus
+  const time=(value:any)=>typeof value==='number'&&Number.isFinite(value)&&value>0&&value<8640000000000000?new Date(value).toLocaleTimeString('pt-BR',{timeZone:'America/Sao_Paulo',hour:'2-digit',minute:'2-digit',second:'2-digit'}):''
+  if(code.startsWith('quote-')){
+    const quote=time(d.regularMarketTime),receipt=time(d.localReceiptTime),server=time(d.serverTime)
+    if(quote)message+=' · cotação '+quote
+    if(receipt)message+=' · aparelho '+receipt
+    if(typeof d.quoteMinusReceiptMS==='number'&&Number.isFinite(d.quoteMinusReceiptMS))message+=' · diferença '+(d.quoteMinusReceiptMS>=0?'+':'')+(d.quoteMinusReceiptMS/1000).toFixed(3)+' s'
+    if(server)message+=' · servidor '+server
+  }
+  if(code==='identity'){
+    const value=(v:any)=>typeof v==='string'&&v.length<=32&&/^[A-Za-z0-9^=._/-]+$/.test(v)?v:'ausente'
+    message+=' · recebido '+[d.providerSymbol,d.providerCurrency,d.providerType,d.dataGranularity].map(value).join(' / ')
+  }
+  if(code==='sessions'||code.startsWith('series-')){
+    if(Number.isInteger(d.timestampCount)&&d.timestampCount>=0&&d.timestampCount<=15000)message+=' · pontos '+d.timestampCount
+    if(Number.isInteger(d.sessionCount)&&d.sessionCount>=0&&d.sessionCount<=15000)message+=' · sessões '+d.sessionCount
+  }
+  if(d.cachePreserved===true)message+=' · cache anterior preservado'
+  else if(d.historyExpansion===true)message+=' · cotação preservada, ampliação do histórico falhou'
+  return message
 }
 export type TapRefreshState='queried'|'failed-cache-preserved'|'timeout-cache-preserved'
 export function preparedTapState(now=Date.now()):TapRefreshState|null{

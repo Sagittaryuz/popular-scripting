@@ -1,3 +1,9 @@
+## 0.2.49 — dólar e diagnóstico da falha restante
+
+- A resposta atual de `BRL=X` usa o nome canônico `USDBRL=X`. Aceita somente esse alias do mesmo par, preservando moeda/tipo/intervalo, fonte e cache.
+- A .48 não resolveu os dois indicadores no iPhone. Dow passa na nova captura, mas sua falha no aparelho permanece sem causa confirmada. A tela agora mostra o motivo específico de rejeição/rede e horários seguros, perto de Atualizar, para evitar novas correções por suposição.
+- Motor `2026.11.09.99`. Sem tolerância arbitrária para cotações futuras, troca de fonte, credenciais ou mudança de layout do widget. [Validação e limites](VALIDACAO-0.2.49.md).
+
 ## 0.2.48 — horário da resposta para Dow e dólar
 
 - Reproduz e corrige o descarte de cotações de Dow/dólar atualizadas durante a consulta. A validação intradiária passa a usar a hora do recebimento, não o início da execução. Dados realmente futuros continuam rejeitados; o cache por instrumento e a janela de horas cotadas permanecem.
@@ -18,7 +24,7 @@ A foto do dispositivo identificou Scripting 0.2.46/motor .96: preços de Ibovesp
 
 Destino estabelecido: `Sagittaryuz/popular-scripting`, pasta `main/scripts/Popular Scripting`. A versão .47 foi preparada sobre `03a3850e134e6c34dd38060118d3a6fac2771e2e`, preservando os dados econômicos e recursos existentes. Fonte principal do motor neste repositório é `original-engine.js`; seu gerador histórico não está no repositório público. Não reexportar motor antigo do outro projeto sobre esta adaptação.
 
-# Popular Scripting - Pro 0.2.48
+# Popular Scripting - Pro 0.2.49
 
 ## 0.2.46 - contrato explícito de curva 24H
 

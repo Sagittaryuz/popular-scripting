@@ -1,5 +1,5 @@
 import { Navigation, NavigationStack, VStack, Text, Button, Script, Widget, useEffect, useRef, useState, ScrollView } from 'scripting'
-import { engine, loadModel, setOrdering, VERSION, MODES, privateMarketStatusText } from './model'
+import { engine, loadModel, setOrdering, VERSION, MODES, privateMarketStatusText, intradayDiagnosticText } from './model'
 import { removeLegacyAccess } from './host'
 import { PopularView } from './view'
 import { PopularDetails } from './details'
@@ -20,6 +20,7 @@ function Screen(){
   return <NavigationStack><ScrollView><VStack padding={16} spacing={12} navigationTitle="Popular">
     <Text>Popular Scripting · {VERSION} · motor {api.version}</Text>
     <Button title={busy?'Consultando…':'Atualizar'} action={refresh}/>
+    {model?.rows.map((row:any)=>{const diagnostic=intradayDiagnosticText(row);return diagnostic?<Text key={'source-diagnostic-'+row.asset.code}>{diagnostic}</Text>:null})}
     {model?<PopularView model={model} width={332} height={158}/>:null}
     <PopularDetails model={model}/>
     {model&&model.rows.some((row:any)=>row.asset.source==='PrivateMarket')?<Text foregroundStyle="secondary">{privateMarketStatusText(model.privateMarketStatus??model.api.privateMarketStatus)}</Text>:null}
