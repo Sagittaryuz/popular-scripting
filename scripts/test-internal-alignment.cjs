@@ -7,7 +7,7 @@ const draw=loadDraw(),G=draw.GEOMETRY
 assert.equal(G.row,36,'row height stays fixed')
 assert.equal(G.icon,26,'icons return to the pre-0.2.25 diameter')
 assert.equal(G.col1,28,'icon column keeps the 26 pt badge with a measured margin')
-assert.equal(G.col2,40,'identity column is widened for readable code/date text')
+assert.equal(G.col2,44,'identity column is widened for readable code/date text')
 assert(G.col2>G.col1,'identity column is wider than the icon column when text needs it')
 assert.equal(G.nameTextMax,G.name,'the single name view receives the full identity column')
 assert.equal(G.col1+G.col2+G.col3+G.col4+G.colGap*3,G.column,'four columns fill the useful row width')
@@ -23,8 +23,8 @@ const sdk={AppIntentManager:{register:definition=>()=>({name:definition.name})},
 const viewModule={exports:{}},values=new Map([['popular-page:small',9],['popular-page:medium',9],['popular-page:large',9]])
 const createElement=(type,props,...children)=>typeof type==='function'?type({...props,children:children.flat(Infinity).filter(Boolean)}):({type,props:props||{},children:children.flat(Infinity).filter(Boolean)})
 vm.runInNewContext(bundle('view.tsx'),{module:viewModule,exports:viewModule.exports,require:()=>sdk,createElement,Date,Storage:{get:key=>values.get(key)},UIImage:{fromBase64String:()=>null}})
-const codes=['SELIC','IPCA','IBOV','USD/BRL','SOJA_JATAI_GO','CUB_GO','DIESEL_S10','BRENT']
-const rows=codes.map((code,index)=>({asset:{code},name:index===0?'Selic com nome suficientemente long para testar a reserva':'Nome '+code,price:index===3?'-115,22':String(100+index),percent:index===6?'-3,03%':'+1,14 pp',unit:code,time:index===5?'—':'27/10',movement:index%2?-1:1,chart:null}))
+const codes=['SELIC','DOW_JONES','IBOV','USD/BRL','SOJA_JATAI_GO','CUB_GO','DIESEL_S10','BRENT']
+const rows=codes.map((code,index)=>({asset:{code},name:index===0?'Selic com nome suficientemente long para testar a reserva':code==='BRENT'?'Brent futuro Jan-2027':'Nome '+code,price:index===3?'-115,22':String(100+index),percent:index===6?'-3,03%':'+1,14 pp',unit:code,time:index===5?'—':'27/10',movement:index%2?-1:1,chart:null}))
 const api={displayChart:chart=>chart,lineCoordinates:()=>[],monthLayout:()=>({labels:[],lines:[]}),gradientStrips:()=>[]}
 for(const [family,width,height,expected] of [['small',158,170,4],['medium',338,170,8],['large',338,360,8]]){
   const tree=viewModule.exports.PopularView({model:{family,rows,api,status:{label:'fixture'}},width,height}),buttons=tree.children.filter(node=>node.type==='Button')
@@ -37,24 +37,37 @@ for(const [family,width,height,expected] of [['small',158,170,4],['medium',338,1
     assert(!desc.some(node=>node.type==='Text'&&node.props?.key==='unit'),family+' row '+i+' does not render a unit below the quote')
     assert(!desc.some(node=>node.type==='Circle'&&node.props?.key==='market-status-dot'),family+' row '+i+' has no status dot')
     if(i===0){
-      assert.equal(nameText.props.font,5.5*plan.scale,family+' long name keeps the shared font size')
+      assert.equal(nameText.props.font,6.6*plan.scale,family+' long name keeps the shared font size')
       assert.equal(nameText.props.frame.width,G.name*plan.scale,family+' long name uses the complete identity width')
       assert.equal(nameText.props.minScaleFactor,1,family+' long name uses ellipsis instead of per-name shrinking')
     }
+    const expectedNames={IBOV:'IBOVESPA',DOW_JONES:'DOW JONES','USD/BRL':'DÓLAR',BRENT:'BRENT'}
+    if(expectedNames[rows[i].asset.code])assert.equal(nameText.children.join(''),expectedNames[rows[i].asset.code])
+    if(rows[i].asset.code==='BRENT')assert(buttons[i].props.accessibilityLabel.includes('Brent futuro Jan-2027'),'Brent futures identity is retained for accessibility')
     const top=n=>n.props.position.y-n.props.frame.height/2,bottom=n=>n.props.position.y+n.props.frame.height/2
-    assert(Math.abs(top(nameText)-G.nameTop*plan.scaleY)<1e-8,family+' name starts at top')
+    assert(Math.abs(top(nameText)-G.blockCenter*(plan.scaleY-plan.scale)-G.nameTop*plan.scale)<1e-8,family+' name starts at top')
     assert(Math.abs(icon.props.position.y-G.blockCenter*plan.scaleY)<1e-8,family+' icon is vertically centered')
-    assert(Math.abs(meta.props.position.y-(G.dateTop+G.dateHeight/2)*plan.scaleY)<1e-8,family+' code/date uses its lower line')
-    assert(Math.abs(graph.props.position.y-(G.graphTop+G.graphHeight/2)*plan.scaleY)<1e-8,family+' graph has the usable height')
+    assert(Math.abs(meta.props.position.y-G.blockCenter*(plan.scaleY-plan.scale)-(G.dateTop+G.dateHeight/2)*plan.scale)<1e-8,family+' code/date uses its lower line')
+    assert(Math.abs(graph.props.position.y-G.blockCenter*(plan.scaleY-plan.scale)-(G.graphTop+G.graphHeight/2)*plan.scale)<1e-8,family+' graph has the usable height')
     assert(Math.abs(graph.props.position.y-icon.props.position.y)<1e-8,family+' graph center stays aligned with the icon')
     assert(Math.abs(((top(price)+bottom(percent))/2)-G.blockCenter*plan.scaleY)<1e-8,family+' value/variation block is centered')
+    assert(Math.abs(top(nameText)-top(icon))<1e-8,family+' name top equals circle top')
+    assert(Math.abs(top(graph)-top(icon))<1e-8&&Math.abs(bottom(graph)-bottom(icon))<1e-8,family+' graph fills circle height')
+    assert.equal(icon.props.frame.height,icon.props.frame.width,family+' badge is circular even with stretched row spacing')
+    assert(Math.abs(bottom(meta)-bottom(icon))<1e-8&&Math.abs(bottom(percent)-bottom(icon))<1e-8,family+' both metadata lines share circle bottom')
+    assert.equal(meta.props.font,percent.props.font)
+    assert.equal(meta.props.fontWeight,percent.props.fontWeight)
+    assert.equal(meta.props.minScaleFactor,percent.props.minScaleFactor)
+    assert.equal(G.dateTop-(G.nameTop+G.nameHeight),G.line2Top-(G.line1Top+G.top),'both blocks have the same 2pt gap')
+    assert.equal(nameText.props.fontWeight,'bold')
+    assert.equal(price.props.fontWeight,'bold')
     assert(top(price)>=top(nameText)-1e-8,family+' quote does not rise above the name')
     assert(bottom(price)<top(percent),family+' variation remains below the quote')
     assert.equal(price.props.font,14*plan.scale,family+' quote uses the enlarged maximum-fit source size')
-    assert(Math.abs(top(price)-G.line1Top*plan.scaleY)<1e-8,family+' quote stays at the top')
+    assert(Math.abs(top(price)-G.blockCenter*(plan.scaleY-plan.scale)-G.line1Top*plan.scale)<1e-8,family+' quote stays at the top')
     assert(nameText.props.position.x+nameText.props.frame.width/2<=graph.props.position.x-graph.props.frame.width/2-1e-8,family+' name cell does not collide with graph')
     assert(meta.props.frame.width===G.date*plan.scale,family+' code/date has the identity width')
     assert(tree.props.accessibilityLabel.includes('Selic com nome suficientemente long'))
   }
 }
-console.log('PASS 0.2.46 geometry: full identity-width names, one shared font with ellipsis, no status dot, grouped centered blocks, 26 pt icons, enlarged quote, no unit line, graph/quote separation and long/missing fixtures covered. Native iPhone render pending.')
+console.log('PASS updated geometry: full identity-width names, one shared font with ellipsis, no status dot, grouped centered blocks, 26 pt icons, enlarged quote, no unit line, graph/quote separation and long/missing fixtures covered. Native iPhone render pending.')

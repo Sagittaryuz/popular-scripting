@@ -1,0 +1,75 @@
+{
+  "version": "0.2.50",
+  "nativeIPhone": false,
+  "names": {
+    "oldFont": 5.5,
+    "newFont": 6.6,
+    "increasePercent": 20,
+    "labels": [
+      "IBOVESPA",
+      "DOW JONES",
+      "DÓLAR",
+      "BRENT"
+    ],
+    "weight": "bold"
+  },
+  "prices": {
+    "mediumLargeBefore": [
+      6.6,
+      8.02,
+      10.54,
+      8.22
+    ],
+    "mediumLargeAfter": [
+      9.14,
+      11.1,
+      14,
+      11.38
+    ],
+    "increasePercentRange": [
+      33,
+      38
+    ]
+  },
+  "lowerLine": {
+    "font": 5.3,
+    "weight": "regular",
+    "sameForCodeAndPercent": true
+  },
+  "geometry": {
+    "columnWidths": [
+      28,
+      44,
+      32,
+      36
+    ],
+    "rowWidth": 146,
+    "iconDiameter": 26,
+    "graphHeight": 26,
+    "interFrameGap": 2,
+    "circleAspect": 1
+  },
+  "validatedFamilies": {
+    "small": [
+      158,
+      158
+    ],
+    "medium": [
+      338,
+      170
+    ],
+    "large": [
+      338,
+      360
+    ],
+    "preview": [
+      332,
+      158
+    ]
+  },
+  "limitations": [
+    "Linux font metrics approximate native Text",
+    "Frame edges aligned; glyph ink edges and visual gap depend on native metrics",
+    "Actual iPhone visual result not confirmed"
+  ]
+}
