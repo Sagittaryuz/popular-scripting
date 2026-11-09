@@ -1,0 +1,26 @@
+[
+  {
+    "symbol": "^BVSP",
+    "status": 200,
+    "elapsedMs": 8462,
+    "checkedAt": "2026-11-09T16:25:26.180Z"
+  },
+  {
+    "symbol": "BRL=X",
+    "status": 200,
+    "elapsedMs": 8491,
+    "checkedAt": "2026-11-09T16:25:26.219Z"
+  },
+  {
+    "symbol": "^DJI",
+    "status": 200,
+    "elapsedMs": 8535,
+    "checkedAt": "2026-11-09T16:25:26.262Z"
+  },
+  {
+    "symbol": "BZ=F",
+    "status": 200,
+    "elapsedMs": 8564,
+    "checkedAt": "2026-11-09T16:25:26.293Z"
+  }
+]

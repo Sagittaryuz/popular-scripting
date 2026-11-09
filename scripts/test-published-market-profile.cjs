@@ -1,109 +1,61 @@
-const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),{buildSync}=require('esbuild');
-
-const root=path.join(__dirname,'Popular Scripting');
-const entry=path.join(root,'original-engine.js');
-const code=buildSync({entryPoints:[entry],bundle:true,write:false,format:'cjs',platform:'node'}).outputFiles[0].text;
-const bundled={exports:{}};
-vm.runInNewContext(code,{module:bundled,exports:bundled.exports,console:{log(){}},Date,URL,Intl,Math,JSON,Set,Map});
-
-const queryTime=Date.parse('2026-10-30T18:00:00Z');
-const privateURL='https://popular-private-market-prep.mrpires72.workers.dev/v1/market';
-const dayStamp=(day,hour=17)=>({day,time:Date.parse(`${day}T${String(hour).padStart(2,'0')}:00:00Z`),hasTime:true,label:day.slice(8)+'/'+day.slice(5)});
-const privateDays=['2026-10-26','2026-10-27','2026-10-28','2026-10-29','2026-10-30'];
-const privatePayload={schema:1,source:'brapi',fetchedAt:queryTime-15*60000,delivery:'upstream',assets:['BBAS3','BBDC4','IBOV'].map((code,index)=>{
-  const symbol=code==='IBOV'?'^BVSP':code,base=code==='IBOV'?170000:20+index*4,step=code==='IBOV'?200:.1;
-  return {asset:{code,symbol,source:'brapi',price:base+step*4,delta:step,percent:(step/(base+step*3))*100,quoteBasis:'regular-market',percentBasis:'provider'},stamp:dayStamp('2026-10-30'),chart:{source:'brapi',symbol,window:'7D',windowDays:7,timeBasis:'trade-timestamp',closedOnly:true,sourceStartDay:'2026-10-24',sourceEndDay:'2026-10-30',points:privateDays.map((day,i)=>({value:base+step*i,stamp:dayStamp(day)}))}};
-})};
-const fxPayload={USDBRL:{code:'USD',codein:'BRL',bid:'5.25',ask:'5.26',pctChange:'0.4',timestamp:String(Math.floor((queryTime-30*60000)/1000))}};
-const fxHistory=['2026-10-23','2026-10-26','2026-10-27','2026-10-28','2026-10-29','2026-10-30'].map((day,i)=>({...(!i?{code:'USD',codein:'BRL'}:{}),bid:String(5.2+i*.02),timestamp:String(Math.floor(Date.parse(`${day}T17:00:00Z`)/1000))}));
-const files=new Map();
-const fm={documentsDirectory:()=>'/documents',joinPath:(...parts)=>parts.join('/'),fileExists:file=>files.has(file),createDirectory:()=>{},readString:file=>files.get(file),writeString:(file,value)=>files.set(file,value)};
-const requests=[];
-class MockRequest {
-  constructor(url){this.url=String(url);this.response={statusCode:200};this.headers={};requests.push(this.url);}
-  async loadJSON(){
-    if(this.url===privateURL)return privatePayload;
-    if(this.url==='https://economia.awesomeapi.com.br/last/USD-BRL')return fxPayload;
-    if(this.url==='https://economia.awesomeapi.com.br/json/daily/USD-BRL/90')return fxHistory;
-    throw Error('unexpected JSON URL '+this.url);
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
+const {bundle,hostHarness,endpoint,symbols}=require('./test-trading-host.cjs');
+const types=['INDEX','INDEX','CURRENCY','FUTURE'],currencies=['BRL','USD','BRL','USD'],bases=[170000,48000,5.3,94];
+function synthetic(symbol){
+  const i=symbols.indexOf(symbol),timestamps=[],close=[],tradingPeriods=[];
+  // Five real sessions with a weekend and overnight gaps. No closed-hour data.
+  for(const day of ['2026-11-02','2026-11-03','2026-11-04','2026-11-05','2026-11-06']){
+    const start=Date.parse(day+'T13:00:00Z')/1000;tradingPeriods.push([{start,end:start+6*3600}]);
+    for(let j=0;j<=72;j++){timestamps.push(start+j*300);close.push(bases[i]*(1+timestamps.length/100000));}
   }
-  async loadString(){
-    throw Error('unexpected string URL '+this.url);
-  }
+  return {chart:{result:[{meta:{symbol,currency:currencies[i],instrumentType:types[i],dataGranularity:'5m',regularMarketPrice:close.at(-1),regularMarketTime:timestamps.at(-1),previousClose:bases[i],tradingPeriods},timestamp:timestamps,indicators:{quote:[{close}]}}],error:null}};
 }
-
-(async()=>{
-  const api=bundled.exports.createEngine({FileManager:{local:()=>fm},Request:MockRequest,Data:{},Timer:undefined,privateMarket:{endpoint:privateURL,readToken:()=> 'fixture-private-token'}},{family:'medium',force:true,now:queryTime,localTestAssets:true,localTestProfile:'ibov-dow-usd-brent-24h'});
-  assert.equal(api.localTestMode,true);
-  assert.equal(api.localTestProfile,'ibov-dow-usd-brent-24h');
-  assert.equal(JSON.stringify(api.localTestAssets.map(asset=>asset.code)),JSON.stringify(['IBOV','DOW_JONES','USD/BRL','BRENT']));
+async function test(){
+  const captured=process.env.TRADING_CAPTURE_DIR;
+  const names=['ibov.json','dji.json','usdbrl.json','brent.json'];
+  const payloads=symbols.map((symbol,i)=>captured?JSON.parse(fs.readFileSync(path.join(captured,names[i]),'utf8')):synthetic(symbol));
+  const now=captured?Math.max(...payloads.map(p=>p.chart.result[0].meta.regularMarketTime*1000))+60000:Date.parse('2026-11-09T09:00:00Z');
+  const h=hostHarness(url=>{const symbol=decodeURIComponent(new URL(url).pathname.split('/').at(-1));assert(symbols.includes(symbol));return payloads[symbols.indexOf(symbol)];});
+  // An unrelated old cache must never substitute spot or a fixed Jan-2027 contract.
+  h.storage.set('popular-engine:/popular/popular-widget-cache-v6/economic-v59-BRENT.json',JSON.stringify({asset:{code:'BRENT',price:123,source:'EIA',contractMonth:'2027-01'}}));
+  const {createEngine}=bundle('original-engine.js');
+  const api=createEngine(h.host,{family:'medium',force:true,now,localTestAssets:true,localTestProfile:'ibov-dow-usd-brent-24h'});
   const rows=await api.collectRows();
-  assert.equal(JSON.stringify(rows.map(row=>row.asset.code)),JSON.stringify(['IBOV','DOW_JONES','USD/BRL','BRENT']),'the active profile preserves the requested order');
-  assert.equal(JSON.stringify(rows.map(row=>api.displayName(row.asset))),JSON.stringify(['Ibovespa','Dow Jones','Dólar','Petróleo']));
-  assert.equal(rows[0].asset.source,'PrivateMarket','IBOV reuses the existing private Worker bundle');
-  assert.equal(rows[0].asset.price,170800,'IBOV comes from the private response, not an ETF');
-  assert.equal(rows[0].asset.percentBasis,'provider','daily variation remains a quote field, separate from the weekly chart');
-  assert.equal(rows[0].chartStatus,'24h-history-unavailable','the current daily private history is not relabeled as a 24-hour curve');
-  assert.equal(rows[0].chart,null);
-  assert.equal(rows[0].chartCoverage.sampleCount,5,'source coverage remains observable without drawing an invalid curve');
-  assert.equal(api.displayChart(rows[0].chart,queryTime),null);
-  assert.equal(rows[1].asset.price,null,'Dow Jones is never filled with a proxy or invented quote');
-  assert.equal(rows[1].asset.source,'FRED/S&P DJI','Dow source provenance is explicit even while the copyrighted series is not requested');
-  assert.equal(rows[1].asset.instrument,'DJIA');
-  assert.equal(rows[1].asset.sourceRights,'third-party-copyright-permission-required');
-  assert.equal(rows[1].sourceError,'dow-jones-reproduction-permission-required');
-  assert.equal(rows[1].chart,null);
-  assert.equal(rows[2].asset.source,'AwesomeAPI');
-  assert.equal(rows[2].asset.price,5.25,'USD/BRL uses the existing AwesomeAPI adapter');
-  assert.equal(rows[2].asset.percent,0.4,'the daily FX variation remains available separately');
-  assert.equal(rows[2].chartStatus,'24h-history-unavailable','daily FX history remains a quote source but cannot satisfy the 24-hour chart contract');
-  assert.equal(rows[2].chart,null);
-  assert.equal(rows[2].chartCoverage.sampleCount,0,'date-only daily FX observations are rejected for a timestamped 24-hour curve');
-  assert.equal(rows[3].asset.source,'ICE Futures Europe');
-  assert.equal(rows[3].asset.name,'Petróleo');
-  assert.equal(rows[3].asset.instrument,'BRN');
-  assert.equal(rows[3].asset.contract,'BRN Jan-27');
-  assert.equal(rows[3].asset.contractMonth,'2027-01');
-  assert.equal(rows[3].asset.contractSymbol,'B');
-  assert.equal(api.unitText(rows[3]),'BRN Jan-27','the visible secondary label identifies the requested future');
-  assert.equal(api.timeText(rows[3]),'— ICE','the unavailable source is labeled without pretending to have a close time');
-  assert.equal(rows[3].asset.price,null,'the requested future is not filled with an EIA spot value');
-  assert.equal(rows[3].chart,null,'no authorized ICE feed is available to draw the requested week');
-  assert.equal(rows[3].sourceError,'brent-jan-2027-feed-required');
-  assert(requests.includes(privateURL));
-  assert(requests.some(url=>url.startsWith('https://economia.awesomeapi.com.br/last/USD-BRL')));
-  assert(requests.some(url=>url==='https://economia.awesomeapi.com.br/json/daily/USD-BRL/90'));
-  assert(!requests.some(url=>url.includes('economia.awesomeapi.com.br/USD-BRL/100')),'the active profile does not use the short one-minute history');
-  assert(!requests.some(url=>url.startsWith('https://fred.stlouisfed.org/graph/fredgraph.csv?id=DCOILBRENTEU')),'the active profile does not fetch the wrong Brent spot instrument');
-  assert(!requests.some(url=>url.includes('^DJI')||url.includes('DOW')),'the unavailable Dow slot does not call an unverified endpoint');
-  assert.equal(JSON.stringify(api.publishedProfileAssets.map(asset=>asset.code)),JSON.stringify(['IBOV','DOW_JONES','USD/BRL','BRENT']));
-  assert.equal(JSON.stringify(api.fixedIndicatorCodes),JSON.stringify(['SELIC','IPCA','IBOV','USD/BRL','SOJA_JATAI_GO','CUB_GO','DIESEL_S10','BRENT']),'the former fixed list remains recoverable');
-  const old=bundled.exports.createEngine({FileManager:{local:()=>fm},Request:MockRequest,Data:{},Timer:undefined,privateMarket:{endpoint:privateURL,readToken:()=> 'fixture-private-token'}},{family:'medium',now:queryTime,localTestAssets:true});
-  assert.equal(JSON.stringify(old.localTestAssets.map(asset=>asset.code)),JSON.stringify(['BBAS3','BBDC4','IBOV','BTC/USD']),'the previous profile remains available as an explicit engine default');
-  const timestampedFixture={asset:{code:'fixture',price:103,percent:1,percentBasis:'provider'},chart:{source:'fixture',window:'24H',windowHours:24,timeBasis:'trade-timestamp',closedOnly:false,points:[dayStamp('2026-10-30',5),dayStamp('2026-10-30',12),dayStamp('2026-10-30',17)].map((stamp,index)=>({value:100+index,stamp}))}};
-  const activeFixture=api.profileTwentyFourHour(timestampedFixture,queryTime);
-  assert.equal(activeFixture.chartStatus,'valid-24h','a real timestamped provider history is accepted by the active profile');
-  assert.equal(activeFixture.chart.points.length,3);
-  const activeDisplayed=api.displayChart(activeFixture.chart,queryTime);
-  assert.equal(activeDisplayed.displayStatus,'available-24h');
-  assert.equal(activeDisplayed.displayWindow.hours,24);
-  assert.equal(api.lineCoordinates(activeDisplayed,46,20).length,3,'the 24-hour curve keeps all real in-window points');
-  const dailyFixture={asset:{code:'fixture',price:103,percent:1,percentBasis:'provider'},chart:{source:'fixture',closedOnly:true,timeBasis:'trade-timestamp',points:['2026-10-24','2026-10-27','2026-10-30'].map((day,index)=>({value:100+index,stamp:dayStamp(day)}))}};
-  const accepted=api.profileSevenDayDaily(dailyFixture,queryTime);
-  assert.equal(accepted.chartStatus,'valid-7D-daily','closed daily sessions remain drawable without intraday density');
-  assert.equal(accepted.chart.timeBasis,'trade-timestamp','timestamped daily histories retain their timestamp contract');
-  assert.equal(accepted.chart.points.length,3);
-  const shortIntraday={asset:{code:'short',price:100},chart:{source:'fixture',points:[0,1,2].map(i=>({value:100+i,stamp:dayStamp('2026-10-30',10+i)}))}};
-  assert.equal(api.profileSevenDayDaily(shortIntraday,queryTime).chartStatus,'7d-daily-history-unavailable','short intraday samples are not relabeled as a seven-day daily curve');
-  // A fresh cache written by .42 can contain the old short intraday chart.
-  // It must not prevent the new daily endpoint from being requested.
-  const legacyFiles=new Map(),legacyFM={documentsDirectory:()=>'/documents',joinPath:(...parts)=>parts.join('/'),fileExists:file=>legacyFiles.has(file),createDirectory:()=>{},readString:file=>legacyFiles.get(file),writeString:(file,value)=>legacyFiles.set(file,value)};
-  const legacyNow=Date.now(),legacyDay=new Date(legacyNow).toISOString().slice(0,10),legacyPoint=(offset,value)=>({value,stamp:{time:legacyNow-offset*3600000,day:legacyDay,hasTime:true,label:'cache'}});
-  legacyFiles.set('/documents/popular-widget-cache-v6/usd-brl-awesome-v13.json',JSON.stringify({asset:{code:'USD/BRL',name:'Dólar',type:'cambio',source:'AwesomeAPI',currency:'BRL',unit:'BRL/USD',quoteBasis:'bid',price:5.38,percent:.72},stamp:legacyPoint(0.1,5.38).stamp,chart:{source:'AwesomeAPI',window:'7D',points:[legacyPoint(3,5.36),legacyPoint(2,5.37),legacyPoint(1,5.38)]},quoteVerified:true,fetchedAt:legacyNow-60000}));
-  const beforeLegacyRequests=requests.length,legacyApi=bundled.exports.createEngine({FileManager:{local:()=>legacyFM},Request:MockRequest,Data:{},Timer:undefined,privateMarket:{endpoint:privateURL,readToken:()=> 'fixture-private-token'}},{family:'medium',now:queryTime,localTestAssets:true,localTestProfile:'ibov-dow-usd-brent-24h'});
-  const legacyRows=await legacyApi.collectRows(),legacyUSD=legacyRows.find(row=>row.asset.code==='USD/BRL');
-  assert.equal(legacyUSD.chartStatus,'24h-history-unavailable','a fresh legacy cache cannot hide the explicit 24-hour requirement');
-  assert.equal(legacyUSD.chart,null);
-  assert(requests.slice(beforeLegacyRequests).some(url=>url==='https://economia.awesomeapi.com.br/json/daily/USD-BRL/90'),'legacy cache migration requests the daily endpoint');
-  console.log('PASS published market profile: requested IBOV/Dow/USD/ICE Jan-2027 order, current daily sources remain quote-only in the 24H profile, real timestamped fixtures draw end to end, no EIA spot substitution or fabricated points, recoverable prior profile, and no unverified requests.');
-})().catch(error=>{console.error(error);process.exitCode=1;});
+  assert.deepEqual(Array.from(rows,r=>r.asset.code),['IBOV','DOW_JONES','USD/BRL','BRENT']);
+  assert.equal(rows.length,4);
+  for(let i=0;i<4;i++){
+    const row=rows[i],raw=payloads[i].chart.result[0],visible=api.displayChart(row.chart,now);
+    assert.equal(row.asset.source,'Yahoo Finance');assert.equal(row.asset.instrument,symbols[i]);
+    assert.equal(row.asset.price,raw.meta.regularMarketPrice);assert.equal(row.asset.percentBasis,'supplier-previous-close');
+    assert.equal(row.chart.window,'trading-24h');assert.equal(row.chart.timeBasis,'observed-trading-time');
+    assert(visible.points.length>2,'each asset has a real curve');assert(row.chartCoverage.coveredMs>0);
+    assert.equal(visible.displayWindow.coveredMs,row.chartCoverage.coveredMs);
+    const supplied=new Map(raw.timestamp.map((t,j)=>[t*1000,raw.indicators.quote[0].close[j]]));
+    for(const p of visible.points)assert.equal(p.value,supplied.get(p.stamp.time),'rendered values must originate in source timestamps');
+    const coordinates=api.lineCoordinates(visible,46,20);assert.equal(coordinates.length,visible.points.length);
+    assert.equal(coordinates.filter(p=>p.breakBefore).length,visible.displayWindow.gaps);
+    if(!captured){assert.equal(row.chartCoverage.complete,true);assert.equal(row.chartCoverage.coveredMs,86400000);assert(visible.displayWindow.gaps>=3);assert(now-visible.points.at(-1).stamp.time>48*3600000,'Friday session remains visible on Monday');}
+  }
+  assert.equal(api.displayName(rows[3].asset),'Brent futuro');
+  assert([...h.storage.keys()].some(k=>k.endsWith('/intraday-yahoo-5m-v1-BZ%3DF.json')),'future cache uses provider-specific identity');
+  assert.equal(JSON.parse(h.storage.get('popular-engine:/popular/popular-widget-cache-v6/economic-v59-BRENT.json')).asset.price,123,'old economic cache stays untouched');
+  assert(h.calls.every(c=>c.url.startsWith('https://query1.finance.yahoo.com/v8/finance/chart/')));
+  assert(symbols.every(symbol=>h.calls.some(c=>c.url===endpoint(symbol))));
+  assert(!h.calls.some(c=>c.options.headers.Authorization||c.options.headers.Cookie));
+  const legacy=createEngine(h.host,{family:'medium',now,localTestAssets:true});
+  assert.deepEqual(Array.from(legacy.localTestAssets,a=>a.code),['BBAS3','BBDC4','IBOV','BTC/USD']);
+  assert.deepEqual(Array.from(api.fixedIndicatorCodes),['SELIC','IPCA','IBOV','USD/BRL','SOJA_JATAI_GO','CUB_GO','DIESEL_S10','BRENT']);
+  assert.equal(typeof api.profileTwentyFourHour,'function');assert.equal(typeof api.profileSevenDayDaily,'function');assert.equal(typeof api.profileSevenDayEOD,'function');
+  // Preserve the former calendar-24H and 7D helper contracts independently
+  // from the new published trading-time profile.
+  const helperNow=Date.parse('2026-10-30T18:00:00Z');
+  const stamp=(day,hour=17)=>({day,time:Date.parse(day+'T'+String(hour).padStart(2,'0')+':00:00Z'),hasTime:true});
+  const legacy24=api.profileTwentyFourHour({asset:{code:'fixture',price:103},chart:{window:'24H',windowHours:24,timeBasis:'trade-timestamp',closedOnly:false,points:[5,12,17].map((hour,i)=>({value:100+i,stamp:stamp('2026-10-30',hour)}))}},helperNow);
+  assert.equal(legacy24.chartStatus,'valid-24h');assert.equal(api.displayChart(legacy24.chart,helperNow).points.length,3);
+  const daily=api.profileSevenDayDaily({asset:{code:'fixture',price:103},chart:{closedOnly:true,timeBasis:'trade-timestamp',points:['2026-10-24','2026-10-27','2026-10-30'].map((day,i)=>({value:100+i,stamp:stamp(day)}))}},helperNow);
+  assert.equal(daily.chartStatus,'valid-7D-daily');assert.equal(daily.chart.points.length,3);
+  const short=api.profileSevenDayDaily({asset:{code:'short',price:100},chart:{points:[10,11,12].map((hour,i)=>({value:100+i,stamp:stamp('2026-10-30',hour)}))}},helperNow);
+  assert.equal(short.chartStatus,'7d-daily-history-unavailable');
+  console.log('PASS bundled engine + actual host + '+(captured?'captured public Yahoo responses':'synthetic 5-minute sessions')+': four quotes/curves, exact source values, trading coverage, session gaps, no legacy substitution or credentials, recoverable prior profile.');
+}
+test().catch(e=>{console.error(e);process.exitCode=1});

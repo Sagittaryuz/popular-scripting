@@ -15,13 +15,20 @@ export function files(){
   }
 }
 
+export function isIntradayURL(u:URL){
+  if(u.hostname!=='query1.finance.yahoo.com')return false
+  const prefix='/v8/finance/chart/'
+  if(!u.pathname.startsWith(prefix)||u.hash)return false
+  const symbol=decodeURIComponent(u.pathname.slice(prefix.length))
+  return ['^BVSP','^DJI','BRL=X','BZ=F'].includes(symbol)&&['5d','1mo'].includes(u.searchParams.get('range')||'')&&u.searchParams.get('interval')==='5m'&&[...u.searchParams.keys()].sort().join(',')==='interval,range'
+}
 export function allowedURL(value:string){
   const u=new URL(value)
   if(u.protocol!=='https:'||u.username||u.password||u.port)throw Error('Destino não autorizado')
   const hosts=['investidor10.com.br','api.bcb.gov.br','economia.awesomeapi.com.br','www.agrolink.com.br','fred.stlouisfed.org','api.kraken.com','brapi.dev','icons.brapi.dev']
   if(isPrivateMarketEndpoint(value))return u
   const github=u.hostname==='raw.githubusercontent.com'&&u.pathname==='/Sagittaryuz/popular-scripting/main/data/economic-series.json'
-  if(!hosts.includes(u.hostname)&&!github)throw Error('Destino não autorizado')
+  if(!hosts.includes(u.hostname)&&!github&&!isIntradayURL(u))throw Error('Destino não autorizado')
   return u
 }
 
@@ -42,7 +49,7 @@ function safePrivateMarketDiagnostic(payload:unknown):Record<string,number|strin
 }
 
 export function createHost(foreground=false){
-  const deadline=Date.now()+(foreground?20000:8000)
+  const deadline=Date.now()+(foreground?30000:8000)
   const pending=new Map<string,Promise<{value:any;response:any}>>()
   class EngineRequest {
     method='GET';headers:Record<string,string>={};body?:string;timeoutInterval=3;response?:{statusCode:number;contentType?:string}
@@ -66,7 +73,7 @@ export function createHost(foreground=false){
       const hasOtherCredential=Object.keys(this.headers).some(k=>['cookie','proxy-authorization'].includes(k.toLowerCase()))
       if(hasOtherCredential||hasAuthorization&&!isPrivateMarketEndpoint(url.href))throw Error('Acesso autenticado permitido somente ao endpoint privado')
       if(!['GET','POST'].includes(this.method)||this.method==='POST'&&(url.hostname!=='www.agrolink.com.br'||url.pathname!=='/cotacoes/graos/soja'))throw Error('Método não autorizado')
-      const timeout=Math.max(.05,Math.min(foreground?6:3,this.timeoutInterval,remaining/1000))
+      const timeout=Math.max(.05,Math.min(isIntradayURL(url)?(foreground?20:7):(foreground?6:3),this.timeoutInterval,remaining/1000))
       const result=await within((async()=>{
         const res=await fetch(this.url,{method:this.method,headers:this.headers,body:this.body,timeout,
           handleRedirect:async request=>{const next=allowedURL(request.url);return next.origin===url.origin?request:null}})

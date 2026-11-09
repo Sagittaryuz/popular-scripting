@@ -1,3 +1,11 @@
+## 0.2.47 — quatro curvas de aproximadamente 24 horas cotadas
+
+- Corrige a distribuição **Scripting** efetivamente usada no aparelho, motor `2026.11.09.97`, sem substituir sua interface pelo widget Scriptable.
+- Ibovespa, Dow Jones, USD/BRL e **Brent futuro** consultam Yahoo em barras de cinco minutos, sem nova conta/chave. O futuro é `BZ=F`, referência financeira NYMEX selecionada pelo provedor, não spot EIA/FRED nem o antigo ICE Jan-2027.
+- A janela acumula aproximadamente 24 horas de intervalos cotados; atravessa fechamentos/fins de semana e interrompe linha/preenchimento nas lacunas. Não transforma dados diários em intraday nem interpola preços. Datas efetivas e cobertura parcial são explícitas.
+- Corrige descrições da tela que ainda citavam BBAS3/BBDC4/BTC. Pictogramas, layout, navegação, alertas, exportação e perfis anteriores preservados; o token privado legado não é alterado.
+- Quatro consultas reais HTTP 200 e cobertura completa, testes de motor/transporte/integração, suíte de regressões, build de 16 módulos e prévias dos três tamanhos aprovados. Prévia é simulada com dados reais, não iPhone. Detalhes em [VALIDACAO-0.2.47.md](VALIDACAO-0.2.47.md).
+
 ## Atualização 0.2.46 - janela explícita das últimas 24 horas
 
 - O perfil ativo `IBOV`, `DOW_JONES`, `USD/BRL`, `BRENT` só desenha pontos de
@@ -443,7 +451,7 @@ Na tela **Importar Scripts Remotos** do Scripting, cole:
 https://github.com/Sagittaryuz/popular-scripting/tree/main/scripts/Popular%20Scripting
 ```
 
-Importe **Popular Scripting**, confirme a versão **0.2.46**, abra o projeto e toque em **Atualizar**. Leia a linha **Fonte privada:** para distinguir token, Worker, código da fonte, parsing e cache. Em **Detalhes dos indicadores**, toque em **Configurar fonte privada**, cole o token no campo seguro e salve. Adicione o widget do Scripting à Tela de Início e selecione esse projeto.
+Importe ou atualize **Popular Scripting** pelo vínculo remoto existente, confirme **0.2.47** e motor **2026.11.09.97**, abra o projeto e toque em **Atualizar** para consultar os indicadores. Não configure outro token: o perfil atual usa Yahoo público. O botão Atualizar dentro do Popular atualiza dados, não instala uma versão nova do código. Na Tela de Início, mantenha o widget Scripting com esse projeto.
 
 Para receber melhorias de código, use a atualização do script remoto no Scripting. Essa importação vincula o projeto à pasta `main/scripts/Popular Scripting`; não use um endereço de commit ou tag para acompanhar as próximas versões. O botão **Atualizar** dentro da tela do Popular consulta somente os indicadores e solicita recarregar o widget.
 

@@ -1,3 +1,17 @@
+## 0.2.47 — quatro curvas de aproximadamente 24 horas cotadas
+
+- Corrige a distribuição **Scripting** efetivamente usada no aparelho, motor `2026.11.09.97`, sem substituir sua interface pelo widget Scriptable.
+- Ibovespa, Dow Jones, USD/BRL e **Brent futuro** consultam Yahoo em barras de cinco minutos, sem nova conta/chave. O futuro é `BZ=F`, referência financeira NYMEX selecionada pelo provedor, não spot EIA/FRED nem o antigo ICE Jan-2027.
+- A janela acumula aproximadamente 24 horas de intervalos cotados; atravessa fechamentos/fins de semana e interrompe linha/preenchimento nas lacunas. Não transforma dados diários em intraday nem interpola preços. Datas efetivas e cobertura parcial são explícitas.
+- Corrige descrições da tela que ainda citavam BBAS3/BBDC4/BTC. Pictogramas, layout, navegação, alertas, exportação e perfis anteriores preservados; o token privado legado não é alterado.
+- Quatro consultas reais HTTP 200 e cobertura completa, testes de motor/transporte/integração, suíte de regressões, build de 16 módulos e prévias dos três tamanhos aprovados. Prévia é simulada com dados reais, não iPhone. Detalhes em [VALIDACAO-0.2.47.md](VALIDACAO-0.2.47.md).
+
+### Retomada, causa e orientação validada
+
+A foto do dispositivo identificou Scripting 0.2.46/motor .96: preços de Ibovespa/dólar vinham de fontes diárias, Dow/Brent retornavam ausência por construção e o recorte 24H significava horas corridas. Corrigir a outra distribuição Scriptable não modificava esse aplicativo. A instrução direta subsequente confirmou Scripting e manteve quatro ativos/24 horas cotadas/Brent futuro. Aplicação, versão e vínculo remoto devem ser conferidos contra a evidência do aparelho antes de declarar uma correção instalada.
+
+Destino estabelecido: `Sagittaryuz/popular-scripting`, pasta `main/scripts/Popular Scripting`. A versão .47 foi preparada sobre `03a3850e134e6c34dd38060118d3a6fac2771e2e`, preservando os dados econômicos e recursos existentes. Fonte principal do motor neste repositório é `original-engine.js`; seu gerador histórico não está no repositório público. Não reexportar motor antigo do outro projeto sobre esta adaptação.
+
 # Popular Scripting - Pro 0.2.46
 
 ## 0.2.46 - contrato explícito de curva 24H

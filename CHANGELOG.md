@@ -1,3 +1,11 @@
+## 0.2.47 — quatro curvas de aproximadamente 24 horas cotadas
+
+- Corrige a distribuição **Scripting** efetivamente usada no aparelho, motor `2026.11.09.97`, sem substituir sua interface pelo widget Scriptable.
+- Ibovespa, Dow Jones, USD/BRL e **Brent futuro** consultam Yahoo em barras de cinco minutos, sem nova conta/chave. O futuro é `BZ=F`, referência financeira NYMEX selecionada pelo provedor, não spot EIA/FRED nem o antigo ICE Jan-2027.
+- A janela acumula aproximadamente 24 horas de intervalos cotados; atravessa fechamentos/fins de semana e interrompe linha/preenchimento nas lacunas. Não transforma dados diários em intraday nem interpola preços. Datas efetivas e cobertura parcial são explícitas.
+- Corrige descrições da tela que ainda citavam BBAS3/BBDC4/BTC. Pictogramas, layout, navegação, alertas, exportação e perfis anteriores preservados; o token privado legado não é alterado.
+- Quatro consultas reais HTTP 200 e cobertura completa, testes de motor/transporte/integração, suíte de regressões, build de 16 módulos e prévias dos três tamanhos aprovados. Prévia é simulada com dados reais, não iPhone. Detalhes em [VALIDACAO-0.2.47.md](VALIDACAO-0.2.47.md).
+
 ## 0.2.46 - publica contrato explícito de curvas das últimas 24 horas
 
 - O perfil ativo `IBOV`, `DOW_JONES`, `USD/BRL`, `BRENT` agora aceita uma curva

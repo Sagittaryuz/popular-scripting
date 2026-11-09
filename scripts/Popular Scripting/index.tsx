@@ -22,12 +22,12 @@ function Screen(){
     <Button title={busy?'Consultando…':'Atualizar'} action={refresh}/>
     {model?<PopularView model={model} width={332} height={158}/>:null}
     <PopularDetails model={model}/>
-    {model?<Text foregroundStyle="secondary">{privateMarketStatusText(model.privateMarketStatus??model.api.privateMarketStatus)}</Text>:null}
+    {model&&model.rows.some((row:any)=>row.asset.source==='PrivateMarket')?<Text foregroundStyle="secondary">{privateMarketStatusText(model.privateMarketStatus??model.api.privateMarketStatus)}</Text>:null}
     {message?<Text>{message}</Text>:null}
     {model?.api.failures.map((failure:any,i:number)=><Text key={'failure-'+i}>{new URL(failure.url).hostname}: {failure.reason}</Text>)}
     <Text>Ordenação dos ativos</Text>
     {MODES.map(mode=><Button key={mode} title={(api.readOrderingMode()===mode?'✓ ':'')+api.modes[mode]} action={async()=>{try{setOrdering(mode);await refresh()}catch{setMessage('Falha ao salvar a ordenação.')}}}/>)}
-    <Text>O widget publicado está no perfil de teste BBAS3 · BBDC4 · Ibovespa · BTC/USD, nesta ordem, com janela móvel de 7 dias. As três linhas B3 sem fonte autorizada permanecem sem cotação; BTC/USD usa Kraken quando a consulta pública estiver disponível. A lista fixa anterior continua recuperável no código. Toque no conteúdo solicita atualização e abre o Mercado no Meu Painel; o iOS decide quando executar.</Text>
+    <Text>Perfil publicado: Ibovespa · Dow Jones · dólar · Brent futuro. As curvas acumulam aproximadamente 24 horas de intervalos com cotações, em barras de cinco minutos, atravessando fechamentos e fins de semana sem preencher lacunas. As datas efetivas aparecem junto da curva. A variação ao lado é diária, sobre o fechamento anterior. Yahoo pode atrasar ou falhar; o iOS decide quando atualizar. O perfil legado continua recuperável.</Text>
     <Text>Para melhorias de código, use a atualização do script remoto no Scripting. Atualizar nesta tela consulta somente os indicadores.</Text>
   </VStack></ScrollView></NavigationStack>
 }

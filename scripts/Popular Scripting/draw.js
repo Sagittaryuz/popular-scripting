@@ -34,7 +34,8 @@ export function placeInBlock(plan,x,y,width,height,alignment='center'){
 export function movementColor(row){return row.movement>0?'#00E676':row.movement<0?'#FF1744':'#96969C';}
 export function curvePlan(api,row,width=GEOMETRY.graph){
   const visible=api.displayChart(row.chart),points=api.lineCoordinates(visible,width,GEOMETRY.graphHeight);
-  return {width,points,months:api.monthLayout(visible,width),strips:api.gradientStrips(points,GEOMETRY.graphHeight,.5),status:visible?.displayStatus||'unavailable-24h'};
+  const segments=[];for(const point of points){if(!segments.length||point.breakBefore)segments.push([]);segments.at(-1).push(point);}
+  return {width,points,months:api.monthLayout(visible,width),strips:segments.flatMap(segment=>api.gradientStrips(segment,GEOMETRY.graphHeight,.5)),coverage:visible?.displayWindow?.basis==='observed-trading-time'?visible.displayWindow:null,status:visible?.window==='trading-24h'&&points.length<2?'unavailable-24h':visible?.displayStatus||'unavailable-24h'};
 }
 export function monthBand(curve){
   if(!curve.points.length)return {left:0,width:0,labels:[]};
@@ -45,7 +46,7 @@ function rgba(hex,a){return `rgba(${parseInt(hex.slice(1,3),16)},${parseInt(hex.
 // Path commands and explicit RGBA only: no Canvas text, gradients or 8-digit hex.
 export function drawCurve(ctx,size,plan,color){
   const sx=size.width/plan.width,sy=size.height/GEOMETRY.graphHeight;
-  const path=points=>{ctx.beginPath();points.forEach((p,i)=>i?ctx.lineTo(p.x*sx,p.y*sy):ctx.moveTo(p.x*sx,p.y*sy));};
+  const path=points=>{ctx.beginPath();points.forEach((p,i)=>i&&!p.breakBefore?ctx.lineTo(p.x*sx,p.y*sy):ctx.moveTo(p.x*sx,p.y*sy));};
   for(const guide of plan.months.lines){ctx.beginPath();ctx.moveTo(guide.x*sx,.5*sy);ctx.lineTo(guide.x*sx,(GEOMETRY.graphHeight-.5)*sy);ctx.strokeStyle='rgba(255,255,255,0.20)';ctx.lineWidth=.45*sx;ctx.stroke();}
   for(const {polygon,alpha} of plan.strips){path(polygon);ctx.closePath();ctx.fillStyle=rgba(color,alpha);ctx.fill();}
   if(plan.points.length){path(plan.points);ctx.strokeStyle=color;ctx.lineWidth=.7*sx;ctx.stroke();}
