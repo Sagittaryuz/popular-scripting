@@ -29,7 +29,7 @@ export function crossed(rule:AlertRule,previous:{value:number;at:number}|null,ne
   return rule.direction==='above'?previous.value<=rule.threshold&&next.value>rule.threshold:previous.value>=rule.threshold&&next.value<rule.threshold
 }
 export function sourceURL(row:any){
-  const raw=row.economicValidation?.sourceURL||row.asset?.url||({'USD/BRL':'https://economia.awesomeapi.com.br/last/USD-BRL','SELIC':'https://www.bcb.gov.br/controleinflacao/taxaselic'} as any)[row.asset?.code]
+  const raw=row.economicValidation?.sourceURL||row.asset?.url||row.asset?.sourceURL||({'USD/BRL':'https://economia.awesomeapi.com.br/last/USD-BRL','SELIC':'https://www.bcb.gov.br/controleinflacao/taxaselic'} as any)[row.asset?.code]
   if(typeof raw!=='string')return 'https://www.bcb.gov.br/'
   try{const u=new URL(raw);return u.protocol==='https:'&&!u.username&&!u.password?u.href:'https://www.bcb.gov.br/'}catch{return 'https://www.bcb.gov.br/'}
 }

@@ -28,6 +28,11 @@ function observationDate(value:any){
   const time=text.match(/\b\d{1,2}:\d{2}\b/)
   return time?time[0]:text.slice(0,10)
 }
+export function tradingRangeLabel(coverage:any){
+  if(coverage?.basis!=='observed-trading-time'||!Number.isFinite(coverage.startTime)||!Number.isFinite(coverage.endTime)||coverage.startTime<=0||coverage.endTime<=0||coverage.coveredMs<=0)return ''
+  const date=(time:number)=>new Date(time).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',timeZone:'America/Sao_Paulo'})
+  return (coverage.complete?'≈24h':'Parcial')+' '+date(coverage.startTime)+'–'+date(coverage.endTime)
+}
 function compactUnit(row:any){
   const code=row?.asset?.code
   return COMPACT_UNITS[code]||String(row?.unit||'—').replace(/\s+/g,' ').slice(0,12)
@@ -85,8 +90,9 @@ export function PopularView({model,width,height}:{model:any;width:number;height:
       const column=Math.floor(i/4),rowIndex=i%4,x=column*(G.column+G.columnGap),y=rowIndex*(G.row+G.gap),color=movementColor(row),curve=curvePlan(model.api,row),status=statusFor(row)
       const band=monthBand(curve),remoteSvg=apiSVG(row),remoteIcon=remoteSvg?null:apiImage(row)
       const percentMinimum=variationMinimumSize(row,row.percent),meta=`${shortCode(row)} | ${observationDate(row.time)}`
+      const tradingLabel=tradingRangeLabel(curve.coverage)
       const chartUnavailableLabel=curve.status==='unavailable-24h'?'24h indisponível':'7d indisponível'
-      const chartAccessibility=curve.status==='unavailable-24h'?' Gráfico de 24 horas indisponível':curve.status==='unavailable-7d'?' Gráfico de 7 dias indisponível':''
+      const chartAccessibility=tradingLabel?' Gráfico '+tradingLabel+' de intervalos cotados; lacunas preservadas':curve.status==='unavailable-24h'?' Gráfico de 24 horas indisponível':curve.status==='unavailable-7d'?' Gráfico de 7 dias indisponível':''
       const rowPlan={...plan,x:0,y:0},hitHeight=rowIndex<3?G.row+G.gap:G.row,rowFrame={width:G.column*plan.scale,height:hitHeight*plan.scaleY},rowPosition={x:plan.x+(x+G.column/2)*plan.scale,y:plan.y+(y+hitHeight/2)*plan.scaleY}
       const cellLabel=(key:string,value:string,cx:number,cy:number,w:number,h:number,size:number,min:number,bold=false,cellColor='white',right=false,alignment?:string)=><Label labelKey={key} value={value} plan={rowPlan} x={cx} y={cy} width={w} height={h} size={size} min={min} bold={bold} color={cellColor} right={right} alignment={alignment} placeFn={placeInBlock}/>
       return <Button key={row.asset.code} intent={RefreshAssetsOnTap(undefined)} buttonStyle="plain"
@@ -104,7 +110,8 @@ export function PopularView({model,width,height}:{model:any;width:number;height:
         {cellLabel('asset-meta',meta,G.dateX,G.dateTop,G.date,G.dateHeight,5.3,3.4,false,'#96969C',false,'leading')}
         <Canvas key="asset-chart" opaque={false} {...placeInBlock(rowPlan,G.graphX,G.graphTop,G.graph,G.graphHeight)} draw={(ctx,size)=>drawCurve(ctx,size,curve,color)}/>
         {!curve.points.length?cellLabel('missing',chartUnavailableLabel,G.graphX,G.graphTop,G.graph,G.graphHeight,4.2,3.2,false,'#96969C'):null}
-        {band.width>0?<ZStack key="month-band" alignment="topLeading" {...placeInBlock(rowPlan,G.graphX+band.left,G.monthTop,band.width,5)}>
+        {tradingLabel?cellLabel('trading-range',tradingLabel,G.graphX,G.monthTop,G.graph,5,3.7,3.2,false,'#96969C'):null}
+        {band.width>0&&band.labels.length>0?<ZStack key="month-band" alignment="topLeading" {...placeInBlock(rowPlan,G.graphX+band.left,G.monthTop,band.width,5)}>
           <ZStack alignment="topLeading" frame={{width:band.width*plan.scale,height:5*plan.scale}} clipped
             mask={<Rectangle fill="white" frame={{width:band.width*plan.scale,height:5*plan.scale}}/>}>
             {band.labels.map((month:any,j:number)=><Text key={'month-'+j} font={5*plan.scale} foregroundStyle={color}

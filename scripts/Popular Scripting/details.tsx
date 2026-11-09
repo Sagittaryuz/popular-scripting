@@ -29,9 +29,11 @@ export function PopularDetails({model}:{model:any}){
         <HStack>{[[7,'7 dias'],[90,'90 dias'],[0,'Disponível']].map(([days,label])=><Button key={String(days)} title={String(label)} action={()=>setHistoryDays(Number(days))}/>)}</HStack>
         <Canvas opaque={false} frame={{width:300,height:100}} draw={(ctx,size)=>drawCurve(ctx,size,curvePlan({...model.api,displayChart:(chart:any)=>chart},{...row,chart:history},300),'#4BAEFF')}/>
         <Link url={sourceURL(row)}><Text>Abrir fonte</Text></Link>
-        <Text>Histórico disponível da própria fonte; períodos e unidades podem variar entre indicadores.</Text>
+        <Text>Histórico disponível da própria fonte; períodos e unidades podem variar entre indicadores. A variação é diária, não o retorno de toda a curva.</Text>
+        {row.asset.instrument==='BZ=F'?<Text>Brent futuro BZ=F, referência financeira NYMEX escolhida pelo provedor, sujeita à rolagem. Não é Brent spot nem o contrato ICE Jan-2027 do perfil anterior.</Text>:null}
+        {row.chartCoverage?.startTime>0&&row.chartCoverage?.endTime>0?<Text>{(row.chartCoverage.complete?'Cobertura de aproximadamente 24 horas cotadas':'Cobertura parcial')+' · '+new Date(row.chartCoverage.startTime).toLocaleString('pt-BR',{timeZone:'America/Sao_Paulo'})+' até '+new Date(row.chartCoverage.endTime).toLocaleString('pt-BR',{timeZone:'America/Sao_Paulo'})+' · lacunas preservadas'}</Text>:null}
       </VStack>:null}
-      <Text>Perfil publicado: BBAS3 · BBDC4 · Ibovespa · BTC/USD · janela móvel de 7 dias</Text>
+      <Text>Perfil publicado: Ibovespa · Dow Jones · dólar · Brent futuro · aproximadamente 24 horas cotadas</Text>
       <Button title="Exportar histórico CSV" action={()=>run(async()=>{await exportText('popular-historico.csv',historyCSV(row?[row]:model.rows))})}/>
       <Button title="Explicar indicadores" action={()=>run(()=>explain('Explique os indicadores e compare somente valores de mesma base/unidade/período. Não recomende investimentos nem invente causas de variações. Dados: '+JSON.stringify(summaryRows(row?[row]:model.rows))))}/>
       <Button title="Criar alerta por cruzamento" action={()=>run(async()=>{await addAlert(model.rows);setMessage('Alerta configurado. A primeira observação estabelece a base; o aviso depende de nova execução.')} )}/>
@@ -42,7 +44,7 @@ export function PopularDetails({model}:{model:any}){
     <HStack>{[1,5,15].map(n=><Button key={n} title={(refreshMinutes()===n?'✓ ':'')+n+' min'} action={()=>run(async()=>{Storage.set('refresh-minutes',n);await reloadWidgets();setMessage('Intervalo solicitado. O iOS decide quando executar.')} )}/>)}</HStack>
     <Button title="Configurar fonte privada" action={()=>run(configurePrivateMarket)}/>
     <Button title="Remover token privado" action={()=>run(removePrivateMarket)}/>
-    <Text>O token da fonte privada fica somente no Keychain do iPhone. O widget não pede token nem chama DadosB3; sem token ou sem resposta, preserva cache privado ou deixa os três slots B3 sem cotação.</Text>
+    <Text>A fonte privada é do perfil legado B3/BTC. O perfil atual dos quatro indicadores usa Yahoo sem esse token. A credencial legada permanece somente no Keychain, sem alteração automática.</Text>
     <Button title="Exportar preferências" action={()=>run(async()=>{await exportPreferences('Popular',{refreshMinutes:refreshMinutes(),rules:Storage.get('popular-alerts')??[],alertsEnabled:Storage.get('popular-alerts-enabled')===true})})}/>
     <Button title="Escolher pasta de exportação" action={()=>run(chooseExportFolder)}/>
     <Button title="Importar preferências" action={()=>run(async()=>{const p=await readPreferences('Popular') as any;if(!p)return;const rules=validateRules(p.rules);if(typeof p.alertsEnabled!=='boolean'||![1,5,15].includes(p.refreshMinutes))throw Error('Preferências inválidas.');Storage.set('refresh-minutes',p.refreshMinutes);Storage.set('popular-alerts',rules);Storage.set('popular-alerts-enabled',p.alertsEnabled);await reloadWidgets();setMessage('Preferências importadas. O widget pequeno mantém a ordem fixa.')} )}/>

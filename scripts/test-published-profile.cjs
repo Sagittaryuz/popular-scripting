@@ -7,8 +7,8 @@ const view=fs.readFileSync(path.join(root,'scripts/Popular Scripting/view.tsx'),
 const engine=fs.readFileSync(path.join(root,'scripts/Popular Scripting/original-engine.js'),'utf8');
 const index=fs.readFileSync(path.join(root,'scripts/Popular Scripting/index.tsx'),'utf8');
 
-assert.equal(manifest.version,'0.2.46','published script manifest is bumped for the explicit 24-hour profile');
-assert.match(model,/export const VERSION='0\.2\.46'/);
+assert.equal(manifest.version,'0.2.47','published script manifest is bumped for the explicit 24-hour profile');
+assert.match(model,/export const VERSION='0\.2\.47'/);
 assert.match(model,/export const PUBLISHED_TEST_ASSETS=true/);
 assert.match(model,/PUBLISHED_TEST_PROFILE='ibov-dow-usd-brent-24h'/);
 assert.match(model,/localTestAssets:PUBLISHED_TEST_ASSETS/);
@@ -19,7 +19,7 @@ assert.match(model,/const orderedRows=PUBLISHED_TEST_ASSETS\?rows:fixedIndicator
 assert.match(model,/const combined=PUBLISHED_TEST_ASSETS\?\[\.\.\.orderedRows,\.\.\.additions\]:/,'the active order is preserved through the persisted result');
 assert.match(model,/FIXED_INDICATOR_CODES=\['SELIC','IPCA','IBOV','USD\/BRL','SOJA_JATAI_GO','CUB_GO','DIESEL_S10','BRENT'\]/,'the former list remains recoverable');
 assert.match(engine,/const KRAKEN_WINDOW_HOURS = 7 \* 24/);
-assert.match(engine,/const VERSION = '2026\.11\.03\.96'/,'the published engine bundle is identified separately from the package version');
+assert.match(engine,/const VERSION = '2026\.11\.09\.97'/,'the published engine bundle is identified separately from the package version');
 assert.match(engine,/window:'7D'/);
 assert.match(engine,/window:'24H'/);
 assert.match(view,/DOW_JONES/,'the published UI accepts the Dow Jones slot');
@@ -33,8 +33,10 @@ assert.match(engine,/function profileSevenDayDaily\(row,queryTime=now\.getTime\(
 assert.match(engine,/function profileSevenDayEOD\(row,queryTime=now\.getTime\(\)/);
 assert.doesNotMatch(engine,/function profileIntradaySevenDay/,'the profile no longer imposes intraday density');
 assert.match(engine,/json\/daily\/USD-BRL\/90/,'the former 90-day AwesomeAPI history is restored');
-assert.match(engine,/brent-jan-2027-feed-required/);
-assert.match(engine,/contractMonth:'2027-01'/);
+assert.match(engine,/window:'trading-24h'/);
+assert.match(engine,/observed-trading-time/);
+assert.match(engine,/query1\.finance\.yahoo\.com/);
+assert.match(engine,/instrument:'BZ=F'/);
 assert.match(view,/curve\.status==='unavailable-24h'/);
 assert.match(view,/24h indisponível/);
 assert.match(engine,/get privateMarketStatus\(\)/,'the engine exposes only a safe private-source status snapshot');
@@ -43,4 +45,4 @@ assert.match(model,/Worker respondeu HTTP/,'the foreground model labels other sa
 assert.match(model,/código upstream/,'the foreground model can display the allow-listed upstream code');
 assert.match(index,/privateMarketStatusText/,'the diagnostic is visible in the foreground app, not in the widget layout');
 
-console.log('PASS published profile: version 0.2.46 requires real timestamped 24H curves, keeps current daily IBOV/USD as quote-only with explicit fallback, preserves the recoverable 7D helpers and fixed list, keeps IBOV/DOW/USD/ICE Jan-2027 order, bypasses legacy cache/additions, and keeps safe source diagnostics.');
+console.log('PASS published 0.2.47 profile contract, trading-time history, recoverable legacy lists and 7D helpers, safe source diagnostics.');
