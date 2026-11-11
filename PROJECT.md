@@ -1,3 +1,10 @@
+## 0.2.51 — relógio da fonte para dólar e Dow
+
+- Corrige rejeição de cotações válidas quando o relógio local está alguns segundos atrás do servidor. Usa o HTTP Date da mesma resposta Yahoo validada, sem alterar o relógio do aparelho. Cotações posteriores à própria fonte continuam rejeitadas.
+- Preserva a referência de relógio no filtro da curva e cache; preço, base percentual, instrumentos, fontes, layout e dados econômicos permanecem iguais. Motor `2026.11.11.100`.
+- Preparo isolado de diagnóstico remoto em `scripts/remote-diagnostics`: sanitização, fila/cliente e handler privado com testes. **Sem envio ativo ou acesso remoto implantado**; depende da conexão do executor que administra o Worker e da configuração de acesso aplicável.
+- [Validação e limites](VALIDACAO-0.2.51.md). Testes locais não substituem confirmação no iPhone.
+
 ## 0.2.50 — textos maiores e alinhados aos ícones
 
 - Após a confirmação do usuário de que dados e gráficos funcionam, altera somente apresentação: nomes IBOVESPA, DOW JONES, DÓLAR e BRENT em caixa alta e negrito; cotações maiores; código/horário e variação na mesma fonte inferior.
@@ -30,7 +37,7 @@ A foto do dispositivo identificou Scripting 0.2.46/motor .96: preços de Ibovesp
 
 Destino estabelecido: `Sagittaryuz/popular-scripting`, pasta `main/scripts/Popular Scripting`. A versão .47 foi preparada sobre `03a3850e134e6c34dd38060118d3a6fac2771e2e`, preservando os dados econômicos e recursos existentes. Fonte principal do motor neste repositório é `original-engine.js`; seu gerador histórico não está no repositório público. Não reexportar motor antigo do outro projeto sobre esta adaptação.
 
-# Popular Scripting - Pro 0.2.50
+# Popular Scripting - Pro 0.2.51
 
 ## 0.2.46 - contrato explícito de curva 24H
 

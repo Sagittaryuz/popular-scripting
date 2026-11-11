@@ -2,7 +2,7 @@ import { createEngine } from './original-engine'
 import { createHost } from './host'
 import { dashboardStatus, refreshMinutes } from './pro-common'
 import { sourceStatusForRow } from './market-status'
-export const VERSION='0.2.50'
+export const VERSION='0.2.51'
 export const TAP_REFRESH_CACHE_KEY='popular-tap-refresh-v1'
 export const TAP_REFRESH_CACHE_MS=5000
 // Published, reversible test profile: keep the former eight-indicator list
@@ -52,7 +52,7 @@ export function intradayDiagnosticText(row:any):string{
   if(!Object.prototype.hasOwnProperty.call(INTRADAY_DIAGNOSTIC_LABELS,code))return ''
   const labels:Record<string,string>={IBOV:'Ibovespa',DOW_JONES:'Dow Jones','USD/BRL':'Dólar',BRENT:'Brent futuro'}
   const name=labels[row?.asset?.code];if(!name)return ''
-  let message=name+': '+INTRADAY_DIAGNOSTIC_LABELS[code]
+  let message=name+': '+(code==='quote-future'&&d.validationClock==='provider-http-date'?'cotação posterior ao horário da própria fonte':INTRADAY_DIAGNOSTIC_LABELS[code])
   if(code==='http'&&Number.isInteger(d.httpStatus)&&d.httpStatus>=100&&d.httpStatus<=599)message+=' '+d.httpStatus
   const time=(value:any)=>typeof value==='number'&&Number.isFinite(value)&&value>0&&value<8640000000000000?new Date(value).toLocaleTimeString('pt-BR',{timeZone:'America/Sao_Paulo',hour:'2-digit',minute:'2-digit',second:'2-digit'}):''
   if(code.startsWith('quote-')){

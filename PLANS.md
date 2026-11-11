@@ -1,3 +1,10 @@
+## 0.2.51 — relógio da fonte para dólar e Dow
+
+- Corrige rejeição de cotações válidas quando o relógio local está alguns segundos atrás do servidor. Usa o HTTP Date da mesma resposta Yahoo validada, sem alterar o relógio do aparelho. Cotações posteriores à própria fonte continuam rejeitadas.
+- Preserva a referência de relógio no filtro da curva e cache; preço, base percentual, instrumentos, fontes, layout e dados econômicos permanecem iguais. Motor `2026.11.11.100`.
+- Preparo isolado de diagnóstico remoto em `scripts/remote-diagnostics`: sanitização, fila/cliente e handler privado com testes. **Sem envio ativo ou acesso remoto implantado**; depende da conexão do executor que administra o Worker e da configuração de acesso aplicável.
+- [Validação e limites](VALIDACAO-0.2.51.md). Testes locais não substituem confirmação no iPhone.
+
 ## 0.2.50 — textos maiores e alinhados aos ícones
 
 - Após a confirmação do usuário de que dados e gráficos funcionam, altera somente apresentação: nomes IBOVESPA, DOW JONES, DÓLAR e BRENT em caixa alta e negrito; cotações maiores; código/horário e variação na mesma fonte inferior.

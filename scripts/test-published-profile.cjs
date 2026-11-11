@@ -7,8 +7,8 @@ const view=fs.readFileSync(path.join(root,'scripts/Popular Scripting/view.tsx'),
 const engine=fs.readFileSync(path.join(root,'scripts/Popular Scripting/original-engine.js'),'utf8');
 const index=fs.readFileSync(path.join(root,'scripts/Popular Scripting/index.tsx'),'utf8');
 
-assert.equal(manifest.version,'0.2.50','published script manifest is bumped for the explicit 24-hour profile');
-assert.match(model,/export const VERSION='0\.2\.50'/);
+assert.equal(manifest.version,'0.2.51','published script manifest is bumped for the explicit 24-hour profile');
+assert.match(model,/export const VERSION='0\.2\.51'/);
 assert.match(model,/export const PUBLISHED_TEST_ASSETS=true/);
 assert.match(model,/PUBLISHED_TEST_PROFILE='ibov-dow-usd-brent-24h'/);
 assert.match(model,/localTestAssets:PUBLISHED_TEST_ASSETS/);
@@ -19,7 +19,7 @@ assert.match(model,/const orderedRows=PUBLISHED_TEST_ASSETS\?rows:fixedIndicator
 assert.match(model,/const combined=PUBLISHED_TEST_ASSETS\?\[\.\.\.orderedRows,\.\.\.additions\]:/,'the active order is preserved through the persisted result');
 assert.match(model,/FIXED_INDICATOR_CODES=\['SELIC','IPCA','IBOV','USD\/BRL','SOJA_JATAI_GO','CUB_GO','DIESEL_S10','BRENT'\]/,'the former list remains recoverable');
 assert.match(engine,/const KRAKEN_WINDOW_HOURS = 7 \* 24/);
-assert.match(engine,/const VERSION = '2026\.11\.09\.99'/,'the published engine bundle is identified separately from the package version');
+assert.match(engine,/const VERSION = '2026\.11\.11\.100'/,'the published engine bundle is identified separately from the package version');
 assert.match(engine,/window:'7D'/);
 assert.match(engine,/window:'24H'/);
 assert.match(view,/DOW_JONES/,'the published UI accepts the Dow Jones slot');
@@ -45,4 +45,4 @@ assert.match(model,/Worker respondeu HTTP/,'the foreground model labels other sa
 assert.match(model,/código upstream/,'the foreground model can display the allow-listed upstream code');
 assert.match(index,/privateMarketStatusText/,'the diagnostic is visible in the foreground app, not in the widget layout');
 
-console.log('PASS published 0.2.50 profile contract, trading-time history, recoverable legacy lists and 7D helpers, safe source diagnostics.');
+console.log('PASS published 0.2.51 profile contract, trading-time history, recoverable legacy lists and 7D helpers, safe source diagnostics.');

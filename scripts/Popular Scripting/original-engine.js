@@ -10,7 +10,7 @@ const args={queryParameters:{popular_refresh:options.force?'1':'0'}};
 const Color=class {constructor(hex,alpha=1){this.hex=hex;this.alpha=alpha;}};
 // Scriptable — Popular small/medium/large. O conjunto normal mantém oito
 // indicadores; o entry publicado pode selecionar o perfil de teste reversível.
-const VERSION = '2026.11.09.99'
+const VERSION = '2026.11.11.100'
 const SETTINGS = { refreshMinutes: 5, rotationMinutes: 5, selection: 'indicadores' };
 // Bloco 146 × 146 pt; quatro colunas e ícones circulares 26 pt centralizados nas linhas 36 pt.
 const LAYOUT = { columns: [28, 40, 46, 26], columnGap: 2, valueGap: 2, nameWidth: 40, priceWidth: 26, graphWidth: 46, rowHeight: 36, gap: 2/3, iconSize: 26, chartHeight: 20 };
@@ -1597,7 +1597,18 @@ function intradayNow() { return options.now == null ? Date.now() : now.getTime()
 function intradayStamp(time) {
   return {time,day:new Date(time).toLocaleDateString('sv-SE',{timeZone:'America/Sao_Paulo'}),hasTime:true};
 }
+// An HTTPS Date header from this exact successful Yahoo response can anchor
+// validation when the device differs by a few seconds. The five-minute bound
+// is a header sanity guard, NOT permission for future quotes. No OS clock is changed.
+const MAX_INTRADAY_CLOCK_SKEW_MS=5*60000;
+function validIntradayClock(reference) {
+  return reference?.basis==='provider-http-date'&&finite(reference.serverTime)&&reference.serverTime>0&&finite(reference.localReceiptTime)&&reference.localReceiptTime>0&&Math.abs(reference.serverTime-reference.localReceiptTime)<=MAX_INTRADAY_CLOCK_SKEW_MS;
+}
+function intradayEvaluationTime(time,reference) {
+  return validIntradayClock(reference)&&time>=reference.localReceiptTime&&time-reference.localReceiptTime<=10*86400000?time+reference.serverTime-reference.localReceiptTime:time;
+}
 function tradingWindow(chart,time=intradayNow()) {
+  time=intradayEvaluationTime(time,chart?.clockReference);
   const interval=chart?.intervalMs;
   if(chart?.window!=='trading-24h'||interval!==INTRADAY_INTERVAL_MS||!Array.isArray(chart.points))return null;
   const all=chart.points.filter(p=>finite(p?.value)&&p.value>0&&p.stamp?.hasTime===true&&finite(p.stamp.time)&&p.stamp.time>0&&p.stamp.time>=time-10*86400000&&p.stamp.time<=time);
@@ -1636,30 +1647,38 @@ function parseIntraday(payload,definition,time=intradayNow(),diagnostic={}) {
   diagnostic.timestampCount=Array.isArray(timestamps)?timestamps.length:0;
   diagnostic.sessionCount=Array.isArray(meta?.tradingPeriods)?meta.tradingPeriods.flat(Infinity).filter(s=>finite(s?.start)&&finite(s?.end)&&s.start<s.end).length:0;
   if(payload?.chart?.error||!(meta?.symbol===definition.instrument||(definition.instrument==='BRL=X'&&meta?.symbol==='USDBRL=X'))||meta.currency!==definition.providerCurrency||meta.instrumentType!==definition.providerType||meta.dataGranularity!=='5m'||!Array.isArray(timestamps)||!Array.isArray(closes)||timestamps.length!==closes.length||timestamps.length>15000)throw intradayFailure('identity',definition.code+': identidade ou intervalo inválido',diagnostic);
+  const candidateClock={basis:'provider-http-date',serverTime:diagnostic.serverTime,localReceiptTime:time};
+  const clockReference=diagnostic.httpStatus===200&&validIntradayClock(candidateClock)?candidateClock:null;
+  const evaluationTime=intradayEvaluationTime(time,clockReference);
+  diagnostic.validationClock=clockReference?'provider-http-date':'local-receipt';
+  diagnostic.validationTime=evaluationTime;
+  if(finite(diagnostic.serverTime))diagnostic.serverMinusReceiptMS=diagnostic.serverTime-time;
   const price=Number(meta.regularMarketPrice),at=Number(meta.regularMarketTime)*1000,previous=Number(meta.regularMarketPreviousClose??meta.previousClose);
-  if(!finite(price)||price<=0||(definition.code==='USD/BRL'&&(price<.1||price>100))||!finite(at)||at<=0||at>time||time-at>10*86400000)throw intradayFailure(!finite(price)||price<=0||(definition.code==='USD/BRL'&&(price<.1||price>100))?'price':!finite(at)||at<=0?'quote-time':at>time?'quote-future':'quote-old',definition.code+': cotação inválida ou antiga',diagnostic);
+  if(!finite(price)||price<=0||(definition.code==='USD/BRL'&&(price<.1||price>100))||!finite(at)||at<=0||at>evaluationTime||evaluationTime-at>10*86400000)throw intradayFailure(!finite(price)||price<=0||(definition.code==='USD/BRL'&&(price<.1||price>100))?'price':!finite(at)||at<=0?'quote-time':at>evaluationTime?'quote-future':'quote-old',definition.code+': cotação inválida ou antiga',diagnostic);
   const periods=(Array.isArray(meta.tradingPeriods)?meta.tradingPeriods.flat(Infinity):[]).filter(s=>finite(s?.start)&&finite(s?.end)&&s.start<s.end).map(s=>({start:s.start*1000,end:s.end*1000}));
   if(!periods.length)throw intradayFailure('sessions',definition.code+': sessões ausentes',diagnostic);
   const unique=new Map();
   for(let i=0;i<timestamps.length;i++){
     const t=Number(timestamps[i])*1000,value=closes[i];
-    if(!finite(t)||t<=0||t>at||t<time-10*86400000||!finite(value)||value<=0)continue;
+    if(!finite(t)||t<=0||t>at||t<evaluationTime-10*86400000||!finite(value)||value<=0)continue;
     const session=periods.find(s=>t>=s.start&&t<=s.end);if(!session)continue;
     if(unique.has(t)&&unique.get(t).value!==value)throw intradayFailure('series-conflict',definition.code+': timestamp conflitante',diagnostic);
     unique.set(t,{value,stamp:intradayStamp(t),session:session.start});
   }
   const points=[...unique.values()].sort((a,b)=>a.stamp.time-b.stamp.time);
   if(points.length&&Math.abs(points.at(-1).value/price-1)>.05)throw intradayFailure('series-mismatch',definition.code+': série incompatível com a cotação',diagnostic);
-  const chart={points,window:'trading-24h',timeBasis:'observed-trading-time',intervalMs:INTRADAY_INTERVAL_MS},visible=tradingWindow(chart,time),percent=finite(previous)&&previous>0?(price/previous-1)*100:null;
+  const chart={points,window:'trading-24h',timeBasis:'observed-trading-time',intervalMs:INTRADAY_INTERVAL_MS,...(clockReference?{clockReference}:{})},visible=tradingWindow(chart,time),percent=finite(previous)&&previous>0?(price/previous-1)*100:null;
   diagnostic.stage='complete';diagnostic.code='ok';
   return {intradayDiagnostic:{...diagnostic},intradaySchema:1,asset:{...definition,price,percent,delta:finite(previous)&&previous>0?price-previous:null,percentBasis:'supplier-previous-close'},previousClose:finite(previous)&&previous>0?previous:null,providerExchange:meta.exchangeName||null,providerTimeZone:meta.exchangeTimezoneName||null,localTest:true,stamp:intradayStamp(at),chart,chartStatus:visible.displayWindow.complete?'intraday-24h':'intraday-partial',quoteVerified:true,fetchedAt:time,sourceDelaySeconds:finite(meta.exchangeDataDelayedBy)?meta.exchangeDataDelayedBy*60:null,history:visible.displayWindow,chartCoverage:visible.displayWindow,chartRequirement:'observed-trading-time'};
 }
 function validIntradayCache(row,definition,time=intradayNow()) {
-  return row?.intradaySchema===1&&row.asset?.code===definition.code&&row.asset.instrument===definition.instrument&&row.asset.source==='Yahoo Finance'&&row.asset.providerCurrency===definition.providerCurrency&&row.asset.providerType===definition.providerType&&finite(row.asset.price)&&row.asset.price>0&&finite(row.stamp?.time)&&row.stamp.time<=time&&time-row.stamp.time<=10*86400000&&finite(row.fetchedAt)&&row.fetchedAt>0&&row.fetchedAt<=time&&(row.asset.percent==null||finite(row.asset.percent))&&Array.isArray(row.chart?.points)&&row.chart.points.length<=15000&&row.chart.points.every((p,i,a)=>finite(p.value)&&p.value>0&&p.stamp?.hasTime===true&&finite(p.stamp.time)&&p.stamp.time<=row.stamp.time&&finite(p.session)&&p.session<=p.stamp.time&&(!i||p.stamp.time>a[i-1].stamp.time))&&!!tradingWindow(row.chart,time);
+  const reference=row?.chart?.clockReference,evaluationTime=intradayEvaluationTime(time,reference);
+  if(reference!=null&&!validIntradayClock(reference))return false;
+  return row?.intradaySchema===1&&row.asset?.code===definition.code&&row.asset.instrument===definition.instrument&&row.asset.source==='Yahoo Finance'&&row.asset.providerCurrency===definition.providerCurrency&&row.asset.providerType===definition.providerType&&finite(row.asset.price)&&row.asset.price>0&&finite(row.stamp?.time)&&row.stamp.time<=evaluationTime&&evaluationTime-row.stamp.time<=10*86400000&&finite(row.fetchedAt)&&row.fetchedAt>0&&row.fetchedAt<=time&&(row.asset.percent==null||finite(row.asset.percent))&&Array.isArray(row.chart?.points)&&row.chart.points.length<=15000&&row.chart.points.every((p,i,a)=>finite(p.value)&&p.value>0&&p.stamp?.hasTime===true&&finite(p.stamp.time)&&p.stamp.time<=row.stamp.time&&finite(p.session)&&p.session<=p.stamp.time&&(!i||p.stamp.time>a[i-1].stamp.time))&&!!tradingWindow(row.chart,time);
 }
 function mergeIntradayHistory(row,cached,time=intradayNow()) {
   if(!cached||cached.asset.instrument!==row.asset.instrument)return row;
-  const earliest=time-10*86400000,points=new Map();
+  const earliest=intradayEvaluationTime(time,row.chart?.clockReference)-10*86400000,points=new Map();
   for(const p of [...cached.chart.points,...row.chart.points])if(p.stamp.time>=earliest&&p.stamp.time<=row.stamp.time)points.set(p.stamp.time,p);
   const chart={...row.chart,points:[...points.values()].sort((a,b)=>a.stamp.time-b.stamp.time).slice(-15000)};
   const history=tradingWindow(chart,time).displayWindow;
@@ -1818,7 +1837,8 @@ function timePresentation(row) {
     return {text:value,candidates:[value,short,'— KR'],fallback:'— KR'};
   }
   const tag=asset.source==='Yahoo Finance'?'YF':asset.source==='BCB-SGS'?'BCB':asset.source==='FRED'?'FR':asset.source==='AgroLink'?'AG':asset.source==='PrivateMarket'?'API':asset.source==='DadosB3'?'B3':asset.source==='pending'?'—':asset.source==='Investing'||asset.code==='BRENT'?'INV':asset.code==='USD/BRL'?'AA':'I10',short=tag==='YF'?'YF':tag==='BCB'?'B':tag==='FR'?'F':tag==='AG'?'AG':tag==='API'?'API':tag==='B3'?'B3':tag==='—'?'—':tag==='INV'?'I':tag==='AA'?'A':'10';
-  const displayNow=Date.now(),today=new Date(displayNow).toLocaleDateString('sv-SE',{timeZone:'America/Sao_Paulo'});
+  const localDisplayNow=Date.now(),displayNow=asset.source==='Yahoo Finance'?intradayEvaluationTime(localDisplayNow,row.chart?.clockReference):localDisplayNow;
+  const today=new Date(displayNow).toLocaleDateString('sv-SE',{timeZone:'America/Sao_Paulo'});
   let label=null,day=null;
   if(row.referencePeriod&&asset.source==='FRED'&&/^\d{4}-\d{2}$/.test(row.referencePeriod)){const period=row.referencePeriod.slice(5)+'/'+row.referencePeriod.slice(2,4),mark=cached||row.archive?'†':'';return {text:period+' FR'+mark,candidates:[period+' FR'+mark,period+' F'+mark,...(mark?[period+' F*']:[])],fallback:'— F'+(mark?'*':'')};}
   // Only quote/session metadata is eligible. Page/update/query timestamps are not.
@@ -1851,7 +1871,8 @@ function safeIntradayDiagnostic(value) {
   const out={};
   if(['transport','validation','complete'].includes(value?.stage))out.stage=value.stage;
   if(['pending','ok','http','timeout','json','network','identity','price','quote-time','quote-future','quote-old','sessions','series-conflict','series-mismatch'].includes(value?.code))out.code=value.code;
-  for(const key of ['localReceiptTime','regularMarketTime','quoteMinusReceiptMS','serverTime','httpStatus','timestampCount','sessionCount'])if(finite(value?.[key]))out[key]=value[key];
+  for(const key of ['localReceiptTime','regularMarketTime','quoteMinusReceiptMS','serverTime','validationTime','serverMinusReceiptMS','httpStatus','timestampCount','sessionCount'])if(finite(value?.[key]))out[key]=value[key];
+  if(['provider-http-date','local-receipt'].includes(value?.validationClock))out.validationClock=value.validationClock;
   if(typeof value?.providerSymbol==='string'&&/^[A-Za-z0-9^=.-]{1,24}$/.test(value.providerSymbol))out.providerSymbol=value.providerSymbol;
   for(const key of ['providerCurrency','providerType','dataGranularity'])if(typeof value?.[key]==='string'&&/^[A-Za-z0-9.-]{1,24}$/.test(value[key]))out[key]=value[key];
   for(const key of ['cachePreserved','historyExpansion'])if(value?.[key]===true)out[key]=true;

@@ -8,6 +8,7 @@ assert.equal(render('ok'),'');assert.equal(render('pending'),'');assert.equal(re
 assert.match(render('http',{httpStatus:429}),/Dow Jones: a fonte respondeu HTTP 429/);
 const t=Date.parse('2026-11-09T20:10:15Z');
 assert.match(render('quote-future',{regularMarketTime:t+500,localReceiptTime:t,serverTime:t,quoteMinusReceiptMS:500}),/cotação posterior ao relógio do aparelho.*diferença \+0\.500 s/);
+assert.match(render('quote-future',{validationClock:'provider-http-date',regularMarketTime:t+1000,serverTime:t}),/posterior ao horário da própria fonte/);
 assert.match(render('network',{cachePreserved:true}),/cache anterior preservado/);
 assert.match(render('timeout',{historyExpansion:true}),/cotação preservada, ampliação do histórico falhou/);
 assert.match(render('identity',{providerSymbol:'USDBRL=X',providerCurrency:'BRL',providerType:'CURRENCY',dataGranularity:'5m'}),/USDBRL=X \/ BRL \/ CURRENCY \/ 5m/);
