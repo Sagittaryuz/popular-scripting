@@ -32,7 +32,7 @@ assert.match(view,/const NAME_FONT=6\.6/,'all names use one fixed native font si
 assert.match(view,/minScaleFactor=\{1\}/,'native text uses ellipsis without per-name font shrinking');
 assert.doesNotMatch(view,/market-status-dot/,'the status dot is removed from the compact identity column');
 assert.doesNotMatch(view,/cellLabel\('unit'/,'the unit is no longer rendered below the quote');
-assert.match(view,/const PRICE_FONT=14/,'the quote source font is enlarged before native fitting');
+assert.match(view,/const PRICE_FONT=10\.5/,'the quote source font fits the half-height capsule before native fitting');
 
 const bundled=buildSync({entryPoints:[path.join(root,'badges.js')],bundle:true,write:false,format:'cjs',platform:'node'}).outputFiles[0].text;
 const badgeModule={exports:{}};

@@ -11,6 +11,8 @@ const COL1_X=0,COL2_X=COL1+COL_GAP,COL3_X=COL2_X+COL2+COL_GAP,COL4_X=COL3_X+COL3
 // truncation box; no status indicator reserves space beside the name.
 const NAME_TEXT_MAX=COL2;
 const ICON=26,ICON_TOP=(ROW-ICON)/2,ICON_LEFT=(COL1-ICON)/2;
+// Every quote uses the same capsule, independent of the price's text width.
+export const PRICE_CAPSULE=Object.freeze({width:COL4,height:ICON/2,top:ICON_TOP,inset:2});
 const BLOCK_TOP=0,BLOCK_HEIGHT=ROW,BLOCK_CENTER=BLOCK_TOP+BLOCK_HEIGHT/2;
 const NAME_TOP=5,NAME_HEIGHT=17,META_TOP=24,META_HEIGHT=7,GRAPH_TOP=5,MONTH_TOP=31,LINE1_TOP=5,LINE2_TOP=24,LINE3_TOP=16.5;
 export const GEOMETRY=Object.freeze({column:COLUMN,columnGap:COLUMN_GAP,row:ROW,gap:2/3,icon:ICON,iconTop:ICON_TOP,iconLeft:ICON_LEFT,iconColumn:COL1,col1:COL1,col1X:COL1_X,col2:COL2,col2X:COL2_X,col3:COL3,col3X:COL3_X,col4:COL4,col4X:COL4_X,colGap:COL_GAP,detail:COL3_X,blockWidth:COL3,blockTop:BLOCK_TOP,blockHeight:BLOCK_HEIGHT,blockCenter:BLOCK_CENTER,name:COL2,nameX:COL2_X,nameTop:NAME_TOP,nameHeight:NAME_HEIGHT,nameTextMax:NAME_TEXT_MAX,code:COL2,codeX:COL2_X,codeTop:META_TOP,codeHeight:META_HEIGHT,date:COL2,dateX:COL2_X,dateTop:META_TOP,dateHeight:META_HEIGHT,price:COL4,priceX:COL4_X,unit:COL4,unitX:COL4_X,timeX:COL2_X,time:COL2,graph:COL3,graphX:COL3_X,graphHeight:GRAPH_HEIGHT,percent:COL4,percentX:COL4_X,top:TOP,middle:MIDDLE,bottom:BOTTOM,line1Top:LINE1_TOP,line2Top:LINE2_TOP,graphTop:GRAPH_TOP,monthTop:MONTH_TOP,line3Top:LINE3_TOP});
@@ -31,6 +33,14 @@ export function placeInBlock(plan,x,y,width,height,alignment='center'){
   return place(plan,x,y,width,height,alignment);
 }
 export function movementColor(row){return row.movement>0?'#00E676':row.movement<0?'#FF1744':'#96969C';}
+// Use the same Canvas ellipse/path primitives already used by the asset icons.
+export function drawPriceCapsule(ctx,size,color){
+  const w=size.width,h=size.height,r=h/2;
+  ctx.beginPath();ctx.moveTo(r,0);ctx.lineTo(w-r,0);
+  ctx.ellipse(w-r,r,r,r,0,-Math.PI/2,Math.PI/2,false);
+  ctx.lineTo(r,h);ctx.ellipse(r,r,r,r,0,Math.PI/2,3*Math.PI/2,false);
+  ctx.closePath();ctx.fillStyle=color;ctx.fill();
+}
 export function curvePlan(api,row,width=GEOMETRY.graph){
   const visible=api.displayChart(row.chart),points=api.lineCoordinates(visible,width,GEOMETRY.graphHeight);
   const segments=[];for(const point of points){if(!segments.length||point.breakBefore)segments.push([]);segments.at(-1).push(point);}

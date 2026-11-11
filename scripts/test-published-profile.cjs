@@ -7,8 +7,8 @@ const view=fs.readFileSync(path.join(root,'scripts/Popular Scripting/view.tsx'),
 const engine=fs.readFileSync(path.join(root,'scripts/Popular Scripting/original-engine.js'),'utf8');
 const index=fs.readFileSync(path.join(root,'scripts/Popular Scripting/index.tsx'),'utf8');
 
-assert.equal(manifest.version,'0.2.52','published script manifest is bumped for the explicit 24-hour profile');
-assert.match(model,/export const VERSION='0\.2\.52'/);
+assert.equal(manifest.version,'0.2.53','published script manifest is bumped for the explicit 24-hour profile');
+assert.match(model,/export const VERSION='0\.2\.53'/);
 assert.match(model,/export const PUBLISHED_TEST_ASSETS=true/);
 assert.match(model,/PUBLISHED_TEST_PROFILE='ibov-dow-usd-brent-24h'/);
 assert.match(model,/localTestAssets:PUBLISHED_TEST_ASSETS/);
@@ -45,4 +45,4 @@ assert.match(model,/Worker respondeu HTTP/,'the foreground model labels other sa
 assert.match(model,/código upstream/,'the foreground model can display the allow-listed upstream code');
 assert.match(index,/privateMarketStatusText/,'the diagnostic is visible in the foreground app, not in the widget layout');
 
-console.log('PASS published 0.2.52 profile contract, trading-time history, recoverable legacy lists and 7D helpers, safe source diagnostics.');
+console.log('PASS published 0.2.53 profile contract, trading-time history, recoverable legacy lists and 7D helpers, safe source diagnostics.');

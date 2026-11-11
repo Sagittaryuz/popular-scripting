@@ -2,12 +2,12 @@ import { Button, Canvas, Circle, Image, Rectangle, SVG, Text, ZStack, Script } f
 import { pageRows } from './pagination'
 import { assets } from './assets'
 import { drawBadge } from './badges'
-import { GEOMETRY as G, layout, place, placeInBlock, movementColor, curvePlan, monthBand, drawCurve } from './draw'
+import { GEOMETRY as G, PRICE_CAPSULE as P, layout, place, placeInBlock, movementColor, curvePlan, monthBand, drawCurve, drawPriceCapsule } from './draw'
 import { RefreshAssetsOnTap } from './app_intents'
 import { assetMarketStatus } from './market-status'
 const images:Record<string,UIImage|null|undefined>={}
 const NAME_FONT=6.6
-const PRICE_FONT=14
+const PRICE_FONT=10.5
 const PRICE_MIN=6.5
 const META_FONT=5.3
 const DISPLAY_NAMES:Record<string,string>=Object.freeze({IBOV:'IBOVESPA',DOW_JONES:'DOW JONES','USD/BRL':'DÓLAR',BRENT:'BRENT'})
@@ -117,7 +117,8 @@ export function PopularView({model,width,height}:{model:any;width:number;height:
               position={{x:(month.x+7)*plan.scale,y:2.5*plan.scale}}>{month.text}</Text>)}
           </ZStack>
         </ZStack>:null}
-        {cellLabel('price',row.price,G.priceX,G.line1Top,G.price,G.top,PRICE_FONT,PRICE_MIN,true,'white',true,'topTrailing')}
+        <Canvas key="price-capsule" opaque={false} {...placeInBlock(rowPlan,G.priceX,P.top,P.width,P.height)} draw={(ctx,size)=>drawPriceCapsule(ctx,size,color)}/>
+        {cellLabel('price',row.price,G.priceX+P.inset,P.top,P.width-2*P.inset,P.height,PRICE_FONT,PRICE_MIN,true,'#171719',false,'center')}
         {cellLabel('percent',row.percent,G.percentX,G.line2Top,G.percent,G.middle,META_FONT,3.4,false,color,true,'bottomTrailing')}
         {rowIndex<3?<Rectangle key="divider" fill="rgba(255,255,255,0.13)" {...place({...plan,x:0,y:0},0,G.row,G.column,G.gap)}/>:null}
         </ZStack>

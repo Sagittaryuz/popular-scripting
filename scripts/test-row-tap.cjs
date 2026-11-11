@@ -6,7 +6,7 @@ const definitions={},sdk={AppIntentManager:{register:definition=>{definitions[de
 const viewModule={exports:{}},createElement=(type,props,...children)=>typeof type==='function'?type({...props,children:children.flat(Infinity).filter(Boolean)}):({type,props:props||{},children:children.flat(Infinity).filter(Boolean)})
 vm.runInNewContext(bundle('view.tsx'),{module:viewModule,exports:viewModule.exports,require:()=>sdk,createElement,Date,URL,Storage:{get:()=>null,set:()=>true},UIImage:{fromBase64String:()=>null}})
 const drawModule={exports:{}};vm.runInNewContext(bundle('draw.js'),{module:drawModule,exports:drawModule.exports,Math,Number,Date,Intl,JSON})
-const {GEOMETRY:G,layout}=drawModule.exports,codes=['SELIC','IPCA','IBOV','USD/BRL','SOJA_JATAI_GO','CUB_GO','DIESEL_S10','BRENT']
+const {GEOMETRY:G,PRICE_CAPSULE:P,layout}=drawModule.exports,codes=['SELIC','IPCA','IBOV','USD/BRL','SOJA_JATAI_GO','CUB_GO','DIESEL_S10','BRENT']
 const inlineSVG='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26"><circle cx="13" cy="13" r="13" fill="#345"/></svg>'
 const rows=codes.map((code,index)=>({asset:{code,...(code==='IBOV'?{iconSVGCode:inlineSVG}:{})},name:'Nome '+code,price:'1,00',percent:index%2?'-0,14%':'+0,82%',movement:index%2?-1:1,unit:'BRL',time:'27/10',chart:null}))
 const api={displayChart:chart=>chart,lineCoordinates:()=>[],monthLayout:()=>({labels:[],lines:[]}),gradientStrips:()=>[]}
@@ -50,10 +50,10 @@ for(const [family,width,height,expected] of [['small',158,158,4],['medium',338,1
     assert.equal(graph.props.frame.width,G.graph*plan.scale)
     assert.equal(graph.props.frame.height,G.graphHeight*plan.scale)
     assert.equal(graph.props.position.x,(G.graphX+G.graph/2)*plan.scale)
-    assert.equal(price.props.frame.width,G.price*plan.scale)
+    assert.equal(price.props.frame.width,(P.width-2*P.inset)*plan.scale)
     assert.equal(percent.props.frame.width,G.percent*plan.scale)
-    assert.equal(price.props.font,14*plan.scale)
-    assert.equal(price.props.frame.alignment,'topTrailing')
+    assert.equal(price.props.font,10.5*plan.scale)
+    assert.equal(price.props.frame.alignment,'center')
     assert.equal(percent.props.frame.alignment,'bottomTrailing')
     assert(nameText.props.position.x+nameText.props.frame.width/2<=graph.props.position.x-graph.props.frame.width/2-1e-8,family+' identity column does not enter graph')
     assert(meta.props.position.x-meta.props.frame.width/2>=nameText.props.position.x-nameText.props.frame.width/2-1e-8)

@@ -1,3 +1,10 @@
+## 0.2.53 — cápsulas nas cotações
+
+- Cada cotação recebe uma cápsula sólida de 36 × 13 pt, com metade da altura dos ícones de 26 pt, topo alinhado e largura igual em todos os ativos. A escala do widget preserva essas proporções.
+- Cápsula e gráfico usam a mesma cor de alta, baixa ou movimento neutro. O preço fica centralizado em negrito, com margens internas e texto escuro para contraste; variação, nomes, ícones e curvas mantêm suas posições.
+- Motor `2026.11.11.101`, fontes, valores, cache e logs técnicos privados da .52 permanecem sem alteração. Sem mudança no Worker ou nas credenciais.
+- [Validação e limites](VALIDACAO-0.2.53.md): suíte completa, 18 módulos e prévias do JSX/Canvas aprovados. Renderização nativa no iPhone ainda não verificada.
+
 ## 0.2.52 — logs técnicos privados do processamento
 
 - Integra fila e envio de diagnóstico ao serviço privado existente, no mesmo caminho `/v1/market`. Reutiliza somente o token já configurado no Keychain; não cria, exporta ou modifica credenciais.
@@ -45,7 +52,7 @@ A foto do dispositivo identificou Scripting 0.2.46/motor .96: preços de Ibovesp
 
 Destino estabelecido: `Sagittaryuz/popular-scripting`, pasta `main/scripts/Popular Scripting`. A versão .47 foi preparada sobre `03a3850e134e6c34dd38060118d3a6fac2771e2e`, preservando os dados econômicos e recursos existentes. Fonte principal do motor neste repositório é `original-engine.js`; seu gerador histórico não está no repositório público. Não reexportar motor antigo do outro projeto sobre esta adaptação.
 
-# Popular Scripting - Pro 0.2.52
+# Popular Scripting - Pro 0.2.53
 
 ## 0.2.46 - contrato explícito de curva 24H
 

@@ -1,9 +1,9 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),zlib=require('node:zlib');
 const {bundle}=require('./test-trading-host.cjs');
 const root=path.resolve(__dirname,'..'),previewDir=path.join(root,'validation');
-const evidence=JSON.parse(fs.readFileSync(path.join(previewDir,'market-profile-0.2.50-preview.json'),'utf8'));
+const evidence=JSON.parse(fs.readFileSync(path.join(previewDir,'market-profile-0.2.53-preview.json'),'utf8'));
 const order=['IBOV','DOW_JONES','USD/BRL','BRENT'],symbols=['^BVSP','^DJI','BRL=X','BZ=F'];
-assert.equal(evidence.version,'0.2.50');assert.equal(evidence.sourceVersion,'2026.11.09.99');
+assert.equal(evidence.version,'0.2.53');assert.equal(evidence.sourceVersion,'2026.11.11.101');
 assert.equal(evidence.nativeIPhone,false);assert.match(evidence.simulation,/actual scripting model \+ host \+ JSX\/Canvas/i);
 assert.equal(evidence.data.capturedResponses,true);assert.deepEqual(evidence.order,order);
 assert.equal(evidence.rows.length,4);
@@ -38,12 +38,14 @@ for(const family of ['small','medium','large','preview']){
   assert(prices.every(t=>t.weight==='700'),'prices are bold');
   assert(metas.every((t,i)=>t.weight==='400'&&percents[i].weight==='400'&&Math.abs(t.font-percents[i].font)<.02),'code and variation use same effective font');
   assert(result.texts.every(t=>!t.text.includes('…')),'all data and date labels are intact');
-  const icons=result.geometry.filter(g=>g.key==='asset-icon'),charts=result.geometry.filter(g=>g.key==='asset-chart');
+  const icons=result.geometry.filter(g=>g.key==='asset-icon'),charts=result.geometry.filter(g=>g.key==='asset-chart'),capsules=result.geometry.filter(g=>g.key==='price-capsule');
+  assert.equal(capsules.length,4);assert(capsules.every(c=>c.frame.width===capsules[0].frame.width));
+  icons.forEach((icon,i)=>{const c=capsules[i];assert(Math.abs(c.frame.height*2-icon.frame.height)<1e-8);assert(Math.abs((c.position.y-c.frame.height/2)-(icon.position.y-icon.frame.height/2))<1e-8);});
   assert.equal(icons.length,4);assert.equal(charts.length,4);
   icons.forEach((icon,i)=>{assert(Math.abs(icon.frame.width-icon.frame.height)<1e-8);assert(Math.abs(icon.frame.height-charts[i].frame.height)<1e-8);assert(Math.abs(icon.position.y-charts[i].position.y)<1e-8);});
   verifyPNG(path.join(root,result.output));
 }
-verifyPNG(path.join(previewDir,'market-profile-0.2.50-preview.png'));
+verifyPNG(path.join(previewDir,'market-profile-0.2.53-preview.png'));
 assert(symbols.every(symbol=>evidence.requests.some(r=>decodeURIComponent(new URL(r.url).pathname).endsWith('/'+symbol))));
 assert(evidence.requests.every(r=>!r.authenticated));
 // Exercise the shipped Canvas implementation, not just a textual source match.
@@ -54,4 +56,4 @@ const commands=[],ctx={beginPath:()=>commands.push('begin'),moveTo:(x,y)=>comman
 draw.drawCurve(ctx,{width:46,height:draw.GEOMETRY.graphHeight},plan,'#00E676');
 const line=commands.slice(commands.lastIndexOf('begin')+1);assert.deepEqual(line,[['move',0,5],['line',1,6],['move',3,8],['line',4,7]],'stroke starts a new path at each gap');
 const empty=draw.curvePlan({displayChart:()=>({window:'trading-24h',displayWindow:{basis:'observed-trading-time',startTime:null,endTime:null},displayStatus:'unavailable-trading-24h'}),lineCoordinates:()=>[],monthLayout:()=>({lines:[],labels:[]}),gradientStrips:()=>[]},{chart:{}});assert.equal(empty.status,'unavailable-24h','empty trading history never becomes a 7d fallback');
-console.log('PASS .50 Skia evidence: four prices/curves, real instruments, complete fitted labels and effective dates in three families, decoded nonempty pixels, Canvas line/fill gaps, explicitly not native iPhone evidence.');
+console.log('PASS .53 Skia evidence: four prices/curves, real instruments, complete fitted labels and effective dates in three families, decoded nonempty pixels, Canvas line/fill gaps, explicitly not native iPhone evidence.');
