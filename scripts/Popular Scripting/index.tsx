@@ -5,6 +5,7 @@ import { PopularView } from './view'
 import { PopularDetails } from './details'
 import { evaluateAlerts } from './alerts'
 import { reloadWidgets } from './pro-common'
+import { flushDiagnostics, diagnosticStatusText } from './diagnostics'
 
 function Screen(){
   const [message,setMessage]=useState(''),[model,setModel]=useState<any>(null),[busy,setBusy]=useState(false)
@@ -13,7 +14,7 @@ function Screen(){
     if(running.current)return;running.current=true;setBusy(true);setMessage('Consultando indicadores…')
     try{const next=await loadModel('medium',true);setModel(next);await reloadWidgets();setMessage(next.status.label+' · '+next.status.message);await evaluateAlerts(next.rows)}
     catch{setMessage('Não foi possível consultar. O cache anterior foi preservado.')}
-    finally{running.current=false;setBusy(false)}
+    finally{try{await flushDiagnostics()}catch{}running.current=false;setBusy(false)}
   }
   const api=engine()
   useEffect(()=>{void refresh()},[])
@@ -22,6 +23,7 @@ function Screen(){
     <Button title={busy?'Consultando…':'Atualizar'} action={refresh}/>
     {model?.rows.map((row:any)=>{const diagnostic=intradayDiagnosticText(row);return diagnostic?<Text key={'source-diagnostic-'+row.asset.code}>{diagnostic}</Text>:null})}
     {model?<PopularView model={model} width={332} height={158}/>:null}
+    <Text foregroundStyle="secondary">{diagnosticStatusText()}</Text>
     <PopularDetails model={model}/>
     {model&&model.rows.some((row:any)=>row.asset.source==='PrivateMarket')?<Text foregroundStyle="secondary">{privateMarketStatusText(model.privateMarketStatus??model.api.privateMarketStatus)}</Text>:null}
     {message?<Text>{message}</Text>:null}

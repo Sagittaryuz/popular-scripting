@@ -3,6 +3,7 @@ import { loadModel, VERSION, preparedTapState } from './model'
 import { PopularView } from './view'
 import { refreshMinutes } from './pro-common'
 import { evaluateAlerts } from './alerts'
+import { flushDiagnostics } from './diagnostics'
 async function main(){
   const families:Record<string,string>={systemSmall:'small',systemMedium:'medium',systemLarge:'large'}
   const family=families[Widget.family]
@@ -12,9 +13,13 @@ async function main(){
     const model=await loadModel(family,false,tapPrepared!=null||(age>=0&&age<15000)),{width,height}=Widget.displaySize
     Storage.set('widget-diagnostic',{version:VERSION,phase:'present-requested',at:Date.now(),family})
     try{await evaluateAlerts(model.rows)}catch{}
+    // Widget.present can end the native context: finish the bounded upload first.
+    // Transport failure must never replace valid quotes with an error view.
+    try{await flushDiagnostics()}catch{}
     Widget.present(<PopularView model={model} width={width} height={height}/>,{policy:'after',date:new Date(Date.now()+refreshMinutes()*60000)})
   }catch{
     Storage.set('widget-diagnostic',{version:VERSION,phase:'failed',at:Date.now(),family})
+    try{await flushDiagnostics()}catch{}
     Widget.present(<Text widgetBackground="#1E1E1E" foregroundStyle="white">Popular {VERSION}: falha ao preparar os indicadores. Abra o projeto no Scripting.</Text>)
   }
 }

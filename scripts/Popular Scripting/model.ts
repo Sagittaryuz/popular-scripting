@@ -2,7 +2,8 @@ import { createEngine } from './original-engine'
 import { createHost } from './host'
 import { dashboardStatus, refreshMinutes } from './pro-common'
 import { sourceStatusForRow } from './market-status'
-export const VERSION='0.2.51'
+import { recordDiagnostic, recordProcessingResult } from './diagnostics'
+export const VERSION='0.2.52'
 export const TAP_REFRESH_CACHE_KEY='popular-tap-refresh-v1'
 export const TAP_REFRESH_CACHE_MS=5000
 // Published, reversible test profile: keep the former eight-indicator list
@@ -103,6 +104,7 @@ export async function loadModel(family='medium',force=false,cacheOnly=false,pers
   // exactly its four configured rows so a small widget and wide first column
   // cannot be replaced by legacy selection/cache state.
   const api=engine(family==='small'?'medium':family,force),started=Date.now()
+  recordDiagnostic(VERSION,api.version,{stage:'start',at:started})
   const cached=Storage.get<any[]>('popular-pro-rows')
   // The published test profile must not be shadowed by a pre-existing cache
   // from the former production list, including the cache-only widget path.
@@ -125,6 +127,7 @@ export async function loadModel(family='medium',force=false,cacheOnly=false,pers
       percent:api.displayPercent(api.presentationPercent(row),row.asset),movement:api.presentationPercent(row),
       time:api.timeText(row),unit:api.unitText(row)})),api}
   if(!persistWhen())return result
+  recordProcessingResult(result)
   Storage.set('popular-last-query',Date.now())
   Storage.set('popular-pro-rows',result.rows)
   // Bounded local data only; homepage UI lives in its own Git repository.

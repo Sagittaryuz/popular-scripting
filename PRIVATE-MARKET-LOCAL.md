@@ -1,4 +1,14 @@
-# Integração da fonte privada
+# Acesso privado na versão 0.2.52
+
+O perfil atual de quatro indicadores consulta Yahoo sem token. O token já existente no Keychain também autentica o envio dos logs técnicos solicitados, por `POST` no mesmo endpoint `/v1/market`. Nenhum segredo integra a distribuição. O GET legado de mercado continua separado do POST de diagnóstico, sem mudança dos fornecedores ou dados.
+
+O botão atual é **Configurar acesso privado**. Quem já configurou o token não precisa substituí-lo. **Remover token privado** interrompe o envio de logs e o acesso B3 legado, sem afetar as quatro cotações Yahoo. O estado seguro de envio aparece na tela principal. Não enviar o token por chat ou colocá-lo em arquivo/log.
+
+A leitura do histórico é administrativa e privada, pelo Data Studio do Durable Object existente na sessão Cloudflare autorizada. Não há endpoint público de leitura nem credencial nova. Retenção e limites estão em [diagnóstico remoto](scripts/remote-diagnostics/README.md); confirmação nativa está em [validação .52](VALIDACAO-0.2.52.md).
+
+## Registro histórico da integração 0.2.46
+
+Os detalhes abaixo descrevem o estado daquela revisão e não o perfil Yahoo atual.
 
 A revisão do cliente é `0.2.46`; ela não contém o valor do token e não depende
 de teste nativo para ser importada. A validação ponta a ponta continua

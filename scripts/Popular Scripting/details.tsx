@@ -11,13 +11,13 @@ export function PopularDetails({model}:{model:any}){
   const row=model?.rows.find((r:any)=>r.asset.code===selected)
   const history=row?.chart?{...row.chart,points:row.chart.points.filter((p:any)=>!historyDays||p.stamp.time>=Date.now()-historyDays*86400000)}:null
   async function configurePrivateMarket(){
-    const value=await Dialog.prompt({title:'Fonte privada',message:'Cole o token do widget. Ele será guardado somente no Keychain deste iPhone; nunca no Storage, GitHub, logs ou widget.',placeholder:'Token do widget',obscureText:true,confirmLabel:'Salvar',cancelLabel:'Cancelar'})
+    const value=await Dialog.prompt({title:'Acesso privado',message:'Cole o token do widget. Ele será guardado somente no Keychain deste iPhone; nunca no Storage, GitHub, logs ou widget.',placeholder:'Token do widget',obscureText:true,confirmLabel:'Salvar',cancelLabel:'Cancelar'})
     if(value==null)return
-    savePrivateMarketToken(value);await reloadWidgets();setMessage('Token salvo somente no Keychain. Atualize para consultar BBAS3, BBDC4 e Ibovespa.')
+    savePrivateMarketToken(value);await reloadWidgets();setMessage('Token salvo somente no Keychain. Atualize para enviar os logs privados. O perfil legado B3 também usa esse acesso.')
   }
   async function removePrivateMarket(){
-    const choice=await Dialog.actionSheet({title:'Fonte privada',message:'Remover o token deste iPhone?',actions:[{label:'Remover'},{label:'Cancelar'}]});if(choice!==0)return
-    removePrivateMarketToken();await reloadWidgets();setMessage('Token removido do Keychain. Os três ativos B3 ficarão sem cotação até configurar novamente.')
+    const choice=await Dialog.actionSheet({title:'Acesso privado',message:'Remover o token deste iPhone? Isso interrompe os logs remotos e o acesso do perfil legado B3.',actions:[{label:'Remover'},{label:'Cancelar'}]});if(choice!==0)return
+    removePrivateMarketToken();await reloadWidgets();setMessage('Token removido do Keychain. Os logs remotos e o acesso legado B3 estão desativados. As quatro cotações atuais continuam usando Yahoo.')
   }
   return <VStack spacing={10}>
     {model?<VStack spacing={8}>
@@ -42,9 +42,9 @@ export function PopularDetails({model}:{model:any}){
     <Button title="Remover alerta" action={()=>run(async()=>{const rules=validateRules(Storage.get('popular-alerts')??[]);const choice=await Dialog.actionSheet({title:'Remover alerta',actions:rules.map(r=>({label:r.code+' '+r.direction+' '+r.threshold}))});if(choice!=null){Storage.set('popular-alerts',rules.filter((_,i)=>i!==choice));setMessage('Alerta removido.')}})}/>
     <Text>Frequência solicitada ao iOS</Text>
     <HStack>{[1,5,15].map(n=><Button key={n} title={(refreshMinutes()===n?'✓ ':'')+n+' min'} action={()=>run(async()=>{Storage.set('refresh-minutes',n);await reloadWidgets();setMessage('Intervalo solicitado. O iOS decide quando executar.')} )}/>)}</HStack>
-    <Button title="Configurar fonte privada" action={()=>run(configurePrivateMarket)}/>
+    <Button title="Configurar acesso privado" action={()=>run(configurePrivateMarket)}/>
     <Button title="Remover token privado" action={()=>run(removePrivateMarket)}/>
-    <Text>A fonte privada é do perfil legado B3/BTC. O perfil atual dos quatro indicadores usa Yahoo sem esse token. A credencial legada permanece somente no Keychain, sem alteração automática.</Text>
+    <Text>As quatro cotações usam Yahoo sem token. Os logs técnicos usam o acesso privado já configurado no Keychain, no mesmo serviço do perfil legado B3. São enviados apenas etapas, códigos de falha, horários e contagens, sem preços, preferências ou segredos. O histórico privado guarda até 64 lotes por no máximo sete dias.</Text>
     <Button title="Exportar preferências" action={()=>run(async()=>{await exportPreferences('Popular',{refreshMinutes:refreshMinutes(),rules:Storage.get('popular-alerts')??[],alertsEnabled:Storage.get('popular-alerts-enabled')===true})})}/>
     <Button title="Escolher pasta de exportação" action={()=>run(chooseExportFolder)}/>
     <Button title="Importar preferências" action={()=>run(async()=>{const p=await readPreferences('Popular') as any;if(!p)return;const rules=validateRules(p.rules);if(typeof p.alertsEnabled!=='boolean'||![1,5,15].includes(p.refreshMinutes))throw Error('Preferências inválidas.');Storage.set('refresh-minutes',p.refreshMinutes);Storage.set('popular-alerts',rules);Storage.set('popular-alerts-enabled',p.alertsEnabled);await reloadWidgets();setMessage('Preferências importadas. O widget pequeno mantém a ordem fixa.')} )}/>

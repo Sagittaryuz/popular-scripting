@@ -21,6 +21,7 @@ assert(api.historyCSV([row(5)]).includes('"5"'));assert(api.historyCSV([{...row(
  vm.runInNewContext(modelCode,{module:modelModule,exports:modelModule.exports,Date,Storage:{get:()=>0,set:()=>true},require:id=>{
   if(id==='./host')return {createHost:()=>({})};
   if(id==='./pro-common')return {refreshMinutes:()=>1,dashboardStatus:()=>{}};
+  if(id==='./diagnostics')return {recordDiagnostic:()=>{},recordProcessingResult:()=>{}};
   if(id==='./market-status')return {sourceStatusForRow:(row,at)=>({state:'fresh',at})};
   return {createEngine:(_,options)=>{collectionFamily=options.family;return {collectRows:async()=>nativeRows,orderingFeedback:()=>({label:'fixture'}),readOrderingMode:()=> 'fixed',displayName:a=>a.code,displayPrice:()=> '1',displayPercent:()=> '0',presentationPercent:()=>0,timeText:()=>'',unitText:()=>'',quoteAudit:r=>r.asset.code,failures:[]}}};
  }});

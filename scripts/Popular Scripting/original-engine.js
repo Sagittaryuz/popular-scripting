@@ -10,7 +10,7 @@ const args={queryParameters:{popular_refresh:options.force?'1':'0'}};
 const Color=class {constructor(hex,alpha=1){this.hex=hex;this.alpha=alpha;}};
 // Scriptable — Popular small/medium/large. O conjunto normal mantém oito
 // indicadores; o entry publicado pode selecionar o perfil de teste reversível.
-const VERSION = '2026.11.11.100'
+const VERSION = '2026.11.11.101'
 const SETTINGS = { refreshMinutes: 5, rotationMinutes: 5, selection: 'indicadores' };
 // Bloco 146 × 146 pt; quatro colunas e ícones circulares 26 pt centralizados nas linhas 36 pt.
 const LAYOUT = { columns: [28, 40, 46, 26], columnGap: 2, valueGap: 2, nameWidth: 40, priceWidth: 26, graphWidth: 46, rowHeight: 36, gap: 2/3, iconSize: 26, chartHeight: 20 };
@@ -1688,7 +1688,7 @@ async function loadIntraday(definition) {
   const key='intraday-yahoo-5m-v1-'+encodeURIComponent(definition.instrument),saved=cacheRead(key);
   let cached=validIntradayCache(saved,definition)?saved:null;
   if(cached){const history=tradingWindow(cached.chart,intradayNow()).displayWindow;cached={...cached,history,chartCoverage:history,chartStatus:history.complete?'intraday-24h':'intraday-partial'};}
-  if(cacheFresh(cached))return cached;
+  if(cacheFresh(cached))return {...cached,intradayDelivery:'cache'};
   let diagnostic={stage:'transport',code:'pending'};
   const received=response=>{
     if(!response)return;
@@ -1707,12 +1707,12 @@ async function loadIntraday(definition) {
     if(!row.history.complete&&collectionDeadline-Date.now()>1000){
       try{const expanded=await read(endpoint+'?range=1mo&interval=5m');if(expanded.history.coveredMs>row.history.coveredMs)row=expanded;}catch(error){row={...row,intradayDiagnostic:{...intradayTransportFailure(diagnostic,error),historyExpansion:true}};}
     }
-    row=mergeIntradayHistory(row,cached);cacheWrite(key,row);return row;
+    row={...mergeIntradayHistory(row,cached),intradayDelivery:'network'};cacheWrite(key,row);return row;
   } catch(error) {
     console.log(definition.code+': '+error);
     const intradayDiagnostic={...intradayTransportFailure(diagnostic,error)};
-    if(cached)return {...cached,cached:true,intradayDiagnostic:{...intradayDiagnostic,cachePreserved:true}};
-    return {intradayDiagnostic,asset:{...definition,price:null,percent:null,delta:null},stamp:null,chart:null,localTest:true,intradayUnavailable:true,chartStatus:'intraday-unavailable',quoteVerified:false,sourceError:String(error.message||error)};
+    if(cached)return {...cached,cached:true,intradayDelivery:'fallback',intradayDiagnostic:{...intradayDiagnostic,cachePreserved:true}};
+    return {intradayDiagnostic,intradayDelivery:'network',asset:{...definition,price:null,percent:null,delta:null},stamp:null,chart:null,localTest:true,intradayUnavailable:true,chartStatus:'intraday-unavailable',quoteVerified:false,sourceError:String(error.message||error)};
   }
 }
 async function collectPublishedProfileRows() {

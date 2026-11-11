@@ -1,3 +1,11 @@
+## 0.2.52 — logs técnicos privados do processamento
+
+- Integra fila e envio de diagnóstico ao serviço privado existente, no mesmo caminho `/v1/market`. Reutiliza somente o token já configurado no Keychain; não cria, exporta ou modifica credenciais.
+- Registra etapas, ativo, código técnico, HTTP, cache, contagens e horários. Não envia preços, preferências, corpos HTTP, URLs, mensagens livres ou segredos. Histórico privado separado do cache de mercado, limitado a 64 lotes e sete dias.
+- Tela do app informa o estado do envio. A fila local suporta 32 eventos/24h, tenta no máximo a cada cinco minutos e permanece em falhas. O widget conclui a tentativa limitada a 1,2s antes de apresentar a interface, pois a apresentação pode encerrar o contexto nativo.
+- Motor `2026.11.11.101` mantém a correção do relógio e acrescenta somente a distinção interna entre resposta nova, cache TTL e fallback. Layout do widget, fontes, valores e dados econômicos preservados.
+- [Validação e limites](VALIDACAO-0.2.52.md). O envio real do iPhone permanece pendente até atualizar e executar a versão; teste sintético ou consulta administrativa não prova entrega nativa.
+
 ## 0.2.51 — relógio da fonte para dólar e Dow
 
 - Corrige rejeição de cotações válidas quando o relógio local está alguns segundos atrás do servidor. Usa o HTTP Date da mesma resposta Yahoo validada, sem alterar o relógio do aparelho. Cotações posteriores à própria fonte continuam rejeitadas.
@@ -37,7 +45,7 @@ A foto do dispositivo identificou Scripting 0.2.46/motor .96: preços de Ibovesp
 
 Destino estabelecido: `Sagittaryuz/popular-scripting`, pasta `main/scripts/Popular Scripting`. A versão .47 foi preparada sobre `03a3850e134e6c34dd38060118d3a6fac2771e2e`, preservando os dados econômicos e recursos existentes. Fonte principal do motor neste repositório é `original-engine.js`; seu gerador histórico não está no repositório público. Não reexportar motor antigo do outro projeto sobre esta adaptação.
 
-# Popular Scripting - Pro 0.2.51
+# Popular Scripting - Pro 0.2.52
 
 ## 0.2.46 - contrato explícito de curva 24H
 

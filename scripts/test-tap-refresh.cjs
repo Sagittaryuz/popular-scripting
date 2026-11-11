@@ -15,6 +15,7 @@ function loadModelState(values){
     if(id==='./original-engine')return {createEngine:()=>({})};
     if(id==='./host')return {createHost:()=>({})};
     if(id==='./pro-common')return {dashboardStatus:()=>{},refreshMinutes:()=>1};
+    if(id==='./diagnostics')return {recordDiagnostic:()=>{},recordProcessingResult:()=>{}};
     if(id==='./market-status')return {sourceStatusForRow:(row,at)=>({state:'fresh',at})};
     throw Error('unexpected dependency '+id);
   },Date,Storage:{get:key=>values.get(key),set:(key,value)=>{values.set(key,value);return true}}});
