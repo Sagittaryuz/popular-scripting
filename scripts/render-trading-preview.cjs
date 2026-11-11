@@ -23,7 +23,7 @@ async function run(){
  const rendered={};fs.mkdirSync(path.join(root,'validation'),{recursive:true});
  for(const [family,width,height] of [['small',158,158],['medium',338,170],['large',338,360],['preview',332,158]]){
   const tree=v.exports.PopularView({model:{...model,family:family==='preview'?'medium':family},width,height});await Promise.all(imageJobs);
-  const nodes=walk(tree),charts=nodes.filter(n=>n.type==='Canvas'&&n.props.key==='asset-chart'),labels=nodes.filter(n=>n.type==='Text'&&n.props.key==='trading-range');assert.equal(charts.length,4);assert.equal(labels.length,4);assert(!nodes.some(n=>n.props?.key==='missing'));assert(nodes.some(n=>n.props?.key==='name-text'&&n.children?.includes('BRENT')));
+  const nodes=walk(tree),charts=nodes.filter(n=>n.type==='Canvas'&&n.props.key==='asset-chart'),labels=nodes.filter(n=>n.type==='Text'&&n.props.key==='trading-range');assert.equal(charts.length,4);assert.equal(labels.length,0);assert(!nodes.some(n=>n.props?.key==='missing'));assert(nodes.some(n=>n.props?.key==='name-text'&&n.children?.includes('BRENT')));
   const scale=4,canvas=createCanvas(width*scale,height*scale),g=canvas.getContext('2d');g.scale(scale,scale);g.fillStyle='#1e1e1e';g.fillRect(0,0,width,height);const texts=[];
   function paint(n,ox=0,oy=0,pw=width,ph=height){
    if(!n||typeof n!=='object')return;const p=n.props||{},w=p.frame?.width??pw,h=p.frame?.height??ph,x=ox+(p.position?p.position.x-w/2:0),y=oy+(p.position?p.position.y-h/2:0);

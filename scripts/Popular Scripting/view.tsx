@@ -108,7 +108,6 @@ export function PopularView({model,width,height}:{model:any;width:number;height:
         {cellLabel('asset-meta',meta,G.dateX,G.dateTop,G.date,G.dateHeight,META_FONT,3.4,false,'#96969C',false,'bottomLeading')}
         <Canvas key="asset-chart" opaque={false} {...placeInBlock(rowPlan,G.graphX,G.graphTop,G.graph,G.graphHeight)} draw={(ctx,size)=>drawCurve(ctx,size,curve,color)}/>
         {!curve.points.length?cellLabel('missing',chartUnavailableLabel,G.graphX,G.graphTop,G.graph,G.graphHeight,4.2,3.2,false,'#96969C'):null}
-        {tradingLabel?cellLabel('trading-range',tradingLabel,G.graphX,G.monthTop,G.graph,5,3.7,3.2,false,'#96969C'):null}
         {band.width>0&&band.labels.length>0?<ZStack key="month-band" alignment="topLeading" {...placeInBlock(rowPlan,G.graphX+band.left,G.monthTop,band.width,5)}>
           <ZStack alignment="topLeading" frame={{width:band.width*plan.scale,height:5*plan.scale}} clipped
             mask={<Rectangle fill="white" frame={{width:band.width*plan.scale,height:5*plan.scale}}/>}>

@@ -1,0 +1,2100 @@
+{
+  "version": "0.2.55",
+  "sourceVersion": "2026.11.11.101",
+  "nativeIPhone": false,
+  "simulation": "Actual Scripting model + host + JSX/Canvas, Linux Skia; native Text line-box approximation with Linux font metrics; ink alignment is not UIKit evidence",
+  "data": {
+    "live": false,
+    "capturedResponses": true,
+    "source": "Replay of real responses from the capture directory; not native iPhone evidence",
+    "capturedAt": [
+      {
+        "symbol": "^BVSP",
+        "status": 200,
+        "receivedAt": "2026-11-09T16:25:26.180Z"
+      },
+      {
+        "symbol": "BRL=X",
+        "status": 200,
+        "receivedAt": "2026-11-09T16:25:26.219Z"
+      },
+      {
+        "symbol": "^DJI",
+        "status": 200,
+        "receivedAt": "2026-11-09T16:25:26.262Z"
+      },
+      {
+        "symbol": "BZ=F",
+        "status": 200,
+        "receivedAt": "2026-11-09T16:25:26.293Z"
+      }
+    ],
+    "captureDirectory": "live-capture",
+    "renderedAt": "2026-11-11T23:46:28.184Z",
+    "window": "24 hours observed trading intervals, no gap interpolation"
+  },
+  "order": [
+    "IBOV",
+    "DOW_JONES",
+    "USD/BRL",
+    "BRENT"
+  ],
+  "rows": [
+    {
+      "code": "IBOV",
+      "name": "Ibovespa",
+      "price": "170,5K",
+      "rawPrice": 170474.77,
+      "percent": "+1,17%",
+      "time": "09/11 YF†",
+      "instrument": "^BVSP",
+      "source": "Yahoo Finance",
+      "quoteTime": "2026-11-09T16:10:00.000Z",
+      "coverage": {
+        "basis": "observed-trading-time",
+        "targetMs": 86400000,
+        "coveredMs": 86400000,
+        "complete": true,
+        "intervalMs": 300000,
+        "gaps": 4,
+        "startTime": 1793735400000,
+        "endTime": 1794240600000,
+        "timeZone": "America/Sao_Paulo"
+      },
+      "points": 375
+    },
+    {
+      "code": "DOW_JONES",
+      "name": "Dow Jones",
+      "price": "52,18K",
+      "rawPrice": 52178.19,
+      "percent": "+1,74%",
+      "time": "09/11 YF†",
+      "instrument": "^DJI",
+      "source": "Yahoo Finance",
+      "quoteTime": "2026-11-09T16:25:25.000Z",
+      "coverage": {
+        "basis": "observed-trading-time",
+        "targetMs": 86400000,
+        "coveredMs": 86400000,
+        "complete": true,
+        "intervalMs": 300000,
+        "gaps": 5,
+        "startTime": 1793728800000,
+        "endTime": 1794241525000,
+        "timeZone": "America/Sao_Paulo"
+      },
+      "points": 336
+    },
+    {
+      "code": "USD/BRL",
+      "name": "Dólar",
+      "price": "5,52",
+      "rawPrice": 5.5194,
+      "percent": "+0,43%",
+      "time": "09/11 YF†",
+      "instrument": "BRL=X",
+      "source": "Yahoo Finance",
+      "quoteTime": "2026-11-09T16:25:25.000Z",
+      "coverage": {
+        "basis": "observed-trading-time",
+        "targetMs": 86400000,
+        "coveredMs": 86400000,
+        "complete": true,
+        "intervalMs": 300000,
+        "gaps": 25,
+        "startTime": 1793880900000,
+        "endTime": 1794241525000,
+        "timeZone": "America/Sao_Paulo"
+      },
+      "points": 597
+    },
+    {
+      "code": "BRENT",
+      "name": "Brent futuro",
+      "price": "94,28",
+      "rawPrice": 94.28,
+      "percent": "-4,11%",
+      "time": "09/11 YF†",
+      "instrument": "BZ=F",
+      "source": "Yahoo Finance",
+      "quoteTime": "2026-11-09T16:15:24.000Z",
+      "coverage": {
+        "basis": "observed-trading-time",
+        "targetMs": 86400000,
+        "coveredMs": 86424000,
+        "complete": true,
+        "intervalMs": 300000,
+        "gaps": 5,
+        "startTime": 1793974800000,
+        "endTime": 1794240924000,
+        "timeZone": "America/Sao_Paulo"
+      },
+      "points": 958
+    }
+  ],
+  "families": {
+    "small": {
+      "output": "validation/market-profile-0.2.55-small.png",
+      "rows": 4,
+      "curves": 4,
+      "width": 158,
+      "height": 158,
+      "texts": [
+        {
+          "key": "name-text",
+          "text": "IBOV…",
+          "font": 10.212328767123287,
+          "requestedFont": 10.212328767123287,
+          "weight": "700",
+          "alignment": "leading",
+          "x": 37.17808219178082,
+          "y": 12.863013698630137,
+          "w": 42.794520547945204,
+          "h": 12.643835616438356,
+          "ink": {
+            "left": 37.17808219178082,
+            "right": 75.04713126404644,
+            "top": 14.720351924634961,
+            "bottom": 22.72035192463496
+          },
+          "lineHeight": 11.887788772583008,
+          "inkOutsideFrame": false
+        },
+        {
+          "key": "asset-meta",
+          "text": "IBOV | 09/11",
+          "font": 6.829687479350301,
+          "requestedFont": 10.212328767123287,
+          "weight": "400",
+          "alignment": "bottomLeading",
+          "x": 37.17808219178082,
+          "y": 25.506849315068493,
+          "w": 42.794520547945204,
+          "h": 12.643835616438356,
+          "ink": {
+            "left": 37.17808219178082,
+            "right": 79.65629264099957,
+            "top": 31.539972522487375,
+            "bottom": 38.539972522487375
+          },
+          "lineHeight": 7.950183272361755,
+          "inkOutsideFrame": true
+        },
+        {
+          "key": "price",
+          "text": "170,5K",
+          "font": 7.9104341363442545,
+          "requestedFont": 10.212328767123287,
+          "weight": "700",
+          "alignment": "center",
+          "x": 116.93150684931507,
+          "y": 12.863013698630137,
+          "w": 31.123287671232877,
+          "h": 12.643835616438356,
+          "ink": {
+            "left": 116.9281511045482,
+            "right": 148.93629929790757,
+            "top": 14.923455824590711,
+            "bottom": 22.92345582459071
+          },
+          "lineHeight": 9.208239793777466,
+          "inkOutsideFrame": true
+        },
+        {
+          "key": "percent",
+          "text": "+1,17%",
+          "font": 8.729770746002856,
+          "requestedFont": 10.212328767123287,
+          "weight": "400",
+          "alignment": "bottomTrailing",
+          "x": 114.98630136986301,
+          "y": 25.506849315068493,
+          "w": 35.013698630136986,
+          "h": 12.643835616438356,
+          "ink": {
+            "left": 115,
+            "right": 149.71820068359375,
+            "top": 29.091857292880746,
+            "bottom": 37.091857292880746
+          },
+          "lineHeight": 10.161998987197876,
+          "inkOutsideFrame": false
+        },
+        {
+          "key": "name-text",
+          "text": "DOW …",
+          "font": 10.212328767123287,
+          "requestedFont": 10.212328767123287,
+          "weight": "700",
+          "alignment": "leading",
+          "x": 37.17808219178082,
+          "y": 48.525114155251146,
+          "w": 42.794520547945204,
+          "h": 12.643835616438356,
+          "ink": {
+            "left": 37.17808219178082,
+            "right": 79.12763663514019,
+            "top": 50.382452381255966,
+            "bottom": 58.382452381255966
+          },
+          "lineHeight": 11.887788772583008,
+          "inkOutsideFrame": false
+        },
+        {
+          "key": "asset-meta",
+          "text": "DOW | 09/11",
+          "font": 6.692675234955674,
+          "requestedFont": 10.212328767123287,
+          "weight": "400",
+          "alignment": "bottomLeading",
+          "x": 37.17808219178082,
+          "y": 61.1689497716895,
+          "w": 42.794520547945204,
+          "h": 12.643835616438356,
+          "ink": {
+            "left": 37.17808219178082,
+            "right": 79.72590323670269,
+            "top": 67.2343859683433,
+            "bottom": 74.2343859683433
+          },
+          "lineHeight": 7.790692090988159,
+          "inkOutsideFrame": true
+        },
+        {
+          "key": "price",
+          "text": "52,18K",
+          "font": 7.9104341363442545,
+          "requestedFont": 10.212328767123287,
+          "weight": "700",
+          "alignment": "center",
+          "x": 116.93150684931507,
+          "y": 48.525114155251146,
+          "w": 31.123287671232877,
+          "h": 12.643835616438356,
+          "ink": {
+            "left": 116.9281511045482,
+            "right": 148.93629929790757,
+            "top": 50.585556281211716,
+            "bottom": 58.585556281211716
+          },
+          "lineHeight": 9.208239793777466,
+          "inkOutsideFrame": true
+        },
+        {
+          "key": "percent",
+          "text": "+1,74%",
+          "font": 8.729770746002856,
+          "requestedFont": 10.212328767123287,
+          "weight": "400",
+          "alignment": "bottomTrailing",
+          "x": 114.98630136986301,
+          "y": 61.1689497716895,
+          "w": 35.013698630136986,
+          "h": 12.643835616438356,
+          "ink": {
+            "left": 115,
+            "right": 149.71820068359375,
+            "top": 64.75395774950175,
+            "bottom": 72.75395774950175
+          },
+          "lineHeight": 10.161998987197876,
+          "inkOutsideFrame": false
+        },
+        {
+          "key": "name-text",
+          "text": "DÓLAR",
+          "font": 10.212328767123287,
+          "requestedFont": 10.212328767123287,
+          "weight": "700",
+          "alignment": "leading",
+          "x": 37.17808219178082,
+          "y": 84.18721461187214,
+          "w": 42.794520547945204,
+          "h": 12.643835616438356,
+          "ink": {
+            "left": 37.17808219178082,
+            "right": 76.71911307556988,
+            "top": 83.04455283787696,
+            "bottom": 94.04455283787696
+          },
+          "lineHeight": 11.887788772583008,
+          "inkOutsideFrame": true
+        },
+        {
+          "key": "asset-meta",
+          "text": "USD/BRL | 09/11",
+          "font": 5.181784826218784,
+          "requestedFont": 10.212328767123287,
+          "weight": "400",
+          "alignment": "bottomLeading",
+          "x": 37.17808219178082,
+          "y": 96.83105022831049,
+          "w": 42.794520547945204,
+          "h": 12.643835616438356,
+          "ink": {
+            "left": 37.17808219178082,
+            "right": 79.63895865662457,
+            "top": 104.25281455473267,
+            "bottom": 110.25281455473267
+          },
+          "lineHeight": 6.031921029090881,
+          "inkOutsideFrame": true
+        },
+        {
+          "key": "price",
+          "text": "5,52",
+          "font": 10.212328767123287,
+          "requestedFont": 10.212328767123287,
+          "weight": "700",
+          "alignment": "center",
+          "x": 116.93150684931507,
+          "y": 84.18721461187214,
+          "w": 31.123287671232877,
+          "h": 12.643835616438356,
+          "ink": {
+            "left": 119.90815064678453,
+            "right": 144.98284241924546,
+            "top": 86.04455283787696,
+            "bottom": 96.04455283787696
+          },
+          "lineHeight": 11.887788772583008,
+          "inkOutsideFrame": false
+        },
+        {
+          "key": "percent",
+          "text": "+0,43%",
+          "font": 8.729770746002856,
+          "requestedFont": 10.212328767123287,
+          "weight": "400",
+          "alignment": "bottomTrailing",
+          "x": 114.98630136986301,
+          "y": 96.83105022831049,
+          "w": 35.013698630136986,
+          "h": 12.643835616438356,
+          "ink": {
+            "left": 115,
+            "right": 149.71820068359375,
+            "top": 100.41605820612274,
+            "bottom": 108.41605820612274
+          },
+          "lineHeight": 10.161998987197876,
+          "inkOutsideFrame": false
+        },
+        {
+          "key": "name-text",
+          "text": "BRENT",
+          "font": 10.212328767123287,
+          "requestedFont": 10.212328767123287,
+          "weight": "700",
+          "alignment": "leading",
+          "x": 37.17808219178082,
+          "y": 119.84931506849314,
+          "w": 42.794520547945204,
+          "h": 12.643835616438356,
+          "ink": {
+            "left": 37.17808219178082,
+            "right": 75.32055350525738,
+            "top": 121.70665329449798,
+            "bottom": 129.70665329449798
+          },
+          "lineHeight": 11.887788772583008,
+          "inkOutsideFrame": false
+        },
+        {
+          "key": "asset-meta",
+          "text": "BRENT | 09/11",
+          "font": 5.927460916437498,
+          "requestedFont": 10.212328767123287,
+          "weight": "400",
+          "alignment": "bottomLeading",
+          "x": 37.17808219178082,
+          "y": 132.4931506849315,
+          "w": 42.794520547945204,
+          "h": 12.643835616438356,
+          "ink": {
+            "left": 37.17808219178082,
+            "right": 80.20237418396832,
+            "top": 139.739054844804,
+            "bottom": 145.739054844804
+          },
+          "lineHeight": 6.8999351263046265,
+          "inkOutsideFrame": true
+        },
+        {
+          "key": "price",
+          "text": "94,28",
+          "font": 9.849434195961322,
+          "requestedFont": 10.212328767123287,
+          "weight": "700",
+          "alignment": "center",
+          "x": 116.93150684931507,
+          "y": 119.84931506849314,
+          "w": 31.123287671232877,
+          "h": 12.643835616438356,
+          "ink": {
+            "left": 116.92315099010729,
+            "right": 148.2104892469432,
+            "top": 121.5810222005191,
+            "bottom": 131.5810222005191
+          },
+          "lineHeight": 11.465356349945068,
+          "inkOutsideFrame": true
+        },
+        {
+          "key": "percent",
+          "text": "-4,11%",
+          "font": 9.907769472211902,
+          "requestedFont": 10.212328767123287,
+          "weight": "400",
+          "alignment": "bottomTrailing",
+          "x": 114.98630136986301,
+          "y": 132.4931506849315,
+          "w": 35.013698630136986,
+          "h": 12.643835616438356,
+          "ink": {
+            "left": 114.95999908447266,
+            "right": 149.5914535522461,
+            "top": 134.80033950609703,
+            "bottom": 143.80033950609703
+          },
+          "lineHeight": 11.533262968063354,
+          "inkOutsideFrame": false
+        }
+      ],
+      "geometry": [
+        {
+          "key": "asset-icon",
+          "frame": {
+            "width": 25.28767123287671,
+            "height": 25.28767123287671,
+            "alignment": "center"
+          },
+          "position": {
+            "x": 13.616438356164384,
+            "y": 17.506849315068493
+          }
+        },
+        {
+          "key": "asset-chart",
+          "frame": {
+            "width": 31.123287671232877,
+            "height": 25.28767123287671,
+            "alignment": "center"
+          },
+          "position": {
+            "x": 89.47945205479452,
+            "y": 17.506849315068493
+          }
+        },
+        {
+          "key": "price-capsule",
+          "frame": {
+            "width": 35.013698630136986,
+            "height": 12.643835616438356,
+            "alignment": "center"
+          },
+          "position": {
+            "x": 124.4931506849315,
+            "y": 11.184931506849315
+          }
+        },
+        {
+          "key": "asset-icon",
+          "frame": {
+            "width": 25.28767123287671,
+            "height": 25.28767123287671,
+            "alignment": "center"
+          },
+          "position": {
+            "x": 13.616438356164384,
+            "y": 17.506849315068493
+          }
+        },
+        {
+          "key": "asset-chart",
+          "frame": {
+            "width": 31.123287671232877,
+            "height": 25.28767123287671,
+            "alignment": "center"
+          },
+          "position": {
+            "x": 89.47945205479452,
+            "y": 17.506849315068493
+          }
+        },
+        {
+          "key": "price-capsule",
+          "frame": {
+            "width": 35.013698630136986,
+            "height": 12.643835616438356,
+            "alignment": "center"
+          },
+          "position": {
+            "x": 124.4931506849315,
+            "y": 11.184931506849315
+          }
+        },
+        {
+          "key": "asset-icon",
+          "frame": {
+            "width": 25.28767123287671,
+            "height": 25.28767123287671,
+            "alignment": "center"
+          },
+          "position": {
+            "x": 13.616438356164384,
+            "y": 17.506849315068493
+          }
+        },
+        {
+          "key": "asset-chart",
+          "frame": {
+            "width": 31.123287671232877,
+            "height": 25.28767123287671,
+            "alignment": "center"
+          },
+          "position": {
+            "x": 89.47945205479452,
+            "y": 17.506849315068493
+          }
+        },
+        {
+          "key": "price-capsule",
+          "frame": {
+            "width": 35.013698630136986,
+            "height": 12.643835616438356,
+            "alignment": "center"
+          },
+          "position": {
+            "x": 124.4931506849315,
+            "y": 11.184931506849315
+          }
+        },
+        {
+          "key": "asset-icon",
+          "frame": {
+            "width": 25.28767123287671,
+            "height": 25.28767123287671,
+            "alignment": "center"
+          },
+          "position": {
+            "x": 13.616438356164384,
+            "y": 17.506849315068493
+          }
+        },
+        {
+          "key": "asset-chart",
+          "frame": {
+            "width": 31.123287671232877,
+            "height": 25.28767123287671,
+            "alignment": "center"
+          },
+          "position": {
+            "x": 89.47945205479452,
+            "y": 17.506849315068493
+          }
+        },
+        {
+          "key": "price-capsule",
+          "frame": {
+            "width": 35.013698630136986,
+            "height": 12.643835616438356,
+            "alignment": "center"
+          },
+          "position": {
+            "x": 124.4931506849315,
+            "y": 11.184931506849315
+          }
+        }
+      ]
+    },
+    "medium": {
+      "output": "validation/market-profile-0.2.55-medium.png",
+      "rows": 4,
+      "curves": 4,
+      "width": 338,
+      "height": 170,
+      "texts": [
+        {
+          "key": "name-text",
+          "text": "IBOV…",
+          "font": 10.5,
+          "requestedFont": 10.5,
+          "weight": "700",
+          "alignment": "leading",
+          "x": 47,
+          "y": 13.986301369863014,
+          "w": 44,
+          "h": 13,
+          "ink": {
+            "left": 47,
+            "right": 85.68017578125,
+            "top": 16.121311135488014,
+            "bottom": 24.121311135488014
+          },
+          "lineHeight": 12.22265625,
+          "inkOutsideFrame": false
+        },
+        {
+          "key": "asset-meta",
+          "text": "IBOV | 09/11",
+          "font": 7.015945492869905,
+          "requestedFont": 10.5,
+          "weight": "400",
+          "alignment": "bottomLeading",
+          "x": 47,
+          "y": 26.986301369863014,
+          "w": 44,
+          "h": 13,
+          "ink": {
+            "left": 47,
+            "right": 90.53488159179688,
+            "top": 33.331661887364845,
+            "bottom": 40.331661887364845
+          },
+          "lineHeight": 8.166999101638794,
+          "inkOutsideFrame": true
+        },
+        {
+          "key": "price",
+          "text": "170,5K",
+          "font": 8.12575604350471,
+          "requestedFont": 10.5,
+          "weight": "700",
+          "alignment": "center",
+          "x": 129,
+          "y": 13.986301369863014,
+          "w": 32,
+          "h": 13,
+          "ink": {
+            "left": 129,
+            "right": 161.7000732421875,
+            "top": 16.299368329244118,
+            "bottom": 24.299368329244118
+          },
+          "lineHeight": 9.458888053894043,
+          "inkOutsideFrame": true
+        },
+        {
+          "key": "percent",
+          "text": "+1,17%",
+          "font": 8.967971205598147,
+          "requestedFont": 10.5,
+          "weight": "400",
+          "alignment": "bottomTrailing",
+          "x": 127,
+          "y": 26.986301369863014,
+          "w": 36,
+          "h": 13,
+          "ink": {
+            "left": 127.06000137329102,
+            "right": 163.49646377563477,
+            "top": 30.87129659195469,
+            "bottom": 38.87129659195469
+          },
+          "lineHeight": 10.439278841018677,
+          "inkOutsideFrame": true
+        },
+        {
+          "key": "name-text",
+          "text": "DOW …",
+          "font": 10.5,
+          "requestedFont": 10.5,
+          "weight": "700",
+          "alignment": "leading",
+          "x": 47,
+          "y": 52.662100456621005,
+          "w": 44,
+          "h": 13,
+          "ink": {
+            "left": 47,
+            "right": 89.879150390625,
+            "top": 54.797110222246005,
+            "bottom": 62.797110222246005
+          },
+          "lineHeight": 12.22265625,
+          "inkOutsideFrame": false
+        },
+        {
+          "key": "asset-meta",
+          "text": "DOW | 09/11",
+          "font": 6.87500031221482,
+          "requestedFont": 10.5,
+          "weight": "400",
+          "alignment": "bottomLeading",
+          "x": 47,
+          "y": 65.662100456621,
+          "w": 44,
+          "h": 13,
+          "ink": {
+            "left": 47,
+            "right": 90.62860107421875,
+            "top": 72.04070141163047,
+            "bottom": 79.04070141163047
+          },
+          "lineHeight": 8.002930283546448,
+          "inkOutsideFrame": true
+        },
+        {
+          "key": "price",
+          "text": "52,18K",
+          "font": 8.12575604350471,
+          "requestedFont": 10.5,
+          "weight": "700",
+          "alignment": "center",
+          "x": 129,
+          "y": 52.662100456621005,
+          "w": 32,
+          "h": 13,
+          "ink": {
+            "left": 129,
+            "right": 161.7000732421875,
+            "top": 54.97516741600211,
+            "bottom": 62.97516741600211
+          },
+          "lineHeight": 9.458888053894043,
+          "inkOutsideFrame": true
+        },
+        {
+          "key": "percent",
+          "text": "+1,74%",
+          "font": 8.967971205598147,
+          "requestedFont": 10.5,
+          "weight": "400",
+          "alignment": "bottomTrailing",
+          "x": 127,
+          "y": 65.662100456621,
+          "w": 36,
+          "h": 13,
+          "ink": {
+            "left": 127.06000137329102,
+            "right": 163.49646377563477,
+            "top": 69.54709567871268,
+            "bottom": 77.54709567871268
+          },
+          "lineHeight": 10.439278841018677,
+          "inkOutsideFrame": true
+        },
+        {
+          "key": "name-text",
+          "text": "DÓLAR",
+          "font": 10.5,
+          "requestedFont": 10.5,
+          "weight": "700",
+          "alignment": "leading",
+          "x": 47,
+          "y": 91.33789954337898,
+          "w": 44,
+          "h": 13,
+          "ink": {
+            "left": 47,
+            "right": 87.458740234375,
+            "top": 90.47290930900398,
+            "bottom": 101.47290930900398
+          },
+          "lineHeight": 12.22265625,
+          "inkOutsideFrame": true
+        },
+        {
+          "key": "asset-meta",
+          "text": "USD/BRL | 09/11",
+          "font": 5.323193860196687,
+          "requestedFont": 10.5,
+          "weight": "400",
+          "alignment": "bottomLeading",
+          "x": 47,
+          "y": 104.33789954337898,
+          "w": 44,
+          "h": 13,
+          "ink": {
+            "left": 47,
+            "right": 90.53375244140625,
+            "top": 112.08247826251808,
+            "bottom": 118.08247826251808
+          },
+          "lineHeight": 6.19653046131134,
+          "inkOutsideFrame": true
+        },
+        {
+          "key": "price",
+          "text": "5,52",
+          "font": 10.5,
+          "requestedFont": 10.5,
+          "weight": "700",
+          "alignment": "center",
+          "x": 129,
+          "y": 91.33789954337898,
+          "w": 32,
+          "h": 13,
+          "ink": {
+            "left": 132.04500007629395,
+            "right": 157.64558601379395,
+            "top": 93.47290930900398,
+            "bottom": 103.47290930900398
+          },
+          "lineHeight": 12.22265625,
+          "inkOutsideFrame": false
+        },
+        {
+          "key": "percent",
+          "text": "+0,43%",
+          "font": 8.967971205598147,
+          "requestedFont": 10.5,
+          "weight": "400",
+          "alignment": "bottomTrailing",
+          "x": 127,
+          "y": 104.33789954337898,
+          "w": 36,
+          "h": 13,
+          "ink": {
+            "left": 127.06000137329102,
+            "right": 163.49646377563477,
+            "top": 108.22289476547066,
+            "bottom": 116.22289476547066
+          },
+          "lineHeight": 10.439278841018677,
+          "inkOutsideFrame": true
+        },
+        {
+          "key": "name-text",
+          "text": "BRENT",
+          "font": 10.5,
+          "requestedFont": 10.5,
+          "weight": "700",
+          "alignment": "leading",
+          "x": 47,
+          "y": 130.013698630137,
+          "w": 44,
+          "h": 13,
+          "ink": {
+            "left": 47,
+            "right": 87.048583984375,
+            "top": 132.148708395762,
+            "bottom": 140.148708395762
+          },
+          "lineHeight": 12.22265625,
+          "inkOutsideFrame": false
+        },
+        {
+          "key": "asset-meta",
+          "text": "BRENT | 09/11",
+          "font": 6.0893631642950385,
+          "requestedFont": 10.5,
+          "weight": "400",
+          "alignment": "bottomLeading",
+          "x": 47,
+          "y": 143.013698630137,
+          "w": 44,
+          "h": 13,
+          "ink": {
+            "left": 47,
+            "right": 91.053955078125,
+            "top": 149.57758419970943,
+            "bottom": 156.57758419970943
+          },
+          "lineHeight": 7.088399052619934,
+          "inkOutsideFrame": true
+        },
+        {
+          "key": "price",
+          "text": "94,28",
+          "font": 10.117434786594044,
+          "requestedFont": 10.5,
+          "weight": "700",
+          "alignment": "center",
+          "x": 129,
+          "y": 130.013698630137,
+          "w": 32,
+          "h": 13,
+          "ink": {
+            "left": 129.01000022888184,
+            "right": 160.95273399353027,
+            "top": 132.01626735190823,
+            "bottom": 142.01626735190823
+          },
+          "lineHeight": 11.777325630187988,
+          "inkOutsideFrame": false
+        },
+        {
+          "key": "percent",
+          "text": "-4,11%",
+          "font": 10.177706144641325,
+          "requestedFont": 10.5,
+          "weight": "400",
+          "alignment": "bottomTrailing",
+          "x": 127,
+          "y": 143.013698630137,
+          "w": 36,
+          "h": 13,
+          "ink": {
+            "left": 127.02000045776367,
+            "right": 163.33877182006836,
+            "top": 145.6133900211282,
+            "bottom": 154.6133900211282
+          },
+          "lineHeight": 11.847485542297363,
+          "inkOutsideFrame": true
+        }
+      ],
+      "geometry": [
+        {
+          "key": "asset-icon",
+          "frame": {
+            "width": 26,
+            "height": 26,
+            "alignment": "center"
+          },
+          "position": {
+            "x": 14,
+            "y": 18.986301369863014
+          }
+        },
+        {
+          "key": "asset-chart",
+          "frame": {
+            "width": 32,
+            "height": 26,
+            "alignment": "center"
+          },
+          "position": {
+            "x": 92,
+            "y": 18.986301369863014
+          }
+        },
+        {
+          "key": "price-capsule",
+          "frame": {
+            "width": 36,
+            "height": 13,
+            "alignment": "center"
+          },
+          "position": {
+            "x": 128,
+            "y": 12.486301369863014
+          }
+        },
+        {
+          "key": "asset-icon",
+          "frame": {
+            "width": 26,
+            "height": 26,
+            "alignment": "center"
+          },
+          "position": {
+            "x": 14,
+            "y": 18.986301369863014
+          }
+        },
+        {
+          "key": "asset-chart",
+          "frame": {
+            "width": 32,
+            "height": 26,
+            "alignment": "center"
+          },
+          "position": {
+            "x": 92,
+            "y": 18.986301369863014
+          }
+        },
+        {
+          "key": "price-capsule",
+          "frame": {
+            "width": 36,
+            "height": 13,
+            "alignment": "center"
+          },
+          "position": {
+            "x": 128,
+            "y": 12.486301369863014
+          }
+        },
+        {
+          "key": "asset-icon",
+          "frame": {
+            "width": 26,
+            "height": 26,
+            "alignment": "center"
+          },
+          "position": {
+            "x": 14,
+            "y": 18.986301369863014
+          }
+        },
+        {
+          "key": "asset-chart",
+          "frame": {
+            "width": 32,
+            "height": 26,
+            "alignment": "center"
+          },
+          "position": {
+            "x": 92,
+            "y": 18.986301369863014
+          }
+        },
+        {
+          "key": "price-capsule",
+          "frame": {
+            "width": 36,
+            "height": 13,
+            "alignment": "center"
+          },
+          "position": {
+            "x": 128,
+            "y": 12.486301369863014
+          }
+        },
+        {
+          "key": "asset-icon",
+          "frame": {
+            "width": 26,
+            "height": 26,
+            "alignment": "center"
+          },
+          "position": {
+            "x": 14,
+            "y": 18.986301369863014
+          }
+        },
+        {
+          "key": "asset-chart",
+          "frame": {
+            "width": 32,
+            "height": 26,
+            "alignment": "center"
+          },
+          "position": {
+            "x": 92,
+            "y": 18.986301369863014
+          }
+        },
+        {
+          "key": "price-capsule",
+          "frame": {
+            "width": 36,
+            "height": 13,
+            "alignment": "center"
+          },
+          "position": {
+            "x": 128,
+            "y": 12.486301369863014
+          }
+        }
+      ]
+    },
+    "large": {
+      "output": "validation/market-profile-0.2.55-large.png",
+      "rows": 4,
+      "curves": 4,
+      "width": 338,
+      "height": 360,
+      "texts": [
+        {
+          "key": "title",
+          "text": "Popular · Ordem fixa",
+          "font": 11,
+          "requestedFont": 11,
+          "weight": "700",
+          "alignment": "leading",
+          "x": 17,
+          "y": 7.9999999999999964,
+          "w": 304,
+          "h": 30.80597014925373,
+          "ink": {
+            "left": 18,
+            "right": 144.4306640625,
+            "top": 19.211090543376862,
+            "bottom": 29.211090543376862
+          },
+          "lineHeight": 12.8046875,
+          "inkOutsideFrame": false
+        },
+        {
+          "key": "name-text",
+          "text": "IBOV…",
+          "font": 10.5,
+          "requestedFont": 10.5,
+          "weight": "700",
+          "alignment": "leading",
+          "x": 47,
+          "y": 80.5721393034826,
+          "w": 44,
+          "h": 13,
+          "ink": {
+            "left": 47,
+            "right": 85.68017578125,
+            "top": 82.7071490691076,
+            "bottom": 90.7071490691076
+          },
+          "lineHeight": 12.22265625,
+          "inkOutsideFrame": false
+        },
+        {
+          "key": "asset-meta",
+          "text": "IBOV | 09/11",
+          "font": 7.015945492869905,
+          "requestedFont": 10.5,
+          "weight": "400",
+          "alignment": "bottomLeading",
+          "x": 47,
+          "y": 93.5721393034826,
+          "w": 44,
+          "h": 13,
+          "ink": {
+            "left": 47,
+            "right": 90.53488159179688,
+            "top": 99.91749982098443,
+            "bottom": 106.91749982098443
+          },
+          "lineHeight": 8.166999101638794,
+          "inkOutsideFrame": true
+        },
+        {
+          "key": "price",
+          "text": "170,5K",
+          "font": 8.12575604350471,
+          "requestedFont": 10.5,
+          "weight": "700",
+          "alignment": "center",
+          "x": 129,
+          "y": 80.5721393034826,
+          "w": 32,
+          "h": 13,
+          "ink": {
+            "left": 129,
+            "right": 161.7000732421875,
+            "top": 82.8852062628637,
+            "bottom": 90.8852062628637
+          },
+          "lineHeight": 9.458888053894043,
+          "inkOutsideFrame": true
+        },
+        {
+          "key": "percent",
+          "text": "+1,17%",
+          "font": 8.967971205598147,
+          "requestedFont": 10.5,
+          "weight": "400",
+          "alignment": "bottomTrailing",
+          "x": 127,
+          "y": 93.5721393034826,
+          "w": 36,
+          "h": 13,
+          "ink": {
+            "left": 127.06000137329102,
+            "right": 163.49646377563477,
+            "top": 97.45713452557428,
+            "bottom": 105.45713452557428
+          },
+          "lineHeight": 10.439278841018677,
+          "inkOutsideFrame": true
+        },
+        {
+          "key": "name-text",
+          "text": "DOW …",
+          "font": 10.5,
+          "requestedFont": 10.5,
+          "weight": "700",
+          "alignment": "leading",
+          "x": 47,
+          "y": 143.32504145936983,
+          "w": 44,
+          "h": 13,
+          "ink": {
+            "left": 47,
+            "right": 89.879150390625,
+            "top": 145.46005122499483,
+            "bottom": 153.46005122499483
+          },
+          "lineHeight": 12.22265625,
+          "inkOutsideFrame": false
+        },
+        {
+          "key": "asset-meta",
+          "text": "DOW | 09/11",
+          "font": 6.87500031221482,
+          "requestedFont": 10.5,
+          "weight": "400",
+          "alignment": "bottomLeading",
+          "x": 47,
+          "y": 156.32504145936983,
+          "w": 44,
+          "h": 13,
+          "ink": {
+            "left": 47,
+            "right": 90.62860107421875,
+            "top": 162.7036424143793,
+            "bottom": 169.7036424143793
+          },
+          "lineHeight": 8.002930283546448,
+          "inkOutsideFrame": true
+        },
+        {
+          "key": "price",
+          "text": "52,18K",
+          "font": 8.12575604350471,
+          "requestedFont": 10.5,
+          "weight": "700",
+          "alignment": "center",
+          "x": 129,
+          "y": 143.32504145936983,
+          "w": 32,
+          "h": 13,
+          "ink": {
+            "left": 129,
+            "right": 161.7000732421875,
+            "top": 145.63810841875093,
+            "bottom": 153.63810841875093
+          },
+          "lineHeight": 9.458888053894043,
+          "inkOutsideFrame": true
+        },
+        {
+          "key": "percent",
+          "text": "+1,74%",
+          "font": 8.967971205598147,
+          "requestedFont": 10.5,
+          "weight": "400",
+          "alignment": "bottomTrailing",
+          "x": 127,
+          "y": 156.32504145936983,
+          "w": 36,
+          "h": 13,
+          "ink": {
+            "left": 127.06000137329102,
+            "right": 163.49646377563477,
+            "top": 160.2100366814615,
+            "bottom": 168.2100366814615
+          },
+          "lineHeight": 10.439278841018677,
+          "inkOutsideFrame": true
+        },
+        {
+          "key": "name-text",
+          "text": "DÓLAR",
+          "font": 10.5,
+          "requestedFont": 10.5,
+          "weight": "700",
+          "alignment": "leading",
+          "x": 47,
+          "y": 206.07794361525706,
+          "w": 44,
+          "h": 13,
+          "ink": {
+            "left": 47,
+            "right": 87.458740234375,
+            "top": 205.21295338088206,
+            "bottom": 216.21295338088206
+          },
+          "lineHeight": 12.22265625,
+          "inkOutsideFrame": true
+        },
+        {
+          "key": "asset-meta",
+          "text": "USD/BRL | 09/11",
+          "font": 5.323193860196687,
+          "requestedFont": 10.5,
+          "weight": "400",
+          "alignment": "bottomLeading",
+          "x": 47,
+          "y": 219.07794361525706,
+          "w": 44,
+          "h": 13,
+          "ink": {
+            "left": 47,
+            "right": 90.53375244140625,
+            "top": 226.82252233439615,
+            "bottom": 232.82252233439615
+          },
+          "lineHeight": 6.19653046131134,
+          "inkOutsideFrame": true
+        },
+        {
+          "key": "price",
+          "text": "5,52",
+          "font": 10.5,
+          "requestedFont": 10.5,
+          "weight": "700",
+          "alignment": "center",
+          "x": 129,
+          "y": 206.07794361525706,
+          "w": 32,
+          "h": 13,
+          "ink": {
+            "left": 132.04500007629395,
+            "right": 157.64558601379395,
+            "top": 208.21295338088206,
+            "bottom": 218.21295338088206
+          },
+          "lineHeight": 12.22265625,
+          "inkOutsideFrame": false
+        },
+        {
+          "key": "percent",
+          "text": "+0,43%",
+          "font": 8.967971205598147,
+          "requestedFont": 10.5,
+          "weight": "400",
+          "alignment": "bottomTrailing",
+          "x": 127,
+          "y": 219.07794361525706,
+          "w": 36,
+          "h": 13,
+          "ink": {
+            "left": 127.06000137329102,
+            "right": 163.49646377563477,
+            "top": 222.96293883734873,
+            "bottom": 230.96293883734873
+          },
+          "lineHeight": 10.439278841018677,
+          "inkOutsideFrame": true
+        },
+        {
+          "key": "name-text",
+          "text": "BRENT",
+          "font": 10.5,
+          "requestedFont": 10.5,
+          "weight": "700",
+          "alignment": "leading",
+          "x": 47,
+          "y": 268.83084577114425,
+          "w": 44,
+          "h": 13,
+          "ink": {
+            "left": 47,
+            "right": 87.048583984375,
+            "top": 270.96585553676925,
+            "bottom": 278.96585553676925
+          },
+          "lineHeight": 12.22265625,
+          "inkOutsideFrame": false
+        },
+        {
+          "key": "asset-meta",
+          "text": "BRENT | 09/11",
+          "font": 6.0893631642950385,
+          "requestedFont": 10.5,
+          "weight": "400",
+          "alignment": "bottomLeading",
+          "x": 47,
+          "y": 281.83084577114425,
+          "w": 44,
+          "h": 13,
+          "ink": {
+            "left": 47,
+            "right": 91.053955078125,
+            "top": 288.3947313407167,
+            "bottom": 295.3947313407167
+          },
+          "lineHeight": 7.088399052619934,
+          "inkOutsideFrame": true
+        },
+        {
+          "key": "price",
+          "text": "94,28",
+          "font": 10.117434786594044,
+          "requestedFont": 10.5,
+          "weight": "700",
+          "alignment": "center",
+          "x": 129,
+          "y": 268.83084577114425,
+          "w": 32,
+          "h": 13,
+          "ink": {
+            "left": 129.01000022888184,
+            "right": 160.95273399353027,
+            "top": 270.8334144929155,
+            "bottom": 280.8334144929155
+          },
+          "lineHeight": 11.777325630187988,
+          "inkOutsideFrame": false
+        },
+        {
+          "key": "percent",
+          "text": "-4,11%",
+          "font": 10.177706144641325,
+          "requestedFont": 10.5,
+          "weight": "400",
+          "alignment": "bottomTrailing",
+          "x": 127,
+          "y": 281.83084577114425,
+          "w": 36,
+          "h": 13,
+          "ink": {
+            "left": 127.02000045776367,
+            "right": 163.33877182006836,
+            "top": 284.43053716213547,
+            "bottom": 293.43053716213547
+          },
+          "lineHeight": 11.847485542297363,
+          "inkOutsideFrame": true
+        },
+        {
+          "key": "foot",
+          "text": "D/D diário · S/S semanal · M/M mensal · pp: taxa",
+          "font": 8,
+          "requestedFont": 8,
+          "weight": "400",
+          "alignment": "leading",
+          "x": 17,
+          "y": 328.03980099502485,
+          "w": 304,
+          "h": 23.960199004975124,
+          "ink": {
+            "left": 17,
+            "right": 210.71875,
+            "top": 334.7894317475124,
+            "bottom": 344.7894317475124
+          },
+          "lineHeight": 9.3125,
+          "inkOutsideFrame": false
+        }
+      ],
+      "geometry": [
+        {
+          "key": "asset-icon",
+          "frame": {
+            "width": 26,
+            "height": 26,
+            "alignment": "center"
+          },
+          "position": {
+            "x": 14,
+            "y": 30.80597014925373
+          }
+        },
+        {
+          "key": "asset-chart",
+          "frame": {
+            "width": 32,
+            "height": 26,
+            "alignment": "center"
+          },
+          "position": {
+            "x": 92,
+            "y": 30.80597014925373
+          }
+        },
+        {
+          "key": "price-capsule",
+          "frame": {
+            "width": 36,
+            "height": 13,
+            "alignment": "center"
+          },
+          "position": {
+            "x": 128,
+            "y": 24.30597014925373
+          }
+        },
+        {
+          "key": "asset-icon",
+          "frame": {
+            "width": 26,
+            "height": 26,
+            "alignment": "center"
+          },
+          "position": {
+            "x": 14,
+            "y": 30.80597014925373
+          }
+        },
+        {
+          "key": "asset-chart",
+          "frame": {
+            "width": 32,
+            "height": 26,
+            "alignment": "center"
+          },
+          "position": {
+            "x": 92,
+            "y": 30.80597014925373
+          }
+        },
+        {
+          "key": "price-capsule",
+          "frame": {
+            "width": 36,
+            "height": 13,
+            "alignment": "center"
+          },
+          "position": {
+            "x": 128,
+            "y": 24.30597014925373
+          }
+        },
+        {
+          "key": "asset-icon",
+          "frame": {
+            "width": 26,
+            "height": 26,
+            "alignment": "center"
+          },
+          "position": {
+            "x": 14,
+            "y": 30.80597014925373
+          }
+        },
+        {
+          "key": "asset-chart",
+          "frame": {
+            "width": 32,
+            "height": 26,
+            "alignment": "center"
+          },
+          "position": {
+            "x": 92,
+            "y": 30.80597014925373
+          }
+        },
+        {
+          "key": "price-capsule",
+          "frame": {
+            "width": 36,
+            "height": 13,
+            "alignment": "center"
+          },
+          "position": {
+            "x": 128,
+            "y": 24.30597014925373
+          }
+        },
+        {
+          "key": "asset-icon",
+          "frame": {
+            "width": 26,
+            "height": 26,
+            "alignment": "center"
+          },
+          "position": {
+            "x": 14,
+            "y": 30.80597014925373
+          }
+        },
+        {
+          "key": "asset-chart",
+          "frame": {
+            "width": 32,
+            "height": 26,
+            "alignment": "center"
+          },
+          "position": {
+            "x": 92,
+            "y": 30.80597014925373
+          }
+        },
+        {
+          "key": "price-capsule",
+          "frame": {
+            "width": 36,
+            "height": 13,
+            "alignment": "center"
+          },
+          "position": {
+            "x": 128,
+            "y": 24.30597014925373
+          }
+        }
+      ]
+    },
+    "preview": {
+      "output": "validation/market-profile-0.2.55-preview.png",
+      "rows": 4,
+      "curves": 4,
+      "width": 332,
+      "height": 158,
+      "texts": [
+        {
+          "key": "name-text",
+          "text": "IBOV…",
+          "font": 10.212328767123287,
+          "requestedFont": 10.212328767123287,
+          "weight": "700",
+          "alignment": "leading",
+          "x": 47.34246575342465,
+          "y": 12.863013698630137,
+          "w": 42.794520547945204,
+          "h": 12.643835616438356,
+          "ink": {
+            "left": 47.34246575342465,
+            "right": 85.21151482569027,
+            "top": 14.720351924634961,
+            "bottom": 22.72035192463496
+          },
+          "lineHeight": 11.887788772583008,
+          "inkOutsideFrame": false
+        },
+        {
+          "key": "asset-meta",
+          "text": "IBOV | 09/11",
+          "font": 6.829687479350301,
+          "requestedFont": 10.212328767123287,
+          "weight": "400",
+          "alignment": "bottomLeading",
+          "x": 47.34246575342465,
+          "y": 25.506849315068493,
+          "w": 42.794520547945204,
+          "h": 12.643835616438356,
+          "ink": {
+            "left": 47.34246575342465,
+            "right": 89.8206762026434,
+            "top": 31.539972522487375,
+            "bottom": 38.539972522487375
+          },
+          "lineHeight": 7.950183272361755,
+          "inkOutsideFrame": true
+        },
+        {
+          "key": "price",
+          "text": "170,5K",
+          "font": 7.9104341363442545,
+          "requestedFont": 10.212328767123287,
+          "weight": "700",
+          "alignment": "center",
+          "x": 127.0958904109589,
+          "y": 12.863013698630137,
+          "w": 31.123287671232877,
+          "h": 12.643835616438356,
+          "ink": {
+            "left": 127.09253466619204,
+            "right": 159.1006828595514,
+            "top": 14.923455824590711,
+            "bottom": 22.92345582459071
+          },
+          "lineHeight": 9.208239793777466,
+          "inkOutsideFrame": true
+        },
+        {
+          "key": "percent",
+          "text": "+1,17%",
+          "font": 8.729770746002856,
+          "requestedFont": 10.212328767123287,
+          "weight": "400",
+          "alignment": "bottomTrailing",
+          "x": 125.15068493150685,
+          "y": 25.506849315068493,
+          "w": 35.013698630136986,
+          "h": 12.643835616438356,
+          "ink": {
+            "left": 125.16438356164383,
+            "right": 159.88258424523758,
+            "top": 29.091857292880746,
+            "bottom": 37.091857292880746
+          },
+          "lineHeight": 10.161998987197876,
+          "inkOutsideFrame": false
+        },
+        {
+          "key": "name-text",
+          "text": "DOW …",
+          "font": 10.212328767123287,
+          "requestedFont": 10.212328767123287,
+          "weight": "700",
+          "alignment": "leading",
+          "x": 47.34246575342465,
+          "y": 48.525114155251146,
+          "w": 42.794520547945204,
+          "h": 12.643835616438356,
+          "ink": {
+            "left": 47.34246575342465,
+            "right": 89.29202019678402,
+            "top": 50.382452381255966,
+            "bottom": 58.382452381255966
+          },
+          "lineHeight": 11.887788772583008,
+          "inkOutsideFrame": false
+        },
+        {
+          "key": "asset-meta",
+          "text": "DOW | 09/11",
+          "font": 6.692675234955674,
+          "requestedFont": 10.212328767123287,
+          "weight": "400",
+          "alignment": "bottomLeading",
+          "x": 47.34246575342465,
+          "y": 61.1689497716895,
+          "w": 42.794520547945204,
+          "h": 12.643835616438356,
+          "ink": {
+            "left": 47.34246575342465,
+            "right": 89.89028679834652,
+            "top": 67.2343859683433,
+            "bottom": 74.2343859683433
+          },
+          "lineHeight": 7.790692090988159,
+          "inkOutsideFrame": true
+        },
+        {
+          "key": "price",
+          "text": "52,18K",
+          "font": 7.9104341363442545,
+          "requestedFont": 10.212328767123287,
+          "weight": "700",
+          "alignment": "center",
+          "x": 127.0958904109589,
+          "y": 48.525114155251146,
+          "w": 31.123287671232877,
+          "h": 12.643835616438356,
+          "ink": {
+            "left": 127.09253466619204,
+            "right": 159.1006828595514,
+            "top": 50.585556281211716,
+            "bottom": 58.585556281211716
+          },
+          "lineHeight": 9.208239793777466,
+          "inkOutsideFrame": true
+        },
+        {
+          "key": "percent",
+          "text": "+1,74%",
+          "font": 8.729770746002856,
+          "requestedFont": 10.212328767123287,
+          "weight": "400",
+          "alignment": "bottomTrailing",
+          "x": 125.15068493150685,
+          "y": 61.1689497716895,
+          "w": 35.013698630136986,
+          "h": 12.643835616438356,
+          "ink": {
+            "left": 125.16438356164383,
+            "right": 159.88258424523758,
+            "top": 64.75395774950175,
+            "bottom": 72.75395774950175
+          },
+          "lineHeight": 10.161998987197876,
+          "inkOutsideFrame": false
+        },
+        {
+          "key": "name-text",
+          "text": "DÓLAR",
+          "font": 10.212328767123287,
+          "requestedFont": 10.212328767123287,
+          "weight": "700",
+          "alignment": "leading",
+          "x": 47.34246575342465,
+          "y": 84.18721461187214,
+          "w": 42.794520547945204,
+          "h": 12.643835616438356,
+          "ink": {
+            "left": 47.34246575342465,
+            "right": 86.88349663721371,
+            "top": 83.04455283787696,
+            "bottom": 94.04455283787696
+          },
+          "lineHeight": 11.887788772583008,
+          "inkOutsideFrame": true
+        },
+        {
+          "key": "asset-meta",
+          "text": "USD/BRL | 09/11",
+          "font": 5.181784826218784,
+          "requestedFont": 10.212328767123287,
+          "weight": "400",
+          "alignment": "bottomLeading",
+          "x": 47.34246575342465,
+          "y": 96.83105022831049,
+          "w": 42.794520547945204,
+          "h": 12.643835616438356,
+          "ink": {
+            "left": 47.34246575342465,
+            "right": 89.8033422182684,
+            "top": 104.25281455473267,
+            "bottom": 110.25281455473267
+          },
+          "lineHeight": 6.031921029090881,
+          "inkOutsideFrame": true
+        },
+        {
+          "key": "price",
+          "text": "5,52",
+          "font": 10.212328767123287,
+          "requestedFont": 10.212328767123287,
+          "weight": "700",
+          "alignment": "center",
+          "x": 127.0958904109589,
+          "y": 84.18721461187214,
+          "w": 31.123287671232877,
+          "h": 12.643835616438356,
+          "ink": {
+            "left": 130.07253420842838,
+            "right": 155.14722598088932,
+            "top": 86.04455283787696,
+            "bottom": 96.04455283787696
+          },
+          "lineHeight": 11.887788772583008,
+          "inkOutsideFrame": false
+        },
+        {
+          "key": "percent",
+          "text": "+0,43%",
+          "font": 8.729770746002856,
+          "requestedFont": 10.212328767123287,
+          "weight": "400",
+          "alignment": "bottomTrailing",
+          "x": 125.15068493150685,
+          "y": 96.83105022831049,
+          "w": 35.013698630136986,
+          "h": 12.643835616438356,
+          "ink": {
+            "left": 125.16438356164383,
+            "right": 159.88258424523758,
+            "top": 100.41605820612274,
+            "bottom": 108.41605820612274
+          },
+          "lineHeight": 10.161998987197876,
+          "inkOutsideFrame": false
+        },
+        {
+          "key": "name-text",
+          "text": "BRENT",
+          "font": 10.212328767123287,
+          "requestedFont": 10.212328767123287,
+          "weight": "700",
+          "alignment": "leading",
+          "x": 47.34246575342465,
+          "y": 119.84931506849314,
+          "w": 42.794520547945204,
+          "h": 12.643835616438356,
+          "ink": {
+            "left": 47.34246575342465,
+            "right": 85.48493706690121,
+            "top": 121.70665329449798,
+            "bottom": 129.70665329449798
+          },
+          "lineHeight": 11.887788772583008,
+          "inkOutsideFrame": false
+        },
+        {
+          "key": "asset-meta",
+          "text": "BRENT | 09/11",
+          "font": 5.927460916437498,
+          "requestedFont": 10.212328767123287,
+          "weight": "400",
+          "alignment": "bottomLeading",
+          "x": 47.34246575342465,
+          "y": 132.4931506849315,
+          "w": 42.794520547945204,
+          "h": 12.643835616438356,
+          "ink": {
+            "left": 47.34246575342465,
+            "right": 90.36675774561215,
+            "top": 139.739054844804,
+            "bottom": 145.739054844804
+          },
+          "lineHeight": 6.8999351263046265,
+          "inkOutsideFrame": true
+        },
+        {
+          "key": "price",
+          "text": "94,28",
+          "font": 9.849434195961322,
+          "requestedFont": 10.212328767123287,
+          "weight": "700",
+          "alignment": "center",
+          "x": 127.0958904109589,
+          "y": 119.84931506849314,
+          "w": 31.123287671232877,
+          "h": 12.643835616438356,
+          "ink": {
+            "left": 127.08753455175112,
+            "right": 158.37487280858704,
+            "top": 121.5810222005191,
+            "bottom": 131.5810222005191
+          },
+          "lineHeight": 11.465356349945068,
+          "inkOutsideFrame": true
+        },
+        {
+          "key": "percent",
+          "text": "-4,11%",
+          "font": 9.907769472211902,
+          "requestedFont": 10.212328767123287,
+          "weight": "400",
+          "alignment": "bottomTrailing",
+          "x": 125.15068493150685,
+          "y": 132.4931506849315,
+          "w": 35.013698630136986,
+          "h": 12.643835616438356,
+          "ink": {
+            "left": 125.12438264611649,
+            "right": 159.75583711388992,
+            "top": 134.80033950609703,
+            "bottom": 143.80033950609703
+          },
+          "lineHeight": 11.533262968063354,
+          "inkOutsideFrame": false
+        }
+      ],
+      "geometry": [
+        {
+          "key": "asset-icon",
+          "frame": {
+            "width": 25.28767123287671,
+            "height": 25.28767123287671,
+            "alignment": "center"
+          },
+          "position": {
+            "x": 13.616438356164384,
+            "y": 17.506849315068493
+          }
+        },
+        {
+          "key": "asset-chart",
+          "frame": {
+            "width": 31.123287671232877,
+            "height": 25.28767123287671,
+            "alignment": "center"
+          },
+          "position": {
+            "x": 89.47945205479452,
+            "y": 17.506849315068493
+          }
+        },
+        {
+          "key": "price-capsule",
+          "frame": {
+            "width": 35.013698630136986,
+            "height": 12.643835616438356,
+            "alignment": "center"
+          },
+          "position": {
+            "x": 124.4931506849315,
+            "y": 11.184931506849315
+          }
+        },
+        {
+          "key": "asset-icon",
+          "frame": {
+            "width": 25.28767123287671,
+            "height": 25.28767123287671,
+            "alignment": "center"
+          },
+          "position": {
+            "x": 13.616438356164384,
+            "y": 17.506849315068493
+          }
+        },
+        {
+          "key": "asset-chart",
+          "frame": {
+            "width": 31.123287671232877,
+            "height": 25.28767123287671,
+            "alignment": "center"
+          },
+          "position": {
+            "x": 89.47945205479452,
+            "y": 17.506849315068493
+          }
+        },
+        {
+          "key": "price-capsule",
+          "frame": {
+            "width": 35.013698630136986,
+            "height": 12.643835616438356,
+            "alignment": "center"
+          },
+          "position": {
+            "x": 124.4931506849315,
+            "y": 11.184931506849315
+          }
+        },
+        {
+          "key": "asset-icon",
+          "frame": {
+            "width": 25.28767123287671,
+            "height": 25.28767123287671,
+            "alignment": "center"
+          },
+          "position": {
+            "x": 13.616438356164384,
+            "y": 17.506849315068493
+          }
+        },
+        {
+          "key": "asset-chart",
+          "frame": {
+            "width": 31.123287671232877,
+            "height": 25.28767123287671,
+            "alignment": "center"
+          },
+          "position": {
+            "x": 89.47945205479452,
+            "y": 17.506849315068493
+          }
+        },
+        {
+          "key": "price-capsule",
+          "frame": {
+            "width": 35.013698630136986,
+            "height": 12.643835616438356,
+            "alignment": "center"
+          },
+          "position": {
+            "x": 124.4931506849315,
+            "y": 11.184931506849315
+          }
+        },
+        {
+          "key": "asset-icon",
+          "frame": {
+            "width": 25.28767123287671,
+            "height": 25.28767123287671,
+            "alignment": "center"
+          },
+          "position": {
+            "x": 13.616438356164384,
+            "y": 17.506849315068493
+          }
+        },
+        {
+          "key": "asset-chart",
+          "frame": {
+            "width": 31.123287671232877,
+            "height": 25.28767123287671,
+            "alignment": "center"
+          },
+          "position": {
+            "x": 89.47945205479452,
+            "y": 17.506849315068493
+          }
+        },
+        {
+          "key": "price-capsule",
+          "frame": {
+            "width": 35.013698630136986,
+            "height": 12.643835616438356,
+            "alignment": "center"
+          },
+          "position": {
+            "x": 124.4931506849315,
+            "y": 11.184931506849315
+          }
+        }
+      ]
+    }
+  },
+  "requests": [
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/%5EBVSP?range=5d&interval=5m",
+      "timeout": 20,
+      "authenticated": false
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/%5EDJI?range=5d&interval=5m",
+      "timeout": 20,
+      "authenticated": false
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/BRL%3DX?range=5d&interval=5m",
+      "timeout": 20,
+      "authenticated": false
+    },
+    {
+      "url": "https://query1.finance.yahoo.com/v8/finance/chart/BZ%3DF?range=5d&interval=5m",
+      "timeout": 20,
+      "authenticated": false
+    }
+  ]
+}

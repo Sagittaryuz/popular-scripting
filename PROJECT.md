@@ -1,3 +1,7 @@
+## 0.2.55 — Remoção da legenda temporal
+
+Pedido de Marcos: remover apenas a legenda ≈24h/data abaixo do gráfico. Preservados gráfico, cobertura temporal na acessibilidade, horários das cotações, cápsulas e demais funções.
+
 ## 0.2.54 — contorno das cápsulas e duas linhas proporcionais
 
 - Corrige o preenchimento diagonal observado no iPhone na .53: o fundo agora usa um contorno fechado com segmentos explícitos, sem depender da composição de arcos elípticos do Canvas nativo.

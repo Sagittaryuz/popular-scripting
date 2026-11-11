@@ -1,9 +1,9 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),zlib=require('node:zlib');
 const {bundle}=require('./test-trading-host.cjs');
 const root=path.resolve(__dirname,'..'),previewDir=path.join(root,'validation');
-const evidence=JSON.parse(fs.readFileSync(path.join(previewDir,'market-profile-0.2.54-preview.json'),'utf8'));
+const evidence=JSON.parse(fs.readFileSync(path.join(previewDir,'market-profile-0.2.55-preview.json'),'utf8'));
 const order=['IBOV','DOW_JONES','USD/BRL','BRENT'],symbols=['^BVSP','^DJI','BRL=X','BZ=F'];
-assert.equal(evidence.version,'0.2.54');assert.equal(evidence.sourceVersion,'2026.11.11.101');
+assert.equal(evidence.version,'0.2.55');assert.equal(evidence.sourceVersion,'2026.11.11.101');
 assert.equal(evidence.nativeIPhone,false);assert.match(evidence.simulation,/actual scripting model \+ host \+ JSX\/Canvas/i);
 assert.equal(evidence.data.capturedResponses,true);assert.deepEqual(evidence.order,order);
 assert.equal(evidence.rows.length,4);
@@ -32,7 +32,7 @@ for(const family of ['small','medium','large','preview']){
   assert.equal(result.texts.filter(t=>t.key==='name-text').length,4);
   assert(result.texts.filter(t=>t.key==='name-text').every(t=>t.requestedFont>8&&t.h>10),'enlarged names use capsule-height band');
   assert.deepEqual(result.texts.filter(t=>t.key==='price').map(t=>t.text),evidence.rows.map(r=>r.price),'all four fitted prices remain complete in '+family);
-  assert.deepEqual(result.texts.filter(t=>t.key==='trading-range').map(t=>t.text),evidence.rows.map(r=>'≈24h '+date(r.coverage.startTime)+'–'+date(r.coverage.endTime)));
+  assert.deepEqual(result.texts.filter(t=>t.key==='trading-range').map(t=>t.text),[]);
   assert(!result.texts.some(t=>t.key==='market-status-dot'||/indisponível|Jan-27/.test(t.text)));
   const names=result.texts.filter(t=>t.key==='name-text'),prices=result.texts.filter(t=>t.key==='price'),metas=result.texts.filter(t=>t.key==='asset-meta'),percents=result.texts.filter(t=>t.key==='percent');
   assert(names.every(t=>t.weight==='700'&&t.font>5.5),'names are larger and bold');
@@ -46,7 +46,7 @@ for(const family of ['small','medium','large','preview']){
   icons.forEach((icon,i)=>{assert(Math.abs(icon.frame.width-icon.frame.height)<1e-8);assert(Math.abs(icon.frame.height-charts[i].frame.height)<1e-8);assert(Math.abs(icon.position.y-charts[i].position.y)<1e-8);});
   verifyPNG(path.join(root,result.output));
 }
-verifyPNG(path.join(previewDir,'market-profile-0.2.54-preview.png'));
+verifyPNG(path.join(previewDir,'market-profile-0.2.55-preview.png'));
 assert(symbols.every(symbol=>evidence.requests.some(r=>decodeURIComponent(new URL(r.url).pathname).endsWith('/'+symbol))));
 assert(evidence.requests.every(r=>!r.authenticated));
 // Exercise the shipped Canvas implementation, not just a textual source match.
