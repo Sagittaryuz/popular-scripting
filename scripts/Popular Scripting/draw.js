@@ -1,6 +1,6 @@
 // @ts-nocheck
 // Text belongs to native Text views, never to Canvas baselines or clipping boxes.
-const ROW=36,TOP=17,MIDDLE=7,BOTTOM=3,GRAPH_HEIGHT=26;
+const ROW=36,TOP=17,MIDDLE=13,BOTTOM=3,GRAPH_HEIGHT=26;
 // The row is a measured four-column grid. The 26 pt icon is centered in the
 // first column while the wider identity column has room for the name /
 // code-date pair. The graph and quote columns are independent, so no text can
@@ -14,7 +14,7 @@ const ICON=26,ICON_TOP=(ROW-ICON)/2,ICON_LEFT=(COL1-ICON)/2;
 // Every quote uses the same capsule, independent of the price's text width.
 export const PRICE_CAPSULE=Object.freeze({width:COL4,height:ICON/2,top:ICON_TOP,inset:2});
 const BLOCK_TOP=0,BLOCK_HEIGHT=ROW,BLOCK_CENTER=BLOCK_TOP+BLOCK_HEIGHT/2;
-const NAME_TOP=5,NAME_HEIGHT=17,META_TOP=24,META_HEIGHT=7,GRAPH_TOP=5,MONTH_TOP=31,LINE1_TOP=5,LINE2_TOP=24,LINE3_TOP=16.5;
+const NAME_TOP=ICON_TOP,NAME_HEIGHT=ICON/2,META_TOP=ICON_TOP+ICON/2,META_HEIGHT=ICON/2,GRAPH_TOP=5,MONTH_TOP=31,LINE1_TOP=5,LINE2_TOP=ICON_TOP+ICON/2,LINE3_TOP=16.5;
 export const GEOMETRY=Object.freeze({column:COLUMN,columnGap:COLUMN_GAP,row:ROW,gap:2/3,icon:ICON,iconTop:ICON_TOP,iconLeft:ICON_LEFT,iconColumn:COL1,col1:COL1,col1X:COL1_X,col2:COL2,col2X:COL2_X,col3:COL3,col3X:COL3_X,col4:COL4,col4X:COL4_X,colGap:COL_GAP,detail:COL3_X,blockWidth:COL3,blockTop:BLOCK_TOP,blockHeight:BLOCK_HEIGHT,blockCenter:BLOCK_CENTER,name:COL2,nameX:COL2_X,nameTop:NAME_TOP,nameHeight:NAME_HEIGHT,nameTextMax:NAME_TEXT_MAX,code:COL2,codeX:COL2_X,codeTop:META_TOP,codeHeight:META_HEIGHT,date:COL2,dateX:COL2_X,dateTop:META_TOP,dateHeight:META_HEIGHT,price:COL4,priceX:COL4_X,unit:COL4,unitX:COL4_X,timeX:COL2_X,time:COL2,graph:COL3,graphX:COL3_X,graphHeight:GRAPH_HEIGHT,percent:COL4,percentX:COL4_X,top:TOP,middle:MIDDLE,bottom:BOTTOM,line1Top:LINE1_TOP,line2Top:LINE2_TOP,graphTop:GRAPH_TOP,monthTop:MONTH_TOP,line3Top:LINE3_TOP});
 export function layout(family,width,height){
   if(!Number.isFinite(width)||!Number.isFinite(height)||width<=12||height<=8)throw Error('Dimensão inválida');
@@ -33,12 +33,21 @@ export function placeInBlock(plan,x,y,width,height,alignment='center'){
   return place(plan,x,y,width,height,alignment);
 }
 export function movementColor(row){return row.movement>0?'#00E676':row.movement<0?'#FF1744':'#96969C';}
-// Use the same Canvas ellipse/path primitives already used by the asset icons.
+// Explicit perimeter: native Scripting does not preserve HTML Canvas ellipse
+// arc semantics when composing a filled path (.53 produced a diagonal cutout).
+// Use only moveTo/lineTo/closePath, as the existing chart fills do.
 export function drawPriceCapsule(ctx,size,color){
-  const w=size.width,h=size.height,r=h/2;
+  const w=size.width,h=size.height,r=Math.min(w,h)/2,steps=24;
   ctx.beginPath();ctx.moveTo(r,0);ctx.lineTo(w-r,0);
-  ctx.ellipse(w-r,r,r,r,0,-Math.PI/2,Math.PI/2,false);
-  ctx.lineTo(r,h);ctx.ellipse(r,r,r,r,0,Math.PI/2,3*Math.PI/2,false);
+  for(let i=1;i<=steps;i++){
+    const angle=-Math.PI/2+Math.PI*i/steps;
+    ctx.lineTo(w-r+r*Math.cos(angle),h/2+r*Math.sin(angle));
+  }
+  ctx.lineTo(r,h);
+  for(let i=1;i<=steps;i++){
+    const angle=Math.PI/2+Math.PI*i/steps;
+    ctx.lineTo(r+r*Math.cos(angle),h/2+r*Math.sin(angle));
+  }
   ctx.closePath();ctx.fillStyle=color;ctx.fill();
 }
 export function curvePlan(api,row,width=GEOMETRY.graph){

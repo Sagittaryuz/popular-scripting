@@ -39,7 +39,7 @@ for(const [family,width,height,expected] of [['small',158,158,4],['medium',338,1
     assert(!desc.some(node=>node.type==='Circle'&&node.props?.key==='market-status-dot'),family+' row '+i+' has no status dot consuming identity width')
     if(rows[i].asset.code==='USD/BRL')assert.equal(icon.type,'Canvas')
     assert.equal(nameText.props.frame.width,G.name*plan.scale)
-    assert.equal(nameText.props.frame.alignment,'topLeading')
+    assert.equal(nameText.props.frame.alignment,'leading')
     assert.equal(nameText.props.minScaleFactor,1)
     assert.equal(meta.props.frame.width,G.date*plan.scale)
     assert.equal(meta.props.position.x-nameText.props.position.x,(G.dateX+G.date/2-(G.nameX+G.name/2))*plan.scale)

@@ -6,10 +6,10 @@ import { GEOMETRY as G, PRICE_CAPSULE as P, layout, place, placeInBlock, movemen
 import { RefreshAssetsOnTap } from './app_intents'
 import { assetMarketStatus } from './market-status'
 const images:Record<string,UIImage|null|undefined>={}
-const NAME_FONT=6.6
+const NAME_FONT=10.5
 const PRICE_FONT=10.5
 const PRICE_MIN=6.5
-const META_FONT=5.3
+const META_FONT=10.5
 const DISPLAY_NAMES:Record<string,string>=Object.freeze({IBOV:'IBOVESPA',DOW_JONES:'DOW JONES','USD/BRL':'DÓLAR',BRENT:'BRENT'})
 function displayName(row:any){return DISPLAY_NAMES[row.asset?.code]||String(row.name||'—').toLocaleUpperCase('pt-BR')}
 const SHORT_CODES:Record<string,string>=Object.freeze({SELIC:'SELIC',IPCA:'IPCA',IBOV:'IBOV',DOW_JONES:'DOW',BBAS3:'BBAS3',BBDC4:'BBDC4','BTC/USD':'BTC/USD','USD/BRL':'USD/BRL',SOJA_JATAI_GO:'SOJAGO',CUB_GO:'CUB-GO',DIESEL_S10:'DIESEL',BRENT:'BRENT'})
@@ -104,7 +104,7 @@ export function PopularView({model,width,height}:{model:any;width:number;height:
           <Image key="asset-remote" image={remoteIcon} resizable renderingMode="original" frame={{width:G.icon*plan.scale,height:G.icon*plan.scale}}/>
         </ZStack> :null}
         <Text key="name-text" font={NAME_FONT*plan.scale} fontWeight="bold" foregroundStyle="white"
-          lineLimit={1} minScaleFactor={1} {...place(rowPlan,G.nameX,G.nameTop,G.name,G.nameHeight,'topLeading')}>{displayName(row)}</Text>
+          lineLimit={1} minScaleFactor={1} {...place(rowPlan,G.nameX,G.nameTop,G.name,G.nameHeight,'leading')}>{displayName(row)}</Text>
         {cellLabel('asset-meta',meta,G.dateX,G.dateTop,G.date,G.dateHeight,META_FONT,3.4,false,'#96969C',false,'bottomLeading')}
         <Canvas key="asset-chart" opaque={false} {...placeInBlock(rowPlan,G.graphX,G.graphTop,G.graph,G.graphHeight)} draw={(ctx,size)=>drawCurve(ctx,size,curve,color)}/>
         {!curve.points.length?cellLabel('missing',chartUnavailableLabel,G.graphX,G.graphTop,G.graph,G.graphHeight,4.2,3.2,false,'#96969C'):null}

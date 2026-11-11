@@ -28,7 +28,7 @@ assert.doesNotMatch(badges,/INITIAL_BADGES=.*DOW_JONES:/,'Dow Jones no longer us
 assert.doesNotMatch(badges,/INITIAL_BADGES=.*BRENT:/,'Brent no longer uses initials as its published icon');
 assert.match(badges,/function drawIndexBadge\(code\)/,'index and Dow use local vector pictograms');
 assert.match(badges,/function drawOilBadge\(\)/,'Brent uses a local oil-barrel pictogram');
-assert.match(view,/const NAME_FONT=6\.6/,'all names use one fixed native font size');
+assert.match(view,/const NAME_FONT=10\.5/,'all names use one fixed native font size');
 assert.match(view,/minScaleFactor=\{1\}/,'native text uses ellipsis without per-name font shrinking');
 assert.doesNotMatch(view,/market-status-dot/,'the status dot is removed from the compact identity column');
 assert.doesNotMatch(view,/cellLabel\('unit'/,'the unit is no longer rendered below the quote');

@@ -21,18 +21,36 @@ for(const [family,width,height] of [['small',158,158],['medium',338,170],['large
   near(capsule.props.frame.width,icon.props.frame.width*P.width/G.icon,'capsule uses the common fixed width');
   near(top(price),top(capsule),'price and capsule share the frame top');near(bottom(price),bottom(capsule),'price and capsule share frame bottom');
   assert(left(price)>left(capsule)&&right(price)<right(capsule),'price has internal horizontal padding');
-  assert(bottom(capsule)<top(percent),'percentage remains separate below capsule');
+  assert(bottom(capsule)<=top(percent)+1e-8,'percentage remains in lower half below capsule');
   assert(left(capsule)>right(chart),'capsule does not cover chart');
   assert(nodes.indexOf(capsule)<nodes.indexOf(price),'capsule is drawn behind the price');
   assert.equal(price.children.join(''),rows[i].price,'price is not reformatted or replaced to fit');
   assert.equal(price.props.frame.alignment,'center');
   const background=draw(capsule),curve=draw(chart),color=movementColor(rows[i]);
   assert.equal(background.ctx.fillStyle,color,'capsule has full chart color');assert.equal(curve.ctx.strokeStyle,color,'curve uses same color');
-  const ellipses=background.calls.filter(c=>c[0]==='ellipse');assert.equal(ellipses.length,2,'both ends are round');
-  for(const e of ellipses){near(e[3],capsule.props.frame.height/2,'end radius equals half capsule height');near(e[4],e[3],'ends stay circular');}
+  assert(!background.calls.some(c=>['ellipse','arc','arcTo'].includes(c[0])),'no native-incompatible arc primitives');
+  const perimeter=background.calls.filter(c=>c[0]==='moveTo'||c[0]==='lineTo').map(c=>c.slice(1));
+  assert.equal(perimeter.length,51,'continuous closed perimeter with two explicit semicircles');
+  for(const [x,y] of perimeter){assert(x>=-1e-8&&x<=capsule.props.frame.width+1e-8);assert(y>=-1e-8&&y<=capsule.props.frame.height+1e-8);}
   const a=luminance(color.slice(1)),b=luminance(price.props.foregroundStyle.slice(1));assert((Math.max(a,b)+.05)/(Math.min(a,b)+.05)>=4.5,'text contrast passes 4.5:1 for all movement colors');
  }
  assert(widths.every(w=>w===widths[0]),'all assets use equal capsule widths');measurements.push({family,width,height,rows:buttons.length,capsuleWidth:widths[0]});
 }
 assert.equal(P.height,13);assert.equal(P.width,36);assert.equal(P.top,G.iconTop);
 console.log('PASS price capsules: half icon height, common top/width, chart colors, round ends, centered inset text, contrast, no chart/variation overlap, positive/negative/neutral/missing and 5 sizes.',measurements);
+
+// Rasterize the shipped function through a deliberately line-only context.
+// Native arc semantics cannot affect this path. Test the interior and symmetry,
+// not just the existence of draw calls (which missed the .53 iPhone defect).
+const {createCanvas}=require('@napi-rs/canvas');
+const {drawPriceCapsule}=load('draw.js');
+for(const scale of [1,2,3,4]){
+ const w=P.width*scale,h=P.height*scale,canvas=createCanvas(w,h),ctx=canvas.getContext('2d');
+ const lineOnly={beginPath:()=>ctx.beginPath(),moveTo:(...a)=>ctx.moveTo(...a),lineTo:(...a)=>ctx.lineTo(...a),closePath:()=>ctx.closePath(),fill:()=>ctx.fill(),set fillStyle(v){ctx.fillStyle=v}};
+ drawPriceCapsule(lineOnly,{width:w,height:h},'#00E676');
+ const data=ctx.getImageData(0,0,w,h).data,alpha=(x,y)=>data[(y*w+x)*4+3];
+ for(let y=1;y<h-1;y++)for(let x=Math.ceil(h/2);x<w-Math.ceil(h/2);x++)assert.equal(alpha(x,y),255,'central rectangle solid, no diagonal cutout');
+ assert(alpha(0,0)<20&&alpha(w-1,0)<20,'rounded corners stay transparent');
+ for(let y=0;y<h;y++)for(let x=0;x<w;x++)assert(Math.abs(alpha(x,y)-alpha(w-1-x,y))<40,'left/right antialias tolerance');
+}
+console.log('PASS line-only capsule raster: solid center, rounded corners and symmetry at 1x–4x.');

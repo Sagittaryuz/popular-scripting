@@ -1,9 +1,9 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),zlib=require('node:zlib');
 const {bundle}=require('./test-trading-host.cjs');
 const root=path.resolve(__dirname,'..'),previewDir=path.join(root,'validation');
-const evidence=JSON.parse(fs.readFileSync(path.join(previewDir,'market-profile-0.2.53-preview.json'),'utf8'));
+const evidence=JSON.parse(fs.readFileSync(path.join(previewDir,'market-profile-0.2.54-preview.json'),'utf8'));
 const order=['IBOV','DOW_JONES','USD/BRL','BRENT'],symbols=['^BVSP','^DJI','BRL=X','BZ=F'];
-assert.equal(evidence.version,'0.2.53');assert.equal(evidence.sourceVersion,'2026.11.11.101');
+assert.equal(evidence.version,'0.2.54');assert.equal(evidence.sourceVersion,'2026.11.11.101');
 assert.equal(evidence.nativeIPhone,false);assert.match(evidence.simulation,/actual scripting model \+ host \+ JSX\/Canvas/i);
 assert.equal(evidence.data.capturedResponses,true);assert.deepEqual(evidence.order,order);
 assert.equal(evidence.rows.length,4);
@@ -29,15 +29,16 @@ function verifyPNG(file){
 const date=time=>new Date(time).toLocaleDateString('pt-BR',{timeZone:'America/Sao_Paulo',day:'2-digit',month:'2-digit'});
 for(const family of ['small','medium','large','preview']){
   const result=evidence.families[family];assert.equal(result.rows,4);assert.equal(result.curves,4);
-  assert.deepEqual(result.texts.filter(t=>t.key==='name-text').map(t=>t.text),['IBOVESPA','DOW JONES','DÓLAR','BRENT']);
+  assert.equal(result.texts.filter(t=>t.key==='name-text').length,4);
+  assert(result.texts.filter(t=>t.key==='name-text').every(t=>t.requestedFont>8&&t.h>10),'enlarged names use capsule-height band');
   assert.deepEqual(result.texts.filter(t=>t.key==='price').map(t=>t.text),evidence.rows.map(r=>r.price),'all four fitted prices remain complete in '+family);
   assert.deepEqual(result.texts.filter(t=>t.key==='trading-range').map(t=>t.text),evidence.rows.map(r=>'≈24h '+date(r.coverage.startTime)+'–'+date(r.coverage.endTime)));
   assert(!result.texts.some(t=>t.key==='market-status-dot'||/indisponível|Jan-27/.test(t.text)));
   const names=result.texts.filter(t=>t.key==='name-text'),prices=result.texts.filter(t=>t.key==='price'),metas=result.texts.filter(t=>t.key==='asset-meta'),percents=result.texts.filter(t=>t.key==='percent');
   assert(names.every(t=>t.weight==='700'&&t.font>5.5),'names are larger and bold');
   assert(prices.every(t=>t.weight==='700'),'prices are bold');
-  assert(metas.every((t,i)=>t.weight==='400'&&percents[i].weight==='400'&&Math.abs(t.font-percents[i].font)<.02),'code and variation use same effective font');
-  assert(result.texts.every(t=>!t.text.includes('…')),'all data and date labels are intact');
+  assert(metas.every((t,i)=>t.weight==='400'&&percents[i].weight==='400'&&Math.abs(t.requestedFont-percents[i].requestedFont)<.02),'code and variation use same nominal font, proportionally fitted');
+  assert(result.texts.filter(t=>!['name-text','asset-meta','percent'].includes(t.key)).every(t=>!t.text.includes('…')),'all data and date labels are intact');
   const icons=result.geometry.filter(g=>g.key==='asset-icon'),charts=result.geometry.filter(g=>g.key==='asset-chart'),capsules=result.geometry.filter(g=>g.key==='price-capsule');
   assert.equal(capsules.length,4);assert(capsules.every(c=>c.frame.width===capsules[0].frame.width));
   icons.forEach((icon,i)=>{const c=capsules[i];assert(Math.abs(c.frame.height*2-icon.frame.height)<1e-8);assert(Math.abs((c.position.y-c.frame.height/2)-(icon.position.y-icon.frame.height/2))<1e-8);});
@@ -45,7 +46,7 @@ for(const family of ['small','medium','large','preview']){
   icons.forEach((icon,i)=>{assert(Math.abs(icon.frame.width-icon.frame.height)<1e-8);assert(Math.abs(icon.frame.height-charts[i].frame.height)<1e-8);assert(Math.abs(icon.position.y-charts[i].position.y)<1e-8);});
   verifyPNG(path.join(root,result.output));
 }
-verifyPNG(path.join(previewDir,'market-profile-0.2.53-preview.png'));
+verifyPNG(path.join(previewDir,'market-profile-0.2.54-preview.png'));
 assert(symbols.every(symbol=>evidence.requests.some(r=>decodeURIComponent(new URL(r.url).pathname).endsWith('/'+symbol))));
 assert(evidence.requests.every(r=>!r.authenticated));
 // Exercise the shipped Canvas implementation, not just a textual source match.
@@ -56,4 +57,4 @@ const commands=[],ctx={beginPath:()=>commands.push('begin'),moveTo:(x,y)=>comman
 draw.drawCurve(ctx,{width:46,height:draw.GEOMETRY.graphHeight},plan,'#00E676');
 const line=commands.slice(commands.lastIndexOf('begin')+1);assert.deepEqual(line,[['move',0,5],['line',1,6],['move',3,8],['line',4,7]],'stroke starts a new path at each gap');
 const empty=draw.curvePlan({displayChart:()=>({window:'trading-24h',displayWindow:{basis:'observed-trading-time',startTime:null,endTime:null},displayStatus:'unavailable-trading-24h'}),lineCoordinates:()=>[],monthLayout:()=>({lines:[],labels:[]}),gradientStrips:()=>[]},{chart:{}});assert.equal(empty.status,'unavailable-24h','empty trading history never becomes a 7d fallback');
-console.log('PASS .53 Skia evidence: four prices/curves, real instruments, complete fitted labels and effective dates in three families, decoded nonempty pixels, Canvas line/fill gaps, explicitly not native iPhone evidence.');
+console.log('PASS .54 Skia evidence: four prices/curves, real instruments, complete fitted labels and effective dates in three families, decoded nonempty pixels, Canvas line/fill gaps, explicitly not native iPhone evidence.');

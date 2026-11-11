@@ -1,3 +1,10 @@
+## 0.2.54 — contorno das cápsulas e duas linhas proporcionais
+
+- Corrige o preenchimento diagonal observado no iPhone na .53: o fundo agora usa um contorno fechado com segmentos explícitos, sem depender da composição de arcos elípticos do Canvas nativo.
+- Nomes e preços ocupam a metade superior dos ícones; sigla/data e variação ocupam a metade inferior. Faixas de 13 pt para ícones de 26 pt, com topo/base alinhados. Só o preço tem fundo colorido.
+- Aumenta a fonte nominal dos nomes e da segunda linha para 10,5 pt. Nomes longos usam reticências na coluna existente; sigla/data e variação ajustam proporcionalmente para preservar conteúdo.
+- Mantém largura de cápsula, cores, motor, fontes de dados, cache e diagnóstico privado. [Validação](VALIDACAO-0.2.54.md). A correção ainda precisa de confirmação visual no iPhone.
+
 ## 0.2.53 — cápsulas nas cotações
 
 - Cada cotação recebe uma cápsula sólida de 36 × 13 pt, com metade da altura dos ícones de 26 pt, topo alinhado e largura igual em todos os ativos. A escala do widget preserva essas proporções.
