@@ -52,7 +52,7 @@ assert(evidence.requests.every(r=>!r.authenticated));
 // Exercise the shipped Canvas implementation, not just a textual source match.
 const draw=bundle('draw.js'),points=[{x:0,y:5},{x:1,y:6},{x:3,y:8,breakBefore:true},{x:4,y:7}],segments=[];
 const plan=draw.curvePlan({displayChart:()=>({displayWindow:{basis:'observed-trading-time'}}),lineCoordinates:()=>points,monthLayout:()=>({lines:[],labels:[]}),gradientStrips:p=>{segments.push(p);return [{polygon:[...p,{x:p.at(-1).x,y:20},{x:p[0].x,y:20}],alpha:.2}]}},{chart:{}},46);
-assert(plan.strips.length===104);assert(plan.strips.every(s=>s.polygon.every(p=>p.x<=1)||s.polygon.every(p=>p.x>=3)),'fill is split at every gap');
+assert(plan.strips.length===16);assert(plan.strips.every(s=>s.polygon.every(p=>p.x<=1)||s.polygon.every(p=>p.x>=3)),'fill is split at every gap');
 const commands=[],ctx={beginPath:()=>commands.push('begin'),moveTo:(x,y)=>commands.push(['move',x,y]),lineTo:(x,y)=>commands.push(['line',x,y]),closePath:()=>{},fill:()=>{},stroke:()=>{}};
 draw.drawCurve(ctx,{width:46,height:draw.GEOMETRY.graphHeight},plan,'#00E676');
 const line=commands.slice(commands.lastIndexOf('begin')+1);assert.deepEqual(line,[['move',0,5],['line',1,6],['move',3,8],['line',4,7]],'stroke starts a new path at each gap');

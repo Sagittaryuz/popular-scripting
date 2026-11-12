@@ -20,3 +20,9 @@ for(const scale of [2,3,4]){
 }
 assert.equal(draw.curveRelativeStrips([]).length,0);assert.equal(draw.curveRelativeStrips([{x:0,y:0}]).length,0);
 console.log('PASS red/green curve-relative fill, shallow/deep geometry, 2x/3x/4x raster, fade and empty input');
+
+const history=Array.from({length:289},(_,i)=>({x:i*32/288,y:13+9*Math.sin(i*.7)}));
+let lines=0;const native={beginPath(){},moveTo(){},lineTo(){lines++},closePath(){},fill(){},stroke(){}};
+draw.drawCurve(native,{width:32,height:26},{width:32,points:history,months:{lines:[]},strips:draw.curveRelativeStrips(history)},'#FF1744');
+assert(lines*4<20000,'four charts stay below native bridge command budget');
+console.log('Native bridge line budget, four 289-point charts:',lines*4);

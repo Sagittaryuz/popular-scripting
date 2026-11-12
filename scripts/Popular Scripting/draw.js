@@ -54,7 +54,9 @@ export function drawPriceCapsule(ctx,size,color){
 // stretches otherwise receive near-zero alpha (most visible on red Brent).
 export function curveRelativeStrips(points,height=GEOMETRY.graphHeight){
   if(points.length<2)return [];
-  const strips=[],count=52;
+  // Eight layers retain the same peak opacity without replaying the full
+  // history 52 times across the native Canvas bridge.
+  const strips=[],count=8;
   const contour=t=>points.map(p=>({x:p.x,y:p.y+(height-p.y)*t}));
   for(let i=0;i<count;i++){
     const depth=(i+1)/count;
