@@ -1,3 +1,9 @@
+## 0.2.59 — Proporção dos ícones
+
+Pedido de Marcos em 12/11: ícones parecem ovais, devem ficar redondos. Inspeção dos quatro PNGs confirmou imagens 156×156 com contorno circular; a árvore de views também usa slots quadrados. O caminho Image resizable, porém, não fixava a proporção do conteúdo. Foi acrescentado aspectRatio 1:1 / fit em imagens e SVGs de ícones, mantendo arte, tamanho, posicionamento, dados e gráficos. Não foi possível reproduzir o relato em um iPhone; a ausência da trava é uma fragilidade confirmada, não prova da causa nativa. Teste dos quatro ícones agora faz parte do npm test e exige proporção 1:1 em sete tamanhos/famílias. A validação nativa permanece pendente.
+
+Fonte da API: https://scriptingapp.github.io/guide/View%20Modifiers/Image%20Style
+
 ## 0.2.56 — Fundo acompanha a curva
 
 A captura nativa de Marcos mostrou o fundo vermelho quase invisível no Brent. A opacidade anterior dependia da altura absoluta no quadro; curvas próximas à base recebiam quase zero alpha. Agora o degradê parte da própria curva, igual para verde/vermelho, sem unir lacunas. Áreas aninhadas evitam costuras subpixel. Dados, cache, logs, textos e cápsulas preservados.

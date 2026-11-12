@@ -8,10 +8,10 @@ const walk=n=>n&&typeof n==='object'?[n,...n.children.flatMap(walk)]:[];
 assert.deepEqual(Object.keys(approvedIcons).sort(),[...codes].sort());
 for(const code of codes){const image=await loadImage(Buffer.from(approvedIcons[code],'base64'));assert.equal(image.width,156);assert.equal(image.height,156);const c=createCanvas(156,156),g=c.getContext('2d');g.drawImage(image,0,0);assert.equal(g.getImageData(0,0,1,1).data[3],0);assert(g.getImageData(78,78,1,1).data[3]>240);}
 const rows=codes.map(code=>({asset:{code,iconSVGCode:'<svg xmlns="http://www.w3.org/2000/svg"><circle r="13"/></svg>',iconData:'x'.repeat(100)},name:code,price:'1',percent:'1%',time:'12:00',movement:1,chart:null}));
-for(const [family,width,height] of [['small',158,158],['medium',338,170],['large',338,360]]){
+for(const [family,width,height] of [['small',158,158],['medium',338,170],['large',338,360],['small',170,170],['medium',364,170],['large',364,382],['medium',400,150]]){
 const tree=PopularView({model:{family,rows,api:{displayChart:()=>null,lineCoordinates:()=>[],monthLayout:()=>({lines:[],labels:[]})},status:{label:''}},width,height}),nodes=walk(tree),icons=nodes.filter(n=>n.props.key==='asset-image');
 assert.equal(icons.length,4);assert(!nodes.some(n=>String(n.props.key||'').startsWith('asset-remote')));
-icons.forEach((n,i)=>{assert.equal(n.props.image.base64,approvedIcons[codes[i]]);assert.equal(n.props.frame.width,n.props.frame.height);assert(n.props.frame.width<=26);});
+icons.forEach((n,i)=>{assert.equal(n.props.image.base64,approvedIcons[codes[i]]);assert.equal(n.props.frame.width,n.props.frame.height);assert.equal(n.props.aspectRatio.value,1);assert.equal(n.props.aspectRatio.contentMode,"fit");assert(n.props.frame.width<=26);});
 }
 console.log('PASS four approved transparent 156px images, 26pt isotropic slot and priority over remote artwork');
 })().catch(e=>{console.error(e);process.exit(1)});

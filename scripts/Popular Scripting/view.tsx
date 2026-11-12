@@ -66,9 +66,9 @@ function apiSVG(row:any){
 const FALLBACK_BADGE_CODES=Object.freeze(['BBAS3','BBDC4','IBOV','DOW_JONES','BTC/USD','SOJA_JATAI_GO','CUB_GO','IPCA','DIESEL_S10','USD/BRL','BRENT'])
 function fallbackIcon(row:any,plan:any,rowPlan:any,positioned=true){
   const code=row?.asset?.code,placement=positioned?place(rowPlan,G.iconLeft,G.iconTop,G.icon,G.icon):{frame:{width:G.icon*plan.scale,height:G.icon*plan.scale}}
-  if(approvedIcons[code]&&images[code])return <Image key="asset-image" image={images[code]} resizable renderingMode="original" {...placement}/>
+  if(approvedIcons[code]&&images[code])return <Image key="asset-image" image={images[code]} resizable aspectRatio={{value:1,contentMode:"fit"}} renderingMode="original" {...placement}/>
   if(FALLBACK_BADGE_CODES.includes(code))return <Canvas key="asset-icon" opaque={false} {...placement} draw={(ctx,size)=>{ctx.scale(size.width/26,size.height/26);drawBadge(ctx,code)}}/>
-  if(images[code])return <Image key="asset-image" image={images[code]} resizable renderingMode="original" {...placement}/>
+  if(images[code])return <Image key="asset-image" image={images[code]} resizable aspectRatio={{value:1,contentMode:"fit"}} renderingMode="original" {...placement}/>
   return <Image key="asset-fallback" systemName="chart.line.uptrend.xyaxis" font={10*plan.scale} foregroundStyle="#D1D1D6" background={{style:'#34343A',shape:{type:'circle'}}} {...placement}/>
 }
 export function PopularView({model,width,height}:{model:any;width:number;height:number}){
@@ -101,9 +101,9 @@ export function PopularView({model,width,height}:{model:any;width:number;height:
         <ZStack alignment="topLeading" frame={rowFrame}>
         {fallbackIcon(row,plan,rowPlan,true)}
         {remoteSvg?<ZStack key="asset-remote-svg-mask" alignment="topLeading" {...place(rowPlan,G.iconLeft,G.iconTop,G.icon,G.icon)} mask={<Circle fill="white" frame={{width:G.icon*plan.scale,height:G.icon*plan.scale}}/>}>
-          <SVG key="asset-inline-svg" code={remoteSvg} resizable renderingMode="original" frame={{width:G.icon*plan.scale,height:G.icon*plan.scale}}/>
+          <SVG key="asset-inline-svg" code={remoteSvg} resizable aspectRatio={{value:1,contentMode:"fit"}} renderingMode="original" frame={{width:G.icon*plan.scale,height:G.icon*plan.scale}}/>
         </ZStack> :remoteIcon?<ZStack key="asset-remote-mask" alignment="topLeading" {...place(rowPlan,G.iconLeft,G.iconTop,G.icon,G.icon)} mask={<Circle fill="white" frame={{width:G.icon*plan.scale,height:G.icon*plan.scale}}/>}>
-          <Image key="asset-remote" image={remoteIcon} resizable renderingMode="original" frame={{width:G.icon*plan.scale,height:G.icon*plan.scale}}/>
+          <Image key="asset-remote" image={remoteIcon} resizable aspectRatio={{value:1,contentMode:"fit"}} renderingMode="original" frame={{width:G.icon*plan.scale,height:G.icon*plan.scale}}/>
         </ZStack> :null}
         <Text key="name-text" font={NAME_FONT*plan.scale} fontWeight="bold" foregroundStyle="white"
           lineLimit={1} minScaleFactor={1} {...place(rowPlan,G.nameX,G.nameTop,G.name,G.nameHeight,'leading')}>{displayName(row)}</Text>

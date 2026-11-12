@@ -1,3 +1,10 @@
+## 0.2.59
+
+- Fixa a proporção 1:1 / fit dos ícones para impedir alongamento independente dos eixos.
+- Preserva os quatro PNGs aprovados e o slot quadrado existente.
+- Inclui regressão de proporção dos ícones na suíte principal, em sete tamanhos de widget.
+- Validação nativa no iPhone não executada.
+
 ## 0.2.56 — Fundo acompanha a curva
 
 A captura nativa de Marcos mostrou o fundo vermelho quase invisível no Brent. A opacidade anterior dependia da altura absoluta no quadro; curvas próximas à base recebiam quase zero alpha. Agora o degradê parte da própria curva, igual para verde/vermelho, sem unir lacunas. Áreas aninhadas evitam costuras subpixel. Dados, cache, logs, textos e cápsulas preservados.
