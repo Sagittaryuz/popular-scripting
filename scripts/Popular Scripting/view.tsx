@@ -1,6 +1,7 @@
 import { Button, Canvas, Circle, Image, Rectangle, SVG, Text, ZStack, Script } from 'scripting'
 import { pageRows } from './pagination'
 import { assets } from './assets'
+import { approvedIcons } from './approved-icons'
 import { drawBadge } from './badges'
 import { GEOMETRY as G, PRICE_CAPSULE as P, layout, place, placeInBlock, movementColor, curvePlan, monthBand, drawCurve, drawPriceCapsule } from './draw'
 import { RefreshAssetsOnTap } from './app_intents'
@@ -65,12 +66,13 @@ function apiSVG(row:any){
 const FALLBACK_BADGE_CODES=Object.freeze(['BBAS3','BBDC4','IBOV','DOW_JONES','BTC/USD','SOJA_JATAI_GO','CUB_GO','IPCA','DIESEL_S10','USD/BRL','BRENT'])
 function fallbackIcon(row:any,plan:any,rowPlan:any,positioned=true){
   const code=row?.asset?.code,placement=positioned?place(rowPlan,G.iconLeft,G.iconTop,G.icon,G.icon):{frame:{width:G.icon*plan.scale,height:G.icon*plan.scale}}
+  if(approvedIcons[code]&&images[code])return <Image key="asset-image" image={images[code]} resizable renderingMode="original" {...placement}/>
   if(FALLBACK_BADGE_CODES.includes(code))return <Canvas key="asset-icon" opaque={false} {...placement} draw={(ctx,size)=>{ctx.scale(size.width/26,size.height/26);drawBadge(ctx,code)}}/>
   if(images[code])return <Image key="asset-image" image={images[code]} resizable renderingMode="original" {...placement}/>
   return <Image key="asset-fallback" systemName="chart.line.uptrend.xyaxis" font={10*plan.scale} foregroundStyle="#D1D1D6" background={{style:'#34343A',shape:{type:'circle'}}} {...placement}/>
 }
 export function PopularView({model,width,height}:{model:any;width:number;height:number}){
-  for(const [key,value] of Object.entries(assets))if(!images[key]){const image=UIImage.fromBase64String(value as string);if(image)images[key]=image}
+  for(const [key,value] of Object.entries({...assets,...approvedIcons}))if(!images[key]){const image=UIImage.fromBase64String(value as string);if(image)images[key]=image}
   const plan=layout(model.family,width,height)
   // The published widget is a fixed indicator panel. Legacy page state and
   // the old small-widget selection must not replace its first four/eight.
@@ -84,7 +86,7 @@ export function PopularView({model,width,height}:{model:any;width:number;height:
     {plan.large?label('title','Popular · '+model.status.label,0,-32,304,18,11,8,true):null}
     {visibleRows.map((row:any,i:number)=>{
       const column=Math.floor(i/4),rowIndex=i%4,x=column*(G.column+G.columnGap),y=rowIndex*(G.row+G.gap),color=movementColor(row),curve=curvePlan(model.api,row),status=statusFor(row)
-      const band=monthBand(curve),remoteSvg=apiSVG(row),remoteIcon=remoteSvg?null:apiImage(row)
+      const band=monthBand(curve),remoteSvg=approvedIcons[row.asset?.code]?null:apiSVG(row),remoteIcon=approvedIcons[row.asset?.code]||remoteSvg?null:apiImage(row)
       const meta=`${shortCode(row)} | ${observationDate(row.time)}`
       const tradingLabel=tradingRangeLabel(curve.coverage)
       const chartUnavailableLabel=curve.status==='unavailable-24h'?'24h indisponível':'7d indisponível'

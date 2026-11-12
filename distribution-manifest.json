@@ -1,5 +1,5 @@
 {
-  "version": "0.2.56",
+  "version": "0.2.57",
   "dataPath": "data/economic-series.json",
   "dataUpdatesIndependently": true,
   "files": {
@@ -34,7 +34,7 @@
     "scripts/Popular Scripting/host.ts": "3eb7a47fa46e55de275d00ef15f7dfb016936d50f183a402449ab6d091b893fd",
     "scripts/Popular Scripting/index.tsx": "1276ff4ca38a0a46a0cb6a4adf1725e8b149d16756af447a7689d2e6f91d88cc",
     "scripts/Popular Scripting/market-status.ts": "562c2b3c3a8833bf73e4e39a988615629806142c9b81b6fb04d77b424d570742",
-    "scripts/Popular Scripting/model.ts": "54fd107bca2d4a64892f3e73bdec7d9b757dd795ad09e81fa14b1ff1e564dbd6",
+    "scripts/Popular Scripting/model.ts": "e58474b91fe6ed7e4aece2e1c174bd16d3bfd80eda4aa41d208cac6c70696981",
     "scripts/Popular Scripting/original-engine.js": "d0e41a453d5dc4e6dc6c05d76d90bb922c5d04fcbeba8e8bdbe142614da6fc50",
     "scripts/Popular Scripting/pagination.ts": "a44437098db3118eb3f54c41dd49f79191b7c9b58256232ae246b9d37793e408",
     "scripts/Popular Scripting/png.js": "4a464aef33f12b353fb78cb39e9f6868e13962b25f1153f3e676d381da43b0ed",
@@ -42,8 +42,8 @@
     "scripts/Popular Scripting/pro-common.ts": "50efdc7a8b0b8384367adb7993ebf686e7806c75c2455aa285369294dd8c5c70",
     "scripts/Popular Scripting/pro-model.ts": "09d2cf9b373850e801ba2747b7e43cb8d75428b968d0dcf2d405e43c1a024897",
     "scripts/Popular Scripting/refresh-footer.tsx": "6ea09f87c43d2fc09af2d3ac897590f7c29a2e2f43a04db178d1425ed980f47e",
-    "scripts/Popular Scripting/script.json": "11cbb416eae511ba84c25204999d0387401d56ae97f45ab8ecaffb75cb3a76b7",
-    "scripts/Popular Scripting/view.tsx": "05fae8556217a2d53a9ed613864cb420b40fa8beefde833e560c1f4652f6d8b3",
+    "scripts/Popular Scripting/script.json": "4ef155aaf387899070e1a4f83ff76f0bb507769bc884d889a01ea0cf51bcb1d0",
+    "scripts/Popular Scripting/view.tsx": "c58e57652bf23b3b488f9b6e45c945b1a196610ab953f13e958c8fa515bbdf95",
     "scripts/Popular Scripting/widget.tsx": "e38635176cd8d6f970277ad7b8f51c4c70931ffb69a39a49acf9762ca457224e",
     "scripts/brapi-contract.cjs": "64d71726b3d819d609f1eccc139e6c79b2c0f45abf09a989982a4757c1f327fe",
     "scripts/check-pro.cjs": "a69c7f0fac7035174210015d6669a605d24080e33bde099d3e100bf310d5fb74",
@@ -80,7 +80,7 @@
     "scripts/test-kraken-btc.cjs": "4aa1952d1c4bfd4a077db8a5ea6e3232afce938461fa4214464a22a3707d0276",
     "scripts/test-local-test-mode.cjs": "b8c5676a540ceacd6adf2d9df0ecce5ddbc3a2ddb48240b8b8a9e2e1c4b90f6f",
     "scripts/test-manual-refresh.cjs": "a2561b784c9e38ed95e3747f849db6a4445f2ed00c3b3e72097a7006bca8d409",
-    "scripts/test-market-entry.cjs": "b099e9ef94af8175c767caabcbe36a1702d8bcb5db81e083136f14dde5a65bab",
+    "scripts/test-market-entry.cjs": "5d67afac1291bd0b30ccbbaa1b0b5651c82ca9d1e0415a935f48942879b4f11e",
     "scripts/test-market-profile-preview.cjs": "16e3342bda37af1cb4f51c5b9f1e8a811ad08c1249dd319624ea044a12b2826c",
     "scripts/test-market-status.cjs": "fa9cf88db75aacd597fd6a5ccece50ae118ac7e50e254e95815dbfb27d819169",
     "scripts/test-pagination.cjs": "e6fbc44e784e2b3cf6d147fb5e3d3201493f21a53c20abd7137c37bc328a6503",
@@ -89,10 +89,10 @@
     "scripts/test-private-market.cjs": "fd7f83f377c6fce37195bbead7d5cb75752ec93eeaf8315eda2479e495e913fe",
     "scripts/test-pro.cjs": "12abec9910ae9f172cba5a456de1c121197c66232304f14fdeac0c5d487c0672",
     "scripts/test-published-market-profile.cjs": "49ba16c1962cc797a583e8d5e73b9fa7f114ec9c5a43c2761abb99f7f7a83760",
-    "scripts/test-published-profile.cjs": "0a7d2a3034c9bd676f99ffddb3274dc31a90807cf7f7b3a711cecc707607af85",
+    "scripts/test-published-profile.cjs": "effb66c0936549424830bccf491f0568633c8f2a2bdb98278fe4d190d26d1adb",
     "scripts/test-refresh-footer.cjs": "0dd61b487cc723035e937966555bf8d2c9450b77d56670798da902f06ecce677",
     "scripts/test-remote-diagnostics-native.cjs": "08d3cd2c421948543380e8af9f8c1161bdb5025356648c7b626bda6a099c8ea4",
-    "scripts/test-row-tap.cjs": "a865f0bb34199f7595f27a287c3a126a38fb9855982430ed99c28d0dfa7dac7f",
+    "scripts/test-row-tap.cjs": "47f0011784968247829f0ba721d7c67c8944b6401c23b5ee9eebf35fb995be9b",
     "scripts/test-tap-refresh.cjs": "b43ecb89a7afe67fa2bea0ec904dcbbf5d1a9e84b6c8773fc2f0d3d4c67ad2b2",
     "scripts/test-trading-host.cjs": "cbf51ca107bb5ed310ad60a6b6861460dbb8d227230ccdbd267a44340f1724d1",
     "scripts/test-trading-intraday.cjs": "6842e554fd2f5c3f7b58dfb56957bbc5e7ef52d3ab2e95c9fc370a48236ce2ff",
@@ -104,6 +104,8 @@
     "VALIDACAO-0.2.54.md": "0ea3d9977dfcf0487bbb8786aa9e58052de0533d2c85106048a041f2f67949d2",
     "VALIDACAO-0.2.55.md": "4379ce0dde4a41779dd5a0d37588bc0aea555cab5e6d7f40cae3444d241b4d80",
     "scripts/test-curve-fill.cjs": "f345ffd65b46d28a3d1baa9c59db4874934240503e02882a317cd24aab8894bb",
-    "VALIDACAO-0.2.56.md": "dbd4054f7634c885d0b67bb95b19eb2360b2bb9cd5438bbb2221da2f52fa3075"
+    "VALIDACAO-0.2.56.md": "dbd4054f7634c885d0b67bb95b19eb2360b2bb9cd5438bbb2221da2f52fa3075",
+    "scripts/Popular Scripting/approved-icons.js": "3e8385bbd8cd2a8d7401c2891560acbd2d5f6853942a887d9c762e827b2d3309",
+    "scripts/test-approved-icons.cjs": "6b20a5706d0200bfb61d616c04dbd2e69862cded72287ee3a1d615e79beeca4a"
   }
 }

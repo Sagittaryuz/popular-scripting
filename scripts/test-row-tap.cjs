@@ -8,7 +8,7 @@ vm.runInNewContext(bundle('view.tsx'),{module:viewModule,exports:viewModule.expo
 const drawModule={exports:{}};vm.runInNewContext(bundle('draw.js'),{module:drawModule,exports:drawModule.exports,Math,Number,Date,Intl,JSON})
 const {GEOMETRY:G,PRICE_CAPSULE:P,layout}=drawModule.exports,codes=['SELIC','IPCA','IBOV','USD/BRL','SOJA_JATAI_GO','CUB_GO','DIESEL_S10','BRENT']
 const inlineSVG='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26"><circle cx="13" cy="13" r="13" fill="#345"/></svg>'
-const rows=codes.map((code,index)=>({asset:{code,...(code==='IBOV'?{iconSVGCode:inlineSVG}:{})},name:'Nome '+code,price:'1,00',percent:index%2?'-0,14%':'+0,82%',movement:index%2?-1:1,unit:'BRL',time:'27/10',chart:null}))
+const rows=codes.map((code,index)=>({asset:{code,...(code==='IPCA'?{iconSVGCode:inlineSVG}:{})},name:'Nome '+code,price:'1,00',percent:index%2?'-0,14%':'+0,82%',movement:index%2?-1:1,unit:'BRL',time:'27/10',chart:null}))
 const api={displayChart:chart=>chart,lineCoordinates:()=>[],monthLayout:()=>({labels:[],lines:[]}),gradientStrips:()=>[]}
 const expectedURL='scripting://run/Meu%20Painel?section=market'
 function box(node){const {frame,position}=node.props;return {left:position.x-frame.width/2,right:position.x+frame.width/2,top:position.y-frame.height/2,bottom:position.y+frame.height/2}}
@@ -24,10 +24,10 @@ for(const [family,width,height,expected] of [['small',158,158,4],['medium',338,1
     const meta=desc.find(node=>node.type==='Text'&&node.props?.key==='asset-meta')
     const icon=desc.find(node=>node.props?.key==='asset-icon'||node.props?.key==='asset-image'||node.props?.key==='asset-fallback')
     const remoteMask=desc.find(node=>node.type==='ZStack'&&node.props?.key==='asset-remote-svg-mask'),iconBox=remoteMask||icon
-    if(rows[i].asset.code==='IBOV'){
+    if(rows[i].asset.code==='IPCA'){
       const remoteChildren=remoteMask?.children||[]
       const fallback=content.children.find(node=>node.type==='Canvas'&&node.props?.key==='asset-icon'),remoteSVG=remoteChildren.find(node=>node.type==='SVG'&&node.props?.key==='asset-inline-svg')
-      assert(remoteMask&&fallback&&remoteSVG,'an API SVG fixture keeps the IBOV fallback beside the inline renderer')
+      assert(remoteMask&&fallback&&remoteSVG,'an API SVG fixture keeps the IPCA fallback beside the inline renderer')
       assert(!remoteChildren.some(node=>node.type==='Canvas'&&node.props?.key==='asset-icon'),'the fallback is outside the SVG mask so a blank renderer cannot hide it')
       assert.equal(remoteSVG.props.code,inlineSVG)
     }
