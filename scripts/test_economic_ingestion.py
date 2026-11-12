@@ -4,6 +4,7 @@ import datetime as dt
 import io
 import json
 import unittest
+import subprocess
 from pathlib import Path
 from unittest.mock import patch
 from openpyxl import Workbook
@@ -84,10 +85,26 @@ class IngestionTests(unittest.TestCase):
             {'D2C': '202609', 'V': '7695.82'},
         ]
         previous=copy.deepcopy(json.loads((m.ROOT/'data/economic-series.json').read_text())['series']['IPCA'])
+        # Simulate a stored window that predates the incoming annual observations.
+        previous['annualObservations']=[{'period':'2024-01','value':1,'sourceURL':m.IPCA_12M}]
         def response(url):
             return json.dumps(monthly if url==m.IPCA_MONTHLY else history if url==m.IPCA_HISTORY else annual if url==m.IPCA_12M else index).encode()
         with patch.object(m,'download',side_effect=response):
             result=m.refresh_ipca(previous,dt.date(2026,10,21))
+        self.assertEqual([row['period'] for row in result['annualObservations']],
+                         [row['period'] for row in result['observations']])
+        self.assertEqual(result['annualObservations'][-1]['value'],4.58)
+        self.assertEqual(previous['annualObservations'][0]['period'],'2024-01')
+        # The real production validator must accept the refreshed window.
+        js = """const fs=require('fs'),vm=require('vm');
+        const src=fs.readFileSync('scripts/Popular Scripting/original-engine.js','utf8').replace('export function createEngine','function createEngine');
+        const create=vm.runInNewContext(src+'\\ncreateEngine',{Date,URL,console,Map,Set});
+        const files={documentsDirectory:()=>'/test',joinPath:(a,b)=>a+'/'+b,fileExists:()=>false,createDirectory(){}};
+        const api=create({FileManager:{local:()=>files}},{family:'medium'});
+        const series=JSON.parse(fs.readFileSync(0,'utf8'));
+        if(!api.validEconomicSeries(series,api.ECONOMIC_ASSETS.find(a=>a.code==='IPCA')))process.exit(1);
+        """
+        subprocess.run(['node','-e',js],input=json.dumps(result),text=True,cwd=m.ROOT,check=True)
         self.assertEqual(result['observations'][-1]['value'],0.82)
         self.assertEqual(result['observations'][-1]['annualChange'],4.58)
         self.assertEqual(result['observations'][-1]['yearToDate'],3.95)

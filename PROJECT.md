@@ -505,3 +505,14 @@ Critérios e limites em `PLANS.md` e `PRO.md`.
 Padrão: `Sagittaryuz/development-standards`, commit
 `722279eb8ec4bac318f8fa2ad50ac34b128e90dc`, GIT-FIRST 1.0.1, WEBAPP-WORKFLOW 1.2.3.
 Git é origem; Drive recebe backup privado com histórico recuperável.
+
+## 2026-11-12 — IPCA refresh annual window
+
+Workflow 43284453375 collected October IPCA but production validation rejected it:
+refresh_ipca replaced observations while retaining annualObservations from the old
+snapshot. Refresh now copies the matching independently published SGS 13522 rows
+for exactly the incoming periods. No validation rules or data values weakened.
+Regression reproduces a stale annual window, checks no mutation of previous data,
+and runs the production JavaScript validator. All 16 Python tests and bundled
+production data validation passed. Brent source header warning remains separate;
+its last verified series is retained rather than fabricated.

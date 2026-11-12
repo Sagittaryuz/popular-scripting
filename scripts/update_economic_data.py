@@ -160,6 +160,9 @@ def refresh_ipca(previous, today):
     if len(observations)<2:
         raise ValueError('IPCA monthly history is too short')
     result=copy.deepcopy(previous)
+    # Keep the independently published annual series aligned with this window.
+    # Never reuse the previous snapshot's periods or derive annual rates here.
+    result['annualObservations']=[copy.deepcopy(annual[item['period']]) for item in observations]
     result.update(sourceURL=IPCA_MONTHLY, historySourceURL=IPCA_HISTORY, annualSourceURL=IPCA_12M, indexSourceURL=IPCA_INDEX, referenceURL=IPCA_REFERENCE, annualSeries='BCB-SGS-13522', indexSeries='IBGE-SIDRA-1737-2266', observations=observations)
     return result
 
