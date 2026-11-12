@@ -50,10 +50,23 @@ export function drawPriceCapsule(ctx,size,color){
   }
   ctx.closePath();ctx.fillStyle=color;ctx.fill();
 }
+// Fade from the actual curve, not from the top of the chart. Low-valued
+// stretches otherwise receive near-zero alpha (most visible on red Brent).
+export function curveRelativeStrips(points,height=GEOMETRY.graphHeight){
+  if(points.length<2)return [];
+  const strips=[],count=52;
+  const contour=t=>points.map(p=>({x:p.x,y:p.y+(height-p.y)*t}));
+  for(let i=0;i<count;i++){
+    const depth=(i+1)/count;
+    // Nested translucent areas avoid subpixel seams on shallow curves.
+    strips.push({polygon:[...contour(0),...contour(depth).reverse()],alpha:1-Math.pow(1-.36,1/count)});
+  }
+  return strips;
+}
 export function curvePlan(api,row,width=GEOMETRY.graph){
   const visible=api.displayChart(row.chart),points=api.lineCoordinates(visible,width,GEOMETRY.graphHeight);
   const segments=[];for(const point of points){if(!segments.length||point.breakBefore)segments.push([]);segments.at(-1).push(point);}
-  return {width,points,months:api.monthLayout(visible,width),strips:segments.flatMap(segment=>api.gradientStrips(segment,GEOMETRY.graphHeight,.5)),coverage:visible?.displayWindow?.basis==='observed-trading-time'?visible.displayWindow:null,status:visible?.window==='trading-24h'&&points.length<2?'unavailable-24h':visible?.displayStatus||'unavailable-24h'};
+  return {width,points,months:api.monthLayout(visible,width),strips:segments.flatMap(segment=>curveRelativeStrips(segment,GEOMETRY.graphHeight)),coverage:visible?.displayWindow?.basis==='observed-trading-time'?visible.displayWindow:null,status:visible?.window==='trading-24h'&&points.length<2?'unavailable-24h':visible?.displayStatus||'unavailable-24h'};
 }
 export function monthBand(curve){
   if(!curve.points.length)return {left:0,width:0,labels:[]};

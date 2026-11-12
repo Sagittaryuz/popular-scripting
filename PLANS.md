@@ -1,3 +1,7 @@
+## 0.2.56 — Fundo acompanha a curva
+
+A captura nativa de Marcos mostrou o fundo vermelho quase invisível no Brent. A opacidade anterior dependia da altura absoluta no quadro; curvas próximas à base recebiam quase zero alpha. Agora o degradê parte da própria curva, igual para verde/vermelho, sem unir lacunas. Áreas aninhadas evitam costuras subpixel. Dados, cache, logs, textos e cápsulas preservados.
+
 ## 0.2.55 — Remoção da legenda temporal
 
 Pedido de Marcos: remover apenas a legenda ≈24h/data abaixo do gráfico. Preservados gráfico, cobertura temporal na acessibilidade, horários das cotações, cápsulas e demais funções.

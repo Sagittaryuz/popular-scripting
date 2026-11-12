@@ -1,9 +1,9 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),zlib=require('node:zlib');
 const {bundle}=require('./test-trading-host.cjs');
 const root=path.resolve(__dirname,'..'),previewDir=path.join(root,'validation');
-const evidence=JSON.parse(fs.readFileSync(path.join(previewDir,'market-profile-0.2.55-preview.json'),'utf8'));
+const evidence=JSON.parse(fs.readFileSync(path.join(previewDir,'market-profile-0.2.56-preview.json'),'utf8'));
 const order=['IBOV','DOW_JONES','USD/BRL','BRENT'],symbols=['^BVSP','^DJI','BRL=X','BZ=F'];
-assert.equal(evidence.version,'0.2.55');assert.equal(evidence.sourceVersion,'2026.11.11.101');
+assert.equal(evidence.version,'0.2.56');assert.equal(evidence.sourceVersion,'2026.11.11.101');
 assert.equal(evidence.nativeIPhone,false);assert.match(evidence.simulation,/actual scripting model \+ host \+ JSX\/Canvas/i);
 assert.equal(evidence.data.capturedResponses,true);assert.deepEqual(evidence.order,order);
 assert.equal(evidence.rows.length,4);
@@ -46,13 +46,13 @@ for(const family of ['small','medium','large','preview']){
   icons.forEach((icon,i)=>{assert(Math.abs(icon.frame.width-icon.frame.height)<1e-8);assert(Math.abs(icon.frame.height-charts[i].frame.height)<1e-8);assert(Math.abs(icon.position.y-charts[i].position.y)<1e-8);});
   verifyPNG(path.join(root,result.output));
 }
-verifyPNG(path.join(previewDir,'market-profile-0.2.55-preview.png'));
+verifyPNG(path.join(previewDir,'market-profile-0.2.56-preview.png'));
 assert(symbols.every(symbol=>evidence.requests.some(r=>decodeURIComponent(new URL(r.url).pathname).endsWith('/'+symbol))));
 assert(evidence.requests.every(r=>!r.authenticated));
 // Exercise the shipped Canvas implementation, not just a textual source match.
 const draw=bundle('draw.js'),points=[{x:0,y:5},{x:1,y:6},{x:3,y:8,breakBefore:true},{x:4,y:7}],segments=[];
 const plan=draw.curvePlan({displayChart:()=>({displayWindow:{basis:'observed-trading-time'}}),lineCoordinates:()=>points,monthLayout:()=>({lines:[],labels:[]}),gradientStrips:p=>{segments.push(p);return [{polygon:[...p,{x:p.at(-1).x,y:20},{x:p[0].x,y:20}],alpha:.2}]}},{chart:{}},46);
-assert.deepEqual(segments.map(p=>Array.from(p,v=>v.x)),[[0,1],[3,4]],'fill is split at every gap');
+assert(plan.strips.length===104);assert(plan.strips.every(s=>s.polygon.every(p=>p.x<=1)||s.polygon.every(p=>p.x>=3)),'fill is split at every gap');
 const commands=[],ctx={beginPath:()=>commands.push('begin'),moveTo:(x,y)=>commands.push(['move',x,y]),lineTo:(x,y)=>commands.push(['line',x,y]),closePath:()=>{},fill:()=>{},stroke:()=>{}};
 draw.drawCurve(ctx,{width:46,height:draw.GEOMETRY.graphHeight},plan,'#00E676');
 const line=commands.slice(commands.lastIndexOf('begin')+1);assert.deepEqual(line,[['move',0,5],['line',1,6],['move',3,8],['line',4,7]],'stroke starts a new path at each gap');
