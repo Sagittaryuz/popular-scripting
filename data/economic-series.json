@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "verifiedAt": "2026-11-09T21:26:05.019819Z",
+  "verifiedAt": "2026-11-13T00:19:20.203750Z",
   "series": {
     "CUB_GO": {
       "instrument": "CUB-GO-R1-N-CUB2006",
@@ -282,11 +282,6 @@
       "valueKind": "monthly-change-percent",
       "annualObservations": [
         {
-          "period": "2025-09",
-          "value": 5.17,
-          "sourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json"
-        },
-        {
           "period": "2025-10",
           "value": 4.68,
           "sourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json"
@@ -345,20 +340,14 @@
           "period": "2026-09",
           "value": 4.58,
           "sourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json"
+        },
+        {
+          "period": "2026-10",
+          "value": 4.63,
+          "sourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json"
         }
       ],
       "observations": [
-        {
-          "period": "2025-09",
-          "value": 0.48,
-          "sourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados/ultimos/13?formato=json",
-          "annualChange": 5.17,
-          "annualChangeSourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json",
-          "yearToDate": 3.64,
-          "indexValue": 7359.06,
-          "indexSourceURL": "https://apisidra.ibge.gov.br/values/t/1737/n1/all/v/2266/p/last%2013",
-          "referenceURL": "https://www.gov.br/fazenda/pt-br/central-de-conteudo/publicacoes/conjuntura-economica/inflacao/defeso-eleitoral-2026/informativo-ipca-set2026.html/view"
-        },
         {
           "period": "2025-10",
           "value": 0.09,
@@ -490,9 +479,20 @@
           "indexValue": 7695.82,
           "indexSourceURL": "https://apisidra.ibge.gov.br/values/t/1737/n1/all/v/2266/p/last%2013",
           "referenceURL": "https://www.gov.br/fazenda/pt-br/central-de-conteudo/publicacoes/conjuntura-economica/inflacao/defeso-eleitoral-2026/informativo-ipca-set2026.html/view"
+        },
+        {
+          "period": "2026-10",
+          "value": 0.14,
+          "sourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados/ultimos/13?formato=json",
+          "annualChange": 4.63,
+          "annualChangeSourceURL": "https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json",
+          "yearToDate": 4.1,
+          "indexValue": 7706.59,
+          "indexSourceURL": "https://apisidra.ibge.gov.br/values/t/1737/n1/all/v/2266/p/last%2013",
+          "referenceURL": "https://www.gov.br/fazenda/pt-br/central-de-conteudo/publicacoes/conjuntura-economica/inflacao/defeso-eleitoral-2026/informativo-ipca-set2026.html/view"
         }
       ],
-      "verifiedAt": "2026-10-21T19:14:39.159920Z"
+      "verifiedAt": "2026-11-13T00:19:20.203750Z"
     },
     "BRENT": {
       "instrument": "DCOILBRENTEU",
