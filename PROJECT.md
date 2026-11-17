@@ -1,3 +1,9 @@
+## 0.2.62 — Imagens prontas aprovadas
+
+- Aplicada aprovação “Ok. Implante elas”: B3, Dow Jones, barril de petróleo e câmbio Google Material. Fontes, licenças e limites de marcas registrados em artwork/ready-made-icons/SOURCES.md.
+- Fundo circular branco sem contorno para contraste; transparência externa; logotipos originais proporcionais. Câmbio usa SVG real, sem o quadriculado da prévia JPEG. Sem desenho de novos símbolos.
+- Preserva layout, fontes e dados. Marcas B3/Dow são referências institucionais, não logos oficiais dos índices; detalhes textuais ficam pequenos no slot de 26pt. Renderização física no iPhone não verificada.
+
 ## 0.2.61 — Ícones simples e circulares
 
 - Substitui as quatro imagens detalhadas por pictogramas originais: índices com gráfico, dólar com símbolo monetário e Brent com gota. Mesma silhueta circular sem borda, traço branco interno, peso e margem; cores distinguem os ativos.
