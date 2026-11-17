@@ -1,3 +1,9 @@
+## 0.2.61 — Ícones simples e circulares
+
+- Substitui as quatro imagens detalhadas por pictogramas originais: índices com gráfico, dólar com símbolo monetário e Brent com gota. Mesma silhueta circular sem borda, traço branco interno, peso e margem; cores distinguem os ativos.
+- Gerador reproduzível e fontes SVG em artwork/simple-icons; PNGs transparentes incorporados em 156px para o slot de 26pt. Exportações individuais 624px entregues na Library.
+- Preserva nomes, geometria, dados, fontes e atualização. Teste automatizado confere dimensões, transparência, prioridade e renderização estrutural em sete tamanhos; inspeção visual do conjunto. iPhone físico não verificado.
+
 ## 2026-11-17 — Recuperação da atualização BRENT
 
 - Run 44162793724 falhou porque o endereço HTML legado EIA redireciona para página dinâmica; o parser não encontrava tabela e a referência de 03/11 venceu. Não relacionado ao ajuste de nomes 0.2.60.
