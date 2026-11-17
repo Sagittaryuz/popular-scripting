@@ -1,3 +1,10 @@
+## 2026-11-17 — Recuperação da atualização BRENT
+
+- Run 44162793724 falhou porque o endereço HTML legado EIA redireciona para página dinâmica; o parser não encontrava tabela e a referência de 03/11 venceu. Não relacionado ao ajuste de nomes 0.2.60.
+- Fallback passa a consumir o JSON público usado pela própria página EIA. Valida série RBRTE/Brent-Europe, unidade USD/barril, datas, colunas, valores e publicação. FRED mais antigo também aciona fallback, sem regredir observações.
+- Fonte oficial consultada: https://www.eia.gov/petroleum/prices/data/12_series/D/PET_PRI_SPT_S1_D.json ; referência 16/11/2026, publicada 17/11, USD 92,90/barril. Nenhuma interpolação; validação de frescor preservada.
+- Validação local: 17 testes Python, todas as 39 suítes npm e check de 18 módulos aprovados; fallback validado também com resposta real. Nenhuma credencial ou permissão alterada.
+
 ## 0.2.60 — Nome do ativo em uma linha
 
 - Permite ajuste nativo da fonte do nome até 50% antes de truncar nomes extraordinariamente longos; normaliza quebras de linha. Preserva coluna, ícones, preços e dados.

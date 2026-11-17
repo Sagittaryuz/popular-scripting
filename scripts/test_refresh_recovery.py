@@ -24,10 +24,7 @@ EIA=b'<h1>Spot Prices</h1><p>Crude Oil in Dollars per Barrel, Products in Dollar
 class RecoveryTests(unittest.TestCase):
     def test_eia_original_spot_brent_fallback_never_uses_wti(self):
         original=copy.deepcopy(FIXTURE['series']['BRENT'])
-        def download(url):
-            if url.startswith(m.BRENT):raise TimeoutError('controlled FRED read timeout')
-            self.assertEqual(url,m.BRENT_EIA);return EIA
-        with patch.object(m,'download',side_effect=download):result=m.refresh_brent(original,dt.date(2026,10,19))
+        result=m.brent_eia_page(EIA,original,dt.date(2026,10,19))
         self.assertEqual(len(result['observations']),6)
         self.assertEqual(result['observations'][0]['period'],'2026-10-07')
         self.assertEqual(result['observations'][-1]['value'],126.55)

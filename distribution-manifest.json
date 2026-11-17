@@ -9,7 +9,7 @@
     "PLANS.md": "7d21a76c7c7df2def036540c204573a865dcbdc6ace78866eb54a5796e3a69f5",
     "PRIVATE-MARKET-LOCAL.md": "aad117e745cc23e656e1e205b57f3ecce8ca2c748378b1a7d20a55d985708726",
     "PRO.md": "cc9394515d1f310e385275c233a7b37eb0c3f58ddc2e7684869199d395fc1239",
-    "PROJECT.md": "3afc5ed60be185c85b7c0ace13d3f4b58350b7cf371f0b7923d84e9b5148d2b9",
+    "PROJECT.md": "86857954703c197796b6b6529a8df7e3be1e5dd68a4e45522a5e80fcdc66c079",
     "README.md": "aef76dfe967d3cd38e6d9dedb4b4bc01f987d8283b1bee5fc7fd06bed84457a9",
     "VALIDACAO-0.2.47.md": "e98a8e68310dd88d7c79771523aa55b4563e4360eaf2f45928c96dd257458220",
     "VALIDACAO-0.2.48.md": "84ca50b5aacd90069d58c73caab8bed8ea80c333109aa7c01e9cc2dfe4bdbead",
@@ -103,9 +103,9 @@
     "scripts/test-trading-host.cjs": "cbf51ca107bb5ed310ad60a6b6861460dbb8d227230ccdbd267a44340f1724d1",
     "scripts/test-trading-intraday.cjs": "6842e554fd2f5c3f7b58dfb56957bbc5e7ef52d3ab2e95c9fc370a48236ce2ff",
     "scripts/test-week-fixture.cjs": "3024ed5b985b4af80efcb12c11a7aac7373a46e46f431fbaf33e4da3e0f4b2b9",
-    "scripts/test_economic_ingestion.py": "98b60a59e0c5f779d56242753fa620afdc3e890cda18cfd6fcba2c845c295c71",
-    "scripts/test_refresh_recovery.py": "2ca27e8c5b93b5af372e6ac2c8f0aa437a0f3856b168b49f90b732d0af593cb1",
-    "scripts/update_economic_data.py": "750fe2d717c2b8d350973a31778a19e6f75f01f5254f820c3d59325323f0c676",
+    "scripts/test_economic_ingestion.py": "c23b93d4b358100061a2437f751eae3ea69c815271ad38222bac8ebc1545c443",
+    "scripts/test_refresh_recovery.py": "bd7bbf1f1694c82150da3aaf709af98733e11294b428dcd549480b3c04797a69",
+    "scripts/update_economic_data.py": "5e781db833c5aefe7a5b55ffc127072626f7652d0a6e19997970ae841f176e7e",
     "scripts/validate-data.cjs": "1498105086b1c0cfeb6aa120c19263e3f8b8adc0170fa846e9a439e0b380751e"
   }
 }

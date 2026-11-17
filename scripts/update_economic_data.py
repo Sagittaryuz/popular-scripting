@@ -30,6 +30,7 @@ ANP_CITIES = ANP_HIST + 'semanal-municipios-{year}.xlsx'
 ANP_LATEST = ANP_ROOT + 'levantamento-de-precos-de-combustiveis-ultimas-semanas-pesquisadas'
 BRENT = 'https://fred.stlouisfed.org/graph/fredgraph.csv?id=DCOILBRENTEU'
 BRENT_EIA = 'https://www.eia.gov/dnav/pet/pet_pri_spt_s1_d.htm'
+BRENT_EIA_JSON = 'https://www.eia.gov/petroleum/prices/data/12_series/D/PET_PRI_SPT_S1_D.json'
 IPCA_MONTHLY = 'https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados/ultimos/13?formato=json'
 IPCA_HISTORY = 'https://api.bcb.gov.br/dados/serie/bcdata.sgs.433/dados?formato=json'
 IPCA_12M = 'https://api.bcb.gov.br/dados/serie/bcdata.sgs.13522/dados/ultimos/13?formato=json'
@@ -442,12 +443,52 @@ def brent_eia_page(raw, previous, today):
     return result
 
 
+def brent_eia_json(raw, previous, today):
+    """Official daily table behind EIA's replacement dynamic prices page."""
+    payload = json.loads(raw)
+    if ('SPOT PRICES' not in normalized(payload.get('table_name')) or
+            'CRUDE OIL IN DOLLARS PER BARREL' not in normalized(payload.get('table_units'))):
+        raise ValueError('EIA daily spot crude/USD per barrel header missing')
+    dates = [dt.datetime.strptime(c, '%m/%d/%y').date() for c in payload['thead']]
+    if len(dates) < 2 or len(set(dates)) != len(dates):
+        raise ValueError('EIA daily dates missing or duplicated')
+    rows = [section['data']['RBRTE'] for section in payload['tbody']
+            if normalized(section.get('section')) == 'CRUDE OIL' and 'RBRTE' in section.get('data', {})]
+    if len(rows) != 1 or normalized(rows[0][1]) != 'BRENT - EUROPE':
+        raise ValueError('EIA daily Brent-Europe series missing or ambiguous')
+    values = rows[0][3:]
+    if len(values) != len(dates):
+        raise ValueError('EIA Brent date/value columns disagree')
+    records = {r['period']: copy.deepcopy(r) for r in previous['observations']}
+    received = []
+    for date, value in zip(dates, values):
+        if value in ('', '-', '--', 'NA', 'W'):
+            continue
+        price = number(value)
+        if date > today or not (0 < price < 10000):
+            raise ValueError('EIA future/invalid Brent observation')
+        records[date.isoformat()] = {'period': date.isoformat(), 'value': price, 'sourceURL': BRENT_EIA_JSON}
+        received.append(date)
+    if len(received) < 2 or max(received).isoformat() < previous['observations'][-1]['period']:
+        raise ValueError('EIA Brent response missing current verified observations')
+    published = dt.datetime.strptime(payload['release_date'], '%m/%d/%Y').date()
+    if published > today or published < max(received):
+        raise ValueError('EIA publication date invalid')
+    result = copy.deepcopy(previous)
+    result.update(sourceURL=BRENT_EIA_JSON, publishedAt=published.isoformat(),
+                  observations=sorted(records.values(), key=lambda r: r['period'])[-90:])
+    return result
+
+
 def refresh_brent(previous, today):
     try:
-        return refresh_brent_fred(previous,today)
+        candidate=refresh_brent_fred(previous,today)
+        if not candidate['observations'] or candidate['observations'][-1]['period'] < previous['observations'][-1]['period']:
+            raise ValueError('FRED reference older than last verified series')
+        return candidate
     except Exception as primary_error:
-        candidate=brent_eia_page(download(BRENT_EIA),previous,today)
-        RECOVERIES['BRENT']={'primaryError':str(primary_error)[:240],'sourceURL':BRENT_EIA}
+        candidate=brent_eia_json(download(BRENT_EIA_JSON),previous,today)
+        RECOVERIES['BRENT']={'primaryError':str(primary_error)[:240],'sourceURL':BRENT_EIA_JSON}
         return candidate
 
 

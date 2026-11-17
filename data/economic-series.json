@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "verifiedAt": "2026-11-16T21:00:30.396151Z",
+  "verifiedAt": "2026-11-17T20:02:57.299436Z",
   "series": {
     "CUB_GO": {
       "instrument": "CUB-GO-R1-N-CUB2006",
@@ -497,43 +497,13 @@
     "BRENT": {
       "instrument": "DCOILBRENTEU",
       "source": "EIA/FRED",
-      "sourceURL": "https://www.eia.gov/dnav/pet/pet_pri_spt_s1_d.htm",
+      "sourceURL": "https://www.eia.gov/petroleum/prices/data/12_series/D/PET_PRI_SPT_S1_D.json",
       "currency": "USD",
       "unit": "USD/bbl",
       "frequency": "daily",
       "valueKind": "level",
       "modality": "spot-Europe",
       "observations": [
-        {
-          "period": "2026-06-30",
-          "value": 70.46,
-          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
-        },
-        {
-          "period": "2026-07-01",
-          "value": 69.24,
-          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
-        },
-        {
-          "period": "2026-07-02",
-          "value": 68.53,
-          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
-        },
-        {
-          "period": "2026-07-03",
-          "value": 68.68,
-          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
-        },
-        {
-          "period": "2026-07-06",
-          "value": 69.56,
-          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
-        },
-        {
-          "period": "2026-07-07",
-          "value": 71.78,
-          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
-        },
         {
           "period": "2026-07-08",
           "value": 76.5,
@@ -953,9 +923,40 @@
           "period": "2026-11-03",
           "value": 107.03,
           "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
+        },
+        {
+          "period": "2026-11-09",
+          "value": 91.03,
+          "sourceURL": "https://www.eia.gov/petroleum/prices/data/12_series/D/PET_PRI_SPT_S1_D.json"
+        },
+        {
+          "period": "2026-11-10",
+          "value": 90.16,
+          "sourceURL": "https://www.eia.gov/petroleum/prices/data/12_series/D/PET_PRI_SPT_S1_D.json"
+        },
+        {
+          "period": "2026-11-11",
+          "value": 92.14,
+          "sourceURL": "https://www.eia.gov/petroleum/prices/data/12_series/D/PET_PRI_SPT_S1_D.json"
+        },
+        {
+          "period": "2026-11-12",
+          "value": 95.42,
+          "sourceURL": "https://www.eia.gov/petroleum/prices/data/12_series/D/PET_PRI_SPT_S1_D.json"
+        },
+        {
+          "period": "2026-11-13",
+          "value": 95.17,
+          "sourceURL": "https://www.eia.gov/petroleum/prices/data/12_series/D/PET_PRI_SPT_S1_D.json"
+        },
+        {
+          "period": "2026-11-16",
+          "value": 92.9,
+          "sourceURL": "https://www.eia.gov/petroleum/prices/data/12_series/D/PET_PRI_SPT_S1_D.json"
         }
       ],
-      "verifiedAt": "2026-11-04T18:38:29.741725Z"
+      "verifiedAt": "2026-11-17T20:02:57.299436Z",
+      "publishedAt": "2026-11-17"
     }
   }
 }

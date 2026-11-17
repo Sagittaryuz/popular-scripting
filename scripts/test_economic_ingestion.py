@@ -42,12 +42,43 @@ class IngestionTests(unittest.TestCase):
         data=json.loads((m.ROOT/'data/economic-series.json').read_text())['series']['BRENT']
         with patch.object(m,'download',return_value=b'<html>upstream blocked</html>'):
             with self.assertRaises(ValueError):m.refresh_brent(data,dt.date(2026,10,18))
+        data['observations']=[{'period':'2026-10-12','value':100}]
         raw=b'observation_date,DCOILBRENTEU\n2026-10-13,125.78\n2026-10-14,126.55\n2026-10-15,.\n'
         with patch.object(m,'download',return_value=raw) as request:
             parsed=m.refresh_brent(data,dt.date(2026,10,18))
         self.assertEqual(request.call_args.args[0],m.BRENT+'&cosd=2026-04-21')
         self.assertEqual(len(parsed['observations']),2)
         self.assertEqual(parsed['observations'][-1]['value'],126.55)
+
+    def test_eia_dynamic_daily_json_fallback(self):
+        previous = {'observations': [{'period': '2026-11-03', 'value': 100, 'sourceURL': m.BRENT_EIA}]}
+        payload = {'table_name': 'Spot Prices for Crude Oil and Petroleum Products',
+                   'table_units': 'Crude Oil in Dollars per Barrel', 'release_date': '11/17/2026',
+                   'thead': ['11/16/26', '11/13/26'],
+                   'tbody': [{'section': 'Crude Oil', 'data': {
+                       'RBRTE': ['indent_0', 'Brent - Europe', '1987 - 2026', '92.90', '95.17']}}]}
+        raw = json.dumps(payload).encode()
+        with patch.object(m, 'download', side_effect=[ValueError('FRED unavailable'), raw]) as request:
+            result = m.refresh_brent(previous, dt.date(2026, 11, 17))
+        with patch.object(m, 'download', side_effect=[b'observation_date,DCOILBRENTEU\n2026-11-02,90\n', raw]):
+            recovered = m.refresh_brent(previous, dt.date(2026, 11, 17))
+        self.assertEqual(recovered['observations'][-1]['period'], '2026-11-16')
+        self.assertEqual(request.call_args.args[0], m.BRENT_EIA_JSON)
+        self.assertEqual(result['observations'][-1]['period'], '2026-11-16')
+        self.assertEqual(result['observations'][-1]['value'], 92.90)
+        self.assertEqual(result['observations'][-2]['value'], 95.17)
+        self.assertEqual(previous['observations'][-1]['period'], '2026-11-03')
+        for field, value in [('table_units', 'Dollars per Gallon'), ('release_date', '11/18/2026'),
+                             ('thead', ['11/16/26', '11/16/26']), ('thead', ['11/16/26']),
+                             ('thead', ['11/18/26', '11/13/26']), ('tbody', [])]:
+            invalid = copy.deepcopy(payload); invalid[field] = value
+            with self.subTest(field=field, value=value), self.assertRaises(ValueError):
+                m.brent_eia_json(json.dumps(invalid).encode(), previous, dt.date(2026, 11, 17))
+        for bad in ['0', '-1', 'NaN', 'Infinity']:
+            invalid = copy.deepcopy(payload)
+            invalid['tbody'][0]['data']['RBRTE'][3] = bad
+            with self.subTest(bad=bad), self.assertRaises(ValueError):
+                m.brent_eia_json(json.dumps(invalid).encode(), previous, dt.date(2026, 11, 17))
 
     def test_ipca_sgs_monthly_and_published_annual_change_are_joined(self):
         monthly=[
