@@ -24,7 +24,7 @@ const viewModule={exports:{}},values=new Map([['popular-page:small',9],['popular
 const createElement=(type,props,...children)=>typeof type==='function'?type({...props,children:children.flat(Infinity).filter(Boolean)}):({type,props:props||{},children:children.flat(Infinity).filter(Boolean)})
 vm.runInNewContext(bundle('view.tsx'),{module:viewModule,exports:viewModule.exports,require:()=>sdk,createElement,Date,Storage:{get:key=>values.get(key)},UIImage:{fromBase64String:()=>null}})
 const codes=['SELIC','DOW_JONES','IBOV','USD/BRL','SOJA_JATAI_GO','CUB_GO','DIESEL_S10','BRENT']
-const rows=codes.map((code,index)=>({asset:{code},name:index===0?'Selic com nome suficientemente long para testar a reserva':code==='BRENT'?'Brent futuro Jan-2027':'Nome '+code,price:index===3?'-115,22':String(100+index),percent:index===6?'-3,03%':'+1,14 pp',unit:code,time:index===5?'—':'27/10',movement:index%2?-1:1,chart:null}))
+const rows=codes.map((code,index)=>({asset:{code},name:index===0?'Selic com nome suficientemente long\npara testar a reserva':code==='BRENT'?'Brent futuro Jan-2027':'Nome '+code,price:index===3?'-115,22':String(100+index),percent:index===6?'-3,03%':'+1,14 pp',unit:code,time:index===5?'—':'27/10',movement:index%2?-1:1,chart:null}))
 const api={displayChart:chart=>chart,lineCoordinates:()=>[],monthLayout:()=>({labels:[],lines:[]}),gradientStrips:()=>[]}
 for(const [family,width,height,expected] of [['small',158,170,4],['medium',338,170,8],['large',338,360,8]]){
   const tree=viewModule.exports.PopularView({model:{family,rows,api,status:{label:'fixture'}},width,height}),buttons=tree.children.filter(node=>node.type==='Button')
@@ -39,8 +39,10 @@ for(const [family,width,height,expected] of [['small',158,170,4],['medium',338,1
     if(i===0){
       assert.equal(nameText.props.font,10.5*plan.scale,family+' long name keeps the shared font size')
       assert.equal(nameText.props.frame.width,G.name*plan.scale,family+' long name uses the complete identity width')
-      assert.equal(nameText.props.minScaleFactor,1,family+' long name uses ellipsis instead of per-name shrinking')
+      assert.equal(nameText.props.minScaleFactor,0.5,family+' name shrinks on the first line before truncating')
     }
+    assert.equal(nameText.props.lineLimit,1,'names never occupy a second line')
+    assert(!/[\r\n]/.test(nameText.children.join('')),'embedded line breaks are normalized')
     const expectedNames={IBOV:'IBOVESPA',DOW_JONES:'DOW JONES','USD/BRL':'DÓLAR',BRENT:'BRENT'}
     if(expectedNames[rows[i].asset.code])assert.equal(nameText.children.join(''),expectedNames[rows[i].asset.code])
     if(rows[i].asset.code==='BRENT')assert(buttons[i].props.accessibilityLabel.includes('Brent futuro Jan-2027'),'Brent futures identity is retained for accessibility')

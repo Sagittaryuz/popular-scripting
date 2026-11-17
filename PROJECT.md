@@ -1,3 +1,9 @@
+## 0.2.60 — Nome do ativo em uma linha
+
+- Permite ajuste nativo da fonte do nome até 50% antes de truncar nomes extraordinariamente longos; normaliza quebras de linha. Preserva coluna, ícones, preços e dados.
+- Regressões cobrem nomes longos e quebras em small/medium/large. Renderização física no iPhone ainda não verificada.
+- Validação: 38 suítes aprovadas e check de 18 módulos aprovado. validate-data falha por referência BRENT antiga, reproduzida também no HEAD original 31e7228; dados não alterados.
+
 ## 0.2.59 — Proporção dos ícones
 
 Pedido de Marcos em 12/11: ícones parecem ovais, devem ficar redondos. Inspeção dos quatro PNGs confirmou imagens 156×156 com contorno circular; a árvore de views também usa slots quadrados. O caminho Image resizable, porém, não fixava a proporção do conteúdo. Foi acrescentado aspectRatio 1:1 / fit em imagens e SVGs de ícones, mantendo arte, tamanho, posicionamento, dados e gráficos. Não foi possível reproduzir o relato em um iPhone; a ausência da trava é uma fragilidade confirmada, não prova da causa nativa. Teste dos quatro ícones agora faz parte do npm test e exige proporção 1:1 em sete tamanhos/famílias. A validação nativa permanece pendente.

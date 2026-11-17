@@ -1,3 +1,8 @@
+## 0.2.60 — Nome do ativo em uma linha
+
+- Permite ajuste nativo da fonte do nome até 50% antes de truncar nomes extraordinariamente longos; normaliza quebras de linha. Preserva coluna, ícones, preços e dados.
+- Regressões cobrem nomes longos e quebras em small/medium/large. Renderização física no iPhone ainda não verificada.
+
 ## 0.2.59
 
 - Fixa a proporção 1:1 / fit dos ícones para impedir alongamento independente dos eixos.
