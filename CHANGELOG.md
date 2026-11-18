@@ -1,3 +1,8 @@
+## 0.2.65 — Brent escolhido individualmente
+
+- Aplica imagem enviada por Marcos: barril cinza/gota amarela no círculo coral, sem redesenhar. Exclui apenas margem clara externa ao círculo e ajusta proporcionalmente, sem borda adicional.
+- Contém os novos Dow e Ibovespa 0.2.64; USD/BRL, Dow e Ibovespa preservados byte a byte nesta etapa. Layout e dados intactos. iPhone físico não verificado.
+
 ## 0.2.64 — Dow Jones e Ibovespa escolhidos individualmente
 
 - Substitui Dow Jones e Ibovespa pelas imagens enviadas por Marcos: símbolo Dow branco/ciano e B3 branco/azul. Imagem fonte mantida integralmente; exportação proporcional com máscara circular, sem borda.

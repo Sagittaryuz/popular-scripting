@@ -22,3 +22,7 @@ Marcos supplied the cyan square with a white Dow symbol. Original 600x600 PNG pr
 ## Ibovespa replacement, 2026-11-18
 
 Marcos supplied the blue square B3 symbol, PNG 600x600, preserved losslessly in ibov-user-reference.svg. Uniform scale and circular mask of background corners only, no border or new background. Combined with the Dow update before publication. USD/BRL and Brent remain byte-identical. B3 trademark remains with its owner; user-provided artwork.
+
+## Brent replacement, 2026-11-18
+
+Marcos supplied the grey oil barrel/yellow drop on a coral circle (980x980 PNG), preserved losslessly in brent-user-reference.svg. Renderer excludes only the 34px outside-circle pale margin, uniformly fits the 912x912 circle and masks the outer corners. Original barrel, colors and proportions retained, no added border. Other three icons are byte-identical. User-provided artwork, rights remain with their owners.
