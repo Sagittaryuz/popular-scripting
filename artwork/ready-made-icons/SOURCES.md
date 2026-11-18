@@ -10,3 +10,7 @@ Approval: “Ok. Implante elas”, replying to the comparison sheet of existing 
 Renderer removes only transparent padding, uniformly fits the unchanged artwork on a white circular support for contrast on the dark widget, and adds no outline/border. Outer corners remain transparent. The strokes/brackets inside the original marks are part of the original artwork, not new borders.
 
 Use `node scripts/generate-ready-made-icons.cjs`. Previous handmade generator is retained as historical source only; it is not the active artwork generator. No market-data or geometry changes.
+
+## USD/BRL replacement, 2026-11-18
+
+Marcos supplied and selected the split US/Brazil flag image, PNG RGBA 354x351. Preserved verbatim inside usd-brl-reference.svg (SHA256 d4d6b2f2775cd219170d00ece81bae7fe1a2a96928a1bc65659fc875519fefbe). Fitted proportionally into the 156px export with original transparency, no added background or border. Supersedes Google currency_exchange for USD/BRL only; other artwork remains unchanged. User-provided artwork, no additional blanket rights claimed.

@@ -1,3 +1,9 @@
+## 0.2.63 — USD/BRL escolhido individualmente
+
+- Substitui somente USD/BRL pela imagem enviada e escolhida por Marcos: bandeiras EUA à esquerda e Brasil à direita.
+- Preserva proporção 354x351 e transparência. Sem fundo branco adicional, contorno ou redesenho. Demais três ícones preservados byte a byte; layout e dados intactos.
+- Verificação visual da exportação e testes locais; iPhone físico ainda não verificado.
+
 ## 0.2.62 — Imagens prontas aprovadas
 
 - Aplicada aprovação “Ok. Implante elas”: B3, Dow Jones, barril de petróleo e câmbio Google Material. Fontes, licenças e limites de marcas registrados em artwork/ready-made-icons/SOURCES.md.
