@@ -1,3 +1,8 @@
+## 0.2.64 — Dow Jones e Ibovespa escolhidos individualmente
+
+- Substitui Dow Jones e Ibovespa pelas imagens enviadas por Marcos: símbolo Dow branco/ciano e B3 branco/azul. Imagem fonte mantida integralmente; exportação proporcional com máscara circular, sem borda.
+- USD/BRL e Brent preservados byte a byte. Layout e dados intactos. Verificação visual e testes locais; iPhone físico não verificado.
+
 ## 0.2.63 — USD/BRL escolhido individualmente
 
 - Substitui somente USD/BRL pela imagem enviada e escolhida por Marcos: bandeiras EUA à esquerda e Brasil à direita.
