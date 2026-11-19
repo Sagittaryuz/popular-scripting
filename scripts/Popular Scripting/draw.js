@@ -32,7 +32,7 @@ export function place(plan,x,y,width,height,alignment='center'){
 export function placeInBlock(plan,x,y,width,height,alignment='center'){
   return place(plan,x,y,width,height,alignment);
 }
-export function movementColor(row){return row.movement>0?'#00E676':row.movement<0?'#FF1744':'#96969C';}
+export function movementColor(row){return row.movement>0?'#00E676':row.movement<0?'#FF1744':row.movement===0?'#FFD600':'#96969C';}
 // Explicit perimeter: native Scripting does not preserve HTML Canvas ellipse
 // arc semantics when composing a filled path (.53 produced a diagonal cutout).
 // Use only moveTo/lineTo/closePath, as the existing chart fills do.

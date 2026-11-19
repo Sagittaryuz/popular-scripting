@@ -12,7 +12,11 @@ test('24 observed hours span closed sessions',()=>{assert.equal(visible.displayW
 test('contiguous bars across provider session IDs count observed time',()=>{const chart={window:'trading-24h',timeBasis:'observed-trading-time',intervalMs:300000,points:[{value:100,stamp:{time:time-300000,hasTime:true},session:time-86400000},{value:101,stamp:{time,hasTime:true},session:time}]};const w=api.tradingWindow(chart,time);assert.equal(w.displayWindow.coveredMs,300000);assert.equal(w.displayWindow.gaps,0);assert.equal(w.points[1].breakBefore,false);});
 test('empty cached history has no fabricated range or curve',()=>{const empty={...row,chart:{...row.chart,points:[]}};assert.equal(api.validIntradayCache(empty,d,time),true);const shown=api.displayChart(empty.chart,time);assert.equal(shown.points.length,0);assert.equal(shown.displayWindow.startTime,null);assert.equal(shown.displayWindow.endTime,null);assert.equal(shown.displayWindow.complete,false);assert.equal(api.lineCoordinates(empty.chart).length,0);});
 test('cache rejects null quote time',()=>assert.equal(api.validIntradayCache({...row,stamp:{...row.stamp,time:null}},d,time),false));
-test('percent uses daily previousClose, not chartPreviousClose',()=>assert(Math.abs(row.asset.percent-(100/99-1)*100)<1e-9));
+test('percent uses the observed chart base, not either provider previous close',()=>{
+ const base=visible.points[0].value;
+ assert(Math.abs(row.asset.percent-(100/base-1)*100)<1e-9);
+ assert.equal(visible.points.at(-1).value,100);
+});
 test('coordinate gaps persist without interpolation',()=>{const c=api.lineCoordinates(row.chart);assert.equal(c.length,visible.points.length);assert.equal(c.filter(x=>x.breakBefore).length,visible.displayWindow.gaps);assert.equal(c[0].x,.75);assert.equal(c.at(-1).x,45.25);});
 test('no calendar month marks for observed bars',()=>assert.equal(api.monthLayout(row.chart).lines.length,0));
 for(const key of ['symbol','currency','instrumentType','dataGranularity'])test('reject wrong '+key,()=>{const p=payload(d);p.chart.result[0].meta[key]='wrong';assert.throws(()=>api.parseIntraday(p,d,time));});

@@ -26,12 +26,15 @@ async function test(){
   for(let i=0;i<4;i++){
     const row=rows[i],raw=payloads[i].chart.result[0],visible=api.displayChart(row.chart,now);
     assert.equal(row.asset.source,'Yahoo Finance');assert.equal(row.asset.instrument,symbols[i]);
-    assert.equal(row.asset.price,raw.meta.regularMarketPrice);assert.equal(row.asset.percentBasis,'supplier-previous-close');
+    assert.equal(row.asset.price,raw.meta.regularMarketPrice);assert.equal(row.asset.percentBasis,'observed-trading-24h');
     assert.equal(row.chart.window,'trading-24h');assert.equal(row.chart.timeBasis,'observed-trading-time');
     assert(visible.points.length>2,'each asset has a real curve');assert(row.chartCoverage.coveredMs>0);
     assert.equal(visible.displayWindow.coveredMs,row.chartCoverage.coveredMs);
     const supplied=new Map(raw.timestamp.map((t,j)=>[t*1000,raw.indicators.quote[0].close[j]]));
+    supplied.set(raw.meta.regularMarketTime*1000,raw.meta.regularMarketPrice);
     for(const p of visible.points)assert.equal(p.value,supplied.get(p.stamp.time),'rendered values must originate in source timestamps');
+    if(row.chartCoverage.complete)assert.equal(row.asset.percent,(row.asset.price/visible.points[0].value-1)*100,'displayed return and curve share the same baseline');
+    else assert.equal(row.asset.percent,null,'an unverified window cannot show a return');
     const coordinates=api.lineCoordinates(visible,46,20);assert.equal(coordinates.length,visible.points.length);
     assert.equal(coordinates.filter(p=>p.breakBefore).length,visible.displayWindow.gaps);
     if(!captured){assert.equal(row.chartCoverage.complete,true);assert.equal(row.chartCoverage.coveredMs,86400000);assert(visible.displayWindow.gaps>=3);assert(now-visible.points.at(-1).stamp.time>48*3600000,'Friday session remains visible on Monday');}

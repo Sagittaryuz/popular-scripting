@@ -557,3 +557,6 @@ Regression reproduces a stale annual window, checks no mutation of previous data
 and runs the production JavaScript validator. All 16 Python tests and bundled
 production data validation passed. Brent source header warning remains separate;
 its last verified series is retained rather than fabricated.
+
+## 19/11/2026 — 0.2.66 / variação 24h negociadas
+Pedido direto de Marcos: mesma janela para variação/gráfico, sem reset na virada/fechamento, amarelo só zero. Causa do falso zero: previousClose do fornecedor passou a ser a cotação da sessão anterior enquanto a última cotação não mudou. Corrigido pelo relógio de sessões históricas e extremos reais, tolerância inicial5min; lacunas internas preservadas no desenho sem zerar retorno. Evidência e limites: VALIDACAO-0.2.66.md. Não alterar para horas corridas, nem confundir buraco de feed com mercado fechado. Cache schema2. Próximo passo: conferir comportamento no iPhone atualizado; simulação não comprova execução nativa.

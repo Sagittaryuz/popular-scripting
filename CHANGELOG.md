@@ -534,3 +534,8 @@ Versões anteriores: README e tags `v0.1.1` a `v0.1.3`.
 - Usa a altura liberada no lado do gráfico: a faixa do Canvas passa a 20 pt, com gráfico e variação ainda centrados verticalmente no ícone, enquanto valor fica no topo e unidade/data na base. A largura útil do gráfico e o tamanho externo das linhas permanecem iguais em 2×2 e 4×2.
 - Mantém ordem, dados, fontes, cores intensas, bandeira circular, status, refresh e acessibilidade; nomes longos continuam limitados antes da coluna de preço. A prévia raster é fixture-only e não simula render nativo do iPhone.
 - A investigação do `^BVSP` não publicou uma nova fonte: a página pública do Investidor10 só documenta intervalos históricos, e o [portal oficial de APIs do Yahoo](https://developer.yahoo.com/api/) exige acesso OAuth; o acesso direto à página Yahoo retornou 429 no executor. Não foram fixados os valores da captura, usado ETF/proxy, nem contornado 403/429.
+
+## 0.2.66 — retorno acumulado em 24h de negociação
+- Variação e gráfico usam os mesmos extremos e sessões históricas; não reiniciam na virada nem no fim de semana.
+- Lacunas de barras em sessão confirmada não apagam tempo negociado. Base real com tolerância explícita de5min; sem base, —.
+- Verde na alta, vermelho na queda, amarelo apenas zero exato; preservados ícones e layout.
