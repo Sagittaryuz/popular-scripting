@@ -27,8 +27,8 @@ function observationDate(value:any){
   const text=String(value??'—').trim()
   if(!text||text==='—')return '—'
   const date=text.match(/\b\d{2}\/\d{2}(?:\/\d{2,4})?\b/)
-  if(date)return date[0]
   const time=text.match(/\b\d{1,2}:\d{2}\b/)
+  if(date)return date[0]+(time?' '+time[0]:'')
   return time?time[0]:text.slice(0,10)
 }
 export function tradingRangeLabel(coverage:any){
@@ -97,7 +97,7 @@ export function PopularView({model,width,height}:{model:any;width:number;height:
       const rowPlan={...plan,x:0,y:G.blockCenter*(plan.scaleY-plan.scale),scaleY:plan.scale},hitHeight=rowIndex<3?G.row+G.gap:G.row,rowFrame={width:G.column*plan.scale,height:hitHeight*plan.scaleY},rowPosition={x:plan.x+(x+G.column/2)*plan.scale,y:plan.y+(y+hitHeight/2)*plan.scaleY}
       const cellLabel=(key:string,value:string,cx:number,cy:number,w:number,h:number,size:number,min:number,bold=false,cellColor='white',right=false,alignment?:string)=><Label labelKey={key} value={value} plan={rowPlan} x={cx} y={cy} width={w} height={h} size={size} min={min} bold={bold} color={cellColor} right={right} alignment={alignment} placeFn={placeInBlock}/>
       return <Button key={row.asset.code} intent={RefreshAssetsOnTap(undefined)} buttonStyle="plain"
-        accessibilityLabel={`Atualizar indicadores. ${row.name}. ${shortCode(row)}. ${row.price}. ${row.percent}. ${row.unit}. ${row.time}. ${status.accessibility}.${chartAccessibility}`}
+        accessibilityLabel={`Atualizar indicadores. ${row.name}. ${shortCode(row)}. ${row.price}. ${row.percent}. ${row.unit}. ${row.time}. ${status.accessibility}.${row.recovered?' Última janela de 24 horas confiável preservada; cotação mais recente sem base suficiente.':''}${chartAccessibility}`}
         frame={rowFrame} position={rowPosition}>
         <ZStack alignment="topLeading" frame={rowFrame}>
         {fallbackIcon(row,plan,rowPlan,true)}

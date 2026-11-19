@@ -57,6 +57,7 @@ function fallbackRow(row:any){
 // affect the market-session dot.
 export function sourceStatusForRow(row:any,at=Date.now()):SourceStatus{
   const observedAt=finite(at)&&at>=0?at:Date.now()
+  if(row?.recovered)return {state:'cached',at:observedAt,reason:'last-complete-trading-window-preserved'}
   if(validProviderPayload(row,observedAt)&&!fallbackRow(row))return {state:'fresh',at:observedAt,reason:'valid-provider-payload'}
   if(fallbackRow(row))return {state:'cached',at:observedAt,reason:'cache-or-archive-preserved'}
   return {state:'failed',at:observedAt,reason:'missing-or-invalid-payload'}

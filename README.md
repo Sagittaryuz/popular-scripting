@@ -484,22 +484,21 @@ Na tela **Importar Scripts Remotos** do Scripting, cole:
 https://github.com/Sagittaryuz/popular-scripting/tree/main/scripts/Popular%20Scripting
 ```
 
-Importe ou atualize **Popular Scripting** pelo vínculo remoto existente, confirme **0.2.50** e motor **2026.11.09.99**, abra o projeto e toque em **Atualizar** para consultar os indicadores. Não configure outro token: o perfil atual usa Yahoo público. O botão Atualizar dentro do Popular atualiza dados, não instala uma versão nova do código. Na Tela de Início, mantenha o widget Scripting com esse projeto.
+Importe ou atualize **Popular Scripting** pelo vínculo remoto existente, confirme **0.2.67** e motor **2026.11.19.103**, abra o projeto e toque em **Atualizar** para consultar os indicadores. Não configure outro token: o perfil atual usa Yahoo público. O botão Atualizar dentro do Popular atualiza dados, não instala uma versão nova do código. Na Tela de Início, mantenha o widget Scripting com esse projeto.
 
 Para receber melhorias de código, use a atualização do script remoto no Scripting. Essa importação vincula o projeto à pasta `main/scripts/Popular Scripting`; não use um endereço de commit ou tag para acompanhar as próximas versões. O botão **Atualizar** dentro da tela do Popular consulta somente os indicadores e solicita recarregar o widget.
 
 ## Tamanhos e dados
 
 - Pequeno, médio e grande: o perfil publicado mostra `Ibovespa`, `Dow Jones`, `Dólar` e `Petróleo` na mesma ordem; o médio/grande não repete linhas na segunda coluna.
-- O IBOV usa o endpoint privado autenticado; USD/BRL usa a história diária
-  AwesomeAPI `/json/daily/USD-BRL/90`; Petróleo identifica `BRN Jan-27` na ICE.
-  Sem resposta válida ou fonte histórica do instrumento, os slots preservam
-  ausência/cache honesto. Dow Jones permanece sem cotação até feed autorizado.
-- O domínio de gráfico ativo exige observações timestampadas reais nas últimas
-  24 horas. As fontes diárias atuais são mantidas para cotação/variação, mas
-  não são convertidas em curva 24H; não há interpolação, weekend fill ou
-  substituição do Brent futuro por spot. A variação diária continua sendo
-  exibida somente quando sua fonte a comprova.
+- Os quatro ativos usam Yahoo Finance público intraday (5m), símbolos ^BVSP,
+  ^DJI, BRL=X e BZ=F. Gráfico/percentual usam os mesmos extremos de 24 horas
+  acumuladas nas sessões históricas fornecidas. Fechamento não reinicia a base.
+- Lacunas em sessões abertas não apagam tempo negociado. Referência inicial
+  real com tolerância máxima5min; sem interpolação de preço. Se a cotação nova
+  não tem base suficiente, preserva-se o último conjunto coerente de preço,
+  gráfico, retorno e data/hora, recuperável também do histórico em cache frio.
+  Sem qualquer conjunto confiável, exibe —, nunca zero fabricado.
 - Cada série válida preenche horizontalmente apenas entre seu primeiro/último
   timestamp visível; a posição relativa dos pontos continua temporal e a
   cobertura/densidade de cada mercado permanece honesta.

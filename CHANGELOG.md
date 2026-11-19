@@ -539,3 +539,8 @@ Versões anteriores: README e tags `v0.1.1` a `v0.1.3`.
 - Variação e gráfico usam os mesmos extremos e sessões históricas; não reiniciam na virada nem no fim de semana.
 - Lacunas de barras em sessão confirmada não apagam tempo negociado. Base real com tolerância explícita de5min; sem base, —.
 - Verde na alta, vermelho na queda, amarelo apenas zero exato; preservados ícones e layout.
+
+## 0.2.67 — recuperação de histórico incompleto
+- Corrige dólar cinza quando metadados novos não têm base histórica próxima: recupera a última janela24h completa, inclusive em cache frio.
+- Preserva cache confiável mais recente e mantém preço, horário, percentual e gráfico coerentes.
+- Mostra data/hora da leitura preservada e corrige orientação de atualização remota.

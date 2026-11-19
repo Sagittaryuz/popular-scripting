@@ -560,3 +560,6 @@ its last verified series is retained rather than fabricated.
 
 ## 19/11/2026 — 0.2.66 / variação 24h negociadas
 Pedido direto de Marcos: mesma janela para variação/gráfico, sem reset na virada/fechamento, amarelo só zero. Causa do falso zero: previousClose do fornecedor passou a ser a cotação da sessão anterior enquanto a última cotação não mudou. Corrigido pelo relógio de sessões históricas e extremos reais, tolerância inicial5min; lacunas internas preservadas no desenho sem zerar retorno. Evidência e limites: VALIDACAO-0.2.66.md. Não alterar para horas corridas, nem confundir buraco de feed com mercado fechado. Cache schema2. Próximo passo: conferir comportamento no iPhone atualizado; simulação não comprova execução nativa.
+
+## 19/11/2026 — 0.2.67 / recuperação de janela
+Relato direto de Marcos03:46UTC confirmou dólar cinza na versão nova. Reproduzido: meta recente sem base24h próxima;0.2.66 descartava leitura anterior válida. Solução: recoverTradingReturn após merge, recuperar último conjunto completo em histórico/cache, preferir maisrecente e identificar data/hora preservada. Caso validado em cache frio e quente, feed regredido, offline e fluxo real model/view. Não aumentar tolerância nem misturar retornos/preços de instantes diferentes. Ver VALIDACAO-0.2.67.md. Próximo passo: atualização remota e conferência nativa do usuário.
