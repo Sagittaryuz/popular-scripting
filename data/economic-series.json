@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "verifiedAt": "2026-11-24T06:56:57.161779Z",
+  "verifiedAt": "2026-11-24T21:09:48.456005Z",
   "series": {
     "CUB_GO": {
       "instrument": "CUB-GO-R1-N-CUB2006",
@@ -505,11 +505,6 @@
       "modality": "spot-Europe",
       "observations": [
         {
-          "period": "2026-07-14",
-          "value": 83.69,
-          "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
-        },
-        {
           "period": "2026-07-15",
           "value": 83.08,
           "sourceURL": "https://fred.stlouisfed.org/series/DCOILBRENTEU"
@@ -953,10 +948,15 @@
           "period": "2026-11-20",
           "value": 92.76,
           "sourceURL": "https://www.eia.gov/petroleum/prices/data/12_series/D/PET_PRI_SPT_S1_D.json"
+        },
+        {
+          "period": "2026-11-23",
+          "value": 91.2,
+          "sourceURL": "https://www.eia.gov/petroleum/prices/data/12_series/D/PET_PRI_SPT_S1_D.json"
         }
       ],
-      "verifiedAt": "2026-11-23T22:37:17.178596Z",
-      "publishedAt": "2026-11-23"
+      "verifiedAt": "2026-11-24T21:09:48.456005Z",
+      "publishedAt": "2026-11-24"
     }
   }
 }
