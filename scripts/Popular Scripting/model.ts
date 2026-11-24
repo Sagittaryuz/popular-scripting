@@ -3,7 +3,7 @@ import { createHost } from './host'
 import { dashboardStatus, refreshMinutes } from './pro-common'
 import { sourceStatusForRow } from './market-status'
 import { recordDiagnostic, recordProcessingResult } from './diagnostics'
-export const VERSION='0.2.67'
+export const VERSION='0.2.68'
 export const TAP_REFRESH_CACHE_KEY='popular-tap-refresh-v1'
 export const TAP_REFRESH_CACHE_MS=5000
 // Published, reversible test profile: keep the former eight-indicator list
@@ -99,6 +99,14 @@ export function markPersistedSourceStatus(state:'cached'|'failed',at=Date.now())
   Storage.set('popular-pro-rows',rows.map(row=>row?.asset?.code?{...row,sourceStatus}:row))
   return true
 }
+// Rank the exact numeric return shown in the active widget, not the formatted
+// percentage, absolute move, or last trade. Unavailable rows keep their slot
+// membership and follow valid returns; equal values retain profile order.
+function byTradingReturn(a:{movement:number|null},b:{movement:number|null}){
+  const av=Number.isFinite(a.movement),bv=Number.isFinite(b.movement)
+  if(av&&bv)return b.movement!-a.movement!
+  return av?-1:bv?1:0
+}
 export async function loadModel(family='medium',force=false,cacheOnly=false,persistWhen:()=>boolean=()=>true){
   // The former path collects all eight; the published test profile collects
   // exactly its four configured rows so a small widget and wide first column
@@ -120,12 +128,17 @@ export async function loadModel(family='medium',force=false,cacheOnly=false,pers
   const additions=PUBLISHED_TEST_ASSETS?[]:(extra.length?extra:Array.isArray(saved)?saved.map(r=>({...r,cached:true})):[]).filter((r:any)=>r?.asset&&typeof r.asset.code==='string'&&!baseCodes.has(r.asset.code)).slice(0,8)
   if(extra.length&&persistWhen())Storage.set('popular-extra-rows',additions)
   const combined=PUBLISHED_TEST_ASSETS?[...orderedRows,...additions]:fixedIndicatorRows([...orderedRows,...additions])
-  const status=api.orderingFeedback(orderedRows)
   const queriedAt=Date.now()
-  const result={queriedAt,version:VERSION,sourceVersion:api.version,family,mode:'fixed',status,privateMarketStatus:api.privateMarketStatus,
-    rows:combined.map((row:any)=>({...row,sourceStatus:sourceStatusForRow(row,queriedAt),name:api.displayName(row.asset),price:api.displayPrice(row.asset.price,row.asset),
-      percent:api.displayPercent(api.presentationPercent(row),row.asset),movement:api.presentationPercent(row),
-      time:api.timeText(row),unit:api.unitText(row)})),api}
+  const presented=combined.map((row:any)=>{
+    const movement=api.presentationPercent(row)
+    return {...row,sourceStatus:sourceStatusForRow(row,queriedAt),name:api.displayName(row.asset),price:api.displayPrice(row.asset.price,row.asset),
+      percent:api.displayPercent(movement,row.asset),movement,time:api.timeText(row),unit:api.unitText(row)}
+  })
+  const ranked=PUBLISHED_TEST_ASSETS&&api.localTestProfile===api.publishedProfile
+  const presentedRows=ranked?presented.sort(byTradingReturn):presented
+  const feedback=api.orderingFeedback(ranked?presentedRows:orderedRows)
+  const status=ranked?{...feedback,label:'Por variação',message:'Da maior para a menor variação de 24h negociadas. Sem variação disponível no fim.'}:feedback
+  const result={queriedAt,version:VERSION,sourceVersion:api.version,family,mode:'fixed',status,privateMarketStatus:api.privateMarketStatus,rows:presentedRows,api}
   if(!persistWhen())return result
   recordProcessingResult(result)
   Storage.set('popular-last-query',Date.now())

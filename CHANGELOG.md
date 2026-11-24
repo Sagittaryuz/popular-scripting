@@ -1,3 +1,7 @@
+## 0.2.68 — quatro ativos ordenados pela variação
+
+Ibovespa, Dow Jones, Dólar e Brent futuro continuam no widget. A ordem agora vai da maior para a menor variação percentual com sinal nas últimas 24 horas negociadas. Empates exatos mantêm a ordem original; sem variação válida, o ativo fica no fim e não vira zero. Cotações, janelas, cores, gráficos e recuperação permanecem inalterados.
+
 ## 0.2.65 — Brent escolhido individualmente
 
 - Aplica imagem enviada por Marcos: barril cinza/gota amarela no círculo coral, sem redesenhar. Exclui apenas margem clara externa ao círculo e ajusta proporcionalmente, sem borda adicional.

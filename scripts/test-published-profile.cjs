@@ -7,16 +7,16 @@ const view=fs.readFileSync(path.join(root,'scripts/Popular Scripting/view.tsx'),
 const engine=fs.readFileSync(path.join(root,'scripts/Popular Scripting/original-engine.js'),'utf8');
 const index=fs.readFileSync(path.join(root,'scripts/Popular Scripting/index.tsx'),'utf8');
 
-assert.equal(manifest.version,'0.2.67','published script manifest is bumped for the explicit 24-hour profile');
-assert.match(model,/export const VERSION='0\.2\.67'/);
+assert.equal(manifest.version,'0.2.68','published script manifest is bumped for the explicit 24-hour profile');
+assert.match(model,/export const VERSION='0\.2\.68'/);
 assert.match(model,/export const PUBLISHED_TEST_ASSETS=true/);
 assert.match(model,/PUBLISHED_TEST_PROFILE='ibov-dow-usd-brent-24h'/);
 assert.match(model,/localTestAssets:PUBLISHED_TEST_ASSETS/);
 assert.match(model,/localTestProfile:PUBLISHED_TEST_PROFILE/);
 assert.match(model,/if\(!PUBLISHED_TEST_ASSETS&&cacheOnly/,'a legacy cache cannot shadow the active test profile');
 assert.match(model,/const additions=PUBLISHED_TEST_ASSETS\?\[\]:/,'legacy catalog additions are disabled by the profile');
-assert.match(model,/const orderedRows=PUBLISHED_TEST_ASSETS\?rows:fixedIndicatorRows\(rows\)/,'the active four-row order is not re-sorted by the legacy IBOV slot');
-assert.match(model,/const combined=PUBLISHED_TEST_ASSETS\?\[\.\.\.orderedRows,\.\.\.additions\]:/,'the active order is preserved through the persisted result');
+assert.match(model,/const orderedRows=PUBLISHED_TEST_ASSETS\?rows:fixedIndicatorRows\(rows\)/,'the active four-row membership bypasses the legacy IBOV slot');
+assert.match(model,/const combined=PUBLISHED_TEST_ASSETS\?\[\.\.\.orderedRows,\.\.\.additions\]:/,'legacy additions do not change the active four-row membership');
 assert.match(model,/FIXED_INDICATOR_CODES=\['SELIC','IPCA','IBOV','USD\/BRL','SOJA_JATAI_GO','CUB_GO','DIESEL_S10','BRENT'\]/,'the former list remains recoverable');
 assert.match(engine,/const KRAKEN_WINDOW_HOURS = 7 \* 24/);
 assert.match(engine,/const VERSION = '2026\.11\.19\.103'/,'the published engine bundle is identified separately from the package version');
@@ -45,4 +45,4 @@ assert.match(model,/Worker respondeu HTTP/,'the foreground model labels other sa
 assert.match(model,/código upstream/,'the foreground model can display the allow-listed upstream code');
 assert.match(index,/privateMarketStatusText/,'the diagnostic is visible in the foreground app, not in the widget layout');
 
-console.log('PASS published 0.2.67 profile contract, trading-time history, recoverable legacy lists and 7D helpers, safe source diagnostics.');
+console.log('PASS published 0.2.68 profile contract, trading-time history, recoverable legacy lists and 7D helpers, safe source diagnostics.');

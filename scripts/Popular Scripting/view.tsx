@@ -75,8 +75,8 @@ function fallbackIcon(row:any,plan:any,rowPlan:any,positioned=true){
 export function PopularView({model,width,height}:{model:any;width:number;height:number}){
   for(const [key,value] of Object.entries({...assets,...approvedIcons}))if(!images[key]){const image=UIImage.fromBase64String(value as string);if(image)images[key]=image}
   const plan=layout(model.family,width,height)
-  // The published widget is a fixed indicator panel. Legacy page state and
-  // the old small-widget selection must not replace its first four/eight.
+  // Use the model's presentation order. Legacy page state and the old
+  // small-widget selection must not replace its first four/eight.
   const page=pageRows(model.rows,model.family,null,0),visibleRows=page.rows
   const label=(key:string,value:string,x:number,y:number,w:number,h:number,size:number,min:number,bold=false,color='white',right=false)=><Label labelKey={key} value={value} plan={plan} x={x} y={y} width={w} height={h} size={size} min={min} bold={bold} color={color} right={right}/>
   const renderNow=Date.now(),statusFor=(row:any)=>assetMarketStatus(row,renderNow)

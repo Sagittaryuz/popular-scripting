@@ -1,3 +1,7 @@
+## 0.2.68 — quatro ativos ordenados pela variação
+
+Ibovespa, Dow Jones, Dólar e Brent futuro continuam no widget. A ordem agora vai da maior para a menor variação percentual com sinal nas últimas 24 horas negociadas. Empates exatos mantêm a ordem original; sem variação válida, o ativo fica no fim e não vira zero. Cotações, janelas, cores, gráficos e recuperação permanecem inalterados.
+
 ## 0.2.52 — logs técnicos privados do processamento
 
 - Integra fila e envio de diagnóstico ao serviço privado existente, no mesmo caminho `/v1/market`. Reutiliza somente o token já configurado no Keychain; não cria, exporta ou modifica credenciais.
@@ -469,7 +473,7 @@ Testes locais de fontes, observações antigas/futuras, alertas, cache, transpor
 
 # Popular Scripting
 
-**Atual: 0.2.46 - Scripting Pro.** Perfil publicado de quatro ativos
+**Atual: 0.2.68 - Scripting Pro.** Perfil publicado de quatro ativos
 (`IBOV`, `DOW_JONES`, `USD/BRL`, `BRENT`) em janela móvel de 24 horas, com detalhes,
 CSV, alertas, assistente, Central de Controle e painel Início. [Ativação,
 testes e limites](PRO.md).
@@ -484,13 +488,13 @@ Na tela **Importar Scripts Remotos** do Scripting, cole:
 https://github.com/Sagittaryuz/popular-scripting/tree/main/scripts/Popular%20Scripting
 ```
 
-Importe ou atualize **Popular Scripting** pelo vínculo remoto existente, confirme **0.2.67** e motor **2026.11.19.103**, abra o projeto e toque em **Atualizar** para consultar os indicadores. Não configure outro token: o perfil atual usa Yahoo público. O botão Atualizar dentro do Popular atualiza dados, não instala uma versão nova do código. Na Tela de Início, mantenha o widget Scripting com esse projeto.
+Importe ou atualize **Popular Scripting** pelo vínculo remoto existente, confirme **0.2.68** e motor **2026.11.19.103**, abra o projeto e toque em **Atualizar** para consultar os indicadores. Não configure outro token: o perfil atual usa Yahoo público. O botão Atualizar dentro do Popular atualiza dados, não instala uma versão nova do código. Na Tela de Início, mantenha o widget Scripting com esse projeto.
 
 Para receber melhorias de código, use a atualização do script remoto no Scripting. Essa importação vincula o projeto à pasta `main/scripts/Popular Scripting`; não use um endereço de commit ou tag para acompanhar as próximas versões. O botão **Atualizar** dentro da tela do Popular consulta somente os indicadores e solicita recarregar o widget.
 
 ## Tamanhos e dados
 
-- Pequeno, médio e grande: o perfil publicado mostra `Ibovespa`, `Dow Jones`, `Dólar` e `Petróleo` na mesma ordem; o médio/grande não repete linhas na segunda coluna.
+- Pequeno, médio e grande: o perfil publicado mostra `Ibovespa`, `Dow Jones`, `Dólar` e `Petróleo` da maior para a menor variação; o médio/grande não repete linhas na segunda coluna.
 - Os quatro ativos usam Yahoo Finance público intraday (5m), símbolos ^BVSP,
   ^DJI, BRL=X e BZ=F. Gráfico/percentual usam os mesmos extremos de 24 horas
   acumuladas nas sessões históricas fornecidas. Fechamento não reinicia a base.

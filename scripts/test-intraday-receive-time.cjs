@@ -107,7 +107,7 @@ async function main() {
     console.log('Receive-time evidence:', JSON.stringify(model.rows.map(row => ({ code: row.asset.code,
       verified: row.quoteVerified, quoteTime: row.stamp?.time, error: row.sourceError }))));
     assert.equal(h.calls.length, 4);
-    assert.deepEqual(Array.from(model.rows, row => row.asset.code), definitions.map(d => d.code));
+    assert.deepEqual(Array.from(model.rows, row => row.asset.code).sort(), definitions.map(d => d.code).sort());
     for (const row of model.rows)
       assert.equal(row.quoteVerified, true, row.asset.code + ' must accept quote <= actual receipt time');
     for (const row of model.rows) {
