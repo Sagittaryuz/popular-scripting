@@ -336,51 +336,85 @@ def sheet_records(raw, source):
 
 def refresh_diesel(previous, today):
     municipal_url = ANP_CITIES.format(year=today.year)
-    municipal, coverage = {}, set()
-    for state, city, record in sheet_records(download(municipal_url), municipal_url):
-        coverage.add(record['period'])
-        if state in ('GO','GOIAS') and city == 'JATAI':
-            record['geography'] = 'JATAI-GO'
-            municipal[record['period']] = record
-    states = {}
-    for state, city, record in sheet_records(download(ANP_STATES), ANP_STATES):
-        if state in ('GO','GOIAS') and not city:
-            record.update(geography='GO', noMunicipalResult=record['period'] in coverage and record['period'] not in municipal, municipalitySourceURL=municipal_url)
-            states[record['period']] = record
-    # The small latest-week workbook can be ahead of the historical download.
-    page = Page(download(ANP_LATEST))
-    releases = []
-    for href in page.links:
-        url = urllib.parse.urljoin(ANP_LATEST, href)
-        match = re.search(r'resumo_semanal_lpc_(\d{4}-\d{2}-\d{2})_(\d{4}-\d{2}-\d{2})\.xlsx$', url)
-        if url.startswith(ANP_ROOT) and match and match[2] <= today.isoformat():
-            releases.append((match[2], url))
-    if releases:
+    municipal, states, coverage = {}, {}, {}
+    errors = {}
+
+    def collect(url, kind, expected_period=None):
+        # Materialize first: a malformed workbook must not publish partial rows.
+        rows = list(sheet_records(download(url), url))
+        if expected_period:
+            rows = [(s, c, r) for s, c, r in rows if r['period'] == expected_period]
+            if not any(c for _, c, _ in rows) or not any(
+                    s in ('GO', 'GOIAS') and not c for s, c, _ in rows):
+                raise ValueError('Latest ANP workbook lacks verified weekly coverage')
+        if not rows:
+            raise ValueError('ANP workbook has no Diesel S10 observations')
+        for state, city, record in rows:
+            period = record['period']
+            if period > today.isoformat():
+                continue
+            if city and kind in ('municipal', 'weekly'):
+                coverage[period] = url
+                if state in ('GO', 'GOIAS') and city == 'JATAI':
+                    record['geography'] = 'JATAI-GO'
+                    municipal[period] = record
+            if not city and kind in ('state', 'weekly') and state in ('GO', 'GOIAS'):
+                record['geography'] = 'GO'
+                states[period] = record
+
+    for kind, url in [('municipal', municipal_url), ('state', ANP_STATES)]:
+        try:
+            collect(url, kind)
+        except Exception as error:
+            errors[kind] = str(error)[:240]
+
+    try:
+        page = Page(download(ANP_LATEST))
+        releases = []
+        for href in page.links:
+            url = urllib.parse.urljoin(ANP_LATEST, href)
+            match = re.search(r'resumo_semanal_lpc_(\d{4}[-_]\d{2}[-_]\d{2})_(\d{4}[-_]\d{2}[-_]\d{2})\.xlsx$', url)
+            if url.startswith(ANP_ROOT) and match:
+                start, end = (dt.date.fromisoformat(x.replace('_', '-')) for x in match.groups())
+                if end <= today and end - start == dt.timedelta(days=6):
+                    releases.append((end.isoformat(), url))
+        if not releases:
+            raise ValueError('No completed ANP weekly workbook linked')
         period, url = max(releases)
-        records = list(sheet_records(download(url), url))
-        cities = [(s,c,r) for s,c,r in records if c]
-        if not cities:
-            raise ValueError('Latest ANP municipal coverage not found')
-        own = [r for s,c,r in cities if s in ('GO','GOIAS') and c == 'JATAI']
-        for r in own:
-            r['geography'] = 'JATAI-GO'
-            municipal[r['period']] = r
-        for state, city, r in records:
-            if state in ('GO','GOIAS') and not city:
-                r.update(geography='GO', noMunicipalResult=not own, municipalitySourceURL=url)
-                states[r['period']] = r
-    if not states or not coverage:
-        raise ValueError('ANP official state/municipal coverage absent')
-    periods = sorted(set(states)|set(municipal))[-13:]
-    observations = []
-    for period in periods:
-        if period in states:
-            observations.append(states[period])
-        if period in municipal:
-            observations.append(municipal[period])
+        collect(url, 'weekly', period)
+    except Exception as error:
+        errors['weekly'] = str(error)[:240]
+
+    if not states and not municipal:
+        raise ValueError('ANP returned no usable Goiás or Jataí observations: ' + str(errors))
+    if errors and max(set(states) | set(municipal)) < previous['observations'][-1]['period']:
+        raise ValueError('ANP sources only returned older observations: ' + str(errors))
+
+    # Preserve verified observations when a feed fails. Only report that
+    # Jataí is absent for a week with a successfully read municipal source.
+    merged = {(r['period'], r['geography']): r for r in previous['observations']}
+    for period, record in states.items():
+        old = merged.get((period, 'GO'))
+        if period in coverage:
+            record.update(noMunicipalResult=period not in municipal and (period, 'JATAI-GO') not in merged,
+                          municipalitySourceURL=coverage[period])
+        elif old and old.get('municipalitySourceURL'):
+            record.update(noMunicipalResult=old.get('noMunicipalResult', False),
+                          municipalitySourceURL=old['municipalitySourceURL'])
+        merged[(period, 'GO')] = record
+    for period, record in municipal.items():
+        merged[(period, 'JATAI-GO')] = record
+        key = (period, 'GO')
+        if key in merged:
+            merged[key] = dict(merged[key], noMunicipalResult=False,
+                               municipalitySourceURL=record['sourceURL'])
+    periods = sorted({key[0] for key in merged if key[0] <= today.isoformat()})[-13:]
     result = copy.deepcopy(previous)
-    result['observations'] = observations
-    result['sourceURL'] = ANP_STATES
+    result['observations'] = [merged[(p, g)] for p in periods
+                              for g in ('GO', 'JATAI-GO') if (p, g) in merged]
+    result['sourceURL'] = result['observations'][-1]['sourceURL']
+    if errors:
+        RECOVERIES['DIESEL_S10'] = {'errors': errors, 'sourceURL': result['sourceURL']}
     return result
 
 

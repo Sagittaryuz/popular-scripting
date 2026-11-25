@@ -124,9 +124,10 @@
     "scripts/test-trading-recovery.cjs": "a88ec39ac9a658e46d112f541555a137d22f8373c80335afb04c5406726a3877",
     "scripts/test-trading-return.cjs": "bed2918256a195cfb3e8997dcc9ba03a40239cf648d3900d74a0225da95b2ad3",
     "scripts/test-week-fixture.cjs": "3024ed5b985b4af80efcb12c11a7aac7373a46e46f431fbaf33e4da3e0f4b2b9",
+    "scripts/test_anp_fallback.py": "bdcc07b304c8f8c52126237c97698b300b86479a4025c300b551841664c2449e",
     "scripts/test_economic_ingestion.py": "c23b93d4b358100061a2437f751eae3ea69c815271ad38222bac8ebc1545c443",
     "scripts/test_refresh_recovery.py": "bd7bbf1f1694c82150da3aaf709af98733e11294b428dcd549480b3c04797a69",
-    "scripts/update_economic_data.py": "5e781db833c5aefe7a5b55ffc127072626f7652d0a6e19997970ae841f176e7e",
+    "scripts/update_economic_data.py": "a10e9138f440c3837ed1e0512fc66573aa2753226195e5e98c2d934fc80c3fdf",
     "scripts/validate-data.cjs": "1498105086b1c0cfeb6aa120c19263e3f8b8adc0170fa846e9a439e0b380751e"
   }
 }
