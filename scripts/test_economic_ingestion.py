@@ -12,6 +12,24 @@ import update_economic_data as m
 
 
 class IngestionTests(unittest.TestCase):
+    def test_diesel_does_not_publish_unfinished_week(self):
+        def records(raw, source):
+            return [('GOIAS', '', {'period': period, 'periodStart': start, 'value': value, 'sourceURL': source})
+                    for period, start, value in [('2026-11-07','2026-11-01',7.25),('2026-11-14','2026-11-08',7.40)]]
+        with patch.object(m,'download',return_value=b'<html></html>'), patch.object(m,'sheet_records',side_effect=records):
+            for previous in ({}, {'observations': []}):
+                with self.subTest(previous=previous):
+                    result=m.refresh_diesel(previous,dt.date(2026,11,13))
+                    self.assertEqual([r['period'] for r in result['observations']],['2026-11-07'])
+                    self.assertEqual(result['observations'][0]['value'],7.25)
+            previous = {'observations': [{'period': '2026-11-14', 'geography': 'GO'}]}
+            with self.assertRaisesRegex(ValueError, 'only returned older observations'):
+                m.refresh_diesel(previous,dt.date(2026,11,13))
+            result=m.refresh_diesel({},dt.date(2026,11,14))
+            self.assertEqual(result['observations'][-1]['period'],'2026-11-14')
+            with self.assertRaisesRegex(ValueError,'No completed ANP weekly workbook linked'):
+                m.refresh_diesel({},dt.date(2026,10,31))
+
     def test_cub_reference_not_other_typology(self):
         text = 'SETEMBRO - 2026 PADRÃO BAIXO PADRÃO NORMAL PADRÃO ALTO R-1 2.302,55 R-1 2.795,37 R-1 3.430,67 R-8 2.243,09 Valor referencial (R$/m²) R-16A Variação mês % 2.858,23 0,013 5,292 7,015'
         row = m.cub_text(text, '2026-09', 'https://www.sinduscongoias.com.br/cub.pdf')
@@ -39,10 +57,9 @@ class IngestionTests(unittest.TestCase):
         with self.assertRaises(ValueError):list(m.sheet_records(b'<html>403</html>','source'))
 
     def test_http_html_not_accepted_as_brent(self):
-        data=json.loads((m.ROOT/'data/economic-series.json').read_text())['series']['BRENT']
+        data = {'observations': [{'period': '2026-10-12', 'value': 100}]}
         with patch.object(m,'download',return_value=b'<html>upstream blocked</html>'):
             with self.assertRaises(ValueError):m.refresh_brent(data,dt.date(2026,10,18))
-        data['observations']=[{'period':'2026-10-12','value':100}]
         raw=b'observation_date,DCOILBRENTEU\n2026-10-13,125.78\n2026-10-14,126.55\n2026-10-15,.\n'
         with patch.object(m,'download',return_value=raw) as request:
             parsed=m.refresh_brent(data,dt.date(2026,10,18))

@@ -1,3 +1,9 @@
+## 2026-11-26 — Recuperação do coletor econômico
+
+- Corrige o início do histórico de Diesel S10 com dados oficiais e preserva a rejeição de séries desatualizadas em falhas parciais.
+- Isola o teste de Brent spot dos dados publicados, sem alterar a regra de atualidade.
+- 23 testes Python e validação econômica JS passaram. Dados publicados, interface e Brent futuro não foram alterados.
+
 ## 0.2.68 — quatro ativos ordenados pela variação
 
 Ibovespa, Dow Jones, Dólar e Brent futuro continuam no widget. A ordem agora vai da maior para a menor variação percentual com sinal nas últimas 24 horas negociadas. Empates exatos mantêm a ordem original; sem variação válida, o ativo fica no fim e não vira zero. Cotações, janelas, cores, gráficos e recuperação permanecem inalterados.

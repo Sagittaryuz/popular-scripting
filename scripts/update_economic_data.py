@@ -387,12 +387,14 @@ def refresh_diesel(previous, today):
 
     if not states and not municipal:
         raise ValueError('ANP returned no usable Goiás or Jataí observations: ' + str(errors))
-    if errors and max(set(states) | set(municipal)) < previous['observations'][-1]['period']:
+    previous_rows = previous.get('observations', [])
+    latest_previous = max((row['period'] for row in previous_rows), default='')
+    if errors and max(set(states) | set(municipal)) < latest_previous:
         raise ValueError('ANP sources only returned older observations: ' + str(errors))
 
     # Preserve verified observations when a feed fails. Only report that
     # Jataí is absent for a week with a successfully read municipal source.
-    merged = {(r['period'], r['geography']): r for r in previous['observations']}
+    merged = {(r['period'], r['geography']): r for r in previous_rows}
     for period, record in states.items():
         old = merged.get((period, 'GO'))
         if period in coverage:
